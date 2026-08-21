@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=75"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,19 @@ description = "Microglial imaging analysis: registration, filtering, segmentatio
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 dynamic = ["version"]
+authors = [{ name = "Brancaccio Lab" }]
+maintainers = [{ name = "Jay2owe" }]
+keywords = ["microglia", "microscopy", "bioluminescence", "image-analysis", "circadian"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
 
 # This package processes microscopy, so unlike analysis-kit it is allowed a
 # scientific stack. Keep the required set to what the data layer genuinely needs
@@ -21,14 +33,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-kit     = ["analysis-kit"]
+kit     = ["analysis-kit>=0.1.0"]
 # The kit is listed here as well as under `kit`, and for a different reason.
 # There it is the audit layer, which is soft: a missing run record costs a
 # record. Here it is the house palette, and it is hard — pymicroglia's figure
 # modules hold no colour table of their own and raise `FigureStyleMissing`
 # rather than substituting anything, because drawing in the wrong colours is
 # the drift the shared palette exists to stop.
-figure  = ["matplotlib>=3.7", "analysis-kit"]
+figure  = ["matplotlib>=3.7", "analysis-kit>=0.1.0"]
 seg     = ["scikit-image>=0.21"]
 video   = ["imageio-ffmpeg"]
 # Floored, not pinned to one release: the workbench is being developed

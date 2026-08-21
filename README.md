@@ -14,7 +14,7 @@ cooked dish.
 ## Install
 
 ```powershell
-pip install "PyMicroglia @ git+https://github.com/Jay2owe/PyMicroglia.git"
+pip install PyMicroglia
 ```
 
 Optional extras: `kit` (run records and house style), `figure`, `seg`, `video`,
@@ -604,7 +604,8 @@ which is the only kind of parity claim that still holds when
 
 ## License
 
-PyMicroglia is released under the [BSD 3-Clause License](LICENSE).
+PyMicroglia is released under the BSD 3-Clause License; the license text is
+included in every source and wheel distribution.
 
 ## Citation
 
