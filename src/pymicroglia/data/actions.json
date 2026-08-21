@@ -1,0 +1,3486 @@
+{
+  "project": "pymicroglia",
+  "generated_by": "tools/regenerate_catalogue.py",
+  "actions": [
+    {
+      "name": "register",
+      "summary": "Register a time-lapse by translation-only phase correlation on a stable channel, applied to every channel at full resolution.",
+      "method": "registration.estimate_and_apply",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "registration_channel",
+        "downsample",
+        "margin_px",
+        "max_residual_px",
+        "compression_level",
+        "input_glob",
+        "python_engine",
+        "estimate_only",
+        "reuse",
+        "content_crop"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "registration_channel": 1,
+        "downsample": 4,
+        "margin_px": 128,
+        "max_residual_px": 1.0,
+        "compression_level": 4,
+        "input_glob": "*.tif",
+        "python_engine": "",
+        "estimate_only": false,
+        "reuse": true,
+        "content_crop": true
+      },
+      "method_version": "2026-07-23",
+      "source": [
+        "Analysis/microglia_phase_correlation_registration.py",
+        "Analysis/microglia_phase_correlation_registration_analysis.ijm"
+      ]
+    },
+    {
+      "name": "register_three_channel",
+      "summary": "Register three-channel phase/green/red organotypic time-lapses on the red neuronal channel.",
+      "method": "registration.estimate_and_apply_three_channel",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "frame_interval_seconds",
+        "downsample",
+        "margin_px",
+        "max_pair_step_px",
+        "max_residual_px",
+        "compression_level",
+        "fps",
+        "python_engine",
+        "estimate_only",
+        "reuse",
+        "minimum_response"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "frame_interval_seconds": 30.0,
+        "downsample": 4,
+        "margin_px": 128,
+        "max_pair_step_px": 30.0,
+        "max_residual_px": 1.0,
+        "compression_level": 4,
+        "fps": 10.0,
+        "python_engine": "phase_green_red_timelapse_pipeline.py",
+        "estimate_only": false,
+        "reuse": true,
+        "minimum_response": 0.2
+      },
+      "method_version": "2026-07-23-red-sequential-phase-v1",
+      "source": [
+        "Analysis/phase_green_red_timelapse_pipeline.py",
+        "Analysis/phase_green_red_registration_analysis.ijm"
+      ]
+    },
+    {
+      "name": "export_registered_stack",
+      "summary": "Export cropped registered raw two-channel stacks with no unmixing, normalisation or rescaling.",
+      "method": "registration.export_registered_stack",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "frame_interval_minutes",
+        "display_percentile",
+        "input_glob",
+        "python_engine",
+        "shifts",
+        "reuse",
+        "compression_level"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "frame_interval_minutes": 30.0,
+        "display_percentile": 99.9,
+        "input_glob": "*.tif",
+        "python_engine": "microglia_raw_registered_stack_export.py",
+        "shifts": null,
+        "reuse": true,
+        "compression_level": 4
+      },
+      "method_version": "2026-07-23-raw-registered",
+      "source": [
+        "Analysis/microglia_raw_registered_stack_export.py",
+        "Analysis/microglia_raw_registered_stack_analysis.ijm"
+      ]
+    },
+    {
+      "name": "remove_cosmic_rays",
+      "summary": "Replace cosmic-ray damage using one outlier rule asked of a pixel, of a line and of the bleed off a saturated pixel, after registration.",
+      "method": "cosmic.remove_cosmic_rays",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "series",
+        "signal_channel",
+        "reference",
+        "seed_z",
+        "grow_z",
+        "growth_px",
+        "minimum_line_px",
+        "minimum_aspect",
+        "saturation_fraction",
+        "tail_reach_px",
+        "tail_loss_scale_noise",
+        "noise_sample_frames",
+        "slope_search_band_px",
+        "exclude_labels",
+        "exclude_label_ids",
+        "border_crop_px",
+        "bleed_correction",
+        "mirror_placebo",
+        "write_mask",
+        "write_preview",
+        "python_engine",
+        "folder_runner",
+        "output_folder",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "series": 0,
+        "signal_channel": 1,
+        "reference": "mean2",
+        "seed_z": 12.0,
+        "grow_z": 2.0,
+        "growth_px": 2,
+        "minimum_line_px": 25,
+        "minimum_aspect": 6.0,
+        "saturation_fraction": 0.99,
+        "tail_reach_px": 60,
+        "tail_loss_scale_noise": 1.0,
+        "noise_sample_frames": 80,
+        "slope_search_band_px": 11,
+        "exclude_labels": "",
+        "exclude_label_ids": "",
+        "border_crop_px": 0,
+        "bleed_correction": true,
+        "mirror_placebo": false,
+        "write_mask": true,
+        "write_preview": true,
+        "python_engine": "",
+        "folder_runner": "tiff_folder_analysis_runner.ijm",
+        "output_folder": "cosmic_cleaned",
+        "reuse": true
+      },
+      "method_version": "2026-08-20-one-outlier-rule",
+      "source": [
+        "Analysis/microglia_cosmic_ray_removal.py",
+        "Analysis/microglia_cosmic_ray_removal_analysis.ijm"
+      ]
+    },
+    {
+      "name": "remove_static_background",
+      "summary": "Remove the static background and shot noise for display only, preserving pulse amplitude at circadian periods.",
+      "method": "display.remove_static_background",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "band_edge_period_h",
+        "spatial_sigma_px",
+        "black_point_pct",
+        "white_point_pct",
+        "frame_interval_h",
+        "signal_channel",
+        "first_frame",
+        "frames",
+        "gain",
+        "offset",
+        "compression_level",
+        "hours_per_second",
+        "crf",
+        "k_extra",
+        "python_engine",
+        "fluctuation_only",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "band_edge_period_h": 18.0,
+        "spatial_sigma_px": 1.0,
+        "black_point_pct": 78.0,
+        "white_point_pct": 99.7,
+        "frame_interval_h": 0.5548225,
+        "signal_channel": 1,
+        "first_frame": 0,
+        "frames": -1,
+        "gain": 396.0,
+        "offset": 2054.0,
+        "compression_level": 4,
+        "hours_per_second": 6.0,
+        "crf": 14,
+        "k_extra": 1,
+        "python_engine": "",
+        "fluctuation_only": false,
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/microglia_static_background_removal.py",
+        "Analysis/microglia_static_background_removal_analysis.ijm"
+      ]
+    },
+    {
+      "name": "display_filter",
+      "summary": "Minimally filtered bioluminescence display that keeps the background visible so the channel merges without looking clipped; display only.",
+      "method": "display.bioluminescence_display",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "black_point_pct",
+        "white_point_pct",
+        "black_point_counts",
+        "white_point_counts",
+        "pool_px",
+        "sharpness",
+        "noise_multiple",
+        "pad_frames",
+        "spatial_sigma_px",
+        "frame_interval_h",
+        "signal_channel",
+        "first_frame",
+        "frames",
+        "compression_level",
+        "hours_per_second",
+        "crf",
+        "injection_period_h",
+        "injection_amplitude",
+        "video_lut",
+        "python_engine",
+        "injection_check_on",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "black_point_pct": 2.5,
+        "white_point_pct": 99.93,
+        "black_point_counts": -1.0,
+        "white_point_counts": -1.0,
+        "pool_px": 4.0,
+        "sharpness": 3.0,
+        "noise_multiple": 1.0,
+        "pad_frames": 64,
+        "spatial_sigma_px": 1.0,
+        "frame_interval_h": 0.5548225,
+        "signal_channel": 1,
+        "first_frame": 0,
+        "frames": -1,
+        "compression_level": 4,
+        "hours_per_second": 12.0,
+        "crf": 14,
+        "injection_period_h": 24.0,
+        "injection_amplitude": 100.0,
+        "video_lut": "dluc_purple",
+        "python_engine": "",
+        "injection_check_on": false,
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/microglia_bioluminescence_display.py",
+        "Analysis/microglia_bioluminescence_display_analysis.ijm"
+      ]
+    },
+    {
+      "name": "background",
+      "summary": "Estimate the off-tissue background from the structural channel, never from the image corners, and check the tissue mask actually contains the bioluminescence.",
+      "method": "segmentation.background",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "tissue_pct",
+        "tissue_smooth",
+        "off_dilate",
+        "prof_smooth",
+        "channels",
+        "structural_samples",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "tissue_pct": 55,
+        "tissue_smooth": 6.0,
+        "off_dilate": 31,
+        "prof_smooth": 1.5,
+        "channels": null,
+        "structural_samples": 20,
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "segment",
+      "summary": "Detect still cells by soma prominence and watershed, then sweep for further candidates. No minimum cell area, by rule.",
+      "method": "segmentation.segment",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "tissue_pct",
+        "tissue_smooth",
+        "off_dilate",
+        "prof_smooth",
+        "k_mask",
+        "k_soma",
+        "prominence",
+        "k_relax",
+        "relax_below",
+        "k_detect",
+        "k_cand",
+        "minsep",
+        "min_cand_px",
+        "move_max",
+        "cent_box",
+        "channels",
+        "structural_samples",
+        "stationarity_check",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "tissue_pct": 55,
+        "tissue_smooth": 6.0,
+        "off_dilate": 31,
+        "prof_smooth": 1.5,
+        "k_mask": 8.0,
+        "k_soma": 10.0,
+        "prominence": 0.5,
+        "k_relax": 5.0,
+        "relax_below": 40,
+        "k_detect": 4.0,
+        "k_cand": 5.0,
+        "minsep": 12,
+        "min_cand_px": 15,
+        "move_max": 8.0,
+        "cent_box": 20,
+        "channels": null,
+        "structural_samples": 20,
+        "stationarity_check": true,
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "export_roi",
+      "summary": "Write a RoiSet.zip Fiji can open: one region per segmented object, plus the SCN region and its two lobes.",
+      "method": "roi.export_roi",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "channels",
+        "objects",
+        "scn",
+        "roi_tolerance"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "channels": null,
+        "objects": true,
+        "scn": true,
+        "roi_tolerance": 1.0
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "extract_traces",
+      "summary": "One trace per segmented object, with its local ring subtracted, and dF/F against each trace's window mean rather than an instantaneous rolling baseline.",
+      "method": "tracing.extract_traces",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "ring_in",
+        "ring_out",
+        "ring_wide",
+        "ring_min",
+        "smooth_display",
+        "poly_edge_h",
+        "channels",
+        "labels",
+        "baselines",
+        "detrends",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "ring_in": 5,
+        "ring_out": 16,
+        "ring_wide": 26,
+        "ring_min": 40,
+        "smooth_display": 3,
+        "poly_edge_h": 12.0,
+        "channels": null,
+        "labels": null,
+        "baselines": [
+          24.0,
+          48.0
+        ],
+        "detrends": [
+          "cubic",
+          "poly6"
+        ],
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "run_controls",
+      "summary": "Area-matched decoys placed on tissue and read in absolute counts, plus the instrumental control that tests whether a rhythm is also off tissue, in another channel, or in image sharpness.",
+      "method": "controls.run_controls",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "ndecoy",
+        "decoy_p",
+        "ls_pmin",
+        "ls_pmax",
+        "ls_rhythmic",
+        "channels",
+        "labels",
+        "regions",
+        "decoy_seed",
+        "baselines",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "ndecoy": 300,
+        "decoy_p": 0.05,
+        "ls_pmin": 15.0,
+        "ls_pmax": 40.0,
+        "ls_rhythmic": 0.5,
+        "channels": null,
+        "labels": null,
+        "regions": null,
+        "decoy_seed": 0,
+        "baselines": [
+          24.0,
+          48.0
+        ],
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "test_rhythm",
+      "summary": "Period and cosinor for every trace, from circadian-workbench, and refused outright for a source with no instrumental control.",
+      "method": "rhythm.test_rhythm",
+      "mutates": false,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "ls_pmin",
+        "ls_pmax",
+        "ls_n",
+        "ls_rhythmic",
+        "traces",
+        "times_h",
+        "labels",
+        "bin_minutes",
+        "fit_cosinor",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "ls_pmin": 15.0,
+        "ls_pmax": 40.0,
+        "ls_n": 800,
+        "ls_rhythmic": 0.5,
+        "traces": null,
+        "times_h": null,
+        "labels": null,
+        "bin_minutes": 30,
+        "fit_cosinor": true,
+        "reuse": true
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "unmix",
+      "summary": "Linearly unmix a signal channel from a scaled autofluorescence channel, per frame, with one constant coefficient for the whole recording.",
+      "method": "filtering.unmix",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "input_glob",
+        "unmixing_coefficient",
+        "signal_channel",
+        "autofluorescence_channel",
+        "reuse"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "input_glob": "*.tif",
+        "unmixing_coefficient": 0.025,
+        "signal_channel": 2,
+        "autofluorescence_channel": 1,
+        "reuse": true
+      },
+      "method_version": "2026-07-23-timestamps-stacks",
+      "source": [
+        "Analysis/microglia_red_only_video_export.py"
+      ]
+    },
+    {
+      "name": "red_only_video",
+      "summary": "Linearly unmix microglial mCherry from autofluorescence on every raw frame, apply the saved registration transform, and export registered two-channel stacks plus timestamped red-only videos.",
+      "method": "video.red_only",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "input_glob",
+        "unmixing_coefficient",
+        "fps",
+        "frame_interval_minutes",
+        "time_label_band_height",
+        "display_percentile",
+        "crf",
+        "file_lock_retry_seconds",
+        "timestamp_font_fallback",
+        "timestamp_font_height_fraction",
+        "timestamp_font_min_size"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "input_glob": "*.tif",
+        "unmixing_coefficient": 0.025,
+        "fps": 10.0,
+        "frame_interval_minutes": 0.0,
+        "time_label_band_height": 48,
+        "display_percentile": 99.9,
+        "crf": 18,
+        "file_lock_retry_seconds": 60.0,
+        "timestamp_font_fallback": "DejaVuSans-Bold.ttf",
+        "timestamp_font_height_fraction": 0.54,
+        "timestamp_font_min_size": 14
+      },
+      "method_version": "2026-07-23-timestamps-stacks",
+      "source": [
+        "Analysis/microglia_red_only_video_export.py"
+      ]
+    },
+    {
+      "name": "composite_video",
+      "summary": "Render timestamped red/green microglia composite videos from registered two-channel stacks, correcting autofluorescence drift with a display-only endpoint gain curve.",
+      "method": "video.timestamped_composite",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "input_glob",
+        "fps",
+        "frame_interval_minutes",
+        "time_label_band_height",
+        "crf",
+        "mask_sample_frames",
+        "mask_erosion_iterations",
+        "mask_min_pixels",
+        "mask_min_area_fraction",
+        "green_display_percentiles",
+        "red_display_percentiles"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "input_glob": "*.tif",
+        "fps": 10.0,
+        "frame_interval_minutes": 30.0,
+        "time_label_band_height": 48,
+        "crf": 18,
+        "mask_sample_frames": 11,
+        "mask_erosion_iterations": 3,
+        "mask_min_pixels": 256,
+        "mask_min_area_fraction": 0.01,
+        "green_display_percentiles": [
+          1.0,
+          99.9
+        ],
+        "red_display_percentiles": [
+          0.0,
+          99.9
+        ]
+      },
+      "method_version": "2026-07-23-composite-green-endpoint-correction",
+      "source": [
+        "Analysis/microglia_timestamped_composite_video_export.py"
+      ]
+    },
+    {
+      "name": "phase_green_red_video",
+      "summary": "Render timestamped green/red videos from a registered three-channel organotypic time-lapse and audit which channel is which, leaving the scientific data unnormalised.",
+      "method": "video.phase_green_red",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "frame_interval_seconds",
+        "fps",
+        "crf",
+        "mask_smooth_sigma_px",
+        "mask_closing_iterations",
+        "mask_dilation_iterations",
+        "gain_sample_frames",
+        "gain_metric_percentile",
+        "gain_window_max",
+        "gain_window_min",
+        "gain_window_divisor",
+        "detail_blur_sigma_px",
+        "green_display_percentiles",
+        "red_display_percentiles",
+        "detail_display_percentiles",
+        "timestamp_band_height",
+        "timestamp_font_size",
+        "legend_font_size",
+        "panel_title_font_size",
+        "font_directory",
+        "font_regular",
+        "font_bold"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "frame_interval_seconds": 30.0,
+        "fps": 10.0,
+        "crf": 18,
+        "mask_smooth_sigma_px": 3.0,
+        "mask_closing_iterations": 3,
+        "mask_dilation_iterations": 2,
+        "gain_sample_frames": 41,
+        "gain_metric_percentile": 75,
+        "gain_window_max": 20,
+        "gain_window_min": 3,
+        "gain_window_divisor": 10,
+        "detail_blur_sigma_px": 8.0,
+        "green_display_percentiles": [
+          0.5,
+          99.7
+        ],
+        "red_display_percentiles": [
+          0.5,
+          99.7
+        ],
+        "detail_display_percentiles": [
+          70.0,
+          99.8
+        ],
+        "timestamp_band_height": 48,
+        "timestamp_font_size": 23,
+        "legend_font_size": 16,
+        "panel_title_font_size": 13,
+        "font_directory": "C:/Windows/Fonts",
+        "font_regular": "arial.ttf",
+        "font_bold": "arialbd.ttf"
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/phase_green_red_video_export.py"
+      ]
+    },
+    {
+      "name": "stack_to_mp4",
+      "summary": "Render a TIFF time-lapse stack as an MP4 at a stated number of experimental hours per second, through a named colour map.",
+      "method": "video.stack_to_mp4",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "input_glob",
+        "hours_per_second",
+        "frame_interval_h",
+        "lut",
+        "black_point",
+        "white_point",
+        "timestamp",
+        "timestamp_band_px",
+        "label",
+        "smooth_frames",
+        "smooth_sigma_px",
+        "floor_off_tissue_pct",
+        "crf",
+        "signal_channel",
+        "first_frame",
+        "frames",
+        "max_fps",
+        "min_fps",
+        "glob",
+        "python",
+        "python_engine"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "input_glob": "*.tif",
+        "hours_per_second": 12.0,
+        "frame_interval_h": 0.0,
+        "lut": "dluc_purple",
+        "black_point": -1.0,
+        "white_point": -1.0,
+        "timestamp": 1,
+        "timestamp_band_px": 48,
+        "label": "",
+        "smooth_frames": 0,
+        "smooth_sigma_px": 0.0,
+        "floor_off_tissue_pct": 0.0,
+        "crf": 14,
+        "signal_channel": 1,
+        "first_frame": 0,
+        "frames": -1,
+        "max_fps": 60.0,
+        "min_fps": 1.0,
+        "glob": "*.tif",
+        "python": "python",
+        "python_engine": ""
+      },
+      "method_version": "2026-08-18",
+      "source": [
+        "Analysis/tiff_stack_to_mp4.py",
+        "Analysis/tiff_stack_to_mp4.ijm"
+      ]
+    },
+    {
+      "name": "trace_panel",
+      "summary": "Draw a stack of time-trace panels from one or more trace CSVs, choosing which trace goes in which panel, merging several onto one panel, with independent control of colours, detrend, grey underlay, edge shading, time window, x ticks and vertical lines.",
+      "method": "trace_tables.trace_panel",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "input_csvs",
+        "time_column",
+        "time_offset_h",
+        "output_path",
+        "output_formats",
+        "write_plotted_csv",
+        "write_provenance",
+        "panel_specs",
+        "auto_columns",
+        "spec_json",
+        "detrend_method",
+        "detrend_window_h",
+        "poly_degree",
+        "normalise",
+        "as_percent",
+        "value_scale",
+        "time_start_h",
+        "time_end_h",
+        "time_cut_stage",
+        "smooth_frames",
+        "show_raw_trace",
+        "raw_colour",
+        "raw_linewidth",
+        "trace_linewidth",
+        "colour",
+        "colour_overflow_cmap",
+        "shade_edges",
+        "shade_colour",
+        "poly_edge_h",
+        "show_zero_line",
+        "show_sd_label",
+        "share_y",
+        "xtick_interval_h",
+        "xtick_origin_h",
+        "xtick_hours",
+        "vline_interval_h",
+        "vline_origin_h",
+        "vline_hours",
+        "vline_colour",
+        "vline_alpha",
+        "vline_linewidth",
+        "fig_width_in",
+        "panel_height_in",
+        "title_height_in",
+        "title",
+        "subtitle",
+        "xlabel",
+        "ylabel_suffix",
+        "legend_when_merged",
+        "dpi",
+        "colour_cycle",
+        "write_bundle",
+        "claim",
+        "theme"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "input_csvs": [],
+        "time_column": "hours",
+        "time_offset_h": 0.0,
+        "output_path": "",
+        "output_formats": [
+          "png"
+        ],
+        "write_plotted_csv": true,
+        "write_provenance": true,
+        "panel_specs": [],
+        "auto_columns": "*_processed",
+        "spec_json": "",
+        "detrend_method": "rolling",
+        "detrend_window_h": 24.0,
+        "poly_degree": 6,
+        "normalise": "window_mean",
+        "as_percent": true,
+        "value_scale": 1.0,
+        "time_start_h": null,
+        "time_end_h": null,
+        "time_cut_stage": "after",
+        "smooth_frames": 3,
+        "show_raw_trace": true,
+        "raw_colour": "raw",
+        "raw_linewidth": 0.6,
+        "trace_linewidth": 2.1,
+        "colour": "dluc",
+        "colour_overflow_cmap": "turbo",
+        "shade_edges": true,
+        "shade_colour": "shade",
+        "poly_edge_h": 12.0,
+        "show_zero_line": true,
+        "show_sd_label": true,
+        "share_y": false,
+        "xtick_interval_h": 24.0,
+        "xtick_origin_h": 0.0,
+        "xtick_hours": [],
+        "vline_interval_h": 24.0,
+        "vline_origin_h": 0.0,
+        "vline_hours": [],
+        "vline_colour": "tab:green",
+        "vline_alpha": 0.45,
+        "vline_linewidth": 0.7,
+        "fig_width_in": 11.5,
+        "panel_height_in": 2.05,
+        "title_height_in": 1.0,
+        "title": "",
+        "subtitle": "",
+        "xlabel": "",
+        "ylabel_suffix": "",
+        "legend_when_merged": true,
+        "dpi": 150,
+        "colour_cycle": [],
+        "write_bundle": true,
+        "claim": "",
+        "theme": "engine"
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/trace_panel_figure/trace_panel_figure.py",
+        "Analysis/trace_panel_figure/run_trace_panel_figure.ps1"
+      ]
+    },
+    {
+      "name": "dluc_single_cell",
+      "summary": "Segment and trace single-cell dLuc bioluminescence from a registered time-lapse, with detrending, rhythmicity tests, instrumental controls, quality-control figures and publication videos.",
+      "method": "pipelines.dluc_single_cell.run",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "gap_h",
+        "crop_pad",
+        "tissue_pct",
+        "tissue_smooth",
+        "off_dilate",
+        "prof_smooth",
+        "k_mask",
+        "k_soma",
+        "prominence",
+        "k_relax",
+        "relax_below",
+        "k_detect",
+        "k_cand",
+        "minsep",
+        "min_cand_px",
+        "ring_in",
+        "ring_out",
+        "ring_wide",
+        "ring_min",
+        "move_max",
+        "cent_box",
+        "ndecoy",
+        "decoy_p",
+        "smooth_display",
+        "poly_edge_h",
+        "video_hours_per_second",
+        "publication_band",
+        "dluc_video_temporal",
+        "dluc_video_spatial",
+        "dluc_video_noise_pct",
+        "ls_pmin",
+        "ls_pmax",
+        "ls_n",
+        "ls_rhythmic",
+        "roi_smooth",
+        "roi_area_lo",
+        "roi_area_hi",
+        "roi_dice_min",
+        "font_regular_path",
+        "font_bold_path",
+        "enginescript",
+        "venvpythonrelativepath",
+        "requiredoutputfolder",
+        "outputfolderformat",
+        "inputextensions",
+        "minimumvideobytes",
+        "venvrelativepath",
+        "pythonversion",
+        "requirementsfile",
+        "if_exists",
+        "run_label",
+        "review",
+        "claim",
+        "reuse",
+        "t0",
+        "t1",
+        "channels",
+        "baselines",
+        "detrends",
+        "roi",
+        "shift_mode",
+        "seed",
+        "dt_min",
+        "um_per_px",
+        "skip_control",
+        "skip_videos",
+        "video_fps",
+        "publication_fps",
+        "work",
+        "cosmic_seed_z",
+        "cosmic_growth_px"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "gap_h": 1.0,
+        "crop_pad": 7,
+        "tissue_pct": 55,
+        "tissue_smooth": 6.0,
+        "off_dilate": 31,
+        "prof_smooth": 1.5,
+        "k_mask": 8.0,
+        "k_soma": 10.0,
+        "prominence": 0.5,
+        "k_relax": 5.0,
+        "relax_below": 40,
+        "k_detect": 4.0,
+        "k_cand": 5.0,
+        "minsep": 12,
+        "min_cand_px": 15,
+        "ring_in": 5,
+        "ring_out": 16,
+        "ring_wide": 26,
+        "ring_min": 40,
+        "move_max": 8.0,
+        "cent_box": 20,
+        "ndecoy": 300,
+        "decoy_p": 0.05,
+        "smooth_display": 3,
+        "poly_edge_h": 12.0,
+        "video_hours_per_second": 12.0,
+        "publication_band": 48,
+        "dluc_video_temporal": 7,
+        "dluc_video_spatial": 1.6,
+        "dluc_video_noise_pct": 98.0,
+        "ls_pmin": 15.0,
+        "ls_pmax": 40.0,
+        "ls_n": 800,
+        "ls_rhythmic": 0.5,
+        "roi_smooth": 4.0,
+        "roi_area_lo": 0.04,
+        "roi_area_hi": 0.4,
+        "roi_dice_min": 0.8,
+        "font_regular_path": "C:\\Windows\\Fonts\\arial.ttf",
+        "font_bold_path": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "enginescript": "dluc_pipeline.py",
+        "venvpythonrelativepath": ".venvs\\dluc-analysis\\Scripts\\python.exe",
+        "requiredoutputfolder": "AI_Exports",
+        "outputfolderformat": "AI_Exports\\{0}_dluc_{1}",
+        "inputextensions": "@(\".tif\", \".tiff\")",
+        "minimumvideobytes": 10000,
+        "venvrelativepath": ".venvs\\dluc-analysis",
+        "pythonversion": "3.12",
+        "requirementsfile": "requirements.txt",
+        "if_exists": "version",
+        "run_label": null,
+        "review": null,
+        "claim": "",
+        "reuse": true,
+        "t0": 72.0,
+        "t1": null,
+        "channels": null,
+        "baselines": [
+          24.0,
+          48.0
+        ],
+        "detrends": [
+          "cubic",
+          "poly6"
+        ],
+        "roi": null,
+        "shift_mode": "integer",
+        "seed": 163,
+        "dt_min": null,
+        "um_per_px": null,
+        "skip_control": false,
+        "skip_videos": false,
+        "video_fps": null,
+        "publication_fps": null,
+        "work": null,
+        "cosmic_seed_z": 12.0,
+        "cosmic_growth_px": 2
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py",
+        "Analysis/dLuc_single_cell_analysis/run_dluc_analysis.ps1",
+        "Analysis/dLuc_single_cell_analysis/run_dluc_batch.ps1",
+        "Analysis/dLuc_single_cell_analysis/setup_environment.ps1"
+      ]
+    },
+    {
+      "name": "cry1_dluc_photon",
+      "summary": "Register four-channel Cry1-dLuc time-lapses on the bright-field channel and render photon-aware bioluminescence videos and quality-control figures, leaving the saved TIFF as raw transformed counts.",
+      "method": "pipelines.cry1_dluc_photon.run",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "fps",
+        "compression_level",
+        "crf",
+        "isolated_event_median_size_px",
+        "isolated_event_sigma_threshold",
+        "camera_baseline_percentile",
+        "signal_report_percentile",
+        "spatial_density_sigma_px",
+        "temporal_window_short_frames",
+        "temporal_window_long_frames",
+        "anscombe_offset",
+        "brightfield_display_percentiles",
+        "neuron_display_percentiles",
+        "photon_raw_display_percentiles",
+        "photon_anscombe_display_percentiles",
+        "qc_panel_display_percentiles",
+        "residual_report_percentile",
+        "timestamp_font_size",
+        "legend_font_size",
+        "font_directory",
+        "font_regular",
+        "font_bold",
+        "if_exists",
+        "run_label",
+        "review",
+        "claim",
+        "reuse",
+        "videos"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "fps": 4.0,
+        "compression_level": 4,
+        "crf": 18,
+        "isolated_event_median_size_px": 3,
+        "isolated_event_sigma_threshold": 8.0,
+        "camera_baseline_percentile": 30.0,
+        "signal_report_percentile": 99.0,
+        "spatial_density_sigma_px": 1.0,
+        "temporal_window_short_frames": 3,
+        "temporal_window_long_frames": 5,
+        "anscombe_offset": "3.0 / 8.0",
+        "brightfield_display_percentiles": [
+          0.5,
+          99.5
+        ],
+        "neuron_display_percentiles": [
+          1.0,
+          99.7
+        ],
+        "photon_raw_display_percentiles": [
+          70.0,
+          99.8
+        ],
+        "photon_anscombe_display_percentiles": [
+          95.0,
+          99.8
+        ],
+        "qc_panel_display_percentiles": [
+          1.0,
+          99.7
+        ],
+        "residual_report_percentile": 95,
+        "timestamp_font_size": 22,
+        "legend_font_size": 15,
+        "font_directory": "C:/Windows/Fonts",
+        "font_regular": "arial.ttf",
+        "font_bold": "arialbd.ttf",
+        "if_exists": "version",
+        "run_label": null,
+        "review": null,
+        "claim": "",
+        "reuse": true,
+        "videos": true
+      },
+      "method_version": "2026-07-23-dluc-bf-sequential-photon-aware-purple-v2",
+      "source": [
+        "Analysis/cry1_dluc_photon_pipeline.py"
+      ]
+    },
+    {
+      "name": "registration_figure",
+      "summary": "Draw the per-frame translation registration applied and the residual it left, from the stored shift table rather than from pixels.",
+      "method": "visualisation.qc.registration_figure",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "shifts",
+        "fig_width_in",
+        "panel_height_in"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "shifts": null,
+        "fig_width_in": 11.0,
+        "panel_height_in": 2.2
+      },
+      "method_version": "2026-07-23",
+      "source": [
+        "Analysis/microglia_phase_correlation_registration.py"
+      ]
+    },
+    {
+      "name": "cosmic_ray_preview",
+      "summary": "Draw one frame before and after cosmic-ray removal beside the replacement mask, choosing the frame that lost the most pixels.",
+      "method": "visualisation.qc.cosmic_ray_preview",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "fig_width_in",
+        "fig_height_in",
+        "frame",
+        "channel",
+        "cleaned",
+        "mask"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "fig_width_in": 15.0,
+        "fig_height_in": 5.4,
+        "frame": null,
+        "channel": 0,
+        "cleaned": null,
+        "mask": null
+      },
+      "method_version": "2026-08-20-one-outlier-rule",
+      "source": [
+        "Analysis/microglia_cosmic_ray_removal.py"
+      ]
+    },
+    {
+      "name": "channel_figure",
+      "summary": "Draw each channel's frame and intensity histogram side by side, so a swapped or bleeding channel is visible before anything is measured.",
+      "method": "visualisation.qc.channel_figure",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "fig_width_in",
+        "fig_height_in",
+        "channels",
+        "frame"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "fig_width_in": 15.0,
+        "fig_height_in": 5.4,
+        "channels": null,
+        "frame": 0
+      },
+      "method_version": "2026-07-23-dluc-bf-sequential-photon-aware-purple-v2",
+      "source": [
+        "Analysis/cry1_dluc_photon_pipeline.py"
+      ]
+    },
+    {
+      "name": "frames_figure",
+      "summary": "Draw the first, middle and last frame of every channel with its timestamp, which catches a wrongly ordered hyperstack in three plane reads.",
+      "method": "visualisation.qc.frames_figure",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "channels",
+        "fig_width_in",
+        "fig_height_in"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "channels": null,
+        "fig_width_in": 16.0,
+        "fig_height_in": 9.0
+      },
+      "method_version": "2026-07-23-dluc-bf-sequential-photon-aware-purple-v2",
+      "source": [
+        "Analysis/cry1_dluc_photon_pipeline.py"
+      ]
+    },
+    {
+      "name": "cell_overlay",
+      "summary": "Draw the segmented objects as outlines over the tissue and the bioluminescence they were found in, with each object's local background ring.",
+      "method": "visualisation.overlays.cell_overlay",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "labels",
+        "background",
+        "structural",
+        "rings",
+        "candidates",
+        "fig_width_in",
+        "fig_height_in"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "labels": null,
+        "background": null,
+        "structural": null,
+        "rings": null,
+        "candidates": [],
+        "fig_width_in": 19.0,
+        "fig_height_in": 6.5
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    },
+    {
+      "name": "roi_overlay",
+      "summary": "Draw stored regions over the frame they were drawn on, so a region decision can be checked once instead of re-made every run.",
+      "method": "visualisation.overlays.roi_overlay",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "theme",
+        "dpi",
+        "claim",
+        "polygons",
+        "background",
+        "structural",
+        "fig_width_in",
+        "fig_height_in"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "theme": "pyflash",
+        "dpi": 150,
+        "claim": "",
+        "polygons": [],
+        "background": null,
+        "structural": null,
+        "fig_width_in": 13.0,
+        "fig_height_in": 6.5
+      },
+      "method_version": "",
+      "source": [
+        "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "anscombe_offset",
+      "type": "str",
+      "units": "-",
+      "description": "Constant in 2*sqrt(counts + offset), the variance-stabilising transform for Poisson photon counts. Standard; rarely changed.",
+      "required": false
+    },
+    {
+      "name": "as_percent",
+      "type": "bool",
+      "units": "%",
+      "description": "Multiply the normalised trace by 100.",
+      "required": false
+    },
+    {
+      "name": "auto_columns",
+      "type": "str",
+      "units": "-",
+      "description": "Glob over column names when PANEL_SPECS is empty. One panel per matching column, in file order. \"*_dFF\" plots already-detrended columns instead; set DETREND_METHOD = \"none\" if you do.",
+      "required": false
+    },
+    {
+      "name": "autofluorescence_channel",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "One-based channel holding the autofluorescence that is scaled and subtracted."
+    },
+    {
+      "name": "background",
+      "type": "array",
+      "units": "counts",
+      "required": false,
+      "description": "The image the outlines are drawn over - normally the accumulated profile the segmenter thresholded, so the picture shows the image the decision was made on. Left out, frame 0 is used and the panel and the provenance both say so."
+    },
+    {
+      "name": "band_edge_period_h",
+      "type": "float",
+      "units": "h",
+      "description": "Keep periods longer than this, hours. CAUTION: set to HALF the shortest period that must survive. Slepians taper at their nominal edge, so setting this to the signal period itself passes it at only ~0.28. Never set it to 24 for circadian work.",
+      "required": false
+    },
+    {
+      "name": "baselines",
+      "type": "list",
+      "units": "h",
+      "required": false,
+      "description": "Rolling-baseline windows to compare, in hours. A window with no fully supported centre sample is refused rather than filled with edge reflections."
+    },
+    {
+      "name": "bin_minutes",
+      "type": "int",
+      "units": "min",
+      "required": false,
+      "description": "Bin the periodogram resamples to. Shorter than the sampling interval only interpolates."
+    },
+    {
+      "name": "black_point",
+      "type": "float",
+      "units": "-",
+      "description": "Display floor in counts. Negative means use the black point stored in the TIFF, which is almost always right: the display stage chose it to sit below the background so the field stays visible rather than crushed. CAUTION: raising it past the background clips the field to black, which reads as a clean image and is really lost signal. Two recordings rendered at different values cannot be compared by eye.",
+      "required": false
+    },
+    {
+      "name": "black_point_counts",
+      "type": "float",
+      "units": "counts",
+      "description": "Display floor in COUNTS. Negative means derive it from black_point_pct instead. A104 did not use a percentile: the whole tuning study held the exposure fixed at 2326 to 4551 counts so that ninety filter attempts could be compared on one scale. Give both counts here to reproduce an A104-style display, or to put several recordings on a common scale. CAUTION: percentiles re-derive the exposure from whatever recording they are handed. On a recording whose brightness spread differs from the one a look was settled on, they give a different picture, not the same one.",
+      "required": false
+    },
+    {
+      "name": "black_point_pct",
+      "type": "float",
+      "units": "%",
+      "description": "Display floor, percentile of the mean image. Display only: stored as the TIFF display range and movable live in Fiji.",
+      "required": false
+    },
+    {
+      "name": "bleed_correction",
+      "type": "bool",
+      "units": "-",
+      "description": "Subtract the fitted bleed off censored pixels. Turn it OFF on a recording whose mirrored placebo does not come back near zero: that says the model cannot tell this recording's bleed from its noise, usually because too few pixels saturated to fit anything. Hits and tracks are unaffected either way. CAUTION: do not turn it off to make a run tidier. Run the placebo and let it decide.",
+      "required": false
+    },
+    {
+      "name": "border_crop_px",
+      "type": "int",
+      "units": "px",
+      "description": "Pixels trimmed from every edge of the output, for a stack carrying a registration border of blank pixels. 0 keeps the frame as it is.",
+      "required": false
+    },
+    {
+      "name": "brightfield_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "Low and high percentiles",
+      "required": false
+    },
+    {
+      "name": "camera_baseline_percentile",
+      "type": "float",
+      "units": "%",
+      "description": "Percentile of the cleaned frame taken as the camera baseline and subtracted. CAUTION: too high and dim real signal is subtracted to zero; too low and the baseline itself is counted as photons.",
+      "required": false
+    },
+    {
+      "name": "candidates",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Labels that are permissive sweep candidates rather than prominence-segmented cells. Drawn dashed."
+    },
+    {
+      "name": "cent_box",
+      "type": "int",
+      "units": "-",
+      "description": "half-width of the stationarity box, px",
+      "required": false
+    },
+    {
+      "name": "channel",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Which channel to show, zero-based. The filter runs on the bioluminescence channel."
+    },
+    {
+      "name": "channels",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Which channel is which, as \"dluc=2,bf=0,struct=1\". Left out, the assignment is inferred and remembered as a decision, so a person is asked at most once."
+    },
+    {
+      "name": "claim",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "The one sentence this figure proves, written into the provenance bundle. Left empty, one is generated from what was actually drawn."
+    },
+    {
+      "name": "cleaned",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "The cleaned stack, as a path or an array, for the after panel. Without it only the before panel and the replacement mask are drawn."
+    },
+    {
+      "name": "colour",
+      "type": "str",
+      "units": "-",
+      "description": "dLuc purple. Used when a panel names no colour.",
+      "required": false
+    },
+    {
+      "name": "colour_cycle",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Colours for the 2nd and later traces merged onto one panel, by house name or by value. Empty uses the house reporter cycle - dLuc purple, RFP red, GFP green, then three fillers - which is what the engine spelled out in hex. Reordering it recolours every merged panel that names no colour of its own."
+    },
+    {
+      "name": "colour_overflow_cmap",
+      "type": "str",
+      "units": "-",
+      "description": "Used instead of repeating COLOUR_CYCLE once a panel merges more traces than the cycle has. CAUTION: leaving it empty makes the cycle repeat, so the 7th trace is drawn in the 1st one's colour and the two become indistinguishable.",
+      "required": false
+    },
+    {
+      "name": "compression_level",
+      "type": "int",
+      "units": "level",
+      "description": "TIFF zlib level, 0..9; 0 disables.",
+      "required": false
+    },
+    {
+      "name": "content_crop",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Crop to the largest tissue component plus a margin. Off keeps the whole common valid field."
+    },
+    {
+      "name": "cosmic_growth_px",
+      "type": "int",
+      "units": "px",
+      "required": false,
+      "description": "How far each outlier is dilated before repair, so the faint skirt around a hit goes with it. Replaced cosmic_grow on 2026-08-20."
+    },
+    {
+      "name": "cosmic_seed_z",
+      "type": "float",
+      "units": "noise units",
+      "required": false,
+      "description": "How far above the mean of the two neighbouring frames a pixel must sit to be called an outlier, in this recording's own noise. CAUTION: this is the setting that decides what counts as data. Replaced cosmic_k on 2026-08-20 with the method itself; the number is the same and what it is measured against is not."
+    },
+    {
+      "name": "crf",
+      "type": "int",
+      "units": "-",
+      "description": "x264 quality; lower is better.",
+      "required": false
+    },
+    {
+      "name": "crop_pad",
+      "type": "int",
+      "units": "-",
+      "description": "border dropped after registration, px",
+      "required": false
+    },
+    {
+      "name": "decoy_p",
+      "type": "float",
+      "units": "-",
+      "description": "admissibility threshold",
+      "required": false
+    },
+    {
+      "name": "decoy_seed",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Decoy placement is random; the seed makes a run repeatable. Change it to check a verdict does not depend on where the decoys happened to land."
+    },
+    {
+      "name": "detail_blur_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Blur subtracted to make the detail panel: max(green - blur(green), 0), in pixels.",
+      "required": false
+    },
+    {
+      "name": "detail_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "Same, for the detail panel. Low and high percentiles mapped to black and white in each panel. Contrast only.",
+      "required": false
+    },
+    {
+      "name": "detrend_method",
+      "type": "str",
+      "units": "-",
+      "description": "\"rolling\", \"polynomial\" or \"none\". CAUTION: \"none\" on a raw photon-count column plots the lamp/tissue drift, not the rhythm.",
+      "required": false
+    },
+    {
+      "name": "detrend_window_h",
+      "type": "float",
+      "units": "h",
+      "description": "Rolling-baseline width, hours. A 24 h rhythm survives a 24 h window almost untouched; a 12 h window removes most of it. Never set this below the period you are trying to see.",
+      "required": false
+    },
+    {
+      "name": "detrends",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Whole-window polynomial detrends compared alongside the rolling ones. Every method divides by the trace's window mean, so all three land on one axis."
+    },
+    {
+      "name": "display_percentile",
+      "type": "float",
+      "units": "%",
+      "description": "Display ceiling percentile. Display only: stored as the display range.",
+      "required": false
+    },
+    {
+      "name": "dluc_video_noise_pct",
+      "type": "float",
+      "units": "%",
+      "description": "off-tissue display floor percentile",
+      "required": false
+    },
+    {
+      "name": "dluc_video_spatial",
+      "type": "float",
+      "units": "-",
+      "description": "display-only Gaussian sigma, px",
+      "required": false
+    },
+    {
+      "name": "dluc_video_temporal",
+      "type": "int",
+      "units": "-",
+      "description": "display-only temporal averaging, frames",
+      "required": false
+    },
+    {
+      "name": "downsample",
+      "type": "int",
+      "units": "-",
+      "description": "Registration downsampling factor. Higher is faster and more robust to noise, but the coarse pass can miss shifts smaller than this many pixels.",
+      "required": false
+    },
+    {
+      "name": "dpi",
+      "type": "int",
+      "units": "-",
+      "description": "Raster resolution. 150 for review, 300+ for print; file size grows with the square.",
+      "required": false
+    },
+    {
+      "name": "dt_min",
+      "type": "float",
+      "units": "minutes",
+      "required": false,
+      "description": "Fallback frame spacing when the file carries no plane timestamps. A uniform assumption cannot find a pause in the recording, only hide it."
+    },
+    {
+      "name": "enginescript",
+      "type": "str",
+      "units": "-",
+      "description": "The engine, beside this script.",
+      "required": false
+    },
+    {
+      "name": "estimate_only",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Write the shifts and quality-control tables and no registered TIFF. The tables are the analysis; the TIFF is a 21 GB convenience that rebuilds from them."
+    },
+    {
+      "name": "exclude_label_ids",
+      "type": "str",
+      "units": "-",
+      "description": "Comma-separated label values to exclude. Empty means every non-zero label.",
+      "required": false
+    },
+    {
+      "name": "exclude_labels",
+      "type": "str",
+      "units": "-",
+      "description": "Optional label TIFF marking the objects being measured. Those pixels are kept out of the bleed FIT only, so a cell sitting in a bleed trail cannot pull the model. It never changes which pixels are repaired. A label image smaller than the frame is centred in it.",
+      "required": false
+    },
+    {
+      "name": "fig_height_in",
+      "type": "float",
+      "units": "-",
+      "required": false,
+      "description": "Figure height, inches."
+    },
+    {
+      "name": "fig_width_in",
+      "type": "float",
+      "units": "-",
+      "description": "Figure width, inches.",
+      "required": false
+    },
+    {
+      "name": "file_lock_retry_seconds",
+      "type": "float",
+      "units": "s",
+      "description": "How long to keep retrying a delete or replace that Dropbox or antivirus has locked. Raise it on a slow-syncing folder.",
+      "required": false
+    },
+    {
+      "name": "first_frame",
+      "type": "int",
+      "units": "-",
+      "description": "First frame index to use.",
+      "required": false
+    },
+    {
+      "name": "fit_cosinor",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Also fit a cosinor at each trace's peak period, for mesor, amplitude and acrophase."
+    },
+    {
+      "name": "floor_off_tissue_pct",
+      "type": "float",
+      "units": "%",
+      "description": "Put the black point at this percentile of the pixels OUTSIDE the tissue, instead of using the one stored in the TIFF. 0 uses the stored one; 98 is the publication look, and is what turns the field black. CAUTION: this deliberately clips the background to zero. It looks clean on its own and shows a hard edge where this channel's floor is when merged with another. Do not use it for a channel headed into a composite.",
+      "required": false
+    },
+    {
+      "name": "fluctuation_only",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Write the mean-subtracted stack instead, so the fixed texture is genuinely subtracted rather than left below the display floor, at the cost of a visibly noisier background. Display only either way."
+    },
+    {
+      "name": "folder_runner",
+      "type": "str",
+      "units": "-",
+      "description": "Opened when this macro is run with no arguments",
+      "required": false
+    },
+    {
+      "name": "font_bold",
+      "type": "str",
+      "units": "-",
+      "description": "Font file used for the elapsed-time stamp.",
+      "required": false
+    },
+    {
+      "name": "font_bold_path",
+      "type": "str",
+      "units": "-",
+      "description": "Titles and timestamps.",
+      "required": false
+    },
+    {
+      "name": "font_directory",
+      "type": "str",
+      "units": "-",
+      "description": "Where caption fonts are found. Where the caption fonts are found. Absolute by nature and Windows-only; point it at a font folder that exists on another platform.",
+      "required": false
+    },
+    {
+      "name": "font_regular",
+      "type": "str",
+      "units": "-",
+      "description": "Font file used for legends and titles.",
+      "required": false
+    },
+    {
+      "name": "font_regular_path",
+      "type": "str",
+      "units": "-",
+      "description": "Labels and legends.",
+      "required": false
+    },
+    {
+      "name": "fps",
+      "type": "float",
+      "units": "fps",
+      "description": "Video playback frame rate. Display only.",
+      "required": false
+    },
+    {
+      "name": "frame",
+      "type": "int",
+      "units": "frames",
+      "required": false,
+      "description": "Which frame to show. Left out, the one the stored event table says lost the most pixels - a preview of a quiet frame proves nothing."
+    },
+    {
+      "name": "frame_interval_h",
+      "type": "float",
+      "units": "h",
+      "description": "Hours between frames. A wrong value rescales every period that comes out.",
+      "required": false
+    },
+    {
+      "name": "frame_interval_minutes",
+      "type": "float",
+      "units": "min",
+      "description": "Minutes between frames. Written into the stack metadata; wrong values mislabel time, they do not move pixels.",
+      "required": false
+    },
+    {
+      "name": "frame_interval_seconds",
+      "type": "float",
+      "units": "s",
+      "description": "Seconds between frames.",
+      "required": false
+    },
+    {
+      "name": "frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Number of frames; -1 means all.",
+      "required": false
+    },
+    {
+      "name": "gain",
+      "type": "float",
+      "units": "-",
+      "description": "Counts of variance per count of signal.",
+      "required": false
+    },
+    {
+      "name": "gain_metric_percentile",
+      "type": "int",
+      "units": "%",
+      "description": "Percentile of in-mask green taken as each frame's brightness. Robust to bright cells.",
+      "required": false
+    },
+    {
+      "name": "gain_sample_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Frames sampled evenly to build the mask and the display ranges. More is steadier and slower.",
+      "required": false
+    },
+    {
+      "name": "gain_window_divisor",
+      "type": "int",
+      "units": "-",
+      "description": "frames // divisor and clamped to the two bounds above. Wider is steadier on a noisy recording, but blunts a real fast change.",
+      "required": false
+    },
+    {
+      "name": "gain_window_max",
+      "type": "int",
+      "units": "-",
+      "description": "The start and end brightness are medians",
+      "required": false
+    },
+    {
+      "name": "gain_window_min",
+      "type": "int",
+      "units": "-",
+      "description": "over a window of this many frames, sized as",
+      "required": false
+    },
+    {
+      "name": "gap_h",
+      "type": "float",
+      "units": "h",
+      "description": "a jump of more than this many hours is a break",
+      "required": false
+    },
+    {
+      "name": "glob",
+      "type": "str",
+      "units": "-",
+      "description": "Which files to take from a folder.",
+      "required": false
+    },
+    {
+      "name": "green_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "Fallback display range for C1 when the TIFF",
+      "required": false
+    },
+    {
+      "name": "grow_z",
+      "type": "float",
+      "units": "-",
+      "description": "Pixels down to this many noise units count as part of the hit they touch. This measures a hit to its own edge rather than to the seed cut, and it decides two things: whether the hit is long and thin enough to be a track, and how wide the repair band is. It does not widen the repair of the hit itself, which is the seed grown by growth_px.",
+      "required": false
+    },
+    {
+      "name": "growth_px",
+      "type": "int",
+      "units": "px",
+      "description": "Every hit is dilated by this many pixels before repair, to catch its skirt.",
+      "required": false
+    },
+    {
+      "name": "hours_per_second",
+      "type": "float",
+      "units": "-",
+      "description": "Review-video playback, hours per second.",
+      "required": false
+    },
+    {
+      "name": "if_exists",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "What to do about a run folder that already exists: 'version' keeps both by adding _v2, 'overwrite' replaces it, 'error' refuses, 'skip' returns the previous manifest without recomputing. Defaults to 'version' because overwriting is the policy that costs somebody the comparison they were in the middle of making."
+    },
+    {
+      "name": "injection_amplitude",
+      "type": "float",
+      "units": "-",
+      "description": "Its amplitude in counts.",
+      "required": false
+    },
+    {
+      "name": "injection_check_on",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Add an oscillation of known size to the recording, run the filter twice and measure what comes back. The filter's response depends on the data it is given, so unlike a fixed low-pass it has no response that can be stated in advance; this is the only honest way to quote a retention number. Costs two extra full runs."
+    },
+    {
+      "name": "injection_period_h",
+      "type": "float",
+      "units": "h",
+      "description": "Period of the test oscillation used by --injection-check.",
+      "required": false
+    },
+    {
+      "name": "input_csvs",
+      "type": "list",
+      "units": "-",
+      "description": "CSV paths. Empty = require --csv (repeatable).",
+      "required": false
+    },
+    {
+      "name": "input_glob",
+      "type": "str",
+      "units": "-",
+      "description": "Which files to take when INPUT is a folder.",
+      "required": false
+    },
+    {
+      "name": "inputextensions",
+      "type": "str",
+      "units": "-",
+      "description": "Which files in the source folder count as recordings.",
+      "required": false
+    },
+    {
+      "name": "isolated_event_median_size_px",
+      "type": "int",
+      "units": "px",
+      "description": "Side of the local median window a pixel is compared against, in pixels.",
+      "required": false
+    },
+    {
+      "name": "isolated_event_sigma_threshold",
+      "type": "float",
+      "units": "-",
+      "description": "A pixel is called an isolated event when it exceeds the local median by this many robust sigma, and is replaced by that median. CAUTION: lower it and real single-cell bioluminescence peaks are erased as though they were cosmic rays; raise it and rays survive into the density estimate.",
+      "required": false
+    },
+    {
+      "name": "k_cand",
+      "type": "float",
+      "units": "-",
+      "description": "candidate sweep: mask threshold",
+      "required": false
+    },
+    {
+      "name": "k_detect",
+      "type": "float",
+      "units": "-",
+      "description": "candidate sweep: local maxima above this",
+      "required": false
+    },
+    {
+      "name": "k_extra",
+      "type": "int",
+      "units": "-",
+      "description": "Extra Slepians past floor(2*NW)-1, for in-band fidelity.",
+      "required": false
+    },
+    {
+      "name": "k_mask",
+      "type": "float",
+      "units": "-",
+      "description": "primary cell mask, in background sigma",
+      "required": false
+    },
+    {
+      "name": "k_relax",
+      "type": "float",
+      "units": "-",
+      "description": "relaxed threshold for cells too small at K_MASK",
+      "required": false
+    },
+    {
+      "name": "k_soma",
+      "type": "float",
+      "units": "-",
+      "description": "a soma candidate must reach this many sigma",
+      "required": false
+    },
+    {
+      "name": "label",
+      "type": "str",
+      "units": "-",
+      "description": "Caption burnt into the top-left corner, in the style the tuning review videos use: white with a black outline, no band, so the frame keeps its native size. Empty draws none. Use it to name the condition when movies will be viewed side by side.",
+      "required": false
+    },
+    {
+      "name": "labels",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A label image to trace. Left out, the stored segmentation for this source is used."
+    },
+    {
+      "name": "legend_font_size",
+      "type": "int",
+      "units": "-",
+      "description": "Legend text size, points.",
+      "required": false
+    },
+    {
+      "name": "legend_when_merged",
+      "type": "bool",
+      "units": "-",
+      "description": "Show a legend on panels holding >1 trace.",
+      "required": false
+    },
+    {
+      "name": "ls_n",
+      "type": "int",
+      "units": "-",
+      "description": "periods tested across the band",
+      "required": false
+    },
+    {
+      "name": "ls_pmax",
+      "type": "float",
+      "units": "-",
+      "description": "upper edge of that band, hours",
+      "required": false
+    },
+    {
+      "name": "ls_pmin",
+      "type": "float",
+      "units": "-",
+      "description": "Lomb-Scargle search band, hours",
+      "required": false
+    },
+    {
+      "name": "ls_rhythmic",
+      "type": "float",
+      "units": "-",
+      "description": "LS power above which a trace counts as rhythmic",
+      "required": false
+    },
+    {
+      "name": "lut",
+      "type": "str",
+      "units": "-",
+      "description": "Colour map, one of LUT_ANCHORS or LUT_RAMPS below. dluc_purple is the house map for bioluminescence and is what every review and publication movie in this project has used; it is the one to match when a new movie has to sit beside an old one. The single-hue ramps are for channels that own a colour: green for GFP, red for RFP.",
+      "required": false
+    },
+    {
+      "name": "margin_px",
+      "type": "int",
+      "units": "px",
+      "description": "Tissue crop margin, full-resolution px, kept around the largest tissue component.",
+      "required": false
+    },
+    {
+      "name": "mask",
+      "type": "array",
+      "units": "-",
+      "required": false,
+      "description": "The replacement mask. Left out, the stored one for this source is used."
+    },
+    {
+      "name": "mask_closing_iterations",
+      "type": "int",
+      "units": "-",
+      "description": "Binary closings sealing holes in the mask.",
+      "required": false
+    },
+    {
+      "name": "mask_dilation_iterations",
+      "type": "int",
+      "units": "-",
+      "description": "Dilations after keeping the largest object.",
+      "required": false
+    },
+    {
+      "name": "mask_erosion_iterations",
+      "type": "int",
+      "units": "-",
+      "description": "Binary erosions pulling the mask in off the tissue edge, where the median is unstable.",
+      "required": false
+    },
+    {
+      "name": "mask_min_area_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "least this many pixels, or this fraction of the frame, whichever is larger. Otherwise the uneroded mask is used.",
+      "required": false
+    },
+    {
+      "name": "mask_min_pixels",
+      "type": "int",
+      "units": "-",
+      "description": "Keep the eroded mask only if it retains at",
+      "required": false
+    },
+    {
+      "name": "mask_sample_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Frames sampled evenly across the recording to build the fixed tissue mask. More frames give a steadier mask on a drifting slice.",
+      "required": false
+    },
+    {
+      "name": "mask_smooth_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Gaussian blur before thresholding, pixels.",
+      "required": false
+    },
+    {
+      "name": "max_fps",
+      "type": "float",
+      "units": "fps",
+      "description": "Refuse above this many frames per second. A rate no display can show is a wrong hours_per_second, not a fast movie.",
+      "required": false
+    },
+    {
+      "name": "max_pair_step_px",
+      "type": "float",
+      "units": "px",
+      "description": "Largest believable shift between two adjacent 30-second frames. CAUTION: this is the guard against a single bad correlation throwing the whole accumulated track off; raising it lets one bad frame drag every later frame.",
+      "required": false
+    },
+    {
+      "name": "max_residual_px",
+      "type": "float",
+      "units": "px",
+      "description": "Per-frame quality-control limit, px. A frame above this is reported, so raising it hides bad registration rather than fixing it.",
+      "required": false
+    },
+    {
+      "name": "min_cand_px",
+      "type": "int",
+      "units": "px",
+      "description": "candidate sweep: smallest mask kept",
+      "required": false
+    },
+    {
+      "name": "min_fps",
+      "type": "float",
+      "units": "fps",
+      "description": "Refuse below this. Under 1 fps the result is a slideshow that many players stumble on.",
+      "required": false
+    },
+    {
+      "name": "minimum_aspect",
+      "type": "float",
+      "units": "-",
+      "description": "Long-to-short bounding-box ratio that makes a hit a track rather than a blob. CAUTION: do not raise this to disable the gate. Without it every round hit gets a line search along an arbitrary axis, which is a search for the best line through noise, and it finds one.",
+      "required": false
+    },
+    {
+      "name": "minimum_line_px",
+      "type": "int",
+      "units": "px",
+      "description": "Shortest run of pixels called a line. Used twice: as the shape gate's length, and as the shortest continuation that can be scored.",
+      "required": false
+    },
+    {
+      "name": "minimum_response",
+      "type": "float",
+      "units": "-",
+      "required": false,
+      "description": "Phase-correlation response below which the red neuronal centroid is used instead. CAUTION: lowering it accepts weaker correlations, and one bad step carries into every later frame because the track accumulates."
+    },
+    {
+      "name": "minimumvideobytes",
+      "type": "int",
+      "units": "-",
+      "description": "A rendered video smaller than this is treated as a failed run rather than a finished one. CAUTION: raise it and a short but valid recording is re-run forever.",
+      "required": false
+    },
+    {
+      "name": "minsep",
+      "type": "int",
+      "units": "-",
+      "description": "candidate sweep: minimum separation, px",
+      "required": false
+    },
+    {
+      "name": "mirror_placebo",
+      "type": "bool",
+      "units": "-",
+      "description": "Control, not a product. Fits and scores the bleed on the side of each censored pixel where nothing bleeds, and writes numbers only - no cleaned stack, no mask, no preview. It must remove nothing. CAUTION: a non-zero result here means the model is fitting noise, and the real run's removal figure cannot be believed.",
+      "required": false
+    },
+    {
+      "name": "move_max",
+      "type": "float",
+      "units": "-",
+      "description": "a cell moving more than this is not \"still\", px",
+      "required": false
+    },
+    {
+      "name": "ndecoy",
+      "type": "int",
+      "units": "-",
+      "description": "decoys per unique mask area",
+      "required": false
+    },
+    {
+      "name": "neuron_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "mapped to black and white in",
+      "required": false
+    },
+    {
+      "name": "noise_multiple",
+      "type": "float",
+      "units": "-",
+      "description": "Where that half-way crossing sits, in multiples of the measured noise. Above 1 is more aggressive.",
+      "required": false
+    },
+    {
+      "name": "noise_sample_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Frames sampled to measure the noise, at every third pixel. 0 uses every frame and every pixel: slower, and on the validation recording it moved the detected pixel count by 0.15%.",
+      "required": false
+    },
+    {
+      "name": "normalise",
+      "type": "str",
+      "units": "-",
+      "description": "\"window_mean\", \"baseline\", \"none\". CAUTION: \"baseline\" is the textbook dF/F and is singular wherever the rolling baseline nears zero. On MCG_04 595 one cell's baseline fell to 5% of its mean and produced a +634% spike that flattened its whole panel. \"window_mean\" divides by each trace's mean over the plotted window and was chosen for that reason.",
+      "required": false
+    },
+    {
+      "name": "objects",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Include one ROI per segmented object. Needs a stored segmentation for this source."
+    },
+    {
+      "name": "off_dilate",
+      "type": "int",
+      "units": "-",
+      "description": "tissue dilation before inverting, px",
+      "required": false
+    },
+    {
+      "name": "offset",
+      "type": "float",
+      "units": "-",
+      "description": "Camera bias, counts.",
+      "required": false
+    },
+    {
+      "name": "output_dir",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Where results are written. Defaults to an AI_Exports folder beside the source, which is where every protocol in this project already puts them."
+    },
+    {
+      "name": "output_folder",
+      "type": "str",
+      "units": "-",
+      "description": "Results folder that batch makes",
+      "required": false
+    },
+    {
+      "name": "output_formats",
+      "type": "list",
+      "units": "-",
+      "description": "Extra copies: e.g. [\"png\", \"svg\", \"pdf\"].",
+      "required": false
+    },
+    {
+      "name": "output_name",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Exact name for the primary output. Defaults to the source stem plus the action's own suffix."
+    },
+    {
+      "name": "output_path",
+      "type": "str",
+      "units": "-",
+      "description": "Figure file. Empty = <first csv stem>_panels.png.",
+      "required": false
+    },
+    {
+      "name": "outputfolderformat",
+      "type": "str",
+      "units": "-",
+      "description": "Default output folder: {0} is the recording stem, {1} the date.",
+      "required": false
+    },
+    {
+      "name": "overwrite",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Replace an existing output. Off by default: refusing to overwrite is what stops a re-run destroying the figures you were comparing against."
+    },
+    {
+      "name": "pad_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Frames mirrored onto each end before the transform. Without it the record is treated as a loop and both ends pick up a jump from the other end.",
+      "required": false
+    },
+    {
+      "name": "panel_height_in",
+      "type": "float",
+      "units": "-",
+      "description": "Height of one panel, inches.",
+      "required": false
+    },
+    {
+      "name": "panel_specs",
+      "type": "list",
+      "units": "-",
+      "description": "Panel strings, one per panel; see --panel below. Empty = fall back to AUTO_COLUMNS.",
+      "required": false
+    },
+    {
+      "name": "panel_title_font_size",
+      "type": "int",
+      "units": "-",
+      "description": "Left/right panel title size, points.",
+      "required": false
+    },
+    {
+      "name": "photon_anscombe_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "only; no number changes.",
+      "required": false
+    },
+    {
+      "name": "photon_raw_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "each rendered panel. Contrast",
+      "required": false
+    },
+    {
+      "name": "poly_degree",
+      "type": "int",
+      "units": "-",
+      "description": "Degree when DETREND_METHOD = \"polynomial\". 3 = gentle drift only; above ~8 the fit starts eating the rhythm at both ends.",
+      "required": false
+    },
+    {
+      "name": "poly_edge_h",
+      "type": "float",
+      "units": "h",
+      "description": "polynomial fits are least constrained at both ends",
+      "required": false
+    },
+    {
+      "name": "polygons",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "The regions to draw, as polygons from pymicroglia.roi."
+    },
+    {
+      "name": "pool_px",
+      "type": "float",
+      "units": "px",
+      "description": "Radius, px, over which power is pooled before being compared with the noise level. Below ~2 the judgement is made on too few photons and real signal is called noise; above ~8 a faint cell is judged together with its neighbours.",
+      "required": false
+    },
+    {
+      "name": "prof_smooth",
+      "type": "float",
+      "units": "-",
+      "description": "sigma on the accumulated image, for mask placement",
+      "required": false
+    },
+    {
+      "name": "prominence",
+      "type": "float",
+      "units": "-",
+      "description": "(peak - saddle) / peak for a separate cell",
+      "required": false
+    },
+    {
+      "name": "publication_band",
+      "type": "int",
+      "units": "-",
+      "description": "timestamp-only strip; crop exactly this many px",
+      "required": false
+    },
+    {
+      "name": "publication_fps",
+      "type": "float",
+      "units": "fps",
+      "required": false,
+      "description": "Explicit publication frame rate. Normally left out, for the same reason as video_fps."
+    },
+    {
+      "name": "python",
+      "type": "str",
+      "units": "-",
+      "description": "Python command or full executable path.",
+      "required": false
+    },
+    {
+      "name": "python_engine",
+      "type": "str",
+      "units": "-",
+      "description": "DEFAULT_PYTHON_ENGINE The sibling Python file that does the numeric work. Empty means derive it from this macro's own name: <name>_analysis.ijm pairs with <name>.py, so neither file spells the other out. Set it only when the engine has a different name. Override per run with python_script=. /",
+      "required": false
+    },
+    {
+      "name": "pythonversion",
+      "type": "str",
+      "units": "-",
+      "description": "Interpreter the environment is built on. CAUTION: the pipeline uses typing syntax that older versions cannot parse.",
+      "required": false
+    },
+    {
+      "name": "qc_panel_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "Same, for the QC figure.",
+      "required": false
+    },
+    {
+      "name": "raw_colour",
+      "type": "str",
+      "units": "-",
+      "description": "Grey level of that thin line.",
+      "required": false
+    },
+    {
+      "name": "raw_linewidth",
+      "type": "float",
+      "units": "-",
+      "description": "Thin line width. Above ~1.0 it competes with the smoothed trace instead of sitting under it.",
+      "required": false
+    },
+    {
+      "name": "red_display_percentiles",
+      "type": "tuple",
+      "units": "%",
+      "description": "carries no Ranges metadata. Contrast only.",
+      "required": false
+    },
+    {
+      "name": "reference",
+      "type": "str",
+      "units": "-",
+      "description": "What a pixel is compared with: \"mean2\" is the mean of the frame before and the frame after. CAUTION: \"max2\" is the superseded behaviour. The larger of two neighbours is biased upward by half their difference, so it inflates the noise estimate by about a fifth and puts that same bias back into every repaired pixel.",
+      "required": false
+    },
+    {
+      "name": "regions",
+      "type": "dict",
+      "units": "-",
+      "required": false,
+      "description": "Named masks to measure the instrumental control inside. Left out, the stored SCN decision is used, and failing that the whole tissue mask."
+    },
+    {
+      "name": "registration_channel",
+      "type": "int",
+      "units": "-",
+      "description": "One-based stable structural or autofluorescence channel used to estimate the shifts. CAUTION: pick a channel whose structure does not itself move. Estimating on the signal channel makes the cells register to themselves and hides motion.",
+      "required": false
+    },
+    {
+      "name": "relax_below",
+      "type": "int",
+      "units": "-",
+      "description": "regrow a cell at K_RELAX if it is smaller than this",
+      "required": false
+    },
+    {
+      "name": "requiredoutputfolder",
+      "type": "str",
+      "units": "-",
+      "description": "Output must sit inside a folder of this name, so generated files never land among raw recordings.",
+      "required": false
+    },
+    {
+      "name": "requirementsfile",
+      "type": "str",
+      "units": "-",
+      "description": "Pinned dependency list, read from beside this script.",
+      "required": false
+    },
+    {
+      "name": "residual_report_percentile",
+      "type": "int",
+      "units": "%",
+      "description": "Registration residual percentile quoted in the QC report. Reporting only.",
+      "required": false
+    },
+    {
+      "name": "reuse",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Use a stored registration when one matches this exact source, parameters and METHOD_VERSION. Turning it off forces a fresh estimate, which reads the whole file."
+    },
+    {
+      "name": "review",
+      "type": "object",
+      "units": "-",
+      "required": false,
+      "description": "A pymicroglia.review.Review to record judgement calls into, so several runs can share one. Left out, the run makes its own and loads any answers already stored against this source."
+    },
+    {
+      "name": "ring_in",
+      "type": "int",
+      "units": "-",
+      "description": "background ring, dilations from the mask",
+      "required": false
+    },
+    {
+      "name": "ring_min",
+      "type": "int",
+      "units": "-",
+      "description": "ring area below which RING_WIDE is used, px",
+      "required": false
+    },
+    {
+      "name": "ring_out",
+      "type": "int",
+      "units": "-",
+      "description": "outer edge of that ring, dilations",
+      "required": false
+    },
+    {
+      "name": "ring_wide",
+      "type": "int",
+      "units": "-",
+      "description": "widened ring when the first is under RING_MIN px",
+      "required": false
+    },
+    {
+      "name": "rings",
+      "type": "array",
+      "units": "-",
+      "required": false,
+      "description": "The local background ring each trace was measured against, as a label image. Without it the third panel is dropped: an absent ring and a ring of zero area are different facts."
+    },
+    {
+      "name": "roi",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A hand-drawn .roi or .zip to check the automatic outline against. Below roi_dice_min the hand tracing wins and the disagreement is recorded as a blocker."
+    },
+    {
+      "name": "roi_area_hi",
+      "type": "float",
+      "units": "-",
+      "description": "upper bound of that area, fraction",
+      "required": false
+    },
+    {
+      "name": "roi_area_lo",
+      "type": "float",
+      "units": "-",
+      "description": "acceptable ROI area, fraction of the frame",
+      "required": false
+    },
+    {
+      "name": "roi_dice_min",
+      "type": "float",
+      "units": "-",
+      "description": "below this the automatic ROI is not used silently",
+      "required": false
+    },
+    {
+      "name": "roi_smooth",
+      "type": "float",
+      "units": "-",
+      "description": "sigma before thresholding for the automatic ROI",
+      "required": false
+    },
+    {
+      "name": "roi_tolerance",
+      "type": "float",
+      "units": "px",
+      "required": false,
+      "description": "Polygon simplification tolerance, px. Larger drops points from the outline; a ROI simplified past a pixel or two stops matching the mask it came from."
+    },
+    {
+      "name": "run_label",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Name for this run's folder. Left out, it is a short hash of the settings, so an identical re-run lands in the same place and a changed one lands beside it."
+    },
+    {
+      "name": "saturation_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "A pixel at or above this share of full scale has stopped measuring. CAUTION: this is the read-out, not slack. A pixel that saturates part-way through an exposure is often read out a few counts short; requiring exactly full scale missed one censored pixel in a hundred and moved the fitted bleed by 12%.",
+      "required": false
+    },
+    {
+      "name": "scn",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Include the SCN region and its two lobes, from the stored decision. A hand tracing wins over the automatic one and is never re-derived."
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Decoy placement is random; this is what makes a p-value reproducible."
+    },
+    {
+      "name": "seed_z",
+      "type": "float",
+      "units": "-",
+      "description": "A pixel is a hit when it sits this many noise units above the reference. The same cut also decides a line. CAUTION: this cannot be derived from a false-positive rate, because the tail of the difference image is rays and not noise. Lowering it removes fainter real transients along with fainter rays; it is the setting that decides what counts as data.",
+      "required": false
+    },
+    {
+      "name": "series",
+      "type": "int",
+      "units": "-",
+      "description": "Which series to read from a multi-series file.",
+      "required": false
+    },
+    {
+      "name": "shade_colour",
+      "type": "str",
+      "units": "-",
+      "description": "Grey level of those blocks. Darker than ~0.8 starts hiding the trace underneath.",
+      "required": false
+    },
+    {
+      "name": "shade_edges",
+      "type": "bool",
+      "units": "-",
+      "description": "The grey blocks over the untrustworthy ends.",
+      "required": false
+    },
+    {
+      "name": "share_y",
+      "type": "bool",
+      "units": "-",
+      "description": "True gives every panel the same y range, so amplitudes compare by eye but dim cells vanish.",
+      "required": false
+    },
+    {
+      "name": "sharpness",
+      "type": "float",
+      "units": "-",
+      "description": "How abruptly the filter switches from suppressing to keeping. 1.0 is the textbook Wiener gain, which never quite reaches full size and so shrinks pulses that are obviously real. 3.0 still crosses one half where signal equals noise but returns to full size above it.",
+      "required": false
+    },
+    {
+      "name": "shift_mode",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "'integer' rolls whole pixels and leaves every value exactly as measured, which is what any spatial statistic needs. 'subpixel' interpolates and is marginally better for intensity alone."
+    },
+    {
+      "name": "shifts",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A specific registration artefact to apply. Named explicitly it always wins; left out, the one stored registration matching this source is used, and two matches is an error naming both."
+    },
+    {
+      "name": "show_raw_trace",
+      "type": "bool",
+      "units": "-",
+      "description": "The thin grey unsmoothed line under each trace.",
+      "required": false
+    },
+    {
+      "name": "show_sd_label",
+      "type": "bool",
+      "units": "-",
+      "description": "\"sd 6.7%\" at the top right of each panel.",
+      "required": false
+    },
+    {
+      "name": "show_zero_line",
+      "type": "bool",
+      "units": "-",
+      "description": "The black horizontal line at 0.",
+      "required": false
+    },
+    {
+      "name": "signal_channel",
+      "type": "int",
+      "units": "-",
+      "description": "One-based channel to clean. Others are copied.",
+      "required": false
+    },
+    {
+      "name": "signal_report_percentile",
+      "type": "float",
+      "units": "%",
+      "description": "Percentile of positive signal recorded per frame in the QC table. Reporting only.",
+      "required": false
+    },
+    {
+      "name": "skip_control",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Skip the instrumental control. Never do this before a periodicity or circadian claim: skipping it is recorded as a blocker, because nothing else in the run distinguishes a rhythm in the sample from one in the microscope."
+    },
+    {
+      "name": "skip_videos",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Skip the time-resolved visual quality-control videos. Mask acceptance is then incomplete, because whether a static outline stays on the same feature is a question only a movie answers."
+    },
+    {
+      "name": "slope_search_band_px",
+      "type": "int",
+      "units": "px",
+      "description": "Sets how many directions the line search tries: half this many pixels of drift across the length of the continuation. It does NOT set the width of the repair, which comes from the hit itself. On the validation recording every value from 5 to 31 found the same track.",
+      "required": false
+    },
+    {
+      "name": "smooth_display",
+      "type": "int",
+      "units": "-",
+      "description": "frames, drawing only; never used in a number",
+      "required": false
+    },
+    {
+      "name": "smooth_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Display-only running mean over this many frames. 0 leaves the record alone; 7 is the publication look used by dluc_pipeline.py. CAUTION: averaging over time shortens and shifts a pulse. It is why anything using it is display only, and why a movie made with it must never be the thing a period or an amplitude is read from.",
+      "required": false
+    },
+    {
+      "name": "smooth_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Display-only Gaussian blur within each frame, px. 0 leaves it alone; 1.6 is the publication look. Free in time: a spatial filter reads one frame, so it cannot shorten a pulse. Above about 2.5 px cell processes lose definition.",
+      "required": false
+    },
+    {
+      "name": "source",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+    },
+    {
+      "name": "spatial_density_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Gaussian blur applied to positive signal before temporal aggregation, in pixels.",
+      "required": false
+    },
+    {
+      "name": "spatial_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "In-frame Gaussian blur, px. Below ~0.5 grainy; above ~2.5 processes lose definition. Cannot shift or shorten a pulse.",
+      "required": false
+    },
+    {
+      "name": "spec_json",
+      "type": "str",
+      "units": "-",
+      "description": "Path to a JSON spec. Overrides PANEL_SPECS and AUTO_COLUMNS; the only way to set per-panel y limits and per-panel detrends. See README.",
+      "required": false
+    },
+    {
+      "name": "stationarity_check",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Measure how far each object's intensity centroid travels over the recording. A cell that wanders is not a still cell, and a static mask over a moving object measures two different things at the two ends of the record. Costs one pass over a small box per object."
+    },
+    {
+      "name": "structural",
+      "type": "array",
+      "units": "counts",
+      "required": false,
+      "description": "The structural-channel image to add as a first panel. Without it the figure cannot answer whether the objects are on tissue, so the panel is left out rather than faked."
+    },
+    {
+      "name": "structural_samples",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Frames sampled for the structural time-average. The mask this feeds is smooth and low-frequency, so twenty frames already average away the shot noise that would move it."
+    },
+    {
+      "name": "subtitle",
+      "type": "str",
+      "units": "-",
+      "description": "Empty = generated. \" \" suppresses it.",
+      "required": false
+    },
+    {
+      "name": "t0",
+      "type": "float",
+      "units": "hours",
+      "required": false,
+      "description": "Window start. The default exists because in the reference dataset the weakest cell's ring-subtracted signal is negative before 72 h; on a shorter recording it is simply lost data, and the review says how many frames it cost."
+    },
+    {
+      "name": "t1",
+      "type": "float",
+      "units": "hours",
+      "required": false,
+      "description": "Window end. Left out, the usable block runs to its end. Given, it selects the continuous block containing that window rather than the longest one, so matched recordings stay on matched hours."
+    },
+    {
+      "name": "tail_loss_scale_noise",
+      "type": "float",
+      "units": "-",
+      "description": "Width of the robust fitting loss, in noise units. CAUTION: plain least squares (a very large value here) chases the brightest rows and over-removes - 105% of the bleed on the validation recording.",
+      "required": false
+    },
+    {
+      "name": "tail_reach_px",
+      "type": "int",
+      "units": "px",
+      "description": "How far along the row the bleed is followed and fitted. Must cover several decay lengths. CAUTION: do not shorten this to \"only while the bleed beats the noise\". A row with one censored pixel predicts less than one noise unit and would get nothing, which leaves 65% of the bleed behind. The noise on a single pixel averages out; the bias does not.",
+      "required": false
+    },
+    {
+      "name": "temporal_window_long_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "for the persistence panel. Each window size is also the factor that turns the mean back into summed counts before the Anscombe transform, so the two uses must stay equal.",
+      "required": false
+    },
+    {
+      "name": "temporal_window_short_frames",
+      "type": "int",
+      "units": "frames",
+      "description": "Frames averaged for the density panel, and",
+      "required": false
+    },
+    {
+      "name": "theme",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "The house look, by name, from analysis-kit. 'engine' is the deliberate exception: it leaves Matplotlib's own defaults alone so a ported figure comes out pixel-for-pixel like the script it replaces."
+    },
+    {
+      "name": "time_column",
+      "type": "str",
+      "units": "-",
+      "description": "Numeric time column in every CSV, in hours.",
+      "required": false
+    },
+    {
+      "name": "time_cut_stage",
+      "type": "str",
+      "units": "-",
+      "description": "\"after\"  = detrend on all data, then crop. The baseline still sees the frames just outside the crop. \"before\" = crop first, then detrend. Use when the discarded stretch is bad data. CAUTION: on a rolling detrend these differ. With \"before\", the first and last DETREND_WINDOW_H/2 of what you kept become edge-shaded.",
+      "required": false
+    },
+    {
+      "name": "time_end_h",
+      "type": "none",
+      "units": "h",
+      "description": "Plot to this hour. None = end of the data.",
+      "required": false
+    },
+    {
+      "name": "time_label_band_height",
+      "type": "int",
+      "units": "-",
+      "description": "Height in pixels of the black band above the image carrying the elapsed-time text.",
+      "required": false
+    },
+    {
+      "name": "time_offset_h",
+      "type": "float",
+      "units": "h",
+      "description": "Added to every time value of every source. Per-source offsets go in the JSON spec instead; use them to align recordings that started at different clock times before merging.",
+      "required": false
+    },
+    {
+      "name": "time_start_h",
+      "type": "none",
+      "units": "h",
+      "description": "Plot from this hour. None = start of the data.",
+      "required": false
+    },
+    {
+      "name": "times_h",
+      "type": "list",
+      "units": "h",
+      "required": false,
+      "description": "The time axis, when traces are passed directly."
+    },
+    {
+      "name": "timestamp",
+      "type": "int",
+      "units": "-",
+      "description": "1 draws a black band above the image carrying elapsed experimental time. It can be cropped off later without re-rendering, using the ffmpeg line in the report.",
+      "required": false
+    },
+    {
+      "name": "timestamp_band_height",
+      "type": "int",
+      "units": "-",
+      "description": "Height in pixels of the black caption band.",
+      "required": false
+    },
+    {
+      "name": "timestamp_band_px",
+      "type": "int",
+      "units": "px",
+      "description": "Height of that band in pixels. Scale it with the image: 48 suits a 500 px field and looks like a title bar on a 2000 px one.",
+      "required": false
+    },
+    {
+      "name": "timestamp_font_fallback",
+      "type": "str",
+      "units": "-",
+      "description": "Font looked for beside this script when no system font above exists.",
+      "required": false
+    },
+    {
+      "name": "timestamp_font_height_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Font size as a fraction of band height.",
+      "required": false
+    },
+    {
+      "name": "timestamp_font_min_size",
+      "type": "int",
+      "units": "-",
+      "description": "Never draw smaller than this, in points.",
+      "required": false
+    },
+    {
+      "name": "timestamp_font_size",
+      "type": "int",
+      "units": "-",
+      "description": "Elapsed-time text size, points.",
+      "required": false
+    },
+    {
+      "name": "tissue_pct",
+      "type": "int",
+      "units": "%",
+      "description": "structural-channel percentile defining tissue",
+      "required": false
+    },
+    {
+      "name": "tissue_smooth",
+      "type": "float",
+      "units": "-",
+      "description": "sigma applied to the structural mean first",
+      "required": false
+    },
+    {
+      "name": "title",
+      "type": "str",
+      "units": "-",
+      "description": "Empty = generated from the detrend settings.",
+      "required": false
+    },
+    {
+      "name": "title_height_in",
+      "type": "float",
+      "units": "-",
+      "description": "Space reserved above the panels for the title.",
+      "required": false
+    },
+    {
+      "name": "trace_linewidth",
+      "type": "float",
+      "units": "-",
+      "description": "Thick line width. Below ~1.2 it stops reading as the summary line at figure scale.",
+      "required": false
+    },
+    {
+      "name": "traces",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Traces to test. Left out, the stored traces for this source are used."
+    },
+    {
+      "name": "um_per_px",
+      "type": "float",
+      "units": "um",
+      "required": false,
+      "description": "Pixel size, when the file is not calibrated. Areas stay in pixels without it."
+    },
+    {
+      "name": "unmixing_coefficient",
+      "type": "float",
+      "units": "-",
+      "description": "THE SETTING THIS PROTOCOL EXISTS FOR. Green contribution subtracted from raw red: corrected_red = max(red - c * green, 0). CAUTION: this changes measured data, not just the display. Too high and real mCherry signal is subtracted away, flattening amplitude everywhere the green channel is bright; too low and autofluorescence stays in the red trace and inflates it. Re-derive it per filter set rather than inheriting it.",
+      "required": false
+    },
+    {
+      "name": "value_scale",
+      "type": "float",
+      "units": "-",
+      "description": "Extra multiplier, applied whatever NORMALISE is. Set to 100 when plotting a column that already holds a fraction (a *_dFF or *_fractional column with DETREND_METHOD = \"none\"), so the axis reads in percent. CAUTION: leaving it at 1 there gives an axis marked % whose numbers are fractions, understating every amplitude a hundredfold.",
+      "required": false
+    },
+    {
+      "name": "venvpythonrelativepath",
+      "type": "str",
+      "units": "-",
+      "description": "Interpreter. Interpreter built by setup_environment.ps1, under the user profile.",
+      "required": false
+    },
+    {
+      "name": "venvrelativepath",
+      "type": "str",
+      "units": "-",
+      "description": "Virtual environment, created under the user profile. Change it to keep several dLuc environments side by side.",
+      "required": false
+    },
+    {
+      "name": "video_fps",
+      "type": "float",
+      "units": "fps",
+      "required": false,
+      "description": "Explicit quality-control frame rate. Normally left out and derived from video_hours_per_second and the acquisition rate, so playback means the same biological speed on every recording."
+    },
+    {
+      "name": "video_hours_per_second",
+      "type": "float",
+      "units": "-",
+      "description": "24 h cycle plays in 2 seconds",
+      "required": false
+    },
+    {
+      "name": "video_lut",
+      "type": "str",
+      "units": "-",
+      "description": "Colour map for the review video. The house bioluminescence map: black through indigo and purple to WHITE, so a pixel sitting at the top of the display range announces itself instead of blending in with merely bright ones. Its stops are copied from tiff_stack_to_mp4.py, so a review video and a finished movie share a palette. CAUTION: the flat ramps below - magenta, red, green - hold one hue and vary only brightness, so nothing marks saturation. Use one only for a channel that owns a colour in a composite.",
+      "required": false
+    },
+    {
+      "name": "videos",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Render the four photon-aware movies. Off stops after the registered TIFF, which is the only output a number should come from anyway."
+    },
+    {
+      "name": "vline_alpha",
+      "type": "float",
+      "units": "-",
+      "description": "Line opacity. Above ~0.7 they compete with the traces; at 0 they are invisible but still drawn.",
+      "required": false
+    },
+    {
+      "name": "vline_colour",
+      "type": "str",
+      "units": "-",
+      "description": "Colour of the periodic lines. Cosmetic; pick something no trace uses or they read as data.",
+      "required": false
+    },
+    {
+      "name": "vline_hours",
+      "type": "list",
+      "units": "h",
+      "description": "Explicit line hours; overrides the two above.",
+      "required": false
+    },
+    {
+      "name": "vline_interval_h",
+      "type": "float",
+      "units": "h",
+      "description": "Hours between vertical lines. 0 = none.",
+      "required": false
+    },
+    {
+      "name": "vline_linewidth",
+      "type": "float",
+      "units": "-",
+      "description": "Line width. Cosmetic; keep it under the trace width so it stays background furniture.",
+      "required": false
+    },
+    {
+      "name": "vline_origin_h",
+      "type": "float",
+      "units": "h",
+      "description": "Lines land on this hour plus whole intervals.",
+      "required": false
+    },
+    {
+      "name": "white_point",
+      "type": "float",
+      "units": "-",
+      "description": "Display ceiling in counts. Negative means use the stored white point. CAUTION: lowering it pins bright cell cores at white, and a pinned core shows no pulse at all, so the brightest cell looks dead.",
+      "required": false
+    },
+    {
+      "name": "white_point_counts",
+      "type": "float",
+      "units": "counts",
+      "description": "Display ceiling in COUNTS. Negative means derive it from white_point_pct. Set both count values, or neither.",
+      "required": false
+    },
+    {
+      "name": "white_point_pct",
+      "type": "float",
+      "units": "%",
+      "description": "Display ceiling, percentile of the input.",
+      "required": false
+    },
+    {
+      "name": "work",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Accepted for compatibility with the engine's --work flag and not used: the registered arrays are keyed artefacts in the project's own PixelStore, which is already capped and already evicts."
+    },
+    {
+      "name": "write_bundle",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Also write the figure as a plot-that provenance bundle: the vector figure, the exact plotted table, copies of every source CSV with its SHA256, and a README."
+    },
+    {
+      "name": "write_mask",
+      "type": "bool",
+      "units": "-",
+      "description": "Write the replaced-pixel mask. Leave on: it is the record of what was changed.",
+      "required": false
+    },
+    {
+      "name": "write_plotted_csv",
+      "type": "bool",
+      "units": "-",
+      "description": "Also write exactly what was drawn, per panel.",
+      "required": false
+    },
+    {
+      "name": "write_preview",
+      "type": "bool",
+      "units": "-",
+      "description": "Write the before/after preview.",
+      "required": false
+    },
+    {
+      "name": "write_provenance",
+      "type": "bool",
+      "units": "-",
+      "description": "Also write a JSON of sources, SHA256s, settings.",
+      "required": false
+    },
+    {
+      "name": "xlabel",
+      "type": "str",
+      "units": "-",
+      "description": "Empty = generated from the vertical-line spacing.",
+      "required": false
+    },
+    {
+      "name": "xtick_hours",
+      "type": "list",
+      "units": "h",
+      "description": "Explicit tick hours; overrides the two above.",
+      "required": false
+    },
+    {
+      "name": "xtick_interval_h",
+      "type": "float",
+      "units": "h",
+      "description": "Hours between labelled ticks. 0 = matplotlib's.",
+      "required": false
+    },
+    {
+      "name": "xtick_origin_h",
+      "type": "float",
+      "units": "h",
+      "description": "Ticks land on this hour plus whole intervals.",
+      "required": false
+    },
+    {
+      "name": "ylabel_suffix",
+      "type": "str",
+      "units": "-",
+      "description": "Empty = \"dF/F %\" or \"signal\", per NORMALISE.",
+      "required": false
+    }
+  ],
+  "vocabulary_conflicts": [
+    "background.reuse",
+    "cell_overlay.labels",
+    "channel_figure.frame",
+    "composite_video.crf",
+    "composite_video.fps",
+    "composite_video.frame_interval_minutes",
+    "composite_video.input_glob",
+    "composite_video.time_label_band_height",
+    "cry1_dluc_photon.claim",
+    "cry1_dluc_photon.compression_level",
+    "cry1_dluc_photon.crf",
+    "cry1_dluc_photon.font_directory",
+    "cry1_dluc_photon.font_regular",
+    "cry1_dluc_photon.fps",
+    "cry1_dluc_photon.legend_font_size",
+    "cry1_dluc_photon.reuse",
+    "display_filter.black_point_pct",
+    "display_filter.compression_level",
+    "display_filter.frame_interval_h",
+    "display_filter.hours_per_second",
+    "display_filter.python_engine",
+    "display_filter.reuse",
+    "display_filter.signal_channel",
+    "display_filter.white_point_pct",
+    "dluc_single_cell.baselines",
+    "dluc_single_cell.channels",
+    "dluc_single_cell.claim",
+    "dluc_single_cell.detrends",
+    "dluc_single_cell.reuse",
+    "export_registered_stack.compression_level",
+    "export_registered_stack.input_glob",
+    "export_registered_stack.python_engine",
+    "export_registered_stack.reuse",
+    "export_roi.channels",
+    "extract_traces.channels",
+    "extract_traces.reuse",
+    "phase_green_red_video.crf",
+    "phase_green_red_video.fps",
+    "phase_green_red_video.frame_interval_seconds",
+    "phase_green_red_video.green_display_percentiles",
+    "phase_green_red_video.red_display_percentiles",
+    "red_only_video.crf",
+    "red_only_video.display_percentile",
+    "red_only_video.fps",
+    "red_only_video.frame_interval_minutes",
+    "red_only_video.input_glob",
+    "register_three_channel.compression_level",
+    "register_three_channel.downsample",
+    "register_three_channel.estimate_only",
+    "register_three_channel.margin_px",
+    "register_three_channel.max_residual_px",
+    "register_three_channel.python_engine",
+    "register_three_channel.reuse",
+    "registration_figure.shifts",
+    "remove_cosmic_rays.python_engine",
+    "remove_cosmic_rays.reuse",
+    "remove_static_background.compression_level",
+    "remove_static_background.python_engine",
+    "remove_static_background.reuse",
+    "remove_static_background.signal_channel",
+    "run_controls.baselines",
+    "run_controls.channels",
+    "run_controls.labels",
+    "run_controls.reuse",
+    "segment.reuse",
+    "segment.structural_samples",
+    "stack_to_mp4.crf",
+    "stack_to_mp4.first_frame",
+    "stack_to_mp4.frame_interval_h",
+    "stack_to_mp4.frames",
+    "stack_to_mp4.hours_per_second",
+    "stack_to_mp4.input_glob",
+    "stack_to_mp4.python_engine",
+    "stack_to_mp4.signal_channel",
+    "test_rhythm.labels",
+    "test_rhythm.reuse",
+    "trace_panel.poly_edge_h",
+    "trace_panel.smooth_frames",
+    "unmix.input_glob",
+    "unmix.reuse",
+    "unmix.signal_channel"
+  ]
+}

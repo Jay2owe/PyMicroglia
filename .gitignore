@@ -1,0 +1,37 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Agent skill folders, as in PyFLASH and CircadianWorkbench. `.codex/skills/`
+# holds junctions into the global shared-skills folder; committing them would
+# duplicate the global copy into this repo.
+/.claude/
+/.codex/
+
+# Imaging outputs and anything a run writes. A single OME-TIFF is larger than
+# this whole repository, so the rule is: source and small fixtures only.
+/.pymicroglia/
+/AI_Exports/
+/Results/
+/Exports/
+*.vsi
+*.ome.tif
+*.ome.tiff
+*.nd2
+*.lif
+*.avi
+*.mp4
+*.mov
+
+# ...except the test fixtures, which are deliberately tiny. The cosmic-ray
+# reference includes a 40 KB synthetic_registered.ome.tif that the filtering
+# parity test reads; without this exemption the rule above would silently
+# exclude it and the test would fail on a fresh clone rather than here.
+# The whole tests/fixtures tree is well under a megabyte. Keep it that way:
+# anything large enough to be real data does not belong in the repository.
+!tests/fixtures/**

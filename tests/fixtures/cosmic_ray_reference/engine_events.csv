@@ -1,0 +1,2 @@
+frame_zero_based,frame_one_based,y_peak,x_peak,grown_area_px,peak_counts_above_neighbours,original_value,replacement_value
+4,5,15,18,25,5882.0,6000.0,118.0

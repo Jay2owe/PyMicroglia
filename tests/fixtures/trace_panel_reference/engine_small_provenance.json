@@ -1,0 +1,113 @@
+{
+  "protocol": "trace_panel_figure",
+  "generated_from": [
+    {
+      "name": "s1",
+      "path": "tests/fixtures/trace_panel_reference/traces_24h.csv",
+      "sha256": "e6adbd942f7282edfe31b3a59fe70d19b721bad7c2509691d92be6eb0057296a",
+      "rows": 250,
+      "time_column": "hours",
+      "time_offset_h": 0.0
+    }
+  ],
+  "figure_files": [
+    "tests/fixtures/trace_panel_reference/engine_small.png"
+  ],
+  "plotted_window_h": [
+    96.0,
+    168.0
+  ],
+  "settings": {
+    "time_column": "hours",
+    "method": "rolling",
+    "window_h": 24.0,
+    "degree": 6,
+    "normalise": "window_mean",
+    "as_percent": true,
+    "scale": 1.0,
+    "poly_edge_h": 12.0,
+    "time_start": 96.0,
+    "time_end": 168.0,
+    "cut_stage": "after",
+    "smooth": 3,
+    "show_raw": true,
+    "raw_colour": "0.72",
+    "raw_linewidth": 0.6,
+    "trace_linewidth": 2.1,
+    "default_colour": "#a340d1",
+    "cycle": [
+      "#a340d1",
+      "#d62728",
+      "#18a64a",
+      "#00a8c0",
+      "#b89c00",
+      "#54206e"
+    ],
+    "overflow_cmap": "turbo",
+    "shade_edges": true,
+    "shade_colour": "0.88",
+    "show_zero_line": true,
+    "show_sd": true,
+    "share_y": false,
+    "xtick_interval_h": 12.0,
+    "xtick_origin_h": 0.0,
+    "xtick_hours": [],
+    "vline_interval_h": 24.0,
+    "vline_origin_h": 0.0,
+    "vline_hours": [],
+    "vline_colour": "tab:green",
+    "vline_alpha": 0.45,
+    "vline_linewidth": 0.7,
+    "fig_width_in": 6.0,
+    "panel_height_in": 1.4,
+    "title_height_in": 1.0,
+    "title": "dF/F, 24 h rolling baseline (43 frames = 23.9 h)",
+    "subtitle": "normalised by each trace's window mean, not its instantaneous baseline; shaded = truncated baseline window",
+    "xlabel": "hours (lines every 24 h)",
+    "ylabel_suffix": "dF/F %",
+    "legend_when_merged": true,
+    "dpi": 80
+  },
+  "panels": [
+    {
+      "label": "cell 1",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_1_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 912.197326148,
+          "sd": 5.8769650366355615
+        }
+      ]
+    },
+    {
+      "label": "cells 1 and 4",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_1_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 912.197326148,
+          "sd": 5.8769650366355615
+        },
+        {
+          "source": "s1",
+          "column": "cell_4_processed",
+          "colour": "#d62728",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 611.800024432,
+          "sd": 14.647047931975182
+        }
+      ]
+    }
+  ]
+}

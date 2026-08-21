@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyMicroglia"
+description = "Microglial imaging analysis: registration, filtering, segmentation, tracing and figures, with a keyed artefact store"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+dynamic = ["version"]
+
+# This package processes microscopy, so unlike analysis-kit it is allowed a
+# scientific stack. Keep the required set to what the data layer genuinely needs
+# and push everything else into an extra, so importing pymicroglia to read a
+# parameter block does not pull in matplotlib.
+dependencies = [
+    "numpy>=1.24",
+    "tifffile>=2023.7",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+kit     = ["analysis-kit"]
+# The kit is listed here as well as under `kit`, and for a different reason.
+# There it is the audit layer, which is soft: a missing run record costs a
+# record. Here it is the house palette, and it is hard — pymicroglia's figure
+# modules hold no colour table of their own and raise `FigureStyleMissing`
+# rather than substituting anything, because drawing in the wrong colours is
+# the drift the shared palette exists to stop.
+figure  = ["matplotlib>=3.7", "analysis-kit"]
+seg     = ["scikit-image>=0.21"]
+video   = ["imageio-ffmpeg"]
+# Floored, not pinned to one release: the workbench is being developed
+# alongside this package, and pymicroglia/rhythm.py uses only
+# analysis.periodograms, analysis.fit_cosinor, analysis.rhythm_significance and
+# analysis.normalized_config. If one of those moves, fix the adapter — never
+# fork the implementation into this package.
+rhythm  = ["circadian-workbench>=0.5.0"]
+test    = ["pytest>=8.0"]
+
+[project.scripts]
+pymicroglia = "pymicroglia.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Jay2owe/PyMicroglia"
+Repository = "https://github.com/Jay2owe/PyMicroglia"
+Issues = "https://github.com/Jay2owe/PyMicroglia/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.package-data]
+pymicroglia = ["data/*.json"]
+
+[tool.setuptools.dynamic]
+version = { attr = "pymicroglia.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

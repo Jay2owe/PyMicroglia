@@ -1,0 +1,34 @@
+{
+  "method_version": "2026-08-16-temporal-neighbour-k12-g2",
+  "source": "tests/fixtures/cosmic_ray_reference/synthetic_registered.ome.tif",
+  "source_bytes": 40618,
+  "source_axes": "TCYX",
+  "source_shape": [
+    9,
+    2,
+    32,
+    32
+  ],
+  "output": "tests/fixtures/cosmic_ray_reference/engine_cleaned.tif",
+  "output_sha256": "dea1fcc609d310d9bc80d7b5a54bf26959c535dba910fb414f1e155c2989745d",
+  "output_axes": "TCYX",
+  "output_shape": [
+    9,
+    2,
+    32,
+    32
+  ],
+  "dtype": "uint16",
+  "series_zero_based": 0,
+  "signal_channel_one_based": 2,
+  "threshold_robust_sigma": 12.0,
+  "mask_growth_px": 2,
+  "sample_frames": 9,
+  "temporal_difference_centre": -2.0,
+  "temporal_sigma": 5.9304,
+  "pixel_frames_replaced": 25,
+  "percent_of_selected_channel": 0.2712673611111111,
+  "connected_events": 1,
+  "source_modified": false,
+  "registered_input_required": true
+}

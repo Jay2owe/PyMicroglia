@@ -1,0 +1,253 @@
+{
+  "protocol": "trace_panel_figure",
+  "generated_from": [
+    {
+      "name": "s1",
+      "path": "tests/fixtures/trace_panel_reference/traces_24h.csv",
+      "sha256": "e6adbd942f7282edfe31b3a59fe70d19b721bad7c2509691d92be6eb0057296a",
+      "rows": 250,
+      "time_column": "hours",
+      "time_offset_h": 0.0
+    }
+  ],
+  "figure_files": [
+    "tests/fixtures/trace_panel_reference/engine_full.png"
+  ],
+  "plotted_window_h": [
+    72.335818,
+    210.49077
+  ],
+  "settings": {
+    "time_column": "hours",
+    "method": "rolling",
+    "window_h": 24.0,
+    "degree": 6,
+    "normalise": "window_mean",
+    "as_percent": true,
+    "scale": 1.0,
+    "poly_edge_h": 12.0,
+    "time_start": null,
+    "time_end": null,
+    "cut_stage": "after",
+    "smooth": 3,
+    "show_raw": true,
+    "raw_colour": "0.72",
+    "raw_linewidth": 0.6,
+    "trace_linewidth": 2.1,
+    "default_colour": "#a340d1",
+    "cycle": [
+      "#a340d1",
+      "#d62728",
+      "#18a64a",
+      "#00a8c0",
+      "#b89c00",
+      "#54206e"
+    ],
+    "overflow_cmap": "turbo",
+    "shade_edges": true,
+    "shade_colour": "0.88",
+    "show_zero_line": true,
+    "show_sd": true,
+    "share_y": false,
+    "xtick_interval_h": 24.0,
+    "xtick_origin_h": 0.0,
+    "xtick_hours": [],
+    "vline_interval_h": 24.0,
+    "vline_origin_h": 0.0,
+    "vline_hours": [],
+    "vline_colour": "tab:green",
+    "vline_alpha": 0.45,
+    "vline_linewidth": 0.7,
+    "fig_width_in": 11.5,
+    "panel_height_in": 2.05,
+    "title_height_in": 1.0,
+    "title": "dF/F, 24 h rolling baseline (43 frames = 23.9 h)",
+    "subtitle": "normalised by each trace's window mean, not its instantaneous baseline; shaded = truncated baseline window",
+    "xlabel": "hours (lines every 24 h)",
+    "ylabel_suffix": "dF/F %",
+    "legend_when_merged": true,
+    "dpi": 150
+  },
+  "panels": [
+    {
+      "label": "cell 1",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_1_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 912.197326148,
+          "sd": 6.7266037798537806
+        }
+      ]
+    },
+    {
+      "label": "cell 2",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_2_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 661.696827192,
+          "sd": 8.812871901990684
+        }
+      ]
+    },
+    {
+      "label": "cell 3",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_3_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 544.49927344,
+          "sd": 8.412874384448928
+        }
+      ]
+    },
+    {
+      "label": "cell 4",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_4_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 611.800024432,
+          "sd": 15.636567515936836
+        }
+      ]
+    },
+    {
+      "label": "cell 5",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_5_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 536.677891572,
+          "sd": 19.568770004914263
+        }
+      ]
+    },
+    {
+      "label": "cell 6",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_6_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 481.09008007999995,
+          "sd": 20.935887796897592
+        }
+      ]
+    },
+    {
+      "label": "cell 7",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_7_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 329.847418944,
+          "sd": 52.31205238989525
+        }
+      ]
+    },
+    {
+      "label": "cell 8",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_8_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 360.86944041600003,
+          "sd": 39.98014126103262
+        }
+      ]
+    },
+    {
+      "label": "cell 9",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "cell_9_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 264.74580466000003,
+          "sd": 33.0539479376089
+        }
+      ]
+    },
+    {
+      "label": "object 11",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "object_11_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 260.611874016,
+          "sd": 43.72733885514186
+        }
+      ]
+    },
+    {
+      "label": "object 12",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "object_12_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 215.56550388399998,
+          "sd": 49.200417218312104
+        }
+      ]
+    },
+    {
+      "label": "whole field",
+      "traces": [
+        {
+          "source": "s1",
+          "column": "whole_field_processed",
+          "colour": "#a340d1",
+          "detrend": "rolling",
+          "detrend_window_h": 24.0,
+          "edge_shaded_h": 11.651556000000184,
+          "denominator": 90.565247084,
+          "sd": 4.686666282904137
+        }
+      ]
+    }
+  ]
+}
