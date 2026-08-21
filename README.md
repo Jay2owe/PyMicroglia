@@ -1,8 +1,13 @@
 # PyMicroglia
 
+[![Documentation Status](https://readthedocs.org/projects/pymicroglia/badge/?version=latest)](https://pymicroglia.readthedocs.io/en/latest/)
+[![PyPI](https://img.shields.io/pypi/v/PyMicroglia)](https://pypi.org/project/PyMicroglia/)
+
 Microglial imaging analysis: registration, filtering, segmentation, tracing and
 figures for bioluminescence time-lapses, over a keyed artefact store that makes
 re-analysis cheap.
+
+**[Read the documentation](https://pymicroglia.readthedocs.io/)**
 
 The store is the idea the package is built around. Registration is the expensive
 step, and its whole output is a 298 KB table of per-frame shifts against a

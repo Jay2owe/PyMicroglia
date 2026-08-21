@@ -1,5 +1,6 @@
 prune .claude
 prune .codex
+prune docs
 prune tests
 prune tools
 exclude PUBLISHING_AUDIT.md

@@ -1,0 +1,4 @@
+nav:
+  - Pipeline Index: README.md
+  - Single-cell dLuc: dluc-single-cell.md
+  - Cry1-dLuc Photon: cry1-dluc-photon.md

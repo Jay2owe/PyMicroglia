@@ -1,0 +1,14 @@
+nav:
+  - Home: README.md
+  - Getting Started: getting-started
+  - Concepts: concepts
+  - Actions: actions
+  - Pipelines: pipelines
+  - Results: results
+  - API Reference: api-reference.md
+  - Workflows: workflows
+  - Troubleshooting: troubleshooting
+  - Glossary: glossary
+  - Developer: developer
+  - Documentation Standard: documentation-standard.md
+  - ...

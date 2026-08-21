@@ -1,0 +1,5 @@
+nav:
+  - Overview: README.md
+  - Installation: installation.md
+  - First Analysis: first-analysis.md
+  - Check a Run: check-a-run.md

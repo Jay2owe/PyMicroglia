@@ -1,0 +1,72 @@
+site_name: PyMicroglia
+site_description: Reproducible microglial bioluminescence time-lapse analysis.
+site_url: https://pymicroglia.readthedocs.io/
+site_author: Brancaccio Lab
+
+repo_url: https://github.com/Jay2owe/PyMicroglia
+repo_name: Jay2owe/PyMicroglia
+edit_uri: edit/main/docs/wiki/
+
+docs_dir: docs/wiki
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - awesome-pages
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+exclude_docs: |
+  **/CONTEXT.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Jay2owe/PyMicroglia
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/PyMicroglia/

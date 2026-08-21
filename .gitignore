@@ -5,6 +5,7 @@ __pycache__/
 venv/
 dist/
 build/
+site/
 *.egg-info/
 
 # Agent skill folders, as in PyFLASH and CircadianWorkbench. `.codex/skills/`

@@ -1,0 +1,3 @@
+# Documentation site build dependencies used locally and by Read the Docs.
+mkdocs-material>=9.5
+mkdocs-awesome-pages-plugin>=2.9

@@ -1,0 +1,4 @@
+nav:
+  - Overview: README.md
+  - Analysis Flow: analysis-flow.md
+  - Artefact Store: artefact-store.md
