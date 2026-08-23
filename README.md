@@ -23,7 +23,8 @@ pip install PyMicroglia
 ```
 
 Optional extras: `kit` (run records and house style), `figure`, `seg`, `video`,
-`rhythm`, `test`.
+`rhythm`, `scn` (the automatic SCN outline, which lives in
+[PySCNSlice](https://pypi.org/project/PySCNSlice/)), `test`.
 
 ```powershell
 git clone https://github.com/Jay2owe/PyMicroglia.git
@@ -310,6 +311,65 @@ found.reference.sigma            # background, read off tissue
 roi.export_roi("cleaned.tif")    # RoiSet.zip Fiji can open
 ```
 
+The accepted whole-SCN outline is also a named action, and it is the one whose
+algorithm is not in this package. Outlining a suprachiasmatic nucleus has
+nothing to do with microglia, so the roughly 6,200 lines that do it moved to
+**PySCNSlice** on 2026-08-23; `pymicroglia.scn_outline` is now a delegate, and
+the action needs `pip install "PyMicroglia[scn]"` to run. The interface below
+did not change.
+
+Its input can be a
+registered red-channel time mean or a registered ImageJ/OME hyperstack. For a
+multi-channel hyperstack, `scn_channel` selects the outline channel using
+one-based ImageJ numbering. If there are multiple depth planes, `scn_z` selects
+the outline depth the same way. `scn_time="mean"` averages over time and remains
+the default; `scn_time="max"` uses a per-pixel maximum projection, while an
+integer such as `scn_time=320` uses one-based source frame 320. The selected
+outline image determines one orientation and crop, which are then streamed
+across every frame, channel and depth plane. A sibling `validfield_<key>.tif` is
+found automatically for a named mean image; otherwise pass `valid_mask`.
+
+```python
+from pymicroglia import scn_outline
+
+result = scn_outline.automatic_scn_outline(
+    "meanred_recording_01.tif",  # orientation + standard square crop are defaults
+)
+result["output"]          # full label: 0 background, 1 output-left, 2 output-right
+result["oriented_source"] # full source image transformed into the same geometry
+result["cropped_output"]  # standard square label crop around the SCN centre
+result["cropped_source"]  # matching square source crop
+result["report"]          # settings, transforms, crop geometry, QC and hashes
+```
+
+The equivalent multi-channel call is:
+
+```python
+result = scn_outline.automatic_scn_outline(
+    "registered_hyperstack.ome.tif",
+    scn_channel=3,  # one-based: the third ImageJ channel
+    scn_time=320,   # or "mean" (default) or "max"
+    valid_mask="registered_hyperstack_validfield.tif",
+)
+result["outline_input"]       # exact mean, maximum projection or frame used
+result["cropped_source"]      # all frames/channels, transformed and square-cropped
+```
+
+`crop_mode` accepts `"tight"`, `"standard"`, `"wide"`, `"custom"` or
+`"none"`. The three presets are relative to the smallest outline-centred square
+that contains the complete outline. For an exact output resolution, pass
+`crop_size_px=512`; the crop remains centred on the complete SCN outline and a
+size that would cut the outline is refused.
+
+Pass `orient_scn=False` only when the original source pose is required. With
+orientation disabled, the port reproduces all ten original accepted
+labels byte for byte and matches the A007 A4/A5 crop-stability and
+carved-channel corrections. With orientation enabled, it reproduces all 16
+approved A006 core masks and the approved source-image transform. A new
+acquisition still returns an `open_questions` check until its outline has been
+compared with hand-drawn evidence; passing through the same code is not evidence
+that the anatomy or image scale is the same.
+
 Two of the five refusals in `dluc_pipeline.py`'s header live here, and the code
 is shaped so they cannot be undone by accident:
 
@@ -539,8 +599,8 @@ Two findings worth knowing:
 from pymicroglia import harvest, harvest_many
 
 block = harvest("Protocols/Analysis/microglia_cosmic_ray_removal.py")
-block.method_version                       # '2026-08-20-one-outlier-rule'
-len(block)                                 # 21
+block.method_version                       # '2026-08-21-selectable-replacement'
+len(block)                                 # 22
 doc = block.by_constant("DEFAULT_SEED_Z")
 doc.name, doc.type, doc.default, doc.units # ('seed_z', 'float', 12.0, '-')
 doc.description                            # the full CAUTION note, joined

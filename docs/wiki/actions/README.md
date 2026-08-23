@@ -1,6 +1,6 @@
 # Action Index
 
-PyMicroglia exposes 26 named actions through the same command-line and Python
+PyMicroglia exposes 27 named actions through the same command-line and Python
 registry. Run `pymicroglia describe ACTION` for the live parameter reference.
 
 ## Processing and Measurement
@@ -15,6 +15,7 @@ registry. Run `pymicroglia describe ACTION` for the live parameter reference.
 | `background` | Estimate off-tissue background from a structural-channel tissue mask. |
 | `segment` | Detect still cells by soma prominence and watershed, then sweep for candidates. |
 | `export_roi` | Write segmented objects and regions as a Fiji-compatible `RoiSet.zip`. |
+| `automatic_scn_outline` | Draw and orient the accepted two-lobe suprachiasmatic nucleus label image from a two-dimensional image or a selected hyperstack channel's mean, maximum projection or chosen frame, then apply the same transform to every plane and write a tight, standard, wide or exact-size square crop. |
 | `extract_traces` | Extract local-ring-subtracted traces and window-mean dF/F. |
 | `run_controls` | Run area-matched on-tissue decoys and the instrumental control. |
 | `test_rhythm` | Run period and cosinor analysis after verifying an instrumental control exists. |

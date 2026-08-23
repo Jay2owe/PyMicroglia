@@ -105,7 +105,8 @@ def test_every_registered_action_produces_a_complete_record(kit_installed,
 #: string is the honest answer there rather than an invented one.
 VERSIONED = {
     "register", "register_three_channel", "export_registered_stack",
-    "remove_cosmic_rays", "unmix", "background", "segment", "export_roi",
+    "remove_cosmic_rays", "unmix", "background", "segment",
+    "automatic_scn_outline", "export_roi",
     "extract_traces", "run_controls", "trace_panel", "red_only_video",
     "composite_video", "stack_to_mp4", "dluc_single_cell", "cry1_dluc_photon",
 }

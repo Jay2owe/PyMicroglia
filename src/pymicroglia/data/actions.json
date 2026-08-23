@@ -437,6 +437,126 @@
       ]
     },
     {
+      "name": "automatic_scn_outline",
+      "summary": "Draw the accepted A007 two-lobe SCN outline from a registered red-channel time mean or selected hyperstack channel using a mean, maximum projection or chosen frame and valid-field mask, stream one transform across every stack plane, apply the accepted A006 top-up orientation by default, and write a mask-relative square crop.",
+      "method": "scn_outline.automatic_scn_outline",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "orient_scn",
+        "orientation_profile_bin_px",
+        "orientation_flare_tie_px",
+        "region_smooth_sigma_px",
+        "halo_low_fraction",
+        "lobe_min_depth",
+        "lobe_angle_step_deg",
+        "lobe_merged_mode",
+        "carve_lane_fraction",
+        "carve_reach_ends",
+        "carve_min_end_smooth_multiplier",
+        "stable_local_line_redetect",
+        "open_enclosed_carve_channels",
+        "lobe_balance_floor",
+        "outline_smooth_sigma_px",
+        "outline_debulge_radius_px",
+        "anomaly_prepass",
+        "anomaly_prepass_window_px",
+        "anomaly_prepass_dev_px",
+        "anomaly_prepass_tip_fraction",
+        "anomaly_prepass_max_fraction",
+        "anomaly_prepass_max_passes",
+        "anomaly_window_px",
+        "anomaly_side_dev_px",
+        "anomaly_pole_dev_px",
+        "anomaly_pole_fraction",
+        "anomaly_support_px",
+        "anomaly_margin_px",
+        "anomaly_max_fraction",
+        "anomaly_max_passes",
+        "anomaly_local_inner",
+        "anomaly_peak_prominence_px",
+        "anomaly_peak_width_fraction",
+        "anomaly_max_candidate_median_quantile",
+        "anomaly_local_transition_px",
+        "anomaly_broad_shortest_path",
+        "anomaly_broad_max_turn_deg",
+        "anomaly_broad_max_extension_px",
+        "anomaly_raster_min_gradient_px",
+        "anomaly_raster_extension_px",
+        "anomaly_raster_max_passes",
+        "allow_full_frame_valid",
+        "scn_channel",
+        "scn_z",
+        "scn_time",
+        "valid_mask",
+        "crop_mode",
+        "crop_size_px"
+      ],
+      "defaults": {
+        "source": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "orient_scn": true,
+        "orientation_profile_bin_px": 2.0,
+        "orientation_flare_tie_px": 5.0,
+        "region_smooth_sigma_px": 4.0,
+        "halo_low_fraction": 0.5,
+        "lobe_min_depth": 0.08,
+        "lobe_angle_step_deg": 2.5,
+        "lobe_merged_mode": "ridge",
+        "carve_lane_fraction": 0.2,
+        "carve_reach_ends": true,
+        "carve_min_end_smooth_multiplier": 4.0,
+        "stable_local_line_redetect": true,
+        "open_enclosed_carve_channels": true,
+        "lobe_balance_floor": 0.7,
+        "outline_smooth_sigma_px": 10.0,
+        "outline_debulge_radius_px": 16.0,
+        "anomaly_prepass": true,
+        "anomaly_prepass_window_px": 101,
+        "anomaly_prepass_dev_px": 9.0,
+        "anomaly_prepass_tip_fraction": 0.05,
+        "anomaly_prepass_max_fraction": 0.03,
+        "anomaly_prepass_max_passes": 6,
+        "anomaly_window_px": 151,
+        "anomaly_side_dev_px": 8.0,
+        "anomaly_pole_dev_px": 14.0,
+        "anomaly_pole_fraction": 0.18,
+        "anomaly_support_px": 0.5,
+        "anomaly_margin_px": 2.0,
+        "anomaly_max_fraction": 0.1,
+        "anomaly_max_passes": 8,
+        "anomaly_local_inner": false,
+        "anomaly_peak_prominence_px": 14.0,
+        "anomaly_peak_width_fraction": 0.35,
+        "anomaly_max_candidate_median_quantile": 0.35,
+        "anomaly_local_transition_px": 16,
+        "anomaly_broad_shortest_path": true,
+        "anomaly_broad_max_turn_deg": 6.5,
+        "anomaly_broad_max_extension_px": 64,
+        "anomaly_raster_min_gradient_px": 0.06,
+        "anomaly_raster_extension_px": 32,
+        "anomaly_raster_max_passes": 16,
+        "allow_full_frame_valid": false,
+        "scn_channel": null,
+        "scn_z": null,
+        "scn_time": "mean",
+        "valid_mask": null,
+        "crop_mode": "standard",
+        "crop_size_px": null
+      },
+      "method_version": "2026-08-23-a007-outline-a006-orientation-crop-hyperstack-time-v3",
+      "source": [
+        "Analysis/automatic_scn_roi/automatic_scn_roi.py"
+      ]
+    },
+    {
       "name": "export_roi",
       "summary": "Write a RoiSet.zip Fiji can open: one region per segmented object, plus the SCN region and its two lobes.",
       "method": "roi.export_roi",
@@ -1533,6 +1653,188 @@
   ],
   "params": [
     {
+      "name": "allow_full_frame_valid",
+      "type": "bool",
+      "units": "-",
+      "description": "Permit a missing valid-field mask. CAUTION: True can treat registration borders as data.",
+      "required": false
+    },
+    {
+      "name": "anomaly_broad_max_extension_px",
+      "type": "int",
+      "units": "px",
+      "description": "Maximum endpoint search extension, pixels. Higher lets a correction consume more side boundary.",
+      "required": false
+    },
+    {
+      "name": "anomaly_broad_max_turn_deg",
+      "type": "float",
+      "units": "deg",
+      "description": "Maximum internal/join turn, degrees. Higher permits visibly sharper turns inward.",
+      "required": false
+    },
+    {
+      "name": "anomaly_broad_shortest_path",
+      "type": "bool",
+      "units": "-",
+      "description": "Use shortest tangent-matched broad-pole bridge. False restores the rejected sharp-cut behaviour.",
+      "required": false
+    },
+    {
+      "name": "anomaly_local_inner",
+      "type": "bool",
+      "units": "-",
+      "description": "Apply local corrections on medial sides. True can create sharp inward cuts at the channel.",
+      "required": false
+    },
+    {
+      "name": "anomaly_local_transition_px",
+      "type": "int",
+      "units": "px",
+      "description": "Blend length at local correction joins, pixels. Lower produces sharper transitions.",
+      "required": false
+    },
+    {
+      "name": "anomaly_margin_px",
+      "type": "float",
+      "units": "px",
+      "description": "Kept margin outside expected boundary, pixels. Lower cuts closer to the fitted course.",
+      "required": false
+    },
+    {
+      "name": "anomaly_max_candidate_median_quantile",
+      "type": "float",
+      "units": "-",
+      "description": "Brightness gate for removable tissue, quantile. CAUTION: higher permits brighter tissue removal.",
+      "required": false
+    },
+    {
+      "name": "anomaly_max_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Maximum total correction per lobe, area fraction. CAUTION: higher can delete genuine dim tissue.",
+      "required": false
+    },
+    {
+      "name": "anomaly_max_passes",
+      "type": "int",
+      "units": "-",
+      "description": "Maximum position-aware iterations, count. Higher can continue removing residual candidates.",
+      "required": false
+    },
+    {
+      "name": "anomaly_peak_prominence_px",
+      "type": "float",
+      "units": "px",
+      "description": "Broad-pole peak prominence, pixels. Lower admits less distinct broad candidates.",
+      "required": false
+    },
+    {
+      "name": "anomaly_peak_width_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Minimum broad peak width, fraction of half-lobe. Lower classifies narrower bumps as broad.",
+      "required": false
+    },
+    {
+      "name": "anomaly_pole_dev_px",
+      "type": "float",
+      "units": "px",
+      "description": "Allowed top/bottom deviation, pixels. Lower makes permissive poles behave like sides.",
+      "required": false
+    },
+    {
+      "name": "anomaly_pole_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Top/bottom fraction with pole tolerance. Higher protects more of each lobe end.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass",
+      "type": "bool",
+      "units": "-",
+      "description": "Remove narrow structural side anomalies first. False leaves them for the broader position-aware pass.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass_dev_px",
+      "type": "float",
+      "units": "px",
+      "description": "Prepass outward-deviation threshold, pixels. Lower removes smaller boundary deviations.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass_max_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Maximum prepass removal per lobe, area fraction. Higher permits larger automatic cuts.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass_max_passes",
+      "type": "int",
+      "units": "-",
+      "description": "Maximum prepass iterations, count. Higher can continue removing residual candidates.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass_tip_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Permissive pole fraction, fraction of lobe length. Higher protects more of each pole.",
+      "required": false
+    },
+    {
+      "name": "anomaly_prepass_window_px",
+      "type": "int",
+      "units": "px",
+      "description": "Rolling boundary window, longitudinal pixels. Higher defines normal shape over a broader course.",
+      "required": false
+    },
+    {
+      "name": "anomaly_raster_extension_px",
+      "type": "int",
+      "units": "px",
+      "description": "Raster cleanup endpoint extension, pixels. Higher lets cleanup reach farther from the anomaly.",
+      "required": false
+    },
+    {
+      "name": "anomaly_raster_max_passes",
+      "type": "int",
+      "units": "-",
+      "description": "Raster cleanup iterations, count. Higher removes more residual grid notches.",
+      "required": false
+    },
+    {
+      "name": "anomaly_raster_min_gradient_px",
+      "type": "float",
+      "units": "px",
+      "description": "Minimum outward motion per longitudinal bin, pixels. Lower permits pixel-grid inward reversals.",
+      "required": false
+    },
+    {
+      "name": "anomaly_side_dev_px",
+      "type": "float",
+      "units": "px",
+      "description": "Allowed side deviation, pixels. Lower removes smaller medial/lateral bulges.",
+      "required": false
+    },
+    {
+      "name": "anomaly_support_px",
+      "type": "float",
+      "units": "px",
+      "description": "Minimum local outward support, pixels. Higher demands a stronger protrusion.",
+      "required": false
+    },
+    {
+      "name": "anomaly_window_px",
+      "type": "int",
+      "units": "px",
+      "description": "Position-aware expected-shape window, pixels. Higher treats broader curvature as normal.",
+      "required": false
+    },
+    {
       "name": "anscombe_offset",
       "type": "str",
       "units": "-",
@@ -1645,6 +1947,27 @@
       "description": "Labels that are permissive sweep candidates rather than prominence-segmented cells. Drawn dashed."
     },
     {
+      "name": "carve_lane_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Fraction of local lobe separation removed. Higher widens the medial channel and removes tissue.",
+      "required": false
+    },
+    {
+      "name": "carve_min_end_smooth_multiplier",
+      "type": "float",
+      "units": "-",
+      "description": "Minimum end width per outline sigma, unitless. Lower can close again during smoothing.",
+      "required": false
+    },
+    {
+      "name": "carve_reach_ends",
+      "type": "bool",
+      "units": "-",
+      "description": "Extend the channel to both anatomical poles. False can let smoothing reconnect the lobes.",
+      "required": false
+    },
+    {
       "name": "cent_box",
       "type": "int",
       "units": "-",
@@ -1736,11 +2059,25 @@
       "required": false
     },
     {
+      "name": "crop_mode",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Square crop after outlining and orientation: tight, standard, wide, custom or none. Presets are scaled from the smallest outline-centred square containing the complete two-lobe mask."
+    },
+    {
       "name": "crop_pad",
       "type": "int",
       "units": "-",
       "description": "border dropped after registration, px",
       "required": false
+    },
+    {
+      "name": "crop_size_px",
+      "type": "int",
+      "units": "px",
+      "required": false,
+      "description": "Exact custom square side length centred on the complete SCN outline. Supplying it selects custom mode. A size that would cut the SCN outline is refused."
     },
     {
       "name": "decoy_p",
@@ -2079,6 +2416,13 @@
       "required": false
     },
     {
+      "name": "halo_low_fraction",
+      "type": "float",
+      "units": "-",
+      "description": "Fraction from field level to Otsu core threshold. Lower grows farther into dim halo and enlarges ROI.",
+      "required": false
+    },
+    {
       "name": "hours_per_second",
       "type": "float",
       "units": "-",
@@ -2216,6 +2560,34 @@
       "type": "bool",
       "units": "-",
       "description": "Show a legend on panels holding >1 trace.",
+      "required": false
+    },
+    {
+      "name": "lobe_angle_step_deg",
+      "type": "float",
+      "units": "deg",
+      "description": "Candidate midline angle spacing, degrees. Higher is faster but coarsens orientation.",
+      "required": false
+    },
+    {
+      "name": "lobe_balance_floor",
+      "type": "float",
+      "units": "-",
+      "description": "Small-lobe/large-lobe area floor, unitless. Higher trims naturally unequal lobes more often.",
+      "required": false
+    },
+    {
+      "name": "lobe_merged_mode",
+      "type": "str",
+      "units": "-",
+      "description": "Fallback for merged lobes; accepted value ridge. CAUTION: changing it can invent or suppress a split.",
+      "required": false
+    },
+    {
+      "name": "lobe_min_depth",
+      "type": "float",
+      "units": "-",
+      "description": "Minimum whole-region valley depth, unitless. Higher refuses more weakly separated lobe pairs.",
       "required": false
     },
     {
@@ -2457,6 +2829,48 @@
       "required": false
     },
     {
+      "name": "open_enclosed_carve_channels",
+      "type": "bool",
+      "units": "-",
+      "description": "Open enclosed carved channels by their shortest zero-turn course to a tissue pole.",
+      "required": false
+    },
+    {
+      "name": "orient_scn",
+      "type": "bool",
+      "units": "-",
+      "description": "Default rotates labels and source after outlining. False preserves accepted A007 output geometry. CAUTION: downstream images and masks must use the same transform; never rotate labels alone.",
+      "required": false
+    },
+    {
+      "name": "orientation_flare_tie_px",
+      "type": "float",
+      "units": "px",
+      "description": "Gap-flare difference treated as weak, pixels. Accepted A006 endpoint fallback threshold. Higher invokes the endpoint rule more often.",
+      "required": false
+    },
+    {
+      "name": "orientation_profile_bin_px",
+      "type": "float",
+      "units": "px",
+      "description": "Medial-edge sampling width, mask pixels. Accepted on 16 core masks, 2026-08-23. Higher can hide a small residual midline tilt.",
+      "required": false
+    },
+    {
+      "name": "outline_debulge_radius_px",
+      "type": "float",
+      "units": "px",
+      "description": "Opening-disc radius for broad protrusions, pixels. Higher removes progressively broader shoulders.",
+      "required": false
+    },
+    {
+      "name": "outline_smooth_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Final outline Gaussian sigma, pixels. Higher rounds anatomy and can erase concavities.",
+      "required": false
+    },
+    {
       "name": "output_dir",
       "type": "path",
       "units": "-",
@@ -2660,6 +3074,13 @@
       "required": false
     },
     {
+      "name": "region_smooth_sigma_px",
+      "type": "float",
+      "units": "px",
+      "description": "Gaussian sigma before thresholding, pixels. Higher suppresses detail and can merge tissue.",
+      "required": false
+    },
+    {
       "name": "regions",
       "type": "dict",
       "units": "-",
@@ -2819,6 +3240,27 @@
       "units": "-",
       "required": false,
       "description": "Include the SCN region and its two lobes, from the stored decision. A hand tracing wins over the automatic one and is never re-derived."
+    },
+    {
+      "name": "scn_channel",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "One-based ImageJ channel used to calculate the outline time mean. Optional for a single-channel image; required when the source has multiple channels."
+    },
+    {
+      "name": "scn_time",
+      "type": "str/int",
+      "units": "-",
+      "required": false,
+      "description": "Time source used for outlining: 'mean' averages the selected channel over time, 'max' makes a per-pixel maximum projection, and a one-based integer uses that source frame. The inferred transform still applies to every plane."
+    },
+    {
+      "name": "scn_z",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "One-based depth plane used to calculate the outline time mean. Optional when there is one or no Z plane; required for a multi-depth hyperstack."
     },
     {
       "name": "seed",
@@ -2986,6 +3428,13 @@
       "type": "str",
       "units": "-",
       "description": "Path to a JSON spec. Overrides PANEL_SPECS and AUTO_COLUMNS; the only way to set per-panel y limits and per-panel detrends. See README.",
+      "required": false
+    },
+    {
+      "name": "stable_local_line_redetect",
+      "type": "bool",
+      "units": "-",
+      "description": "Require two mask-local views to agree before replacing an unstable initial lobe line.",
       "required": false
     },
     {
@@ -3218,6 +3667,13 @@
       "units": "-",
       "description": "THE SETTING THIS PROTOCOL EXISTS FOR. Green contribution subtracted from raw red: corrected_red = max(red - c * green, 0). CAUTION: this changes measured data, not just the display. Too high and real mCherry signal is subtracted away, flattening amplitude everywhere the green channel is bright; too low and autofluorescence stays in the red trace and inflates it. Re-derive it per filter set rather than inheriting it.",
       "required": false
+    },
+    {
+      "name": "valid_mask",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Valid registered pixels for the time-mean image. For meanred_<key>.tif, validfield_<key>.tif beside it is found automatically. A missing mask is refused unless allow_full_frame_valid is explicitly enabled."
     },
     {
       "name": "value_scale",

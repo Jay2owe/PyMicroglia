@@ -49,7 +49,20 @@ video   = ["imageio-ffmpeg"]
 # analysis.normalized_config. If one of those moves, fix the adapter — never
 # fork the implementation into this package.
 rhythm  = ["circadian-workbench>=0.5.0"]
-test    = ["pytest>=8.0"]
+# The accepted automatic SCN outline. Floored, not pinned, for the same reason
+# as the workbench above: it is developed alongside this package and
+# scn_outline.py uses only its public surface. If one of those names moves, fix
+# the delegate — never fork the implementation back into this package.
+#
+# It is an extra rather than a required dependency because outlining a
+# suprachiasmatic nucleus is not what most of this package does, and a
+# microglial registration run should not install a segmentation engine it will
+# never call.
+scn     = ["PySCNSlice>=0.1.0"]
+# The SCN outline is in the test extra as well: without it
+# ``automatic_scn_outline`` cannot resolve, and the record-completeness and
+# delegation tests would be asserting against a stub.
+test    = ["pytest>=8.0", "PySCNSlice>=0.1.0"]
 
 [project.scripts]
 pymicroglia = "pymicroglia.cli:main"

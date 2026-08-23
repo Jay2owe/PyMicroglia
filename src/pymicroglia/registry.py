@@ -44,6 +44,7 @@ MODULE_NAMES: tuple[str, ...] = (
     "display",
     "segmentation",
     "roi",
+    "scn_outline",
     "tracing",
     "controls",
     "rhythm",
@@ -281,6 +282,8 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "display_filter":
         "display copy of {source} that keeps the background visible",
     "background": "read the off-tissue background level of {source}",
+    "automatic_scn_outline":
+        "drew the accepted automatic SCN outline on {source}",
     "export_roi": "wrote {source}'s objects out as a Fiji RoiSet",
     "extract_traces":
         "took one ring-subtracted trace per object out of {source}",

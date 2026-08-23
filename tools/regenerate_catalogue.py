@@ -27,10 +27,32 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from pymicroglia import params  # noqa: E402
+from pymicroglia import params, scn_outline  # noqa: E402
 
 DEFAULT_PROTOCOLS = REPO.parent / "Protocols"
 OUTPUT = REPO / "src" / "pymicroglia" / "data" / "actions.json"
+
+#: Self-contained actions may advance after their source protocol is frozen.
+#: Read their live constant rather than copying it here, so the run-record key
+#: cannot lag behind the method that actually produced the pixels.
+METHOD_VERSION_OVERRIDES = {
+    "automatic_scn_outline": scn_outline.METHOD_VERSION,
+}
+
+# The outline moved to PySCNSlice, so ``scn_outline.METHOD_VERSION`` is now read
+# through a delegate and is the empty string when that package is not installed.
+# Regenerating from such a machine would write an empty version into the
+# catalogue — and ``recording._method_version`` reads the catalogue *first*, so
+# every later run record would silently lose the field that decides whether two
+# runs are comparable. Refuse instead: this tool runs on a developer's machine,
+# where installing the extra is one command.
+_EMPTY_OVERRIDES = sorted(
+    name for name, version in METHOD_VERSION_OVERRIDES.items() if not version)
+if _EMPTY_OVERRIDES:
+    raise SystemExit(
+        f"cannot regenerate the catalogue: {_EMPTY_OVERRIDES} report no method "
+        'version. Install the packages that own them: pip install '
+        '"PyMicroglia[scn]".')
 
 #: Keys every action takes, which no PROTOCOL PARAMETERS block declares because
 #: they are arguments rather than settings. The macro contract already requires
@@ -162,6 +184,67 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
                         "source, parameters, METHOD_VERSION and upstream "
                         "registration. Turning it off forces a fresh pass over "
                         "every frame."},
+    ],
+    "automatic_scn_outline": [
+        {"name": "scn_channel", "type": "int", "units": "-",
+         "required": False, "default": None,
+         "description": "One-based ImageJ channel used to calculate the "
+                        "outline time mean. Optional for a single-channel "
+                        "image; required when the source has multiple channels."},
+        {"name": "scn_z", "type": "int", "units": "-",
+         "required": False, "default": None,
+         "description": "One-based depth plane used to calculate the outline "
+                        "time mean. Optional when there is one or no Z plane; "
+                        "required for a multi-depth hyperstack."},
+        {"name": "scn_time", "type": "str/int", "units": "-",
+         "required": False, "default": "mean",
+         "description": "Time source used for outlining: 'mean' averages the "
+                        "selected channel over time, 'max' makes a per-pixel "
+                        "maximum projection, and a one-based integer uses that "
+                        "source frame. The inferred transform still applies to "
+                        "every plane."},
+        {"name": "valid_mask", "type": "path", "units": "-",
+         "required": False, "default": None,
+         "description": "Valid registered pixels for the time-mean image. "
+                        "For meanred_<key>.tif, validfield_<key>.tif beside it "
+                        "is found automatically. A missing mask is refused "
+                        "unless allow_full_frame_valid is explicitly enabled."},
+        {"name": "orient_scn", "type": "bool", "units": "-",
+         "required": False, "default": True,
+         "description": "By default, after drawing the accepted outline, rotate both the "
+                        "two-label mask and source image so the medial gap is "
+                        "vertical and inferred anatomical top is upward. "
+                        "Set False to preserve the accepted source geometry."},
+        {"name": "orientation_profile_bin_px", "type": "float", "units": "px",
+         "required": False, "default": 2.0,
+         "description": "Width of the paired inner-edge bins used to fit the "
+                        "medial gap. Higher values average more boundary detail "
+                        "and can hide a small residual tilt."},
+        {"name": "orientation_flare_tie_px", "type": "float", "units": "px",
+         "required": False, "default": 5.0,
+         "description": "Terminal gap-flare difference below which lobe-tip "
+                        "alignment chooses the top. Higher values invoke the "
+                        "fallback more often."},
+        {"name": "crop_mode", "type": "str", "units": "-",
+         "required": False, "default": "standard",
+         "description": "Square crop after outlining and orientation: tight, "
+                        "standard, wide, custom or none. Presets are scaled "
+                        "from the smallest outline-centred square containing the "
+                        "complete two-lobe mask."},
+        {"name": "crop_size_px", "type": "int", "units": "px",
+         "required": False, "default": None,
+         "description": "Exact custom square side length centred on the "
+                        "complete SCN outline. Supplying it selects custom mode. "
+                        "A size that would cut the SCN outline is refused."},
+        {"name": "stable_local_line_redetect", "type": "bool", "units": "-",
+         "required": False, "default": True,
+         "description": "Replace the original lobe line only when one-radius "
+                        "and one-diameter initial-mask neighbourhoods agree on "
+                        "the same changed cue and shape axes."},
+        {"name": "open_enclosed_carve_channels", "type": "bool", "units": "-",
+         "required": False, "default": True,
+         "description": "Open only enclosed remnants of the carved medial "
+                        "channel by a remove-only zero-turn pole course."},
     ],
     "segment": [
         {"name": "channels", "type": "str", "units": "-", "required": False,
@@ -613,6 +696,13 @@ DROPPED_PARAMS: dict[str, set[str]] = {
               "display_percentile", "crf", "file_lock_retry_seconds",
               "timestamp_font_candidates", "timestamp_font_fallback",
               "timestamp_font_height_fraction", "timestamp_font_min_size"},
+    # PyMicroglia vendors the accepted engine. These three parameters belong to
+    # the standalone protocol's dynamic-import guard, not to the self-contained
+    # action; the source and port hashes remain in every generated report.
+    "automatic_scn_outline": {
+        "implementation_dir", "expected_scn_roi_sha256",
+        "expected_red_measure_sha256",
+    },
 }
 
 #: ``dluc_pipeline.py`` is one 3600-line script holding the whole single-cell
@@ -774,6 +864,19 @@ ACTIONS: list[dict] = [
         "summary": "Detect still cells by soma prominence and watershed, then sweep for "
                    "further candidates. No minimum cell area, by rule.",
         "source": [_DLUC],
+    },
+    {
+        "name": "automatic_scn_outline",
+        "method": "scn_outline.automatic_scn_outline",
+        "mutates": True,
+        "summary": "Draw the accepted A007 two-lobe SCN outline from a "
+                   "registered red-channel time mean or selected hyperstack "
+                   "channel using a mean, maximum projection or chosen frame "
+                   "and valid-field mask, stream one transform across every "
+                   "stack plane, "
+                   "apply the accepted A006 top-up orientation by default, "
+                   "and write a mask-relative square crop.",
+        "source": ["Analysis/automatic_scn_roi/automatic_scn_roi.py"],
     },
     {
         "name": "export_roi",
@@ -1017,7 +1120,8 @@ def build(protocols: Path) -> dict:
             "display_only": entry.get("display_only", False),
             "params": names,
             "defaults": defaults,
-            "method_version": block.method_version,
+            "method_version": METHOD_VERSION_OVERRIDES.get(
+                entry["name"], block.method_version),
             "source": entry["source"],
         })
 
