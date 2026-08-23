@@ -8,8 +8,9 @@ the bleed profile beside each censored hit. Nothing is repaired yet, because
 the bleed model is fitted from *all* of them together — a model fitted frame by
 frame would be fitted to a handful of rows at a time.
 
-**Pass two** rewrites each frame: repaired pixels take the reference, and the
-rows behind a censored pixel have the fitted bleed subtracted.
+**Pass two** rewrites each frame: repaired pixels take the selected replacement
+(``reference`` or the alternating adjacent-frame ``interleave``), and the rows
+behind a censored pixel have the fitted bleed subtracted.
 
 The mask between the passes is a memory-mapped file, not an array. A 380-frame
 512x512 recording is 100 MB of booleans and a real one is larger; holding it
@@ -55,6 +56,8 @@ def _bleed_profiles(opened, channel: int, settings: Settings, sigma: float,
     for frame in range(frames):
         current = np.asarray(opened.frame(frame, channel), np.float32)
         reference = rule.reference_plane(opened, frame, channel, settings.reference)
+        replacement = rule.replacement_plane(
+            opened, frame, channel, settings.replacement, reference)
         z = rule.z_image(current, reference, sigma)
         seed, mask = rule.outlier_mask(z, settings)
         hot = rule.censored(current, scale, settings)
@@ -90,10 +93,10 @@ def _bleed_profiles(opened, channel: int, settings: Settings, sigma: float,
                 "peak_noise_units": float(local[peak_at]),
                 "peak_counts_above_reference": float(current[y, x] - reference[y, x]),
                 "original_value": float(current[y, x]),
-                "replacement_value": float(reference[y, x]),
+                "replacement_value": float(replacement[y, x]),
                 "censored_px": int(hot[ys, xs].sum()),
                 "carries_a_track": int(bool(np.any(band[ys, xs]))),
-                "replacement_method": f"{settings.reference} reference"})
+                "replacement_method": settings.replacement})
 
         # Bleed rows: the rows of a repaired hit that contains a censored pixel.
         hit = hot & mask
@@ -217,6 +220,7 @@ def remove_cosmic_rays(
     series: int = rule.DEFAULT_SERIES,
     signal_channel: int = rule.DEFAULT_SIGNAL_CHANNEL,
     reference: str = rule.DEFAULT_REFERENCE,
+    replacement: str = rule.DEFAULT_REPLACEMENT,
     seed_z: float = rule.DEFAULT_SEED_Z,
     grow_z: float = rule.DEFAULT_GROW_Z,
     growth_px: int = rule.DEFAULT_GROWTH_PX,
@@ -254,7 +258,8 @@ def remove_cosmic_rays(
     import numpy as np
 
     settings = Settings(
-        reference=str(reference), seed_z=float(seed_z), grow_z=float(grow_z),
+        reference=str(reference), replacement=str(replacement),
+        seed_z=float(seed_z), grow_z=float(grow_z),
         growth_px=int(growth_px), minimum_line_px=int(minimum_line_px),
         minimum_aspect=float(minimum_aspect),
         saturation_fraction=float(saturation_fraction),
@@ -425,8 +430,8 @@ def bleed_plan(found: dict[str, Any], bleed: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def repair_plane(current, reference, repair, plan: dict[str, Any], positions):
-    """One frame of pass two: the reference where repaired, less the bleed.
+def repair_plane(current, replacement, repair, plan: dict[str, Any], positions):
+    """One frame of pass two: selected replacement under the mask, less bleed.
 
     Returns the plane as float and the counts taken off it. Never takes a pixel
     below zero and never touches a pixel that was repaired outright — a value
@@ -437,7 +442,7 @@ def repair_plane(current, reference, repair, plan: dict[str, Any], positions):
     reach, model = plan["reach"], plan["model"]
     saturated, direction = plan["saturated"], plan["direction"]
     width = int(current.shape[1])
-    plane = np.where(repair, reference, current).astype(np.float32)
+    plane = np.where(repair, replacement, current).astype(np.float32)
     removed = 0
     for position in positions:
         if saturated[position] < 1:
@@ -467,7 +472,7 @@ def as_measured(plane, dtype, limits):
 
 def _repaired(opened, channel: int, settings: Settings, sigma: float,
               found: dict[str, Any], bleed: dict[str, Any], repair_mask):
-    """Pass two: the reference where a pixel was repaired, less the bleed."""
+    """Pass two: selected replacement where repaired, less the bleed."""
     import numpy as np
 
     frames, _, height, width = opened.shape
@@ -480,7 +485,9 @@ def _repaired(opened, channel: int, settings: Settings, sigma: float,
     for frame in range(frames):
         current = np.asarray(opened.frame(frame, channel), np.float32)
         reference = rule.reference_plane(opened, frame, channel, settings.reference)
-        plane, taken = repair_plane(current, reference,
+        replacement = rule.replacement_plane(
+            opened, frame, channel, settings.replacement, reference)
+        plane, taken = repair_plane(current, replacement,
                                     np.asarray(repair_mask[frame], bool),
                                     plan, plan["by_frame"].get(frame, ()))
         removed += taken

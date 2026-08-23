@@ -95,6 +95,21 @@ def test_cleaning_an_array_gives_what_cleaning_the_file_gives(tmp_path,
         assert summary[key] == written.summary[key], key
 
 
+def test_interleave_replacement_agrees_through_both_doors(tmp_path, store_root):
+    """The selectable adjacent-frame checkerboard is one method in both paths."""
+    source, data = _spiked(tmp_path)
+
+    written = cosmic.remove_cosmic_rays(
+        source, output_dir=tmp_path / "out", signal_channel=2,
+        replacement="interleave", write_preview=False)
+    from_file = tifffile.imread(written.path)[:, 1]
+
+    array, summary = _in_place(data, source, replacement="interleave")
+
+    np.testing.assert_array_equal(np.rint(array).astype(np.uint16), from_file)
+    assert summary["replacement"] == written.summary["replacement"] == "interleave"
+
+
 def test_the_two_doors_carry_the_same_method_version():
     """A shared version string is a claim that the results are interchangeable.
 

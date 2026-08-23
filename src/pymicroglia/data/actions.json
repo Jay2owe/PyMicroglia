@@ -148,6 +148,7 @@
         "series",
         "signal_channel",
         "reference",
+        "replacement",
         "seed_z",
         "grow_z",
         "growth_px",
@@ -178,6 +179,7 @@
         "series": 0,
         "signal_channel": 1,
         "reference": "mean2",
+        "replacement": "reference",
         "seed_z": 12.0,
         "grow_z": 2.0,
         "growth_px": 2,
@@ -200,7 +202,7 @@
         "output_folder": "cosmic_cleaned",
         "reuse": true
       },
-      "method_version": "2026-08-20-one-outlier-rule",
+      "method_version": "2026-08-21-selectable-replacement",
       "source": [
         "Analysis/microglia_cosmic_ray_removal.py",
         "Analysis/microglia_cosmic_ray_removal_analysis.ijm"
@@ -1365,7 +1367,7 @@
         "cleaned": null,
         "mask": null
       },
-      "method_version": "2026-08-20-one-outlier-rule",
+      "method_version": "2026-08-21-selectable-replacement",
       "source": [
         "Analysis/microglia_cosmic_ray_removal.py"
       ]
@@ -2676,6 +2678,13 @@
       "type": "int",
       "units": "-",
       "description": "regrow a cell at K_RELAX if it is smaller than this",
+      "required": false
+    },
+    {
+      "name": "replacement",
+      "type": "str",
+      "units": "-",
+      "description": "What replaces a repaired pixel. \"reference\" preserves the current result (normally the adjacent-frame mean). \"interleave\" alternates real preceding/following pixels in a fixed checkerboard, restoring the visually approved trail fill without reducing local variance.",
       "required": false
     },
     {

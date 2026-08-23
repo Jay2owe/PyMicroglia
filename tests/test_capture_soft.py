@@ -57,7 +57,7 @@ def test_the_record_carries_the_entry_path_and_method_version(tmp_path, monkeypa
         run.result = None
 
     assert run.record["entry_path"] == "imagej"
-    assert run.record["method_version"] == "2026-08-20-one-outlier-rule"
+    assert run.record["method_version"] == "2026-08-21-selectable-replacement"
 
 
 def test_the_equivalent_script_names_the_action_and_its_arguments(tmp_path):

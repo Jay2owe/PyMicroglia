@@ -98,6 +98,20 @@ def test_a_bright_pixel_is_replaced_by_the_mean_of_its_neighbours(tmp_path):
     assert result.summary["head_pixel_frames"] == 1
 
 
+def test_interleave_replacement_alternates_real_adjacent_pixels(tmp_path):
+    stack = synthetic_stack()
+    frame, y, x = 10, 32, 32
+    stack[frame, y, x] = 60000
+    source = write_stack(tmp_path / "interleave.ome.tif", stack)
+    result = clean(source, tmp_path / "out", replacement="interleave")
+
+    cleaned = tifffile.imread(result.path)
+    take_following = bool((y + x + frame) & 1)
+    neighbour = frame + 1 if take_following else frame - 1
+    assert cleaned[frame, y, x] == stack[neighbour, y, x]
+    assert result.summary["replacement"] == "interleave"
+
+
 def test_the_growth_replaces_the_skirt_as_well_as_the_core(tmp_path):
     """Growth of 2 px dilates one pixel to 5x5 — 25, counted by hand."""
     stack = synthetic_stack()
@@ -352,6 +366,9 @@ def test_the_action_is_registered_and_carries_the_new_method_version():
     entry = describe("remove_cosmic_rays")
     assert entry["pending"] is False
     assert entry["binds_to"] == "cosmic.remove_cosmic_rays"
-    assert entry["method_version"] == "2026-08-20-one-outlier-rule"
+    assert entry["method_version"] == "2026-08-21-selectable-replacement"
     names = {row["name"] for row in entry["params"]}
-    assert {"seed_z", "grow_z", "saturation_fraction", "mirror_placebo"} <= names
+    assert {
+        "replacement", "seed_z", "grow_z", "saturation_fraction",
+        "mirror_placebo"
+    } <= names

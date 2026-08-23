@@ -1,7 +1,8 @@
 """Cosmic-ray damage, removed by one rule asked three times.
 
 Copied from ``Protocols/Analysis/microglia_cosmic_ray_removal.py`` at
-``2026-08-20-one-outlier-rule``, which replaced the matched-line method this
+``2026-08-21-selectable-replacement``, which extends the one-outlier rule that
+replaced the matched-line method this
 package carried until then. That one is in ``superseded/matched_line.py``, where
 nothing calls it and old run records can still replay it.
 
@@ -17,9 +18,11 @@ same cut — so a faint track that no single pixel would fail is still found.
 *censored*: it has stopped measuring, and it bleeds a fixed share of full scale
 into the next pixel of its own row, dying away over a fitted number of pixels.
 
-Every replaced pixel takes the same value, the mean of the two neighbouring
-frames. Every *reduced* pixel is a bleed pixel, and it is reduced by a fitted
-amount rather than replaced.
+Replacement is selectable. ``reference`` puts back the detection reference
+(normally the mean of the neighbouring frames). ``interleave`` alternates real
+pixels from the preceding and following frames in the approved deterministic
+checkerboard, preserving native variance. Every *reduced* pixel is a bleed
+pixel, and it is reduced by a fitted amount rather than replaced.
 
 **Nothing here is a constant in one camera's counts.** The noise, the top of
 the range, the bleed amplitude and its decay length are all measured from the
@@ -45,6 +48,8 @@ __all__ = [
     "Settings",
     "reference_window",
     "reference_plane",
+    "interleaved_neighbour_plane",
+    "replacement_plane",
     "robust_noise",
     "measure_noise",
     "full_scale",
@@ -67,20 +72,20 @@ __all__ = [
     "validate",
 ]
 
-METHOD_VERSION = "2026-08-20-one-outlier-rule"
+METHOD_VERSION = "2026-08-21-selectable-replacement"
 COSMIC_STAGE = "cosmic_rays"
 
 # ============================ PROTOCOL PARAMETERS ============================
-# The nine numbers from REFERENCE to TAIL_LOSS_SCALE_NOISE are the whole method.
-# Everything after them is input plumbing or a cost knob. All nine were tuned on
-# MCG_04_595 (380 frames, 512 x 512, 16-bit) in the round closed 2026-08-20;
-# COSMIC_RAY_REMOVAL_README.md in Protocols records what each was measured
-# against.
+# The ten settings from REFERENCE to TAIL_LOSS_SCALE_NOISE are the whole method.
+# Everything after them is input plumbing or a cost knob. The original nine
+# settings were tuned on MCG_04_595 (380 frames, 512 x 512, 16-bit) in the round
+# closed 2026-08-20; the replacement choice restores the separately approved
+# A005 checkerboard. COSMIC_RAY_REMOVAL_README.md in Protocols records both.
 
 DEFAULT_SERIES = 0                  # which series to read from a multi-series file
 DEFAULT_SIGNAL_CHANNEL = 1          # one-based channel to clean; others are copied
 
-# ---- the nine numbers that are the method ----
+# ---- the ten settings that are the method ----
 DEFAULT_REFERENCE = "mean2"         # what a pixel is compared with: the mean of the
                                     # frame before and the frame after.
                                     # CAUTION: "max2" is the superseded behaviour.
@@ -88,6 +93,10 @@ DEFAULT_REFERENCE = "mean2"         # what a pixel is compared with: the mean of
                                     # by half their difference, so it inflates the
                                     # noise estimate by about a fifth and puts that
                                     # same bias back into every repaired pixel.
+DEFAULT_REPLACEMENT = "reference"   # what replaces repaired pixels. "reference"
+                                    # preserves current output; "interleave" uses
+                                    # an alternating checkerboard of real preceding
+                                    # and following pixels, preserving local noise.
 DEFAULT_SEED_Z = 12.0               # a pixel is a hit at this many noise units above
                                     # the reference, and the same cut decides a line.
                                     # CAUTION: this cannot be derived from a
@@ -160,6 +169,7 @@ CONNECT_SIZE = 3
 MAX_PROFILE = 120
 #: Reference kinds, and how many frames each takes.
 REFERENCE_FRAMES = {"mean2": 2, "max2": 2}
+REPLACEMENT_METHODS = {"reference", "interleave"}
 
 
 @dataclass(frozen=True)
@@ -172,6 +182,7 @@ class Settings:
     """
 
     reference: str = DEFAULT_REFERENCE
+    replacement: str = DEFAULT_REPLACEMENT
     seed_z: float = DEFAULT_SEED_Z
     grow_z: float = DEFAULT_GROW_Z
     growth_px: int = DEFAULT_GROWTH_PX
@@ -199,6 +210,7 @@ class Settings:
         """
         return {
             "reference": str(self.reference),
+            "replacement": str(self.replacement),
             "seed_z": float(self.seed_z),
             "grow_z": float(self.grow_z),
             "growth_px": int(self.growth_px),
@@ -247,6 +259,28 @@ def reference_plane(opened, index: int, channel: int, kind: str):
     planes = np.stack([np.asarray(opened.frame(j, channel), np.float32)
                        for j in window])
     return planes.max(axis=0) if kind == "max2" else planes.mean(axis=0)
+
+
+def interleaved_neighbour_plane(opened, index: int, channel: int):
+    """Checkerboard of real values from the immediately adjacent frames."""
+    import numpy as np
+
+    frames, _, _, _ = opened.shape
+    previous_index, following_index = reference_window(frames, index, 2)
+    previous = np.asarray(opened.frame(previous_index, channel), np.float32)
+    following = np.asarray(opened.frame(following_index, channel), np.float32)
+    rows, columns = np.indices(previous.shape)
+    take_following = ((rows + columns + int(index)) & 1).astype(bool)
+    return np.where(take_following, following, previous)
+
+
+def replacement_plane(opened, index: int, channel: int, kind: str, reference):
+    """Values placed under the repair mask, independent of detection."""
+    if kind == "reference":
+        return reference
+    if kind == "interleave":
+        return interleaved_neighbour_plane(opened, index, channel)
+    raise ValueError(f"replacement must be one of {sorted(REPLACEMENT_METHODS)}")
 
 
 def robust_noise(values) -> tuple[float, float]:
@@ -579,6 +613,9 @@ def validate(settings: Settings) -> None:
         raise ValueError("signal_channel is one-based and must be 1 or greater")
     if settings.reference not in REFERENCE_FRAMES:
         raise ValueError(f"reference must be one of {sorted(REFERENCE_FRAMES)}")
+    if settings.replacement not in REPLACEMENT_METHODS:
+        raise ValueError(
+            f"replacement must be one of {sorted(REPLACEMENT_METHODS)}")
     if settings.seed_z <= 0:
         raise ValueError("seed_z must be greater than zero")
     if not 0 < settings.grow_z <= settings.seed_z:

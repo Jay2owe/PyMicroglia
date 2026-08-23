@@ -16,7 +16,8 @@ The two entry points share one ``METHOD_VERSION`` because they are one method:
 same rule, same settings, same numbers under the same names.
 
 Copied from ``Protocols/Analysis/microglia_cosmic_ray_removal.py`` at
-``2026-08-20-one-outlier-rule``, which replaced the matched-line method this
+``2026-08-21-selectable-replacement``, which extends the one-outlier rule that
+replaced the matched-line method this
 package carried until then. That one is in ``superseded/matched_line.py``,
 where nothing calls it and old run records can still replay it.
 """
@@ -30,6 +31,7 @@ from .rule import (
     MAX_PROFILE,
     METHOD_VERSION,
     REFERENCE_FRAMES,
+    REPLACEMENT_METHODS,
     Settings,
     band_width,
     censored,
@@ -44,6 +46,7 @@ from .rule import (
     outlier_mask,
     predict_tail,
     principal_axis,
+    replacement_plane,
     reference_plane,
     reference_window,
     robust_noise,
@@ -60,6 +63,7 @@ __all__ = [
     "COSMIC_STAGE",
     "MAX_PROFILE",
     "REFERENCE_FRAMES",
+    "REPLACEMENT_METHODS",
     "Settings",
     "remove_cosmic_rays",
     "clean_stack_in_place",
@@ -67,6 +71,7 @@ __all__ = [
     "cleaned_path",
     "reference_window",
     "reference_plane",
+    "replacement_plane",
     "robust_noise",
     "measure_noise",
     "full_scale",

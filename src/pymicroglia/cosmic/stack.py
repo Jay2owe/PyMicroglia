@@ -15,12 +15,12 @@ through, no TIFF to write, no artefact to key — the caller keys the array.
 Two things the in-place form has to be careful about that the file form gets
 for nothing:
 
-**A repaired frame must not become the next frame's reference.** The file path
-reads its references out of the source, which nothing writes to. Here the array
-being read is the array being rewritten, so pass two keeps the previous frame's
-original plane and hands *that* to the reference rule. The method this replaces
-did not, so what it produced depended on the order it happened to walk the
-stack in — invisibly, because every value it wrote was a plausible one.
+**A repaired frame must not become the next frame's reference or replacement.**
+The file path reads its neighbours out of the source, which nothing writes to.
+Here the array being read is the array being rewritten, so pass two keeps the
+previous frame's original plane and hands *that* to both rules. The method this
+replaces did not, so what it produced depended on the order it happened to walk
+the stack in — invisibly, because every value it wrote was plausible.
 
 **Full scale belongs to the camera, not to the array.** A registered stack is
 float32 because it has been shifted, and a float array has no full scale of its
@@ -106,7 +106,9 @@ def _repair_in_place(view: _Rolling, stack, settings: Settings,
         # next frame is read from this plane.
         current = np.array(stack[frame], np.float32)
         reference = rule.reference_plane(view, frame, 0, settings.reference)
-        plane, taken = repair_plane(current, reference,
+        replacement = rule.replacement_plane(
+            view, frame, 0, settings.replacement, reference)
+        plane, taken = repair_plane(current, replacement,
                                     np.asarray(repair_mask[frame], bool),
                                     plan, plan["by_frame"].get(frame, ()))
         removed += taken
@@ -118,6 +120,7 @@ def _repair_in_place(view: _Rolling, stack, settings: Settings,
 def clean_stack_in_place(
     stack, *, source="", measured_dtype=None, full_scale=None,
     reference: str = rule.DEFAULT_REFERENCE,
+    replacement: str = rule.DEFAULT_REPLACEMENT,
     seed_z: float = rule.DEFAULT_SEED_Z,
     grow_z: float = rule.DEFAULT_GROW_Z,
     growth_px: int = rule.DEFAULT_GROWTH_PX,
@@ -154,7 +157,8 @@ def clean_stack_in_place(
     _guards.require_measurement(source)
     named = str(getattr(source, "path", source) or "")
     settings = Settings(
-        reference=str(reference), seed_z=float(seed_z), grow_z=float(grow_z),
+        reference=str(reference), replacement=str(replacement),
+        seed_z=float(seed_z), grow_z=float(grow_z),
         growth_px=int(growth_px), minimum_line_px=int(minimum_line_px),
         minimum_aspect=float(minimum_aspect),
         saturation_fraction=float(saturation_fraction),
