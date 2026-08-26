@@ -62,7 +62,7 @@ def test_the_action_resolves_through_the_delegate():
     assert "automatic_scn_outline" in REGISTRY.names()
     assert REGISTRY.resolve("automatic_scn_outline") is scn_outline.automatic_scn_outline
     assert scn_outline.automatic_scn_outline.__wrapped__ is \
-        pyscnslice.scn_outline.automatic_scn_outline
+        pyscnslice.outline.automatic
 
 
 def test_the_delegate_keeps_the_real_signature():
@@ -74,12 +74,14 @@ def test_the_delegate_keeps_the_real_signature():
     told the old one.
     """
     assert inspect.signature(scn_outline.automatic_scn_outline) == \
-        inspect.signature(pyscnslice.scn_outline.automatic_scn_outline)
+        inspect.signature(pyscnslice.outline.automatic)
 
     live = recording._signature_defaults("automatic_scn_outline")
     assert live["orient_scn"] is True
     assert live["crop_mode"] == "standard"
     assert live["scn_time"] == "mean"
+    assert live["selected_source_only"] is False
+    assert live["hash_source"] is True
     assert live["anomaly_broad_max_turn_deg"] == 6.5
 
 
@@ -132,7 +134,7 @@ def test_the_action_is_public_and_describes_the_valid_field():
     """Moved verbatim from the old parity file. It always tested this half."""
     entry = catalogue.action("automatic_scn_outline")
     assert entry["method"] == "scn_outline.automatic_scn_outline"
-    assert entry["method_version"] == pyscnslice.scn_outline.METHOD_VERSION
+    assert entry["method_version"] == pyscnslice.outline.METHOD_VERSION
 
     described = knowledge.describe("automatic_scn_outline")
     params = {row["name"]: row for row in described["params"]}
@@ -143,6 +145,10 @@ def test_the_action_is_public_and_describes_the_valid_field():
     assert params["scn_z"]["default"] is None
     assert params["scn_time"]["default"] == "mean"
     assert "maximum" in params["scn_time"]["description"].lower()
+    assert params["selected_source_only"]["default"] is False
+    assert "online-only" in params["selected_source_only"]["description"].lower()
+    assert params["hash_source"]["default"] is True
+    assert "still hashed" in params["hash_source"]["description"].lower()
     assert params["anomaly_broad_shortest_path"]["default"] is True
     assert params["anomaly_broad_max_turn_deg"]["default"] == 6.5
     assert params["stable_local_line_redetect"]["default"] is True
@@ -157,5 +163,5 @@ def test_the_record_can_still_say_which_method_ran():
     PySCNSlice — where the run would have failed anyway.
     """
     assert recording._method_version("automatic_scn_outline") == \
-        pyscnslice.scn_outline.METHOD_VERSION
-    assert scn_outline.METHOD_VERSION == pyscnslice.scn_outline.METHOD_VERSION
+        pyscnslice.outline.METHOD_VERSION
+    assert scn_outline.METHOD_VERSION == pyscnslice.outline.METHOD_VERSION

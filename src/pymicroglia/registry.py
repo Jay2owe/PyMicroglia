@@ -54,6 +54,7 @@ MODULE_NAMES: tuple[str, ...] = (
     "trace_tables",
     "visualisation.qc",
     "visualisation.overlays",
+    "publication",
     "video",
     "pipelines.dluc_single_cell",
     "pipelines.cry1_dluc_photon",
@@ -300,6 +301,8 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "cell_overlay": "checked the segmented objects against {source}'s pixels",
     "roi_overlay": "checked the stored regions against the frame they were "
                    "drawn on in {source}",
+    "publication_workbook":
+        "combined the ReproFig evidence for {source} into a publication workbook",
 }
 
 #: Actions that conclude something, where no template can be honest. Which

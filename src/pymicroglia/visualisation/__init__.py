@@ -17,7 +17,7 @@ The four rules are structural facts a test checks, not guidelines:
    figure receives a table or a stored artefact and draws it. This is the
    load-bearing one: a figure that cannot compute cannot grow a private helper
    stack, because there is nothing for the helpers to do.
-3. **One save path.** ``savefig`` appears exactly once in the package, in
+3. **One save path.** ReproFig rendering appears exactly once in the package, in
    :func:`panels.save`, which is what makes every figure arrive with its exact
    plotted table and a provenance record beside it.
 4. **No colour is spelled out.** Every colour comes from ``analysis_kit.style``

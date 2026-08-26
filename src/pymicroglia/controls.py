@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from . import guards as _guards
 from . import series as _series
@@ -55,10 +55,7 @@ __all__ = [
     "run_controls",
 ]
 
-METHOD_VERSION = "2026-08-08-on-tissue-decoys-absolute-counts"
-
 DECOY_STAGE = "decoy_test"
-CONTROL_STAGE = "instrumental_control"
 
 # ============================ PROTOCOL PARAMETERS ============================
 # From dluc_pipeline.py's block, unchanged.
@@ -88,32 +85,6 @@ class DecoyResult:
     @property
     def admissible(self) -> list[dict[str, Any]]:
         return [row for row in self.records if row.get("admissible")]
-
-
-@dataclass
-class ControlResult:
-    """Every channel, inside the region and off tissue and as sharpness."""
-
-    times_h: Any
-    region_names: list[str]
-    region: Any                # (C, R, T) mean counts inside each region
-    off_tissue: Any            # (C, T) mean counts off tissue
-    sharpness: Any             # (C, R, T) variance of the Laplacian
-    verdict: dict[str, Any] = field(default_factory=dict)
-    artefacts: dict[str, Any] = field(default_factory=dict)
-    notes: list[str] = field(default_factory=list)
-
-    def as_dict(self) -> dict[str, Any]:
-        """The form that travels attached to a rhythm result and into a record."""
-        import numpy as np
-
-        return {
-            "method_version": METHOD_VERSION,
-            "region_names": list(self.region_names),
-            "channels": int(np.asarray(self.region).shape[0]),
-            "frames": int(len(self.times_h)),
-            **self.verdict,
-        }
 
 
 # ------------------------------------------------------------------- decoys
@@ -322,167 +293,25 @@ def decoy_test(series, channel: int, labels, tissue, times_h, *,
     return DecoyResult(records=records, by_radius=by_radius, notes=notes)
 
 
-# ------------------------------------------------------ instrumental control
-def instrumental_control(series, regions: Mapping[str, Any], off_tissue,
-                         times_h, *, channels: Iterable[int] | None = None
-                         ) -> ControlResult:
-    """Every channel, inside each region and off tissue and as image sharpness.
-
-    Three measurements per channel per frame, because a rhythm has three ways
-    of being instrumental and each is invisible to the other two:
-
-    * **off tissue** — there is no sample there, so anything periodic is the
-      instrument;
-    * **another channel** — biology in one fluorophore is not in all of them;
-    * **image sharpness** — the variance of the Laplacian rises and falls with
-      focus, and a daily focus cycle modulates every channel at once.
-
-    Sharpness is measured inside the region rather than over the whole frame,
-    so it describes the focus of the thing being measured.
-    """
-    import numpy as np
-    from scipy import ndimage
-
-    frames, channel_count, height, width = series.shape
-    wanted = list(range(channel_count) if channels is None else channels)
-    names = list(regions)
-    region_index = [np.flatnonzero(np.asarray(regions[name]).ravel())
-                    for name in names]
-    off_index = np.flatnonzero(np.asarray(off_tissue).ravel())
-
-    region = np.empty((len(wanted), len(names), frames))
-    off = np.empty((len(wanted), frames))
-    sharp = np.empty((len(wanted), len(names), frames))
-
-    for frame in range(frames):
-        for position, channel in enumerate(wanted):
-            image = np.asarray(series.frame(frame, channel), np.float32)
-            flat = image.ravel()
-            laplacian = ndimage.laplace(
-                ndimage.gaussian_filter(image, 1.0)).ravel()
-            off[position, frame] = flat[off_index].mean()
-            for slot, index in enumerate(region_index):
-                region[position, slot, frame] = flat[index].mean()
-                sharp[position, slot, frame] = laplacian[index].var()
-
-    return ControlResult(times_h=np.asarray(times_h, float),
-                         region_names=names, region=region, off_tissue=off,
-                         sharpness=sharp)
-
-
-def _detrended(times_h, values, baseline_h: float):
-    """The residual a period statistic should actually be read on.
-
-    Subtract the rolling baseline, divide by the window mean, and drop the
-    half-window at each end where the baseline is made of reflected samples.
-
-    This is not a detail. A raw region mean is dominated by its own slow drift,
-    and a normalised periodogram of one reports wherever that drift lands rather
-    than whether anything is periodic. Reading the instrumental control off raw
-    means says "no daily cycle" on a recording whose structural channel has a
-    22.8 h sinusoid at power 0.966, which is the single most misleading thing
-    this control exists to catch.
-    """
-    import numpy as np
-
-    values = np.asarray(values, float)
-    length = _tracing.window_length(baseline_h, times_h)
-    edge = length // 2
-    baseline = _tracing.rolling_baseline(values, length)
-    mean = float(values.mean())
-    residual = (values - baseline) / (mean if mean else 1.0)
-    if edge and len(values) > 2 * edge:
-        return np.asarray(times_h, float)[edge:len(values) - edge],             residual[edge:len(values) - edge]
-    return np.asarray(times_h, float), residual
-
-
-def _verdict(control: ControlResult, *, period_range=(16.0, 32.0),
-             rhythmic_power: float = 0.5, baseline_h: float = 24.0,
-             dluc_channel: int | None = None) -> dict[str, Any]:
-    """Does the region's rhythm also appear where it cannot be biological?
-
-    Every series is detrended first — see :func:`_detrended` for why that is
-    load-bearing rather than tidy. The periodogram itself is
-    ``circadian_workbench``'s, through the adapter; this module implements no
-    period statistic of its own.
-    """
-    import numpy as np
-
-    from . import rhythm
-
-    times = control.times_h
-    channels = np.asarray(control.region).shape[0]
-    rows: list[dict[str, Any]] = []
-
-    def peak(values):
-        hours, residual = _detrended(times, values, baseline_h)
-        return rhythm.periodogram(hours, residual, period_range=period_range)
-
-    for channel in range(channels):
-        for slot, name in enumerate(control.region_names):
-            for kind, values in (("region", control.region[channel, slot]),
-                                 ("sharpness", control.sharpness[channel, slot])):
-                found = peak(values)
-                rows.append({"channel": channel, "region": name, "measure": kind,
-                             "period_h": found["peak_period_hours"],
-                             "power": found["peak_power"],
-                             "rhythmic": bool(found["peak_power"]
-                                              >= rhythmic_power)})
-        found = peak(control.off_tissue[channel])
-        rows.append({"channel": channel, "region": "off tissue",
-                     "measure": "off_tissue",
-                     "period_h": found["peak_period_hours"],
-                     "power": found["peak_power"],
-                     "rhythmic": bool(found["peak_power"] >= rhythmic_power)})
-
-    off_rhythmic = [row for row in rows
-                    if row["measure"] == "off_tissue" and row["rhythmic"]]
-    sharp_rhythmic = [row for row in rows
-                      if row["measure"] == "sharpness" and row["rhythmic"]]
-    channels_rhythmic = {row["channel"] for row in rows
-                         if row["measure"] == "region" and row["rhythmic"]}
-
-    reasons: list[str] = []
-    if off_rhythmic:
-        reasons.append(
-            f"a rhythm is present off tissue, where there is no sample "
-            f"({off_rhythmic[0]['period_h']:.1f} h at power "
-            f"{off_rhythmic[0]['power']:.3f})")
-    if sharp_rhythmic:
-        reasons.append(
-            f"image sharpness is rhythmic ({sharp_rhythmic[0]['period_h']:.1f} h "
-            f"at power {sharp_rhythmic[0]['power']:.3f}) — a focus cycle "
-            "modulates every channel at once")
-    if len(channels_rhythmic) > 1:
-        reasons.append(
-            f"the same rhythm is in {len(channels_rhythmic)} channels; biology "
-            "in one fluorophore is not in all of them")
-
-    verdict = {"rows": rows,
-               "instrumental_rhythm_detected": bool(reasons),
-               "reasons": reasons,
-               "passes": not reasons,
-               "rhythmic_channels": sorted(channels_rhythmic),
-               "rhythmic_off_tissue": sorted({row["channel"]
-                                              for row in off_rhythmic}),
-               "rhythmic_sharpness": sorted({row["channel"]
-                                             for row in sharp_rhythmic}),
-               "note": ("In the reference dataset the structural channel "
-                        "showed a 22.8 h sinusoid at Lomb-Scargle power 0.966 "
-                        "that was also present off tissue, in a second "
-                        "channel, and in image sharpness: a daily focus cycle, "
-                        "not biology.")}
-    if dluc_channel is not None:
-        # The question that decides what may be reported: an instrumental
-        # cycle in the microscope is survivable if the bioluminescence channel
-        # is not carrying it, and fatal if it is.
-        powers = [row["power"] for row in rows
-                  if row["channel"] == int(dluc_channel)
-                  and row["measure"] == "region"]
-        verdict["dluc_roi_power"] = max(powers) if powers else 0.0
-        verdict["dluc_clean"] = bool(verdict["dluc_roi_power"]
-                                     <= rhythmic_power)
-    return verdict
+# The instrumental control moved to ``pyscnslice.instrumental`` on 2026-08-24.
+# This module answers two questions and only one of them is about a cell:
+# decoys are per-object and stayed, while "is this rhythm in the sample at all"
+# is a question about the recording and went down with the rest of it.
+# ``METHOD_VERSION`` is imported rather than restated because it reaches the
+# artefact key, and two copies that drifted by a character would orphan every
+# control already stored.
+from pyscnslice.instrumental import (      # noqa: E402
+    CONTROL_STAGE,
+    METHOD_VERSION,
+    ControlResult,
+    # Private to the module and public to its tests: two of them read the
+    # detrended residual directly, because *that* is what a period statistic is
+    # read on and reading it off raw means is the mistake this control exists
+    # to catch.
+    _detrended,      # noqa: F401
+    _verdict,
+    instrumental_control,
+)
 
 
 # ---------------------------------------------------------------- the action

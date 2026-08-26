@@ -9,7 +9,7 @@ module is the shared half, so a new figure here is the drawing and nothing else.
 
 Three rules hold it in place, each checked by a test rather than remembered:
 
-**One save path.** ``savefig`` appears exactly once in this package, in
+**One save path.** ReproFig rendering appears exactly once in this package, in
 :func:`save`. That is what makes the provenance bundle automatic rather than
 something each figure has to remember, and it is why no figure can quietly
 write a PNG with no table beside it.
@@ -333,13 +333,32 @@ def image(ax, array, *, cmap: str, percentiles: Sequence[float] = (0.5, 99.5),
 def save(figure, path, *, table: Mapping[str, Sequence[Any]],
          sources: Iterable[Any] = (), claim: str = "",
          artefacts: Iterable[Any] = (), settings: Mapping[str, Any] | None = None,
+         statistics: Sequence[Mapping[str, Any]] = (),
+         statistics_status: str = "incomplete",
+         figure_profile: str = "master",
+         figure_safe_columns: Sequence[str] | Mapping[str, Sequence[str]] | None = None,
+         public_sources: Mapping[str, str] | None = None,
          formats: Sequence[str] = ("png",), dpi: int | None = None,
+         dpi_preset: str | None = None, render_preset: str | None = None,
+         width: float | None = None, height: float | None = None,
+         format_options: Mapping[str, Any] | None = None,
+         allow_reencode: bool = False,
          overwrite: bool = True, bundle: bool = True,
          slug: str | None = None, notes: Iterable[str] = (),
-         drawn: Any = None) -> dict[str, Any]:
+         drawn: Any = None, proof: bool = False,
+         statistical_specs: Sequence[Mapping[str, Any]] = (),
+         required_grades: Sequence[str] = (),
+         signing_key_path: str | None = None,
+         signing_password_env: str | None = None,
+         trust_policy_path: str | None = None,
+         encrypted_sections: Sequence[str] = (),
+         encryption_password_env: str | None = None,
+         recipient_file: str | None = None,
+         broker_policy_path: str | None = None,
+         proof_policy: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Write a figure, the exact table behind it, and where that table came from.
 
-    The only ``savefig`` in PyMicroglia. Everything a figure needs to be
+    The only ReproFig render path in PyMicroglia. Everything a figure needs to be
     trusted later is written here, in one place, so no figure can be produced
     without it:
 
@@ -355,6 +374,16 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     with the run that produced it.
     """
     from . import bundle as bundles
+    from reprofig import (
+        SourceReference,
+        approved_public_tables,
+        build_record,
+        derive_profile,
+        save_figure,
+        table_from_data,
+        validate_artifact,
+    )
+    from .. import __version__
 
     target = Path(path).expanduser().resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -365,39 +394,155 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
         + [str(f).lstrip(".") for f in formats if f]))
 
     # Every render this call makes, gathered before any of them happens, so
-    # there is one savefig in the package rather than one per destination.
+    # there is one ReproFig render call in the package rather than one per destination.
     root = Path(f"{stem}{bundles.BUNDLE_SUFFIX}")
     name = slug or target.stem
     inside = bundles.figure_targets(root, name) if bundle else {}
-    renders: list[tuple[Path, dict[str, Any]]] = [
-        (Path(f"{stem}.{suffix}"), {"dpi": dpi}) for suffix in order]
+    renders: list[tuple[Path, int | None]] = [
+        (Path(f"{stem}.{suffix}"), dpi) for suffix in order]
     if bundle:
-        renders.append((inside["svg"], {"format": "svg"}))
-        renders.append((inside["preview"], {"dpi": 110}))
+        renders.append((inside["svg"], None))
+        renders.append((inside["preview"], 110))
+
+    settings = dict(settings or {})
+    settings.setdefault("theme", getattr(figure, "_pymicroglia_theme", ENGINE_THEME))
+    described = bundles.describe_sources(sources)
+    exact_table = table_from_data(
+        bundles.table_bytes(table),
+        name="plotted_data",
+        purpose="plot_and_statistics",
+    )
+    source_records = [
+        SourceReference(
+            role=str(item.get("role", "source")),
+            relative_path=str(item.get("file_name") or "") or None,
+            sha256=item.get("sha256"),
+            size_bytes=item.get("bytes"),
+            modified_at=item.get("modified"),
+            source_id=item.get("name"),
+        )
+        for item in described
+    ]
+    master_record = build_record(
+        title=name,
+        original_stem=target.stem,
+        producer={
+            "package": "PyMicroglia",
+            "package_version": __version__,
+            "function": "pymicroglia.visualisation.panels.save",
+        },
+        analysis={
+            "claim": claim,
+            "settings": settings,
+            "drawn": drawn,
+        },
+        data_tables=[exact_table],
+        statistics=list(statistics),
+        statistics_status=statistics_status,
+        sources=source_records,
+    )
+    from .proof_output import prepare_proof
+
+    proof, policy = prepare_proof(
+        figure, master_record, exact_table, claim=claim,
+        statistical_specs=statistical_specs, proof=proof,
+        proof_policy=proof_policy, required_grades=required_grades,
+        signing_key_path=signing_key_path,
+        signing_password_env=signing_password_env,
+        trust_policy_path=trust_policy_path,
+        encrypted_sections=encrypted_sections,
+        encryption_password_env=encryption_password_env,
+        recipient_file=recipient_file, broker_policy_path=broker_policy_path,
+    )
+    figure_record = derive_profile(
+        master_record,
+        figure_profile,
+        safe_columns=figure_safe_columns,
+        public_sources=public_sources,
+    )
+    companion_table = (
+        exact_table
+        if figure_profile == "master"
+        else approved_public_tables(
+            master_record, safe_columns=figure_safe_columns
+        )[0]
+    )
 
     written: list[Path] = []
-    for out, options in renders:
+    final_record = figure_record
+    variant_record = master_record
+    for out, render_dpi in renders:
         if out.exists() and not overwrite:
             raise FileExistsError(
                 f"refusing to overwrite {out}. Pass overwrite=True to replace "
                 f"it — a re-run silently replacing the figure you were "
                 f"comparing against is a mistake that only has to happen once.")
-        figure.savefig(out, bbox_inches="tight", **options)
+        selected_options = format_options
+        if format_options:
+            extension = out.suffix.lower().lstrip(".")
+            aliases = {"jpg": "jpeg", "jpe": "jpeg", "tif": "tiff", "heic": "heif"}
+            requested = aliases.get(extension, extension)
+            keyed = {
+                aliases.get(str(key).lower().lstrip("."), str(key).lower().lstrip(".")): value
+                for key, value in format_options.items()
+            }
+            if set(keyed) & {"svg", "pdf", "png", "jpeg", "tiff", "webp", "avif", "heif"}:
+                selected_options = keyed.get(requested)
+        final_record = save_figure(
+            figure,
+            out,
+            record=variant_record,
+            figure_profile=figure_profile,
+            dpi=render_dpi,
+            dpi_preset=dpi_preset,
+            render_preset=render_preset,
+            width=width,
+            height=height,
+            format_options=selected_options,
+            savefig_kwargs={"bbox_inches": "tight"},
+            allow_reencode=allow_reencode,
+            safe_columns=figure_safe_columns,
+            public_sources=public_sources,
+            proof=proof,
+            proof_policy=policy if policy else None,
+        )
+        if proof:
+            # Protected sections are reused across carrier variants, while
+            # each signature is rebound to that carrier's visual reference.
+            variant_record = final_record
+        report = validate_artifact(
+            out,
+            expected_profile=figure_profile,
+            public_safety=figure_profile != "master",
+        )
+        if not report.valid:
+            raise ValueError(
+                "; ".join(
+                    issue.message
+                    for issue in report.issues
+                    if issue.severity == "error"
+                )
+            )
         if out.parent != root / "fig":
             written.append(out)
 
     table_path = Path(f"{stem}_plotted.csv")
-    bundles.write_table(table_path, table)
+    table_path.parent.mkdir(parents=True, exist_ok=True)
+    table_path.write_bytes((companion_table.contents or "").encode("utf-8"))
 
-    described = bundles.describe_sources(sources)
     provenance_path = Path(f"{stem}_provenance.json")
-    settings = dict(settings or {})
-    settings.setdefault("theme", getattr(figure, "_pymicroglia_theme",
-                                         ENGINE_THEME))
+    public_output = figure_profile != "master"
+    sidecar_sources = [] if public_output else described
+    sidecar_settings = {} if public_output else settings
+    sidecar_artefacts = () if public_output else artefacts
+    sidecar_claim = "Publication-safe figure derivative" if public_output else claim
+    sidecar_notes = [] if public_output else list(notes)
+    sidecar_drawn = None if public_output else drawn
     bundles.write_provenance(
-        provenance_path, sources=described, figures=written, table=table_path,
-        settings=settings, artefacts=artefacts, claim=claim, notes=list(notes),
-        drawn=drawn)
+        provenance_path, sources=sidecar_sources, figures=written, table=table_path,
+        settings=sidecar_settings, artefacts=sidecar_artefacts,
+        claim=sidecar_claim, notes=sidecar_notes,
+        drawn=sidecar_drawn)
 
     result: dict[str, Any] = {
         "figures": written,
@@ -406,45 +551,26 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
         "sources": described,
         "bundle": None,
     }
+    if proof:
+        from .proof_output import proof_summary
+
+        result["proof"] = proof_summary(
+            [out for out, _render_dpi in renders], policy
+        )
     if bundle:
         result["bundle"] = bundles.write_bundle(
-            root, slug=name, table=table, sources=described, claim=claim,
-            artefacts=artefacts, settings=settings, notes=list(notes))
+            root, slug=name, table=table, sources=sidecar_sources,
+            claim=sidecar_claim, artefacts=sidecar_artefacts,
+            settings=sidecar_settings, notes=sidecar_notes,
+            table_csv=(companion_table.contents or "").encode("utf-8"))
+    if broker_policy_path:
+        from .proof_output import promote_outputs
+
+        result["broker"] = promote_outputs(
+            written, policy_path=broker_policy_path,
+            workspace_parent=target.parent, stem=target.stem,
+        )
     return result
 
 
-def default_output_dir(source, suffix: str = "_qc") -> Path:
-    """Beside the results, in the folder every protocol in this project uses."""
-    path = Path(source).resolve()
-    for parent in (path.parent, *path.parents):
-        if parent.name.lower() == "ai_exports":
-            return parent / f"{path.stem}{suffix}"
-    return path.parent / "AI_Exports" / f"{path.stem}{suffix}"
-
-
-def save_for(figure, source, table: Mapping[str, Sequence[Any]], *, stage: str,
-             output_name: str, output_dir=None, overwrite: bool = False,
-             dpi: int = 150, artefacts: Iterable[Any] = (), claim: str = "",
-             settings: Mapping[str, Any] | None = None,
-             suffix: str = "_qc") -> dict[str, Any]:
-    """One figure about one source, saved and closed.
-
-    Every quality-control figure and every overlay leaves by this door: same
-    default folder, same bundle, same closing of the figure. A batch drawing a
-    hundred of these otherwise keeps all hundred open until the process ends.
-    """
-    folder = Path(output_dir) if output_dir else default_output_dir(source, suffix)
-    written = save(
-        figure, folder / f"{output_name}.png", table=table,
-        sources=[{"path": source, "role": "pixels"}], claim=claim,
-        artefacts=[item for item in artefacts if item is not None],
-        settings=settings or {}, dpi=dpi, overwrite=overwrite,
-        slug=output_name)
-    _plt().close(figure)
-    return {
-        "stage": stage,
-        "figures": [str(p) for p in written["figures"]],
-        "table": str(written["table"]),
-        "provenance": str(written["provenance"]),
-        "bundle": str(written["bundle"]) if written["bundle"] else None,
-    }
+from .save_actions import default_output_dir, save_for

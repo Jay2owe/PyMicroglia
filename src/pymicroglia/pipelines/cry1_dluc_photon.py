@@ -37,9 +37,9 @@ from .. import registration as _registration
 from .. import series as _series
 from ..recording import capture
 from ..review import Review
-from ..video import annotate as _annotate
-from ..video import encode as _encode
-from ..video import render as _render
+from pyscnslice.render import annotate as _annotate
+from pyscnslice.render import screen as _render
+from pyscnslice.video import encode as _encode
 from . import (PipelineResult, StageLog, append_runs_index,
                default_output_root, read_manifest, run_folder, slug,
                write_manifest)

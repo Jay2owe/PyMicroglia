@@ -59,7 +59,7 @@ class SCNSliceMissing(ImportError):
 
 
 def _upstream():
-    """``pyscnslice.scn_outline``, or ``None`` when it is not installed.
+    """``pyscnslice.outline``, or ``None`` when it is not installed.
 
     ``None`` rather than a raise, because this module has to import either way:
     ``registry`` treats an unimportable science module as *pending*, and pending
@@ -67,7 +67,7 @@ def _upstream():
     dependency somebody simply has not installed.
     """
     try:
-        from pyscnslice import scn_outline as module
+        from pyscnslice import outline as module
     except ImportError:
         return None
     return module
@@ -109,5 +109,10 @@ ACCEPTED_SETTINGS: dict[str, Any] = dict(
 #: What ``tight``, ``standard`` and ``wide`` mean as a multiple of the outline.
 CROP_SCALES: dict[str, float] = dict(getattr(_MODULE, "CROP_SCALES", {}) or {})
 
-draw_scn_labels = _delegate("draw_scn_labels")
-automatic_scn_outline = _delegate("automatic_scn_outline")
+# The action keeps its own names; upstream renamed its functions in PySCNSlice
+# 0.5.0, when the outline was split into modules named for what each does.
+# `draw_scn_labels` is `outline.labels`, `automatic_scn_outline` is
+# `outline.automatic`. The action is what a run record names, so it does not
+# move with them.
+draw_scn_labels = _delegate("labels")
+automatic_scn_outline = _delegate("automatic")

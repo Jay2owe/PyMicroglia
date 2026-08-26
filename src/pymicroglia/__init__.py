@@ -16,11 +16,40 @@ scientific stack — so the science modules are imported on use, not here.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+#: 0.2.0 is the release in which the longitudinal machinery left. Anything
+#: below it carries its own registration, cosmic-ray rule and artefact
+#: store, so the two cannot be mixed in one environment.
+__version__ = "0.2.0"
+
+#: The project this package's artefacts belong to, claimed before anything can
+#: reach the store. The store moved to PySCNSlice on 2026-08-24 along with the
+#: rest of the longitudinal machinery, and it takes its location from whichever
+#: project claims it. These are the values this package always used, so an
+#: existing ``PixelStore`` goes on being found and nothing rebuilds.
+#:
+#: ``only_if_unset`` is the important half. A single process holds both
+#: packages — an SCN run reaches in here for the single-cell trace stage — and
+#: if importing this module moved the store, that run's artefacts would land in
+#: the wrong project and its own earlier stages would stop resolving. First
+#: claim wins, so whoever is driving keeps the store.
+PROJECT_FOLDER_NAME = "Microglia Project"
+
+from pyscnslice import config as _pyscnslice_config     # noqa: E402
+
+_pyscnslice_config.use_project(
+    start=__file__,
+    projects=[PROJECT_FOLDER_NAME],
+    store_env=["PYMICROGLIA_STORE"],
+    index_env=["PYMICROGLIA_INDEX"],
+    cache_gb_env=["PYMICROGLIA_CACHE_GB"],
+    cache_dirname="pymicroglia",
+    producer="pymicroglia",
+    only_if_unset=True,
+)
 
 from . import _optional, catalogue, config, imagej, io, metadata, params
 from . import recording
-from . import results, series, store
+from . import publication, results, series, store
 from .metadata import ChannelMap, Metadata, Window, assign_channels, usable_window
 from .recording import capture
 from .series import Series, open_series
@@ -51,6 +80,8 @@ __all__ = [
     "ActionInvalid",
     "ClaimRequired",
     "capture",
+    # ReproFig publication and carrier operations
+    "publication",
     # the artefact store
     "store",
     # the results of a run, without its pixels

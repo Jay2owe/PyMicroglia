@@ -140,7 +140,7 @@ def test_the_computing_half_of_the_trace_panel_is_outside_the_figure_package():
 
 # -------------------------------------------------------------- rule three
 def test_only_panels_saves():
-    """``savefig`` appears exactly once in the package, in ``panels.save``.
+    """ReproFig rendering appears exactly once, in ``panels.save``.
 
     One save path is what makes the plotted table and the provenance record
     automatic. A second one is a figure that can be written with neither.
@@ -149,15 +149,15 @@ def test_only_panels_saves():
     for path in package_files():
         for number, line in enumerate(
                 path.read_text(encoding="utf-8").splitlines(), start=1):
-            if "savefig(" in line:
+            if "save_figure(" in line:
                 hits.append((path, number, line.strip()))
 
     assert len(hits) == 1, (
-        f"expected exactly one savefig call in the package, found "
+        f"expected exactly one ReproFig save call in the package, found "
         f"{[(str(p.relative_to(SRC)), n) for p, n, _ in hits]}")
     path, _, _ = hits[0]
     assert path == FIGURES / "panels.py", (
-        f"the one savefig is in {path.name}, not panels.py")
+        f"the one ReproFig save call is in {path.name}, not panels.py")
 
 
 def test_the_save_path_writes_the_table_and_the_provenance():
@@ -171,6 +171,30 @@ def test_the_save_path_writes_the_table_and_the_provenance():
     assert signature.parameters["table"].default is inspect.Parameter.empty, \
         "the plotted table must be required, not optional"
     assert {"sources", "claim", "artefacts", "bundle"} <= set(signature.parameters)
+
+
+def test_every_quality_control_figure_forwards_the_full_reprofig_policy():
+    """No figure action may silently drop a requested carrier or render policy."""
+    expected = {
+        "output_formats", "figure_profile", "figure_safe_columns",
+        "public_sources", "dpi_preset", "render_preset", "render_width_in",
+        "render_height_in", "format_options", "allow_reencode",
+    }
+    calls = []
+    for path in (FIGURES / "qc.py", FIGURES / "overlays.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Call)
+                    and isinstance(node.func, ast.Attribute)
+                    and node.func.attr == "save_for"):
+                calls.append((path.name, node.lineno, {kw.arg for kw in node.keywords}))
+
+    assert len(calls) == 6
+    missing = [
+        f"{name}:{line} misses {sorted(expected - keywords)}"
+        for name, line, keywords in calls if expected - keywords
+    ]
+    assert not missing, missing
 
 
 # --------------------------------------------------------------- rule four
@@ -301,8 +325,11 @@ def test_the_families_are_all_classified():
     """
     from pymicroglia import visualisation
 
+    infrastructure = {
+        "__init__", "panels", "bundle", "proof_output", "save_actions",
+    }
     modules = {path.stem for path in figure_files()
-               if path.stem not in {"__init__", "panels", "bundle"}}
+               if path.stem not in infrastructure}
     assert set(visualisation.FAMILIES) == modules, (
         f"FAMILIES and the modules disagree: only in FAMILIES "
         f"{sorted(set(visualisation.FAMILIES) - modules)}, only on disk "

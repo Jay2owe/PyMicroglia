@@ -129,7 +129,8 @@ def test_the_skill_and_its_runner_are_where_the_runner_expects(generator):
 
     front = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8").split("---")[1]
     assert "name: pymicroglia" in front
-    assert "trigger: /pymicroglia" in front
+    assert "description:" in front
+    assert "trigger:" not in front
 
 
 def test_the_local_extension_skill_is_present():

@@ -34,6 +34,7 @@ import csv
 import hashlib
 import json
 import shutil
+import io
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
@@ -44,6 +45,7 @@ __all__ = [
     "FLOAT_FORMAT",
     "describe_sources",
     "write_table",
+    "table_bytes",
     "write_provenance",
     "figure_targets",
     "write_bundle",
@@ -112,6 +114,22 @@ def _cell(value: Any) -> str:
         return str(value)
 
 
+def table_bytes(table: Mapping[str, Sequence[Any]]) -> bytes:
+    """Serialize the exact plotted table once for sidecars and embedded records."""
+
+    columns = [str(name) for name in table]
+    data = [list(values) for values in table.values()]
+    height = max((len(column) for column in data), default=0)
+    stream = io.StringIO(newline="")
+    writer = csv.writer(stream, lineterminator="\n")
+    writer.writerow(columns)
+    for row in range(height):
+        writer.writerow([
+            _cell(column[row]) if row < len(column) else "nan"
+            for column in data])
+    return stream.getvalue().encode("utf-8")
+
+
 def write_table(path: Path, table: Mapping[str, Sequence[Any]]) -> Path:
     """The exact plotted values, one column per drawn series.
 
@@ -119,17 +137,8 @@ def write_table(path: Path, table: Mapping[str, Sequence[Any]]) -> Path:
     merged traces keep their own time vectors, and a short recording stopping
     early is a fact about the data, not a reason to drop the long one's tail.
     """
-    columns = [str(name) for name in table]
-    data = [list(values) for values in table.values()]
-    height = max((len(column) for column in data), default=0)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle, lineterminator="\n")
-        writer.writerow(columns)
-        for row in range(height):
-            writer.writerow([
-                _cell(column[row]) if row < len(column) else "nan"
-                for column in data])
+    path.write_bytes(table_bytes(table))
     return path
 
 
@@ -288,7 +297,7 @@ def figure_targets(root: Path, slug: str) -> dict[str, Path]:
 
     Returned rather than written, because rendering a figure is
     ``panels.save``'s job and only ``panels.save``'s job — there is exactly one
-    ``savefig`` in this package and it is not in here. The SVG is the primary
+    ReproFig render call in this package and it is not in here. The SVG is the primary
     one: the bundle is what somebody opens in two years to change a label, and
     a raster figure cannot be edited. ``preview.png`` exists so they do not
     have to open the SVG to see what it is.
@@ -303,12 +312,16 @@ def write_bundle(root: Path, *, slug: str,
                  table: Mapping[str, Sequence[Any]],
                  sources: Sequence[Mapping[str, Any]], claim: str,
                  artefacts: Iterable[Any], settings: Mapping[str, Any],
-                 notes: Sequence[str] = ()) -> Path:
+                 notes: Sequence[str] = (), table_csv: bytes | None = None) -> Path:
     """Everything in the layout except the two rendered figures."""
     root = Path(root)
     (root / "data" / "der").mkdir(parents=True, exist_ok=True)
 
-    write_table(root / "data" / "der" / "figure_data.csv", table)
+    table_path = root / "data" / "der" / "figure_data.csv"
+    if table_csv is None:
+        write_table(table_path, table)
+    else:
+        table_path.write_bytes(table_csv)
     rows = _copy_sources(root, sources)
     _write_sources(root, rows)
     _readme(root, slug=slug, claim=claim, rows=rows, settings=settings,

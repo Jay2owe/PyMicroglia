@@ -438,7 +438,7 @@
     },
     {
       "name": "automatic_scn_outline",
-      "summary": "Draw the accepted A007 two-lobe SCN outline from a registered red-channel time mean or selected hyperstack channel using a mean, maximum projection or chosen frame and valid-field mask, stream one transform across every stack plane, apply the accepted A006 top-up orientation by default, and write a mask-relative square crop.",
+      "summary": "Draw the accepted A007 two-lobe SCN outline from a registered red-channel time mean or selected hyperstack channel using a mean, maximum projection or chosen frame and valid-field mask, either retain that selected plane or stream one transform across every stack plane, apply the accepted A006 top-up orientation by default, and write a mask-relative square crop.",
       "method": "scn_outline.automatic_scn_outline",
       "mutates": true,
       "destructive": false,
@@ -493,9 +493,18 @@
         "scn_channel",
         "scn_z",
         "scn_time",
+        "selected_source_only",
+        "hash_source",
+        "write_oriented_source",
         "valid_mask",
+        "outline_roi",
+        "orient_up_deg",
+        "orient_flip",
+        "orient_roi",
         "crop_mode",
-        "crop_size_px"
+        "crop_size_px",
+        "crop_region",
+        "crop_roi"
       ],
       "defaults": {
         "source": null,
@@ -547,11 +556,20 @@
         "scn_channel": null,
         "scn_z": null,
         "scn_time": "mean",
+        "selected_source_only": false,
+        "hash_source": true,
+        "write_oriented_source": true,
         "valid_mask": null,
+        "outline_roi": null,
+        "orient_up_deg": null,
+        "orient_flip": false,
+        "orient_roi": null,
         "crop_mode": "standard",
-        "crop_size_px": null
+        "crop_size_px": null,
+        "crop_region": null,
+        "crop_roi": null
       },
-      "method_version": "2026-08-23-a007-outline-a006-orientation-crop-hyperstack-time-v3",
+      "method_version": "2026-08-23-a007-outline-a006-orientation-selected-plane-v5",
       "source": [
         "Analysis/automatic_scn_roi/automatic_scn_roi.py"
       ]
@@ -706,6 +724,7 @@
         "ls_n",
         "ls_rhythmic",
         "traces",
+        "control",
         "times_h",
         "labels",
         "bin_minutes",
@@ -722,6 +741,7 @@
         "ls_n": 800,
         "ls_rhythmic": 0.5,
         "traces": null,
+        "control": null,
         "times_h": null,
         "labels": null,
         "bin_minutes": 30,
@@ -1074,7 +1094,25 @@
         "colour_cycle",
         "write_bundle",
         "claim",
-        "theme"
+        "theme",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path"
       ],
       "defaults": {
         "source": null,
@@ -1136,7 +1174,25 @@
         "colour_cycle": [],
         "write_bundle": true,
         "claim": "",
-        "theme": "engine"
+        "theme": "engine",
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null
       },
       "method_version": "",
       "source": [
@@ -1428,6 +1484,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "shifts",
         "fig_width_in",
@@ -1440,6 +1515,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "shifts": null,
         "fig_width_in": 11.0,
@@ -1464,6 +1560,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "fig_width_in",
         "fig_height_in",
@@ -1479,6 +1594,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "fig_width_in": 15.0,
         "fig_height_in": 5.4,
@@ -1506,6 +1642,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "fig_width_in",
         "fig_height_in",
@@ -1519,6 +1674,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "fig_width_in": 15.0,
         "fig_height_in": 5.4,
@@ -1544,6 +1720,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "channels",
         "fig_width_in",
@@ -1556,6 +1751,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "channels": null,
         "fig_width_in": 16.0,
@@ -1580,6 +1796,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "labels",
         "background",
@@ -1596,6 +1831,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "labels": null,
         "background": null,
@@ -1624,6 +1880,25 @@
         "overwrite",
         "theme",
         "dpi",
+        "output_formats",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
         "claim",
         "polygons",
         "background",
@@ -1638,6 +1913,27 @@
         "overwrite": false,
         "theme": "pyflash",
         "dpi": 150,
+        "output_formats": [
+          "png"
+        ],
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
         "claim": "",
         "polygons": [],
         "background": null,
@@ -1649,6 +1945,38 @@
       "source": [
         "Analysis/dLuc_single_cell_analysis/dluc_pipeline.py"
       ]
+    },
+    {
+      "name": "publication_workbook",
+      "summary": "Combine ReproFig figure data and every declared statistical test into one verified journal Excel workbook.",
+      "method": "publication.publication_workbook",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "artifacts",
+        "output_path",
+        "statistics_ledger_path",
+        "profile",
+        "safe_columns",
+        "public_sources",
+        "declare_ledger_complete",
+        "overwrite"
+      ],
+      "defaults": {
+        "source": null,
+        "artifacts": [],
+        "output_path": null,
+        "statistics_ledger_path": null,
+        "profile": "master",
+        "safe_columns": null,
+        "public_sources": null,
+        "declare_ledger_complete": false,
+        "overwrite": false
+      },
+      "method_version": "1",
+      "source": []
     }
   ],
   "params": [
@@ -1658,6 +1986,13 @@
       "units": "-",
       "description": "Permit a missing valid-field mask. CAUTION: True can treat registration borders as data.",
       "required": false
+    },
+    {
+      "name": "allow_reencode",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Allow ReproFig to re-encode a carrier when its metadata cannot otherwise be embedded safely."
     },
     {
       "name": "anomaly_broad_max_extension_px",
@@ -1842,6 +2177,13 @@
       "required": false
     },
     {
+      "name": "artifacts",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Additional figure artifacts or folders to combine."
+    },
+    {
       "name": "as_percent",
       "type": "bool",
       "units": "%",
@@ -1931,6 +2273,13 @@
       "units": "%",
       "description": "Low and high percentiles",
       "required": false
+    },
+    {
+      "name": "broker_policy_path",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Controlled-output broker policy used for explicit promotion."
     },
     {
       "name": "camera_baseline_percentile",
@@ -2038,6 +2387,13 @@
       "description": "Crop to the largest tissue component plus a margin. Off keeps the whole common valid field."
     },
     {
+      "name": "control",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "The instrumental-control result that must accompany a rhythm claim. Left out, the stored matching control is resolved for this source."
+    },
+    {
       "name": "cosmic_growth_px",
       "type": "int",
       "units": "px",
@@ -2073,11 +2429,32 @@
       "required": false
     },
     {
+      "name": "crop_region",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "An explicit crop region supplied in the upstream region grammar instead of an automatic preset."
+    },
+    {
+      "name": "crop_roi",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A hand-drawn crop region for this recording."
+    },
+    {
       "name": "crop_size_px",
       "type": "int",
       "units": "px",
       "required": false,
       "description": "Exact custom square side length centred on the complete SCN outline. Supplying it selects custom mode. A size that would cut the SCN outline is refused."
+    },
+    {
+      "name": "declare_ledger_complete",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Declare that the supplied ledger lists every analysis test."
     },
     {
       "name": "decoy_p",
@@ -2171,11 +2548,32 @@
       "required": false
     },
     {
+      "name": "dpi_preset",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Named ReproFig raster resolution: screen, continuous_tone, or line_art. Exact dpi wins."
+    },
+    {
       "name": "dt_min",
       "type": "float",
       "units": "minutes",
       "required": false,
       "description": "Fallback frame spacing when the file carries no plane timestamps. A uniform assumption cannot find a pause in the recording, only hide it."
+    },
+    {
+      "name": "encrypted_sections",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Evidence section identities to encrypt before the artifact is signed."
+    },
+    {
+      "name": "encryption_password_env",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Name of the environment variable holding a section password."
     },
     {
       "name": "enginescript",
@@ -2218,6 +2616,20 @@
       "units": "-",
       "description": "Figure width, inches.",
       "required": false
+    },
+    {
+      "name": "figure_profile",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Embedded ReproFig record profile: master, public, or minimal_public."
+    },
+    {
+      "name": "figure_safe_columns",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Columns explicitly approved for a public figure and its safe CSV."
     },
     {
       "name": "file_lock_retry_seconds",
@@ -2295,6 +2707,13 @@
       "units": "-",
       "description": "Labels and legends.",
       "required": false
+    },
+    {
+      "name": "format_options",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Encoder options shared by all outputs or keyed by figure format."
     },
     {
       "name": "fps",
@@ -2421,6 +2840,13 @@
       "units": "-",
       "description": "Fraction from field level to Otsu core threshold. Lower grows farther into dim halo and enlarges ROI.",
       "required": false
+    },
+    {
+      "name": "hash_source",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Calculate a SHA-256 hash over the whole source file. Set false for a large online-only stack; the selected outline plane and every output are still hashed."
     },
     {
       "name": "hours_per_second",
@@ -2836,11 +3262,32 @@
       "required": false
     },
     {
+      "name": "orient_flip",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Flip the manually oriented result by 180 degrees."
+    },
+    {
+      "name": "orient_roi",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A hand-drawn orientation region for this recording."
+    },
+    {
       "name": "orient_scn",
       "type": "bool",
       "units": "-",
       "description": "Default rotates labels and source after outlining. False preserves accepted A007 output geometry. CAUTION: downstream images and masks must use the same transform; never rotate labels alone.",
       "required": false
+    },
+    {
+      "name": "orient_up_deg",
+      "type": "float",
+      "units": "degrees",
+      "required": false,
+      "description": "A person-supplied upward orientation angle. When given it replaces the automatic orientation result."
     },
     {
       "name": "orientation_flare_tie_px",
@@ -2862,6 +3309,13 @@
       "units": "px",
       "description": "Opening-disc radius for broad protrusions, pixels. Higher removes progressively broader shoulders.",
       "required": false
+    },
+    {
+      "name": "outline_roi",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "A hand-drawn outline region to use instead of measuring the automatic outline for this recording."
     },
     {
       "name": "outline_smooth_sigma_px",
@@ -2997,11 +3451,32 @@
       "required": false
     },
     {
+      "name": "profile",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Master, public or minimal_public workbook profile."
+    },
+    {
       "name": "prominence",
       "type": "float",
       "units": "-",
       "description": "(peak - saddle) / peak for a separate cell",
       "required": false
+    },
+    {
+      "name": "proof",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Capture semantic marks and a proof root. Off preserves the existing lightweight exact-data figure workflow."
+    },
+    {
+      "name": "public_sources",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Approved source name or hash to public URL replacements."
     },
     {
       "name": "publication_band",
@@ -3060,6 +3535,13 @@
       "required": false
     },
     {
+      "name": "recipient_file",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "JSON mapping of approved recipient names to public encryption keys."
+    },
+    {
       "name": "red_display_percentiles",
       "type": "tuple",
       "units": "%",
@@ -3102,11 +3584,39 @@
       "required": false
     },
     {
+      "name": "render_height_in",
+      "type": "float",
+      "units": "in",
+      "required": false,
+      "description": "Export height in inches; supplying only height preserves the authored aspect ratio."
+    },
+    {
+      "name": "render_preset",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Alias for dpi_preset when describing the intended render rather than a numeric resolution."
+    },
+    {
+      "name": "render_width_in",
+      "type": "float",
+      "units": "in",
+      "required": false,
+      "description": "Export width in inches; supplying only width preserves the authored aspect ratio."
+    },
+    {
       "name": "replacement",
       "type": "str",
       "units": "-",
       "description": "What replaces a repaired pixel. \"reference\" preserves the current result (normally the adjacent-frame mean). \"interleave\" alternates real preceding/following pixels in a fixed checkerboard, restoring the visually approved trail fill without reducing local variance.",
       "required": false
+    },
+    {
+      "name": "required_grades",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Verification meanings that must pass, such as internally_consistent or display_verified."
     },
     {
       "name": "requiredoutputfolder",
@@ -3228,6 +3738,13 @@
       "description": "Name for this run's folder. Left out, it is a short hash of the settings, so an identical re-run lands in the same place and a changed one lands beside it."
     },
     {
+      "name": "safe_columns",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Per-table public column allowlists."
+    },
+    {
       "name": "saturation_fraction",
       "type": "float",
       "units": "-",
@@ -3246,14 +3763,14 @@
       "type": "int",
       "units": "-",
       "required": false,
-      "description": "One-based ImageJ channel used to calculate the outline time mean. Optional for a single-channel image; required when the source has multiple channels."
+      "description": "One-based ImageJ channel used to calculate the outline. For an RGB sample-axis TIFF, 1, 2 and 3 select red, green and blue respectively. Optional for a single-channel image; required when the source has multiple channels."
     },
     {
       "name": "scn_time",
       "type": "str/int",
       "units": "-",
       "required": false,
-      "description": "Time source used for outlining: 'mean' averages the selected channel over time, 'max' makes a per-pixel maximum projection, and a one-based integer uses that source frame. The inferred transform still applies to every plane."
+      "description": "Time source used for outlining: 'mean' averages the selected channel over time, 'max' makes a per-pixel maximum projection, and a one-based integer uses that source frame."
     },
     {
       "name": "scn_z",
@@ -3275,6 +3792,13 @@
       "units": "-",
       "description": "A pixel is a hit when it sits this many noise units above the reference. The same cut also decides a line. CAUTION: this cannot be derived from a false-positive rate, because the tail of the difference image is rays and not noise. Lowering it removes fainter real transients along with fainter rays; it is the setting that decides what counts as data.",
       "required": false
+    },
+    {
+      "name": "selected_source_only",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Write only the selected two-dimensional outline plane instead of transforming every hyperstack plane. This permits one frame and channel to be read from a large online-only source."
     },
     {
       "name": "series",
@@ -3361,6 +3885,20 @@
       "required": false
     },
     {
+      "name": "signing_key_path",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Protected Ed25519 signing-key file; never key contents."
+    },
+    {
+      "name": "signing_password_env",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Name of the environment variable holding the signing-key password."
+    },
+    {
       "name": "skip_control",
       "type": "bool",
       "units": "-",
@@ -3443,6 +3981,13 @@
       "units": "-",
       "required": false,
       "description": "Measure how far each object's intensity centroid travels over the recording. A cell that wanders is not a still cell, and a static mask over a moving object measures two different things at the two ends of the record. Costs one pass over a small box per object."
+    },
+    {
+      "name": "statistics_ledger_path",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Optional complete experiment statistics JSON or CSV."
     },
     {
       "name": "structural",
@@ -3655,6 +4200,13 @@
       "description": "Traces to test. Left out, the stored traces for this source are used."
     },
     {
+      "name": "trust_policy_path",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Offline signer trust-store file used only for explicit verification."
+    },
+    {
       "name": "um_per_px",
       "type": "float",
       "units": "um",
@@ -3809,6 +4361,13 @@
       "required": false
     },
     {
+      "name": "write_oriented_source",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Write the full oriented copy of the source stack. Set false to keep the orientation in the report but skip a second streaming pass over every plane and a second full-size file, which is wasted if the next step reads only the crop."
+    },
+    {
       "name": "write_plotted_csv",
       "type": "bool",
       "units": "-",
@@ -3868,12 +4427,15 @@
   "vocabulary_conflicts": [
     "background.reuse",
     "cell_overlay.labels",
+    "cell_overlay.output_formats",
     "channel_figure.frame",
+    "channel_figure.output_formats",
     "composite_video.crf",
     "composite_video.fps",
     "composite_video.frame_interval_minutes",
     "composite_video.input_glob",
     "composite_video.time_label_band_height",
+    "cosmic_ray_preview.output_formats",
     "cry1_dluc_photon.claim",
     "cry1_dluc_photon.compression_level",
     "cry1_dluc_photon.crf",
@@ -3902,11 +4464,16 @@
     "export_roi.channels",
     "extract_traces.channels",
     "extract_traces.reuse",
+    "frames_figure.output_formats",
     "phase_green_red_video.crf",
     "phase_green_red_video.fps",
     "phase_green_red_video.frame_interval_seconds",
     "phase_green_red_video.green_display_percentiles",
     "phase_green_red_video.red_display_percentiles",
+    "publication_workbook.output_path",
+    "publication_workbook.overwrite",
+    "publication_workbook.public_sources",
+    "publication_workbook.source",
     "red_only_video.crf",
     "red_only_video.display_percentile",
     "red_only_video.fps",
@@ -3919,6 +4486,7 @@
     "register_three_channel.max_residual_px",
     "register_three_channel.python_engine",
     "register_three_channel.reuse",
+    "registration_figure.output_formats",
     "registration_figure.shifts",
     "remove_cosmic_rays.python_engine",
     "remove_cosmic_rays.reuse",
@@ -3926,6 +4494,7 @@
     "remove_static_background.python_engine",
     "remove_static_background.reuse",
     "remove_static_background.signal_channel",
+    "roi_overlay.output_formats",
     "run_controls.baselines",
     "run_controls.channels",
     "run_controls.labels",

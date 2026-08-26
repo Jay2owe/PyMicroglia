@@ -189,8 +189,10 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
         {"name": "scn_channel", "type": "int", "units": "-",
          "required": False, "default": None,
          "description": "One-based ImageJ channel used to calculate the "
-                        "outline time mean. Optional for a single-channel "
-                        "image; required when the source has multiple channels."},
+                        "outline. For an RGB sample-axis TIFF, 1, 2 and 3 "
+                        "select red, green and blue respectively. Optional for "
+                        "a single-channel image; required when the source has "
+                        "multiple channels."},
         {"name": "scn_z", "type": "int", "units": "-",
          "required": False, "default": None,
          "description": "One-based depth plane used to calculate the outline "
@@ -201,20 +203,51 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
          "description": "Time source used for outlining: 'mean' averages the "
                         "selected channel over time, 'max' makes a per-pixel "
                         "maximum projection, and a one-based integer uses that "
-                        "source frame. The inferred transform still applies to "
-                        "every plane."},
+                        "source frame."},
+        {"name": "selected_source_only", "type": "bool", "units": "-",
+         "required": False, "default": False,
+         "description": "Write only the selected two-dimensional outline "
+                        "plane instead of transforming every hyperstack plane. "
+                        "This permits one frame and channel to be read from a "
+                        "large online-only source."},
+        {"name": "hash_source", "type": "bool", "units": "-",
+         "required": False, "default": True,
+         "description": "Calculate a SHA-256 hash over the whole source file. "
+                        "Set false for a large online-only stack; the selected "
+                        "outline plane and every output are still hashed."},
+        {"name": "write_oriented_source", "type": "bool", "units": "-",
+         "required": False, "default": True,
+         "description": "Write the full oriented copy of the source stack. Set "
+                        "false to keep the orientation in the report but skip a "
+                        "second streaming pass over every plane and a second "
+                        "full-size file, which is wasted if the next step reads "
+                        "only the crop."},
         {"name": "valid_mask", "type": "path", "units": "-",
          "required": False, "default": None,
          "description": "Valid registered pixels for the time-mean image. "
                         "For meanred_<key>.tif, validfield_<key>.tif beside it "
                         "is found automatically. A missing mask is refused "
                         "unless allow_full_frame_valid is explicitly enabled."},
+        {"name": "outline_roi", "type": "path", "units": "-",
+         "required": False, "default": None,
+         "description": "A hand-drawn outline region to use instead of "
+                        "measuring the automatic outline for this recording."},
         {"name": "orient_scn", "type": "bool", "units": "-",
          "required": False, "default": True,
          "description": "By default, after drawing the accepted outline, rotate both the "
                         "two-label mask and source image so the medial gap is "
                         "vertical and inferred anatomical top is upward. "
                         "Set False to preserve the accepted source geometry."},
+        {"name": "orient_up_deg", "type": "float", "units": "degrees",
+         "required": False, "default": None,
+         "description": "A person-supplied upward orientation angle. When "
+                        "given it replaces the automatic orientation result."},
+        {"name": "orient_flip", "type": "bool", "units": "-",
+         "required": False, "default": False,
+         "description": "Flip the manually oriented result by 180 degrees."},
+        {"name": "orient_roi", "type": "path", "units": "-",
+         "required": False, "default": None,
+         "description": "A hand-drawn orientation region for this recording."},
         {"name": "orientation_profile_bin_px", "type": "float", "units": "px",
          "required": False, "default": 2.0,
          "description": "Width of the paired inner-edge bins used to fit the "
@@ -236,6 +269,13 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
          "description": "Exact custom square side length centred on the "
                         "complete SCN outline. Supplying it selects custom mode. "
                         "A size that would cut the SCN outline is refused."},
+        {"name": "crop_region", "type": "str", "units": "-",
+         "required": False, "default": None,
+         "description": "An explicit crop region supplied in the upstream "
+                        "region grammar instead of an automatic preset."},
+        {"name": "crop_roi", "type": "path", "units": "-",
+         "required": False, "default": None,
+         "description": "A hand-drawn crop region for this recording."},
         {"name": "stable_local_line_redetect", "type": "bool", "units": "-",
          "required": False, "default": True,
          "description": "Replace the original lobe line only when one-radius "
@@ -346,6 +386,11 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
          "default": None,
          "description": "Traces to test. Left out, the stored traces for this "
                         "source are used."},
+        {"name": "control", "type": "mapping", "units": "-",
+         "required": False, "default": None,
+         "description": "The instrumental-control result that must accompany "
+                        "a rhythm claim. Left out, the stored matching control "
+                        "is resolved for this source."},
         {"name": "times_h", "type": "list", "units": "h", "required": False,
          "default": None,
          "description": "The time axis, when traces are passed directly."},
@@ -385,6 +430,73 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
 # Every figure action takes these three. They are here rather than in
 # COMMON_PARAMS because a measurement action has no use for a theme and no
 # claim to make.
+_REPROFIG_PARAMS: list[dict] = [
+    {"name": "figure_profile", "type": "str", "units": "-", "required": False,
+     "default": "master",
+     "description": "Embedded ReproFig record profile: master, public, or "
+                    "minimal_public."},
+    {"name": "figure_safe_columns", "type": "list", "units": "-",
+     "required": False, "default": [],
+     "description": "Columns explicitly approved for a public figure and "
+                    "its safe CSV."},
+    {"name": "public_sources", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Approved source name or hash to public URL replacements."},
+    {"name": "dpi_preset", "type": "str", "units": "-", "required": False,
+     "default": None,
+     "description": "Named ReproFig raster resolution: screen, "
+                    "continuous_tone, or line_art. Exact dpi wins."},
+    {"name": "render_preset", "type": "str", "units": "-", "required": False,
+     "default": None,
+     "description": "Alias for dpi_preset when describing the intended "
+                    "render rather than a numeric resolution."},
+    {"name": "render_width_in", "type": "float", "units": "in",
+     "required": False, "default": None,
+     "description": "Export width in inches; supplying only width preserves "
+                    "the authored aspect ratio."},
+    {"name": "render_height_in", "type": "float", "units": "in",
+     "required": False, "default": None,
+     "description": "Export height in inches; supplying only height preserves "
+                    "the authored aspect ratio."},
+    {"name": "format_options", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Encoder options shared by all outputs or keyed by "
+                    "figure format."},
+    {"name": "allow_reencode", "type": "bool", "units": "-",
+     "required": False, "default": False,
+     "description": "Allow ReproFig to re-encode a carrier when its metadata "
+                    "cannot otherwise be embedded safely."},
+    {"name": "proof", "type": "bool", "units": "-", "required": False,
+     "default": False,
+     "description": "Capture semantic marks and a proof root. Off preserves "
+                    "the existing lightweight exact-data figure workflow."},
+    {"name": "required_grades", "type": "list", "units": "-", "required": False,
+     "default": [],
+     "description": "Verification meanings that must pass, such as "
+                    "internally_consistent or display_verified."},
+    {"name": "signing_key_path", "type": "path", "units": "-", "required": False,
+     "default": None,
+     "description": "Protected Ed25519 signing-key file; never key contents."},
+    {"name": "signing_password_env", "type": "str", "units": "-", "required": False,
+     "default": None,
+     "description": "Name of the environment variable holding the signing-key password."},
+    {"name": "trust_policy_path", "type": "path", "units": "-", "required": False,
+     "default": None,
+     "description": "Offline signer trust-store file used only for explicit verification."},
+    {"name": "encrypted_sections", "type": "list", "units": "-", "required": False,
+     "default": [],
+     "description": "Evidence section identities to encrypt before the artifact is signed."},
+    {"name": "encryption_password_env", "type": "str", "units": "-", "required": False,
+     "default": None,
+     "description": "Name of the environment variable holding a section password."},
+    {"name": "recipient_file", "type": "path", "units": "-", "required": False,
+     "default": None,
+     "description": "JSON mapping of approved recipient names to public encryption keys."},
+    {"name": "broker_policy_path", "type": "path", "units": "-", "required": False,
+     "default": None,
+     "description": "Controlled-output broker policy used for explicit promotion."},
+]
+
 _FIGURE_COMMON: list[dict] = [
     {"name": "theme", "type": "str", "units": "-", "required": False,
      "default": "pyflash",
@@ -396,6 +508,12 @@ _FIGURE_COMMON: list[dict] = [
      "default": 150,
      "description": "Raster resolution. 150 for review, 300+ for print; file "
                     "size grows with the square."},
+    {"name": "output_formats", "type": "list", "units": "-",
+     "required": False, "default": ["png"],
+     "description": "Direct ReproFig copies. Supports SVG, PDF, PNG, JPEG, "
+                    "TIFF, WebP, AVIF and HEIF; every copy keeps one figure "
+                    "identity."},
+    *_REPROFIG_PARAMS,
     {"name": "claim", "type": "str", "units": "-", "required": False,
      "default": "",
      "description": "The one sentence this figure proves, written into the "
@@ -458,6 +576,28 @@ EXTRA_PARAMS["trace_panel"] = [
                     "the deliberate exception: it leaves Matplotlib's own "
                     "defaults alone so a ported figure comes out pixel-for-"
                     "pixel like the script it replaces."},
+    *_REPROFIG_PARAMS,
+]
+
+_PUBLICATION_WORKBOOK_PARAMS: list[dict] = [
+    {"name": "source", "type": "path", "units": "-", "required": False,
+     "default": None, "description": "One figure artifact or folder to include."},
+    {"name": "artifacts", "type": "list", "units": "-", "required": False,
+     "default": [], "description": "Additional figure artifacts or folders to combine."},
+    {"name": "output_path", "type": "path", "units": "-", "required": True,
+     "default": None, "description": "Destination canonical Excel workbook."},
+    {"name": "statistics_ledger_path", "type": "path", "units": "-", "required": False,
+     "default": None, "description": "Optional complete experiment statistics JSON or CSV."},
+    {"name": "profile", "type": "str", "units": "-", "required": False,
+     "default": "master", "description": "Master, public or minimal_public workbook profile."},
+    {"name": "safe_columns", "type": "mapping", "units": "-", "required": False,
+     "default": None, "description": "Per-table public column allowlists."},
+    {"name": "public_sources", "type": "mapping", "units": "-", "required": False,
+     "default": None, "description": "Approved source identifiers to public URLs."},
+    {"name": "declare_ledger_complete", "type": "bool", "units": "-", "required": False,
+     "default": False, "description": "Declare that the supplied ledger lists every analysis test."},
+    {"name": "overwrite", "type": "bool", "units": "-", "required": False,
+     "default": False, "description": "Replace an existing workbook atomically."},
 ]
 
 EXTRA_PARAMS["registration_figure"] = _FIGURE_COMMON + [
@@ -872,8 +1012,8 @@ ACTIONS: list[dict] = [
         "summary": "Draw the accepted A007 two-lobe SCN outline from a "
                    "registered red-channel time mean or selected hyperstack "
                    "channel using a mean, maximum projection or chosen frame "
-                   "and valid-field mask, stream one transform across every "
-                   "stack plane, "
+                   "and valid-field mask, either retain that selected plane or "
+                   "stream one transform across every stack plane, "
                    "apply the accepted A006 top-up orientation by default, "
                    "and write a mask-relative square crop.",
         "source": ["Analysis/automatic_scn_roi/automatic_scn_roi.py"],
@@ -1124,6 +1264,29 @@ def build(protocols: Path) -> dict:
                 entry["name"], block.method_version),
             "source": entry["source"],
         })
+
+    workbook_defaults = {
+        row["name"]: row["default"] for row in _PUBLICATION_WORKBOOK_PARAMS
+    }
+    for row in _PUBLICATION_WORKBOOK_PARAMS:
+        shared = {key: value for key, value in row.items() if key != "default"}
+        known = vocabulary.get(row["name"])
+        if known is None:
+            vocabulary[row["name"]] = shared
+        elif known != shared:
+            conflicts.append(f"publication_workbook.{row['name']}")
+    actions.append({
+        "name": "publication_workbook",
+        "summary": "Combine ReproFig figure data and every declared statistical test into one verified journal Excel workbook.",
+        "method": "publication.publication_workbook",
+        "mutates": True,
+        "destructive": False,
+        "display_only": False,
+        "params": [row["name"] for row in _PUBLICATION_WORKBOOK_PARAMS],
+        "defaults": workbook_defaults,
+        "method_version": "1",
+        "source": [],
+    })
 
     return {
         "project": "pymicroglia",

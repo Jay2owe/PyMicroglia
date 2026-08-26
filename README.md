@@ -459,7 +459,7 @@ So `visualisation/` is built around four structural facts, each checked in
 | --- | --- |
 | No file over 600 lines | At PyFLASH's rate, 600 lines is less than one plot's worth of scaffolding |
 | No figure computes | Nothing here imports scipy, scikit-image, or any module that *produces* an artefact |
-| One `savefig` | It lives in `panels.save`, which is what makes the plotted table and provenance automatic |
+| One ReproFig save path | It lives in `panels.save`, which makes the plotted table, statistics and provenance automatic in every format |
 | No colour spelled out | Every colour comes from `analysis_kit.style` by name; no hex literal, no `rcParams` |
 
 The second is load-bearing. A figure that cannot compute cannot grow a private
@@ -471,7 +471,11 @@ When the trace panel outgrew the cap, its computing half moved to
 ```python
 from pymicroglia import trace_tables
 
-trace_tables.trace_panel("traces_24h.csv")          # twelve panels, one per cell
+trace_tables.trace_panel(
+    "traces_24h.csv",
+    output_formats=("svg", "pdf", "png", "jpg", "tif", "webp", "avif", "heif"),
+    dpi=300,
+)  # twelve panels, one ReproFig identity across every format
 ```
 
 Every figure arrives as a `plot-that` bundle without being asked:

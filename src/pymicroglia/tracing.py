@@ -29,7 +29,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Sequence
 
 from . import guards as _guards
 from . import series as _series
@@ -42,9 +42,12 @@ __all__ = [
     "trace_of",
     "amplitude",
     "window_mean_dff",
+    "window_length",
     "rolling_baseline",
     "polynomial_baseline",
     "detrend",
+    "DETREND_DEGREES",
+    "DETREND_ALIASES",
     "validate_baseline_windows",
     "extract_traces",
 ]
@@ -61,16 +64,9 @@ RING_OUT = 16              # outer edge of that ring, dilations
 RING_WIDE = 26             # widened ring when the first is under RING_MIN px
 RING_MIN = 40              # ring area below which RING_WIDE is used, px
 SMOOTH_DISPLAY = 3         # frames, DRAWING ONLY; never used in a number
-POLY_EDGE_H = 12.0         # polynomial fits are least constrained at both ends
-
-#: Rolling-baseline windows compared by the pipeline, in hours.
-DEFAULT_BASELINES = (24.0, 48.0)
-#: Whole-window polynomial detrends compared alongside them.
-DEFAULT_DETRENDS = ("cubic", "poly6")
-DETREND_DEGREES = {"cubic": 3, "poly6": 6}
-#: Aliases the engine's command line accepts, kept so a caller who learnt one
-#: name there does not have to learn another here.
-DETREND_ALIASES = {"bicubic": "cubic", "poly3": "cubic", "degree6": "poly6"}
+# POLY_EDGE_H, DEFAULT_BASELINES, DEFAULT_DETRENDS, DETREND_DEGREES and
+# DETREND_ALIASES moved with the maths that reads them; they are imported below
+# and re-exported, so this module's surface is unchanged.
 # ========================== END PROTOCOL PARAMETERS ==========================
 
 
@@ -167,140 +163,32 @@ def trace_of(frames, mask, ring):
     return np.asarray(raw, float), np.asarray(local, float)
 
 
-# ----------------------------------------------------------- baselines
-def rolling_baseline(values, length: int):
-    """Uniform filter of an odd length, reflected at the ends."""
-    import numpy as np
-    from scipy import ndimage
-
-    return ndimage.uniform_filter1d(np.asarray(values, float), int(length),
-                                    mode="nearest")
-
-
-def polynomial_baseline(times_h, values, degree: int):
-    """Numerically conditioned polynomial baseline evaluated on ``times_h``.
-
-    Conditioned by centring and scaling time first: a degree-6 fit on raw hours
-    running to 200 builds a Vandermonde matrix that numpy warns about and then
-    solves badly.
-    """
-    import numpy as np
-
-    x = np.asarray(times_h, float)
-    x = (x - x.mean()) / max(float(np.ptp(x)) / 2.0, 1e-12)
-    return np.polyval(np.polyfit(x, np.asarray(values, float), degree), x)
-
-
-def window_length(baseline_h: float, times_h) -> int:
-    """A rolling window in frames, forced odd so it has a centre sample."""
-    import numpy as np
-
-    step = float(np.median(np.diff(np.asarray(times_h, float))))
-    return int(round(float(baseline_h) / step)) | 1
-
-
-def validate_baseline_windows(baselines: Iterable[float], times_h) -> None:
-    """Refuse a rolling window with no fully supported centre samples.
-
-    A window longer than the recording produces a baseline made entirely of
-    edge reflections, and the detrended trace that comes out of it looks
-    plausible. Refusing is the only way that stays visible.
-    """
-    import numpy as np
-
-    frames = len(np.asarray(times_h))
-    step = float(np.median(np.diff(np.asarray(times_h, float))))
-    bad = []
-    for hours in baselines:
-        length = int(round(float(hours) / step)) | 1
-        valid = frames - 2 * (length // 2)
-        if valid < 3:
-            bad.append((hours, length, valid))
-    if bad:
-        detail = ", ".join(
-            f"{hours:g} h needs {length} frames and leaves {valid} valid"
-            for hours, length, valid in bad)
-        raise ValueError(
-            "the analysis window is too short for the requested rolling "
-            f"baseline(s): {detail}. Choose a wider time window, or ask for a "
-            "shorter baseline.")
-
-
-# ------------------------------------------------------------------- dF/F
-def window_mean_dff(traces, times_h, baseline_h: float = 24.0):
-    """Delta-F over F against each trace's **window mean**.
-
-    Not against its instantaneous rolling baseline. The textbook definition
-    divides by a quantity that can approach zero: one reference cell's rolling
-    baseline falls to 5 % of its mean, and the textbook form produced a +634 %
-    spike that flattened its whole panel (FINDINGS section 25). The rolling
-    baseline is still *subtracted* — that is the detrend — but the divisor is
-    one number per trace.
-
-    A trace whose window mean is not positive gets ``nan`` rather than a large
-    number: its ring placement is wrong and no dF/F of it means anything.
-    """
-    import numpy as np
-
-    values = np.atleast_2d(np.asarray(traces, float))
-    length = window_length(baseline_h, times_h)
-    baseline = np.array([rolling_baseline(row, length) for row in values])
-    divisor = values.mean(axis=1)
-    divisor = np.where(divisor > 0, divisor, np.nan)
-    return (values - baseline) / divisor[:, None]
-
-
-def detrend(traces, times_h, method: str = "cubic"):
-    """Detrended dF/F by one named method: a rolling window or a polynomial.
-
-    Rolling methods are named by their window in hours (``"24h"``, ``"48h"``);
-    polynomial ones by degree (``"cubic"``, ``"poly6"``). Either way the
-    divisor is the window mean, so the two are on the same axis and can be
-    compared — which is the whole reason the pipeline computes three.
-    """
-    import numpy as np
-
-    name = DETREND_ALIASES.get(str(method).lower(), str(method).lower())
-    values = np.atleast_2d(np.asarray(traces, float))
-
-    if name.endswith("h") and name[:-1].replace(".", "", 1).isdigit():
-        return window_mean_dff(values, times_h, float(name[:-1]))
-    if name == "none":
-        divisor = values.mean(axis=1)
-        divisor = np.where(divisor > 0, divisor, np.nan)
-        return (values - divisor[:, None]) / divisor[:, None]
-    if name not in DETREND_DEGREES:
-        raise ValueError(
-            f"unknown detrend {method!r}. Use a rolling window like '24h', or "
-            f"one of {sorted(DETREND_DEGREES)}.")
-
-    degree = DETREND_DEGREES[name]
-    baseline = np.array([polynomial_baseline(times_h, row, degree)
-                         for row in values])
-    divisor = values.mean(axis=1)
-    divisor = np.where(divisor > 0, divisor, np.nan)
-    return (values - baseline) / divisor[:, None]
-
-
-def amplitude(values, length: int) -> tuple[float, Any]:
-    """Noise-corrected amplitude after the rolling detrend, in counts.
-
-    The correction matters: the residual's variance is signal plus noise, and
-    subtracting the noise variance — estimated from the frame-to-frame
-    difference, where no biology lives — is what stops a noisy trace scoring as
-    a large one. Measured on the fully-valid interval only, because the ends
-    are made of reflected samples.
-    """
-    import numpy as np
-
-    values = np.asarray(values, float)
-    edge = int(length) // 2
-    baseline = rolling_baseline(values, length)
-    residual = (values - baseline)[edge:len(values) - edge] if edge \
-        else values - baseline
-    noise = np.std(np.diff(residual)) / np.sqrt(2)
-    counts = float(np.sqrt(max(residual.var() - noise ** 2, 0)))
-    return counts, baseline
+# ------------------------------------------- baselines, detrends and dF/F
+# Split out to ``pyscnslice.baselines`` on 2026-08-24 and re-exported here, so
+# every call site in this package goes on saying ``tracing.window_mean_dff``.
+#
+# The half that left never mentions a cell: a window over a time axis, a
+# baseline through it, and what to divide by. The half that stayed is the mask,
+# the ring drawn around it with the neighbours cut out, and the mean inside
+# each. The reason the seam is there rather than anywhere else is the
+# instrumental control — it decides whether a rhythm is in the sample by
+# measuring the same trace off tissue and as image sharpness, and it has to
+# divide those the identical way a cell is divided or the comparison says
+# nothing. One definition, imported twice.
+from pyscnslice.baselines import (          # noqa: E402
+    DEFAULT_BASELINES,
+    DEFAULT_DETRENDS,
+    DETREND_ALIASES,
+    DETREND_DEGREES,
+    POLY_EDGE_H,
+    amplitude,
+    detrend,
+    polynomial_baseline,
+    rolling_baseline,
+    validate_baseline_windows,
+    window_length,
+    window_mean_dff,
+)
 
 
 # ---------------------------------------------------------------- the action
