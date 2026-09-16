@@ -412,6 +412,7 @@ _GATE_WORDS = {
     "cosmic_rays": "cosmic-ray removal",
     "movement": "object movement",
     "control": "instrumental control",
+    "learned_mask": "learned single-frame mask",
 }
 
 

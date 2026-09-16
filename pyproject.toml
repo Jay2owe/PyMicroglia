@@ -32,7 +32,7 @@ dependencies = [
     # it, removing cosmic rays and the keyed artefact store all live there now,
     # and this package's own modules of those names are shims onto them. It is
     # floored rather than pinned because the two are developed together.
-    "PySCNSlice>=0.5.0",
+    "Auto-Organotypic>=0.6,<0.7",
     "reprofig>=0.5.1",
     "numpy>=1.24",
     "tifffile>=2023.7",
@@ -49,27 +49,32 @@ kit     = ["analysis-kit>=0.1.0"]
 # the drift the shared palette exists to stop.
 figure  = ["matplotlib>=3.7", "analysis-kit>=0.1.0"]
 seg     = ["scikit-image>=0.21"]
+# The learned single-frame mask. Torch is the network; scikit-image is the
+# watershed that grows a seed into a cell. OpenCV is not listed and is not
+# required: `learned_mask.filters` falls back to SciPy without it, and the only
+# difference is that the same answer takes 1.6x longer. Add it yourself if that
+# matters -- it is a large wheel to make anybody take for a speed-up.
+mask    = ["torch>=2.0", "scikit-image>=0.21"]
 video   = ["imageio-ffmpeg"]
 # Floored, not pinned to one release: the workbench is being developed
-# alongside this package, and pymicroglia/rhythm.py uses only
-# analysis.periodograms, analysis.fit_cosinor, analysis.rhythm_significance and
-# analysis.normalized_config. If one of those moves, fix the adapter — never
+# alongside this package. The moved adapter uses Circadian Workbench's public
+# package-root facade only. If that contract changes, fix the adapter — never
 # fork the implementation into this package.
-# Reached through PySCNSlice since 2026-08-24, which is where the adapter
+# Reached through Auto-Organotypic since 2026-08-24, which is where the adapter
 # moved with the instrumental control it will not work without. One
 # declaration of the workbench floor rather than two that can drift.
-rhythm  = ["PySCNSlice[rhythm]>=0.5.0"]
+rhythm  = ["Auto-Organotypic[rhythm]>=0.6,<0.7"]
 # The accepted automatic SCN outline. Floored, not pinned, for the same reason
 # as the workbench above: it is developed alongside this package and
 # scn_outline.py uses only its public surface. If one of those names moves, fix
 # the delegate — never fork the implementation back into this package.
 #
-# Kept, and now redundant: PySCNSlice is a required dependency above, so this
+# Kept, and now redundant: Auto-Organotypic is a required dependency above, so this
 # extra adds nothing. It stays declared because `pip install "PyMicroglia[scn]"`
-# is in this package's README, in PySCNSlice's, and in the message
+# is in this package's README, in Auto-Organotypic's, and in the message
 # ``scn_outline`` prints when the outline cannot resolve — and an extra that
 # stops existing turns all three into a warning nobody reads.
-scn     = ["PySCNSlice>=0.5.0"]
+scn     = ["Auto-Organotypic>=0.6,<0.7"]
 test    = ["pytest>=8.0"]
 
 [project.scripts]

@@ -3,6 +3,12 @@ prune .codex
 prune docs
 prune tests
 prune tools
+# The proving rounds, not the library: 13 GB of pictures, weights and review
+# stacks. Nothing in src imports from it, and an sdist that swept it up would be
+# three orders of magnitude too big.
+prune development
+prune graphify-out
+prune site
 exclude PUBLISHING_AUDIT.md
 global-exclude __pycache__
 global-exclude *.py[cod]

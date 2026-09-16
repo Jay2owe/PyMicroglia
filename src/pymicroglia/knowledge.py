@@ -178,6 +178,19 @@ def _workbench_version() -> str | None:
     return getattr(circadian_workbench, "__version__", "unknown")
 
 
+def _workbench_api_version() -> str | None:
+    """Friendly application programming interface version, when usable."""
+
+    try:
+        import circadian_workbench
+    except ImportError:
+        return None
+    required = ("call", "trace", "population", "phases", "channels")
+    if not all(callable(getattr(circadian_workbench, name, None)) for name in required):
+        return None
+    return str(getattr(circadian_workbench, "PUBLIC_API_VERSION", "unknown"))
+
+
 def doctor() -> dict[str, Any]:
     """Is this control layer healthy, and which interpreter is answering?"""
     from . import __version__
@@ -219,6 +232,7 @@ def doctor() -> dict[str, Any]:
     # science, so its absence is reported here and raises when used, rather
     # than being quietly skipped.
     workbench = _workbench_version()
+    workbench_api = _workbench_api_version()
     # A third case again, and softer than both. A missing Fiji costs the one
     # manual step and nothing else, so it is reported and never complained
     # about: an unattended run on a server has no Fiji by design.
@@ -233,8 +247,9 @@ def doctor() -> dict[str, Any]:
         "interpreter": sys.executable,
         "analysis_kit": kit_version() or None,
         "circadian_workbench": workbench,
+        "circadian_api_version": workbench_api,
         "video_export_available": _video_export_available(),
-        "rhythm_analysis_available": workbench is not None,
+        "rhythm_analysis_available": workbench_api is not None,
         "imagej": fiji,
         "hand_roi_available": bool(fiji.get("ok")),
         "actions": len(REGISTRY.names()),

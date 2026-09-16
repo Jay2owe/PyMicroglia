@@ -39,7 +39,7 @@ METHOD_VERSION_OVERRIDES = {
     "automatic_scn_outline": scn_outline.METHOD_VERSION,
 }
 
-# The outline moved to PySCNSlice, so ``scn_outline.METHOD_VERSION`` is now read
+# The outline moved to Auto-Organotypic, so ``scn_outline.METHOD_VERSION`` is now read
 # through a delegate and is the empty string when that package is not installed.
 # Regenerating from such a machine would write an empty version into the
 # catalogue — and ``recording._method_version`` reads the catalogue *first*, so
@@ -95,6 +95,28 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
          "default": True,
          "description": "Crop to the largest tissue component plus a margin. "
                         "Off keeps the whole common valid field."},
+        # The optional second registration engine, which arrived in
+        # Auto-Organotypic 0.6. ``method`` is the switch and the two ``ripr_``
+        # settings mean nothing until it is thrown.
+        {"name": "method", "type": "str", "units": "-", "required": False,
+         "default": "reference",
+         "description": "Which registration engine: 'reference', the default, "
+                        "which runs in process, or 'ripr', a packaged Java "
+                        "engine. RIPR works at full resolution and refuses "
+                        "downsample and max_residual_px rather than ignoring "
+                        "them, because it uses neither."},
+        {"name": "ripr_recipe", "type": "path", "units": "-", "required": False,
+         "default": None,
+         "description": "Settings file for the RIPR engine. Has no effect "
+                        "unless method is 'ripr'."},
+        {"name": "ripr_workers", "type": "int", "units": "threads",
+         "required": False, "default": 16,
+         "description": "Threads the RIPR engine may use. Has no effect unless "
+                        "method is 'ripr'."},
+        {"name": "cancel", "type": "object", "units": "-", "required": False,
+         "default": None,
+         "description": "Something the engine polls so a long registration can "
+                        "be stopped from outside. Left out, nothing cancels it."},
     ],
     "register_three_channel": [
         {"name": "estimate_only", "type": "bool", "units": "-", "required": False,
@@ -232,6 +254,12 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
          "required": False, "default": None,
          "description": "A hand-drawn outline region to use instead of "
                         "measuring the automatic outline for this recording."},
+        {"name": "lobes", "type": "int/str", "units": "-",
+         "required": False, "default": 2,
+         "description": "How many lobes the outline should retain: 2 keeps "
+                        "the accepted bilateral method, 1 keeps the region "
+                        "whole, and 'any' accepts either from the midline "
+                        "evidence."},
         {"name": "orient_scn", "type": "bool", "units": "-",
          "required": False, "default": True,
          "description": "By default, after drawing the accepted outline, rotate both the "
@@ -259,7 +287,7 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
                         "alignment chooses the top. Higher values invoke the "
                         "fallback more often."},
         {"name": "crop_mode", "type": "str", "units": "-",
-         "required": False, "default": "standard",
+         "required": False, "default": "tight",
          "description": "Square crop after outlining and orientation: tight, "
                         "standard, wide, custom or none. Presets are scaled "
                         "from the smallest outline-centred square containing the "
@@ -397,6 +425,28 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
         {"name": "labels", "type": "list", "units": "-", "required": False,
          "default": None,
          "description": "Names for the traces, when passed directly."},
+        # The estimator became a choice in Auto-Organotypic 0.6; it was Lomb
+        # and nothing else before, and 'lomb' is still the default, so a caller
+        # that names none gets exactly what it used to get.
+        {"name": "period_method", "type": "str", "units": "-", "required": False,
+         "default": "lomb",
+         "description": "Which period estimator: one of the keys from "
+                        "auto_organotypic.rhythm.available_period_methods() -- "
+                        "chi_square, ejtk, f, fft_nlls, jtk, lomb, mesa, "
+                        "mfourfit, spectrum_resampling. The list is that "
+                        "function's to grow, so read it rather than this line."},
+        {"name": "significance_method", "type": "str", "units": "-",
+         "required": False, "default": None,
+         "description": "Which statistical test, when it is separable from the "
+                        "estimator. Left out, a fit-only estimator such as "
+                        "fft_nlls falls back to a Lomb-Scargle test whose "
+                        "p-value is about the trace and not about any one "
+                        "fitted component."},
+        {"name": "period_config", "type": "mapping", "units": "-",
+         "required": False, "default": None,
+         "description": "Workbench settings passed through: detrending, "
+                        "component limits, error controls. Note that RAE is a "
+                        "relative amplitude error and not a significance."},
         {"name": "bin_minutes", "type": "int", "units": "min",
          "required": False, "default": 30,
          "description": "Bin the periodogram resamples to. Shorter than the "
@@ -814,6 +864,41 @@ EXTRA_PARAMS["dluc_single_cell"] = _PIPELINE_RUN + [
      "description": "How far each outlier is dilated before repair, so the "
                     "faint skirt around a hit goes with it. Replaced "
                     "cosmic_grow on 2026-08-20."},
+    {"name": "learned_mask", "type": "bool", "units": "-", "required": False,
+     "default": False,
+     "description": "Also mask every frame with the trained single-frame "
+                    "network, as a branch after the measurement. Off by "
+                    "default and the only stage that is: it needs "
+                    "PyMicroglia[mask], needs weights named by "
+                    "PYMICROGLIA_MASK_WEIGHTS, and the network counts in "
+                    "pixels, so a coarser recording loses a third to a half of "
+                    "its cells while still returning a plausible mask. It "
+                    "changes no number this run reports; its output is a mask "
+                    "paired with the raw signal, for identity tracking."},
+    {"name": "learned_mask_weights", "type": "path", "units": "-",
+     "required": False, "default": None,
+     "description": "The trained model.pt to mask with. Left out, "
+                    "PYMICROGLIA_MASK_WEIGHTS names it. Nothing is shipped to "
+                    "fall back on: weights are an experimental result with a "
+                    "provenance, and a stale copy inside the package would "
+                    "outlive the record that explains it."},
+    {"name": "learned_mask_cut", "type": "float", "units": "probability",
+     "required": False, "default": None,
+     "description": "Probability a pixel must clear to seed a cell. Left out, "
+                    "the accepted 0.80, grown outward to 0.60. The cut is a "
+                    "seed and not the answer: a process is dim by nature and "
+                    "is kept only where it touches something the high cut "
+                    "believed in."},
+    {"name": "learned_mask_window_h", "type": "float", "units": "hours",
+     "required": False, "default": None,
+     "description": "Exposure to assemble for the network, as an unblurred "
+                    "rolling mean. Left out, the duration the weights were "
+                    "trained on. Converted to the nearest odd number of this "
+                    "recording's frames, because the mean is centred."},
+    {"name": "learned_mask_threads", "type": "int", "units": "-",
+     "required": False, "default": 0,
+     "description": "Threads for the network. 0 leaves torch's own choice "
+                    "alone, which is right on a machine doing nothing else."},
 ]
 
 EXTRA_PARAMS["cry1_dluc_photon"] = _PIPELINE_RUN + [

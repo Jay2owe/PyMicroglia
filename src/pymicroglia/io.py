@@ -1,6 +1,6 @@
 """Reading and writing image files, on this machine's terms.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 it does not merely forward: the line below makes this name *be* that module.
 
 A forwarding shim -- ``import *`` plus a ``__getattr__`` -- reads every
@@ -18,6 +18,6 @@ than about a cell, and both packages meet all three.
 
 import sys
 
-from pyscnslice import io as _moved
+from auto_organotypic import io as _moved
 
 sys.modules[__name__] = _moved

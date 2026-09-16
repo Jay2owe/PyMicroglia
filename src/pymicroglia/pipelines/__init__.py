@@ -22,12 +22,16 @@ in, and the record of which stages a run actually performed.
 **The stage order is not ours to change.** ``AGENTS.md`` fixes it::
 
     VSI conversion -> registration -> cosmic-ray removal -> unsmoothed measurement
-                                                       \\-> display-only smoothing
+                                                       |-> display-only smoothing
+                                                       \\-> learned cell mask (opt-in)
 
 Registration before cosmic-ray removal, always: on an unregistered stack the
 neighbouring frames show different tissue and real motion is removed as if it
-were a spike. Display smoothing hangs off the measurement branch and never
-feeds it. :class:`StageLog` records what a run did in the order it did it, and
+were a spike. Everything in :data:`BRANCHES` hangs off the measurement and never
+feeds it — display smoothing because a measured number must not come from
+filtered pixels, and the learned cell mask because it answers a different
+question and its output goes to identity tracking rather than into any number
+here. :class:`StageLog` records what a run did in the order it did it, and
 :func:`check_stage_order` refuses a run that got it wrong — a runtime check
 rather than a comment, so a future edit cannot quietly reorder the calls.
 
@@ -53,6 +57,8 @@ __all__ = [
     "CANONICAL_ORDER",
     "MEASUREMENT_STAGE",
     "DISPLAY_BRANCH",
+    "CELL_MASK_BRANCH",
+    "BRANCHES",
     "RunFolder",
     "StageOrderError",
     "StageLog",
@@ -70,11 +76,15 @@ __all__ = [
     "write_manifest",
 ]
 
-#: Every pipeline this package ships. Four is the whole list; a fifth idea gets
-#: written down for later rather than added here. ``registered`` and ``objects``
-#: are shared stretches of a pipeline rather than pipelines, so they are absent:
-#: listing one would offer an agent a run it cannot start.
+#: Every pipeline this package ships. ``registered``, ``objects`` and
+#: ``cell_masks`` are shared stretches of a pipeline rather than pipelines, so
+#: they are absent: listing one would offer an agent a run it cannot start.
+#:
+#: ``auto_microglia`` leads because it is the one that starts at the instrument.
+#: It is Auto-Organotypic's whole chain with microglia defaults, and the others
+#: are analyses of a recording somebody already has.
 PIPELINE_NAMES: tuple[str, ...] = (
+    "auto_microglia",
     "dluc_single_cell",
     "cry1_dluc_photon",
     "bioluminescence",
@@ -90,6 +100,15 @@ CANONICAL_ORDER: tuple[str, ...] = ("convert", "register", "cosmic_rays",
 MEASUREMENT_STAGE = "measure"
 #: Display smoothing is a *branch* off the measurement, never a step before it.
 DISPLAY_BRANCH = "display"
+#: The learned single-frame mask, when a run asks for it. A branch for the same
+#: reason display is one, and for one more: it answers a different question from
+#: the measurement -- what is a cell in *this* picture, with no time axis -- and
+#: its output goes to identity tracking rather than into any number here.
+CELL_MASK_BRANCH = "cell_masks"
+#: Everything that hangs off the measurement rather than leading to it. A
+#: number computed after one of these is a number computed from pixels nobody
+#: measured, so :func:`check_stage_order` refuses a run shaped that way.
+BRANCHES: tuple[str, ...] = (DISPLAY_BRANCH, CELL_MASK_BRANCH)
 
 MANIFEST_NAME = "manifest.json"
 RUNS_INDEX_NAME = "_runs_index.csv"
@@ -225,13 +244,21 @@ def check_stage_order(names: Sequence[str]) -> None:
                 "unregistered stack the neighbouring frames show different "
                 "tissue, so real motion is removed as if it were a spike. "
                 "AGENTS.md fixes this order and it is not ours to change.")
-    if DISPLAY_BRANCH in order and MEASUREMENT_STAGE in order:
-        if order.index(DISPLAY_BRANCH) < order.index(MEASUREMENT_STAGE):
+    if MEASUREMENT_STAGE not in order:
+        return
+    measured_at = order.index(MEASUREMENT_STAGE)
+    for branch in BRANCHES:
+        if branch in order and order.index(branch) < measured_at:
             raise StageOrderError(
-                "display smoothing ran before the measurement. Display "
-                "filtering is a branch off the measured data, never a step "
-                "on the way to it; a number computed after it is a number "
-                "computed from pixels nobody measured.")
+                f"{_WHY_BRANCH[branch]} ran before the measurement. It is a "
+                "branch off the measured data, never a step on the way to it; "
+                "a number computed after it is a number computed from pixels "
+                "nobody measured.")
+
+
+#: What to call each branch when refusing a run that put it first.
+_WHY_BRANCH = {DISPLAY_BRANCH: "display smoothing",
+               CELL_MASK_BRANCH: "the learned cell mask"}
 
 
 @dataclass

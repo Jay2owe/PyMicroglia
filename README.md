@@ -24,7 +24,8 @@ pip install PyMicroglia
 
 Optional extras: `kit` (run records and house style), `figure`, `seg`, `video`,
 `rhythm`, `scn` (the automatic SCN outline, which lives in
-[PySCNSlice](https://pypi.org/project/PySCNSlice/)), `test`.
+[Auto-Organotypic](https://pypi.org/project/Auto-Organotypic/)), `mask` (the
+learned single-frame mask), `test`.
 
 ```powershell
 git clone https://github.com/Jay2owe/PyMicroglia.git
@@ -216,8 +217,14 @@ one an import can cross by accident.
 
 ```
 raw --> registration --> cosmic-ray removal --> unsmoothed measurement
-                              |
-                              +--> display.py   (looking at only, never measured)
+                                                         |
+                                                         +--> display.py
+                                                         |    looking at only,
+                                                         |    never measured
+                                                         |
+                                                         +--> learned_mask
+                                                              opt-in; a mask for
+                                                              identity tracking
 ```
 
 `cosmic/` and `filtering.py` are the **measurement** branch. Both change pixels
@@ -314,7 +321,7 @@ roi.export_roi("cleaned.tif")    # RoiSet.zip Fiji can open
 The accepted whole-SCN outline is also a named action, and it is the one whose
 algorithm is not in this package. Outlining a suprachiasmatic nucleus has
 nothing to do with microglia, so the roughly 6,200 lines that do it moved to
-**PySCNSlice** on 2026-08-23; `pymicroglia.scn_outline` is now a delegate, and
+**Auto-Organotypic** on 2026-08-23; `pymicroglia.scn_outline` is now a delegate, and
 the action needs `pip install "PyMicroglia[scn]"` to run. The interface below
 did not change.
 
@@ -394,6 +401,114 @@ automates when nobody has answered, records that it did, and defers to the
 person the moment one exists. `roi.py` carries its own ImageJ `.roi` reader and
 writer, and reads the `RoiSet.zip` the existing pipeline wrote in August.
 
+### Finding cells in one exposure, when there is no time axis
+
+`segmentation` is the better route whenever it can be used, because every number
+in it is a measurement you can point at. It cannot be used on a still: the
+accepted seedless detector needs a 14 hour window to tell a cell from static, and
+a single frame, a short clip, or a cell that moves within the window has no such
+window to give it. `learned_mask` answers that one question — what is a cell in
+*this* picture — with a small U-net, and needs `pip install "PyMicroglia[mask]"`.
+
+```python
+from pymicroglia.learned_mask import apply as masking
+
+model = masking.load_model(masking.weights())   # PYMICROGLIA_MASK_WEIGHTS
+out = masking.mask_pictures(model, pictures, um_per_px=2.0)
+out["mask"], out["cells"]      # which pixels are cell, and which cell they are
+out["warning"]                 # None, or why this mask is not to be trusted
+```
+
+The weights are not shipped inside the package and the route will not guess where
+they are. They are an experimental result with a provenance — which recording,
+which cut, which round — and a stale copy buried in an installed package outlives
+the record that explains it, so `PYMICROGLIA_MASK_WEIGHTS` names the run.
+
+Two things are true of this route and not of `segmentation`, and both are in the
+returned dictionary rather than in a docstring somebody has to find:
+
+- **The network is bound to the pixel size it was trained at.** A recording with
+  pixels twice as coarse loses between a third and a half of its cells, and the
+  mask still looks reasonable while it happens. Expressing the sizes in
+  micrometres does not fix it and neither did training across a range of pixel
+  sizes; both were tried and measured. So `warning` is a sentence, it fires on
+  every mismatch, and it belongs in the run's record — whoever picks the mask up
+  for tracking needs to know its cell count is not to be trusted.
+- **The threshold was chosen by looking, not by fitting.** Fitting means best
+  agreement with 21 cells drawn in one recording, which says nothing about a
+  recording nobody drew. `settings` comes back beside the mask so the operating
+  point travels with it.
+
+The mask is a mask: which pixels are cell. Paired with the raw signal it is what
+the Motion project tracks identities through. It is not a measurement of
+brightness. The rounds that settled all of this — including the ones that failed
+— are in `development/single_frame_mask_unet/`.
+
+A whole run can ask for one. It is the only stage of `dluc_single_cell` that is
+off by default, for the two reasons above — the weights are somebody's result,
+and the pixel-size limit is worth consenting to rather than inheriting:
+
+```python
+from pymicroglia.pipelines import dluc_single_cell
+
+dluc_single_cell.run("MCG_04.ome.tif", learned_mask=True)   # + the usual settings
+```
+
+It runs *after* the measurement, never before: nothing the run reports is
+computed from it, and `check_stage_order` refuses a run shaped the other way
+round. The three stacks land beside the traces, the warning goes into the review
+and the manifest rather than into a terminal, and a run that asked for the mask
+shares its folder with one that did not — they are the same analysis.
+
+### One command, from the instrument to identified cells
+
+`auto_microglia` is Auto-Organotypic's whole chain with microglia defaults:
+
+```python
+from pymicroglia.pipelines import auto_microglia
+
+auto_microglia.run(r"C:\Recordings\MCG_04", experiment="MCG_04",
+                   instrument="lumicycle")
+```
+
+It reimplements none of that chain. It calls
+`auto_organotypic.pipeline.run_pipeline` and passes every keyword through, so a
+stage that package gains, a parameter it adds and a default it fixes all arrive
+here with no edit in this package. Three things differ, and
+`auto_microglia.differences()` is the complete list — the test suite asserts it
+is complete:
+
+- **There may be no SCN to outline.** These recordings often contain no two-lobe
+  structure, so `outline` and the two stages that read what it wrote are off.
+  Off is a *default*, not a removal: `outline=True` brings the SCN half back
+  whole, at Auto-Organotypic's own settings, and `stages=("outline",)` runs that
+  one stage and nothing else. The outline is a registered action in its own
+  right too (`pymicroglia describe automatic_scn_outline`).
+- **The regions are cells, and the mask is what finds them.** So here the mask is
+  a *step before* the measurement rather than a branch after it — the inverse of
+  the rule above, checked just as strictly. Skipping the outline loses no trace:
+  `region_trace.run` takes `labels=`, so the maintained engine runs on cell
+  labels instead of outline lobes.
+
+  It is a step *inside* that chain, not a loop after it. Auto-Organotypic
+  publishes `register_stage`, and this package registers `cell_masks` after
+  `split` on import — so it is selected by `stages=`, resumed from with
+  `since=`, configured by `cell_masks_options` checked against
+  `cell_masks.mask_run`'s live signature before any stage runs, given its own
+  row in the staleness grid, and recorded in the chain's own run record with
+  PyMicroglia named as its owner. One run, one record. The stage is opt-in
+  there, so a plain Auto-Organotypic run on a machine with this package
+  installed does exactly what it did before.
+- **Identity tracking is the destination.** The run ends by writing what the
+  Motion project reads — the registered stacks pinned where they are, the masks
+  beside them, each with a SHA-256. Motion is not installed yet, so that stage
+  reports `pending` rather than raising in the middle of a run.
+
+The accepted seedless detector is not used there and is untouched where it can
+be: it needs a 14 hour window and keeps only cells that hold still, which is
+exactly what microglia do not do. Full page:
+[`docs/wiki/pipelines/auto-microglia.md`](docs/wiki/pipelines/auto-microglia.md).
+
 ### Traces, and what has to be true before a period is reported
 
 ```python
@@ -402,7 +517,7 @@ from pymicroglia import tracing, controls, rhythm
 traces = tracing.extract_traces("cleaned.tif")
 controls.run_controls("cleaned.tif")          # decoys + the instrumental control
 result = rhythm.test_rhythm("cleaned.tif")
-result.periods[0]["period_hours"], result.control_passes
+result.periods[0]["period_hours"], result.control   # readings, not a verdict
 ```
 
 **dF/F divides by each trace's window mean, not by its instantaneous rolling
@@ -436,8 +551,23 @@ this costs once per source.
 The verdict then travels *attached* to the result, so no figure or record can
 show a period without also showing whether the control passed.
 
-`rhythm.py` implements no period statistic. Every one comes from
-`circadian_workbench`, and a test asserts the absence by searching the module.
+`pymicroglia.rhythm` remains the same public address, but it is an alias to
+Auto-Organotypic's adapter. That adapter calls the public Circadian Workbench
+package-root facade and implements no period statistic; tests enforce both the
+alias identity and the import boundary.
+The same address exposes `available_detrend_methods()` and `detrend()` for
+LOWESS (locally weighted smoothing), first differences, moving median,
+Savitzky-Golay smoothing, Huber robust linear regression and asymmetric
+least-squares smoothing, together with every older Workbench method. LOWESS's
+point fraction and iterations and asymmetric least squares' smoothness,
+above-baseline weight and iterations are explicit function arguments.
+`available_period_methods()` reports the complete shared catalogue:
+Lomb-Scargle, Enright/Sokolove-Bushell chi-square and F periodograms;
+FFT-NLLS (fast Fourier transform plus nonlinear least squares); maximum
+entropy spectral analysis; mFourFit (multi-harmonic Fourier fitting); spectrum
+resampling; JTK_CYCLE; and empirical JTK_CYCLE. `estimate_period()` and
+`compare_periods()` accept every listed key. Fit-only estimators must be paired
+with a significance-bearing method before calling a trace rhythmic.
 Unlike `analysis_kit`, the workbench is a **hard** optional dependency — a
 missing audit layer costs a run record, a missing periodogram would cost a
 result — so its absence raises a named `ImportError` and `pymicroglia doctor`

@@ -52,6 +52,7 @@ __all__ = [
     "decoy_masks",
     "decoy_test",
     "instrumental_control",
+    "read_findings",
     "run_controls",
 ]
 
@@ -293,14 +294,14 @@ def decoy_test(series, channel: int, labels, tissue, times_h, *,
     return DecoyResult(records=records, by_radius=by_radius, notes=notes)
 
 
-# The instrumental control moved to ``pyscnslice.instrumental`` on 2026-08-24.
+# The instrumental control moved to ``auto_organotypic.instrumental`` on 2026-08-24.
 # This module answers two questions and only one of them is about a cell:
 # decoys are per-object and stayed, while "is this rhythm in the sample at all"
 # is a question about the recording and went down with the rest of it.
 # ``METHOD_VERSION`` is imported rather than restated because it reaches the
 # artefact key, and two copies that drifted by a character would orphan every
 # control already stored.
-from pyscnslice.instrumental import (      # noqa: E402
+from auto_organotypic.instrumental import (      # noqa: E402
     CONTROL_STAGE,
     METHOD_VERSION,
     ControlResult,
@@ -312,6 +313,45 @@ from pyscnslice.instrumental import (      # noqa: E402
     _verdict,
     instrumental_control,
 )
+
+#: The power a Lomb-Scargle peak must reach before a series is called rhythmic.
+#: The same number the control itself is run with, named here because the
+#: reading below is made against it.
+DEFAULT_RHYTHMIC_POWER = 0.5
+
+
+def read_findings(findings: Mapping[str, Any], *,
+                  rhythmic_power: float = DEFAULT_RHYTHMIC_POWER
+                  ) -> dict[str, Any]:
+    """Turn the control's readings into the two calls a caller has to make.
+
+    Auto-Organotypic returned ``instrumental_rhythm_detected``, ``passes`` and
+    ``dluc_clean`` until 2026-09-14 and now returns none of them: a per-recording
+    pass or fail cannot tell a filled well's own glow from the incubator, and
+    only a comparison across the plate can — which that function cannot see. So
+    it reports where the rhythm appears and how strongly, and the judgement
+    belongs to whoever has to act on it.
+
+    This is that judgement, on the same numbers and at the same threshold it was
+    made at before: a rhythm off tissue, in image sharpness, or in more than one
+    channel is the microscope rather than the sample, and the measured channel is
+    carrying it when its own strongest region reading clears ``rhythmic_power``.
+    It is *here* rather than at each call site so that the pipeline and the
+    action cannot come to different conclusions about one recording.
+
+    Reading the dropped keys through ``.get`` with a default would have been the
+    quiet way to survive the rename and the wrong one: every recording would
+    have come out clean and passing, which is the answer that lets a period be
+    reported no matter what the control saw.
+    """
+    instrumental = bool(findings.get("rhythmic_off_tissue")
+                        or findings.get("rhythmic_sharpness")
+                        or len(findings.get("rhythmic_channels") or ()) > 1)
+    carried = float(findings.get("dluc_roi_power") or 0.0) > float(rhythmic_power)
+    return {"instrumental": instrumental,
+            "dluc_carries_it": carried,
+            "passes": not instrumental,
+            "reasons": list(findings.get("findings") or ())}
 
 
 # ---------------------------------------------------------------- the action
@@ -397,6 +437,7 @@ def run_controls(source, *, output_dir=None, output_name=None,
                                    baseline_h=max(baselines),
                                    dluc_channel=dluc,
                                    rhythmic_power=ls_rhythmic)
+        read = read_findings(control.verdict, rhythmic_power=ls_rhythmic)
 
         artefacts = {
             "decoys": store.put(
@@ -418,8 +459,7 @@ def run_controls(source, *, output_dir=None, output_name=None,
 
     return {"ok": True, "cached": False,
             "control": control.as_dict(),
-            "passes": control.verdict["passes"],
-            "reasons": control.verdict["reasons"],
+            **{key: read[key] for key in ("passes", "reasons")},
             "admissible_objects": len(decoys.admissible),
             "objects_tested": len(decoys.records),
             "artefact": str(artefacts["control"].path),

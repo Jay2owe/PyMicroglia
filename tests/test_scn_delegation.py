@@ -1,10 +1,10 @@
 """The SCN outline left this package, and the action it backed did not.
 
 On 2026-08-23 about 6,200 lines of suprachiasmatic nucleus outlining moved to
-PySCNSlice. ``automatic_scn_outline`` is a registered action and run records
+Auto-Organotypic. ``automatic_scn_outline`` is a registered action and run records
 name it, so the action stayed and now delegates.
 
-The parity evidence went with the code: PySCNSlice's own
+The parity evidence went with the code: Auto-Organotypic's own
 ``test_automatic_scn_outline_parity.py`` compares output bytes against ten
 accepted fields. What is left to check here is the seam — that the action still
 resolves, still reports the defaults the function will actually apply, and fails
@@ -23,8 +23,8 @@ from pymicroglia import catalogue, knowledge, recording, scn_outline
 
 SRC = Path(__file__).resolve().parents[1] / "src" / "pymicroglia"
 
-pyscnslice = pytest.importorskip(
-    "pyscnslice",
+auto_organotypic = pytest.importorskip(
+    "auto_organotypic",
     reason='the SCN outline is an extra: pip install "PyMicroglia[scn]"')
 
 
@@ -52,7 +52,7 @@ def test_this_module_delegates_rather_than_computing():
         for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
     }
     assert "numpy" not in imported and "scipy" not in imported
-    assert "pyscnslice" in imported
+    assert "auto_organotypic" in imported
 
 
 # --------------------------------------------------------------- the seam holds
@@ -62,7 +62,7 @@ def test_the_action_resolves_through_the_delegate():
     assert "automatic_scn_outline" in REGISTRY.names()
     assert REGISTRY.resolve("automatic_scn_outline") is scn_outline.automatic_scn_outline
     assert scn_outline.automatic_scn_outline.__wrapped__ is \
-        pyscnslice.outline.automatic
+        auto_organotypic.outline.automatic
 
 
 def test_the_delegate_keeps_the_real_signature():
@@ -73,22 +73,26 @@ def test_the_delegate_keeps_the_real_signature():
     instead, and the first time upstream changed a default an agent would be
     told the old one.
     """
+    upstream_signature = inspect.signature(auto_organotypic.outline.automatic)
     assert inspect.signature(scn_outline.automatic_scn_outline) == \
-        inspect.signature(pyscnslice.outline.automatic)
+        upstream_signature
 
     live = recording._signature_defaults("automatic_scn_outline")
-    assert live["orient_scn"] is True
-    assert live["crop_mode"] == "standard"
-    assert live["scn_time"] == "mean"
-    assert live["selected_source_only"] is False
-    assert live["hash_source"] is True
-    assert live["anomaly_broad_max_turn_deg"] == 6.5
+    for name in (
+        "orient_scn",
+        "crop_mode",
+        "scn_time",
+        "selected_source_only",
+        "hash_source",
+        "anomaly_broad_max_turn_deg",
+    ):
+        assert live[name] == upstream_signature.parameters[name].default
 
 
 def test_the_delegate_stays_in_this_module_for_the_coverage_check():
     """``registry._covered_functions`` matches on ``__module__``.
 
-    A plain re-export would carry PySCNSlice's module name across, the action
+    A plain re-export would carry Auto-Organotypic's module name across, the action
     would cover nothing, and ``discover`` would start reporting the outline's
     public helpers as functions nobody exposed.
     """
@@ -101,7 +105,7 @@ def test_the_delegate_stays_in_this_module_for_the_coverage_check():
 
 
 # ------------------------------------------------------ a missing outline says so
-def test_a_missing_pyscnslice_fails_by_name(monkeypatch):
+def test_a_missing_auto_organotypic_fails_by_name(monkeypatch):
     """Hard optional, like the workbench and unlike the audit layer.
 
     Losing a run record must be silent. Losing the method means the action
@@ -111,9 +115,9 @@ def test_a_missing_pyscnslice_fails_by_name(monkeypatch):
     monkeypatch.setattr(scn_outline, "_upstream", lambda: None)
     stub = scn_outline._delegate("automatic_scn_outline")
 
-    with pytest.raises(scn_outline.SCNSliceMissing, match="PyMicroglia\\[scn\\]"):
+    with pytest.raises(scn_outline.AutoOrganotypicMissing, match="PyMicroglia\\[scn\\]"):
         stub("anything.tif")
-    assert isinstance(scn_outline.SCNSliceMissing(""), ImportError)
+    assert isinstance(scn_outline.AutoOrganotypicMissing(""), ImportError)
 
 
 def test_the_module_still_imports_without_the_outline(monkeypatch):
@@ -134,7 +138,7 @@ def test_the_action_is_public_and_describes_the_valid_field():
     """Moved verbatim from the old parity file. It always tested this half."""
     entry = catalogue.action("automatic_scn_outline")
     assert entry["method"] == "scn_outline.automatic_scn_outline"
-    assert entry["method_version"] == pyscnslice.outline.METHOD_VERSION
+    assert entry["method_version"] == auto_organotypic.outline.METHOD_VERSION
 
     described = knowledge.describe("automatic_scn_outline")
     params = {row["name"]: row for row in described["params"]}
@@ -160,8 +164,8 @@ def test_the_record_can_still_say_which_method_ran():
     """The field that decides whether two runs are comparable at all.
 
     It comes from the catalogue first, so it survives even on a machine without
-    PySCNSlice — where the run would have failed anyway.
+    Auto-Organotypic — where the run would have failed anyway.
     """
     assert recording._method_version("automatic_scn_outline") == \
-        pyscnslice.outline.METHOD_VERSION
-    assert scn_outline.METHOD_VERSION == pyscnslice.outline.METHOD_VERSION
+        auto_organotypic.outline.METHOD_VERSION
+    assert scn_outline.METHOD_VERSION == auto_organotypic.outline.METHOD_VERSION

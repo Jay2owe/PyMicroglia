@@ -1,6 +1,6 @@
-"""Compatibility actions over PySCNSlice's consolidated video renderer.
+"""Compatibility actions over Auto-Organotypic's consolidated video renderer.
 
-Rendering moved to :mod:`pyscnslice.video`. PyMicroglia keeps the four action
+Rendering moved to :mod:`auto_organotypic.video`. PyMicroglia keeps the four action
 names already stored in run records and agent catalogues, but each now only
 translates its established arguments into the single upstream
 ``stack_to_video`` call. No pixel operation is implemented here.
@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Sequence
 
-from pyscnslice import video as _moved
+from auto_organotypic import video as _moved
 
 encode = _moved.encode
 stack_to_video = _moved.stack_to_video

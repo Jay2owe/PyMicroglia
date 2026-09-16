@@ -288,9 +288,16 @@ def test_the_script_reproduces_the_run_in_a_fresh_interpreter(tmp_path, monkeypa
     assert _file_digests(results) == before, (
         "the replayed run wrote different bytes than the run it reproduces")
 
+    # Read the claims through Auto-Organotypic rather than globbing for them.
+    # It writes one ``.auto-organotypic/artefacts.json`` per folder since
+    # 2026-09-14, where it wrote a ``<name>.artefact.json`` twin per file
+    # before, and ``sidecars_in`` reads either -- so this asserts the keys and
+    # not the filing system they happen to be kept in.
+    from auto_organotypic.store import tier_a
+
+    replayed = {claim["stage"]: claim["digest"]
+                for claim in tier_a.sidecars_in(results)}
+    assert replayed, "the replayed run claimed no artefacts at all"
     for stage, digest in keys.items():
-        side = [json.loads(path.read_text(encoding="utf-8"))
-                for path in results.glob("*.artefact.json")]
-        replayed = {claim["stage"]: claim["digest"] for claim in side}
         assert replayed.get(stage) == digest, (
             f"{stage} was stored under a different key on replay")

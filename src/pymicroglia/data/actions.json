@@ -23,7 +23,11 @@
         "python_engine",
         "estimate_only",
         "reuse",
-        "content_crop"
+        "content_crop",
+        "method",
+        "ripr_recipe",
+        "ripr_workers",
+        "cancel"
       ],
       "defaults": {
         "source": null,
@@ -39,7 +43,11 @@
         "python_engine": "",
         "estimate_only": false,
         "reuse": true,
-        "content_crop": true
+        "content_crop": true,
+        "method": "reference",
+        "ripr_recipe": null,
+        "ripr_workers": 16,
+        "cancel": null
       },
       "method_version": "2026-07-23",
       "source": [
@@ -498,6 +506,7 @@
         "write_oriented_source",
         "valid_mask",
         "outline_roi",
+        "lobes",
         "orient_up_deg",
         "orient_flip",
         "orient_roi",
@@ -561,10 +570,11 @@
         "write_oriented_source": true,
         "valid_mask": null,
         "outline_roi": null,
+        "lobes": 2,
         "orient_up_deg": null,
         "orient_flip": false,
         "orient_roi": null,
-        "crop_mode": "standard",
+        "crop_mode": "tight",
         "crop_size_px": null,
         "crop_region": null,
         "crop_roi": null
@@ -727,6 +737,9 @@
         "control",
         "times_h",
         "labels",
+        "period_method",
+        "significance_method",
+        "period_config",
         "bin_minutes",
         "fit_cosinor",
         "reuse"
@@ -744,6 +757,9 @@
         "control": null,
         "times_h": null,
         "labels": null,
+        "period_method": "lomb",
+        "significance_method": null,
+        "period_config": null,
         "bin_minutes": 30,
         "fit_cosinor": true,
         "reuse": true
@@ -1282,7 +1298,12 @@
         "publication_fps",
         "work",
         "cosmic_seed_z",
-        "cosmic_growth_px"
+        "cosmic_growth_px",
+        "learned_mask",
+        "learned_mask_weights",
+        "learned_mask_cut",
+        "learned_mask_window_h",
+        "learned_mask_threads"
       ],
       "defaults": {
         "source": null,
@@ -1365,7 +1386,12 @@
         "publication_fps": null,
         "work": null,
         "cosmic_seed_z": 12.0,
-        "cosmic_growth_px": 2
+        "cosmic_growth_px": 2,
+        "learned_mask": false,
+        "learned_mask_weights": null,
+        "learned_mask_cut": null,
+        "learned_mask_window_h": null,
+        "learned_mask_threads": 0
       },
       "method_version": "",
       "source": [
@@ -2289,6 +2315,13 @@
       "required": false
     },
     {
+      "name": "cancel",
+      "type": "object",
+      "units": "-",
+      "required": false,
+      "description": "Something the engine polls so a long registration can be stopped from outside. Left out, nothing cancels it."
+    },
+    {
       "name": "candidates",
       "type": "list",
       "units": "-",
@@ -2975,6 +3008,41 @@
       "description": "A label image to trace. Left out, the stored segmentation for this source is used."
     },
     {
+      "name": "learned_mask",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Also mask every frame with the trained single-frame network, as a branch after the measurement. Off by default and the only stage that is: it needs PyMicroglia[mask], needs weights named by PYMICROGLIA_MASK_WEIGHTS, and the network counts in pixels, so a coarser recording loses a third to a half of its cells while still returning a plausible mask. It changes no number this run reports; its output is a mask paired with the raw signal, for identity tracking."
+    },
+    {
+      "name": "learned_mask_cut",
+      "type": "float",
+      "units": "probability",
+      "required": false,
+      "description": "Probability a pixel must clear to seed a cell. Left out, the accepted 0.80, grown outward to 0.60. The cut is a seed and not the answer: a process is dim by nature and is kept only where it touches something the high cut believed in."
+    },
+    {
+      "name": "learned_mask_threads",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Threads for the network. 0 leaves torch's own choice alone, which is right on a machine doing nothing else."
+    },
+    {
+      "name": "learned_mask_weights",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "The trained model.pt to mask with. Left out, PYMICROGLIA_MASK_WEIGHTS names it. Nothing is shipped to fall back on: weights are an experimental result with a provenance, and a stale copy inside the package would outlive the record that explains it."
+    },
+    {
+      "name": "learned_mask_window_h",
+      "type": "float",
+      "units": "hours",
+      "required": false,
+      "description": "Exposure to assemble for the network, as an unblurred rolling mean. Left out, the duration the weights were trained on. Converted to the nearest odd number of this recording's frames, because the mean is centred."
+    },
+    {
       "name": "legend_font_size",
       "type": "int",
       "units": "-",
@@ -3015,6 +3083,13 @@
       "units": "-",
       "description": "Minimum whole-region valley depth, unitless. Higher refuses more weakly separated lobe pairs.",
       "required": false
+    },
+    {
+      "name": "lobes",
+      "type": "int/str",
+      "units": "-",
+      "required": false,
+      "description": "How many lobes the outline should retain: 2 keeps the accepted bilateral method, 1 keeps the region whole, and 'any' accepts either from the midline evidence."
     },
     {
       "name": "ls_n",
@@ -3134,6 +3209,13 @@
       "units": "px",
       "description": "Per-frame quality-control limit, px. A frame above this is reported, so raising it hides bad registration rather than fixing it.",
       "required": false
+    },
+    {
+      "name": "method",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Which registration engine: 'reference', the default, which runs in process, or 'ripr', a packaged Java engine. RIPR works at full resolution and refuses downsample and max_residual_px rather than ignoring them, because it uses neither."
     },
     {
       "name": "min_cand_px",
@@ -3400,6 +3482,20 @@
       "units": "-",
       "description": "Left/right panel title size, points.",
       "required": false
+    },
+    {
+      "name": "period_config",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Workbench settings passed through: detrending, component limits, error controls. Note that RAE is a relative amplitude error and not a significance."
+    },
+    {
+      "name": "period_method",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Which period estimator: one of the keys from auto_organotypic.rhythm.available_period_methods() -- chi_square, ejtk, f, fft_nlls, jtk, lomb, mesa, mfourfit, spectrum_resampling. The list is that function's to grow, so read it rather than this line."
     },
     {
       "name": "photon_anscombe_display_percentiles",
@@ -3689,6 +3785,20 @@
       "description": "The local background ring each trace was measured against, as a label image. Without it the third panel is dropped: an absent ring and a ring of zero area are different facts."
     },
     {
+      "name": "ripr_recipe",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Settings file for the RIPR engine. Has no effect unless method is 'ripr'."
+    },
+    {
+      "name": "ripr_workers",
+      "type": "int",
+      "units": "threads",
+      "required": false,
+      "description": "Threads the RIPR engine may use. Has no effect unless method is 'ripr'."
+    },
+    {
       "name": "roi",
       "type": "path",
       "units": "-",
@@ -3883,6 +3993,13 @@
       "units": "%",
       "description": "Percentile of positive signal recorded per frame in the QC table. Reporting only.",
       "required": false
+    },
+    {
+      "name": "significance_method",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Which statistical test, when it is separable from the estimator. Left out, a fit-only estimator such as fft_nlls falls back to a Lomb-Scargle test whose p-value is about the trace and not about any one fitted component."
     },
     {
       "name": "signing_key_path",

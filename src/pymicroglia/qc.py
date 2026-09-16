@@ -1,6 +1,6 @@
 """The quality-control record every science stage produces.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 it does not merely forward: the line below makes this name *be* that module.
 
 A forwarding shim -- ``import *`` plus a ``__getattr__`` -- reads every
@@ -18,6 +18,6 @@ it would mean a run record assembled across both speaking two dialects.
 
 import sys
 
-from pyscnslice import qc as _moved
+from auto_organotypic import qc as _moved
 
 sys.modules[__name__] = _moved

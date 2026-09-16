@@ -90,7 +90,7 @@ def test_a_bright_pixel_is_replaced_by_the_mean_of_its_neighbours(tmp_path):
     stack = synthetic_stack()
     stack[10, 32, 32] = 60000
     source = write_stack(tmp_path / "spike.ome.tif", stack)
-    result = clean(source, tmp_path / "out")
+    result = clean(source, tmp_path / "out", replacement="reference")
 
     cleaned = tifffile.imread(result.path)
     expected = 0.5 * (float(stack[9, 32, 32]) + float(stack[11, 32, 32]))

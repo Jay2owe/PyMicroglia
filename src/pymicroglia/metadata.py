@@ -1,6 +1,6 @@
 """What a file says about itself, and the two questions it cannot answer.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 it does not merely forward: the line below makes this name *be* that module.
 
 A forwarding shim -- ``import *`` plus a ``__getattr__`` -- reads every
@@ -17,6 +17,6 @@ Axes, timestamps and channel names belong to the recording.
 
 import sys
 
-from pyscnslice import metadata as _moved
+from auto_organotypic import metadata as _moved
 
 sys.modules[__name__] = _moved

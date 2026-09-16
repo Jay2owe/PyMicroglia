@@ -1,6 +1,6 @@
 """The line between looking at data and measuring it.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 it does not merely forward: the line below makes this name *be* that module.
 
 A forwarding shim -- ``import *`` plus a ``__getattr__`` -- reads every
@@ -19,6 +19,6 @@ worse than no guard at all.
 
 import sys
 
-from pyscnslice import guards as _moved
+from auto_organotypic import guards as _moved
 
 sys.modules[__name__] = _moved

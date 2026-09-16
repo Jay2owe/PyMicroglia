@@ -29,6 +29,21 @@ site/
 *.mp4
 *.mov
 
+# The development tree: the working record of an analysis while it is being
+# proved -- its code, its round write-ups, its chosen settings and its evidence
+# tables. The evidence itself is imaging output and obeys the rule above, so the
+# folder is kept but its pictures, weights and movies are not. What stays in the
+# repository is the part a person reads.
+/development/**/*.tif
+/development/**/*.tiff
+/development/**/*.pt
+/development/**/*.png
+/development/**/*.zip
+/development/**/*.reprofig
+/development/**/rounds/
+/development/**/runs/
+/development/**/predictions/
+
 # ...except the test fixtures, which are deliberately tiny. The cosmic-ray
 # reference includes a 40 KB synthetic_registered.ome.tif that the filtering
 # parity test reads; without this exemption the rule above would silently
@@ -36,3 +51,6 @@ site/
 # The whole tests/fixtures tree is well under a megabyte. Keep it that way:
 # anything large enough to be real data does not belong in the repository.
 !tests/fixtures/**
+
+# Rebuilt from the code by a commit hook; never read from the repository.
+graphify-out/

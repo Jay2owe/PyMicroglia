@@ -87,17 +87,25 @@ def test_the_generator_produces_a_change_when_the_registry_moves(generator,
     assert "Something nobody has registered before." in after
 
 
+#: What the old block is filled with, so that finding it afterwards means the
+#: splice missed it. A word that could plausibly appear in a real parameter
+#: description is no sentinel at all: this was ``"stale"`` until a parameter
+#: whose description warns about a stale copy of some weights made the test
+#: fail for a reason that had nothing to do with splicing.
+SENTINEL = "OLD_BLOCK_THAT_MUST_BE_REPLACED_5F3A"
+
+
 def test_the_block_is_spliced_without_touching_the_prose(generator, registry):
     """People own the teaching prose; the generator owns the signatures."""
     existing = ("# Hand-written\n\nProse above.\n\n"
-                f"{generator.start_marker(SLUG)}\nstale\n"
+                f"{generator.start_marker(SLUG)}\n{SENTINEL}\n"
                 f"{generator.end_marker(SLUG)}\n\nProse below.\n")
     spliced = generator.splice(existing, registry, slug=SLUG,
                                generator="the test")
 
     assert spliced.startswith("# Hand-written\n\nProse above.\n")
     assert spliced.endswith("\n\nProse below.\n")
-    assert "stale" not in spliced
+    assert SENTINEL not in spliced
     assert "### `register`" in spliced
 
 

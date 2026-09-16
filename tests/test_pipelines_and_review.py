@@ -28,6 +28,7 @@ import numpy as np
 import pytest
 
 from pymicroglia import pipelines, review
+from tests_support import oscillating_stack
 
 
 # ── fixtures ────────────────────────────────────────────────────────────────
@@ -37,52 +38,6 @@ def isolated(tmp_path, monkeypatch):
     monkeypatch.setenv("PYMICROGLIA_STORE", str(tmp_path / "cache"))
     monkeypatch.setenv("PYMICROGLIA_DECISIONS", str(tmp_path / "decisions"))
     return tmp_path
-
-
-def oscillating_stack(folder, *, frames: int = 72, height: int = 130,
-                      width: int = 130, seed: int = 7) -> Path:
-    """Two cells that actually vary in time, on a structural blob.
-
-    The temporal variation is the point. Every admissibility test in this
-    package reads *amplitude*, not brightness, so a static synthetic cell —
-    however bright — is correctly rejected by the decoy test and would make
-    this fixture prove nothing.
-    """
-    import tifffile
-
-    rng = np.random.default_rng(seed)
-    grid_y, grid_x = np.mgrid[0:height, 0:width]
-    hours = np.arange(frames) * 0.5
-
-    tissue = 900.0 * np.exp(
-        -((grid_y - height / 2) ** 2 + (grid_x - width / 2) ** 2)
-        / (2 * 30.0 ** 2))
-
-    def spot(y, x, sigma_px):
-        return np.exp(-((grid_y - y) ** 2 + (grid_x - x) ** 2)
-                      / (2 * sigma_px ** 2))
-
-    cells = [(58, 58, 4.0, 900.0, 24.0), (92, 84, 3.4, 520.0, 24.0)]
-    data = np.zeros((frames, 2, height, width), np.uint16)
-    for frame in range(frames):
-        plane = np.zeros((height, width), np.float64)
-        for y, x, sigma_px, amplitude, period in cells:
-            phase = 1.0 + 0.6 * np.sin(2 * np.pi * hours[frame] / period)
-            plane += amplitude * phase * spot(y, x, sigma_px)
-        data[frame, 0] = np.clip(
-            2000 + plane + rng.normal(0, 25, (height, width)), 0, 65535)
-        data[frame, 1] = np.clip(
-            2000 + tissue + rng.normal(0, 15, (height, width)), 0, 65535)
-
-    target = Path(folder) / "oscillating.ome.tif"
-    delta_t = [float(f * 1800 + c) for f in range(frames) for c in (0, 1)]
-    tifffile.imwrite(
-        target, data, ome=True,
-        metadata={"axes": "TCYX",
-                  "Channel": {"Name": ["dluc", "structural"]},
-                  "Plane": {"DeltaT": delta_t,
-                            "DeltaTUnit": ["s"] * len(delta_t)}})
-    return target
 
 
 SMALL = {"t0": None, "t1": None, "baselines": (6.0,), "detrends": ("cubic",),
@@ -237,19 +192,34 @@ def test_no_pipeline_module_exceeds_eight_hundred_lines():
         assert lines <= 800, f"{path.name} is {lines} lines"
 
 
+#: The files that do what ``dluc_pipeline.py`` did: the single-cell pipeline
+#: and the two stretches of it that were split out.
+#:
+#: Named rather than globbed, and two things are deliberately outside it.
+#: ``__init__.py`` is run bookkeeping -- manifests, stage order, run folders --
+#: shared by every pipeline here, and the engine had no equivalent of it to
+#: replace. The rest of the folder replaces nothing: ``auto_microglia`` wraps
+#: another package's chain, ``cell_masks`` is a learned model. Counting either
+#: against that engine's budget would fail this test for adding code the engine
+#: never contained, which is not the risk it was written for.
+THE_REBUILD = ("registered.py", "objects.py", "dluc_single_cell.py")
+
+
 def test_the_rebuild_is_much_smaller_than_the_engine_it_replaces():
     """The risk the plan names: rebuilding should remove code, not move it.
 
-    ``dluc_pipeline.py`` is 3,643 lines. If the rebuilt pipeline is anywhere
-    near that, the package's parts are not being reused and something is wrong
+    ``dluc_pipeline.py`` is 3,643 lines. If what does its job is anywhere near
+    that, the package's parts are not being reused and something is wrong
     upstream rather than here.
     """
     folder = Path(pipelines.__file__).parent
-    total = sum(len(path.read_text(encoding="utf-8").splitlines())
-                for path in folder.glob("*.py"))
-    assert total < 3643, (
-        f"the whole pipeline library is {total} lines against one engine's "
-        f"3,643; it should be a fraction of that")
+    for name in THE_REBUILD:
+        assert (folder / name).is_file(), f"{name} is gone; retire this list"
+    total = sum(len((folder / name).read_text(encoding="utf-8").splitlines())
+                for name in THE_REBUILD)
+    assert total < 3643 // 2, (
+        f"what replaced dluc_pipeline.py is {total} lines against its 3,643; "
+        f"it should be a fraction of that, not most of it")
 
 
 # ── a real run of the single-cell pipeline ──────────────────────────────────
@@ -473,10 +443,19 @@ def test_a_stack_view_refuses_to_invent_a_source():
 
 
 # ── discovery ───────────────────────────────────────────────────────────────
-def test_all_four_pipelines_are_available_and_no_fifth():
-    """Four is the whole list. A fifth idea gets written down, not added."""
+def test_the_pipelines_available_are_exactly_the_ones_named_and_no_others():
+    """The list is closed: a sixth idea gets written down, not added.
+
+    Spelled out rather than counted, so that adding one is two deliberate
+    edits -- the module and this line -- instead of a number going up. The
+    fifth, ``auto_microglia``, was added on 2026-09-15 because it is the only
+    one that starts at the instrument rather than at a file somebody already
+    has.
+    """
     assert set(pipelines.available()) == set(pipelines.PIPELINE_NAMES)
-    assert len(pipelines.PIPELINE_NAMES) == 4
+    assert pipelines.PIPELINE_NAMES == (
+        "auto_microglia", "dluc_single_cell", "cry1_dluc_photon",
+        "bioluminescence", "phase_green_red")
 
 
 def test_the_two_registered_protocols_are_no_longer_pending():

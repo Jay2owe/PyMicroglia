@@ -1,6 +1,6 @@
 """The artefact store: keep the recipe, not the cooked dish.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 it does not merely forward: the line below makes this name *be* that module.
 
 A forwarding shim -- ``import *`` plus a ``__getattr__`` -- reads every
@@ -22,6 +22,6 @@ artefact already on disk still resolves.
 
 import sys
 
-from pyscnslice import store as _moved
+from auto_organotypic import store as _moved
 
 sys.modules[__name__] = _moved

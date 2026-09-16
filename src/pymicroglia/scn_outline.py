@@ -1,6 +1,6 @@
 """The accepted automatic SCN outline — the action, not the algorithm.
 
-The suprachiasmatic nucleus outline moved to **PySCNSlice** on 2026-08-23. About
+The suprachiasmatic nucleus outline moved to **Auto-Organotypic** on 2026-08-23. About
 6,200 lines of it lived here, in a package named after a cell type the method has
 nothing to do with, and it was already a leaf: nothing in PyMicroglia imported
 it, and everything it needed from PyMicroglia was nine generic file helpers. No
@@ -12,7 +12,7 @@ have broken every stored record that says a run of it happened. So the action
 still resolves, still reports its live defaults, and still runs — one import
 further away.
 
-``pyscnslice`` is a **hard optional dependency**, the same shape as
+``auto_organotypic`` is a **hard optional dependency**, the same shape as
 ``circadian_workbench`` in :mod:`pymicroglia.rhythm` and the opposite of
 ``analysis_kit`` in :mod:`pymicroglia._optional`. Losing the audit layer costs a
 run record and must be silent; losing the outline means the action cannot run at
@@ -37,7 +37,7 @@ import functools
 from typing import Any
 
 __all__ = [
-    "SCNSliceMissing",
+    "AutoOrganotypicMissing",
     "METHOD_VERSION",
     "ACCEPTED_SETTINGS",
     "CROP_SCALES",
@@ -46,7 +46,7 @@ __all__ = [
 ]
 
 _MISSING = (
-    "The automatic SCN outline needs PySCNSlice: "
+    "The automatic SCN outline needs Auto-Organotypic: "
     'pip install "PyMicroglia[scn]". It is a hard optional dependency, not a '
     "soft one — the method moved out of this package rather than being "
     "reimplemented, and silently skipping an outline would be worse than "
@@ -54,12 +54,12 @@ _MISSING = (
 )
 
 
-class SCNSliceMissing(ImportError):
-    """The outline was asked for on a machine without PySCNSlice."""
+class AutoOrganotypicMissing(ImportError):
+    """The outline was asked for on a machine without Auto-Organotypic."""
 
 
 def _upstream():
-    """``pyscnslice.outline``, or ``None`` when it is not installed.
+    """``auto_organotypic.outline``, or ``None`` when it is not installed.
 
     ``None`` rather than a raise, because this module has to import either way:
     ``registry`` treats an unimportable science module as *pending*, and pending
@@ -67,7 +67,7 @@ def _upstream():
     dependency somebody simply has not installed.
     """
     try:
-        from pyscnslice import outline as module
+        from auto_organotypic import outline as module
     except ImportError:
         return None
     return module
@@ -78,7 +78,7 @@ def _delegate(name: str):
     module = _upstream()
     if module is None:
         def unavailable(*args: Any, **kwargs: Any):
-            raise SCNSliceMissing(_MISSING)
+            raise AutoOrganotypicMissing(_MISSING)
 
         unavailable.__name__ = name
         unavailable.__qualname__ = name
@@ -97,7 +97,7 @@ def _delegate(name: str):
 
 _MODULE = _upstream()
 
-#: Which frozen method would run. Empty when PySCNSlice is absent — the catalogue
+#: Which frozen method would run. Empty when Auto-Organotypic is absent — the catalogue
 #: carries this action's version too, and ``recording._method_version`` reads
 #: that first, so a record still says what ran.
 METHOD_VERSION: str = getattr(_MODULE, "METHOD_VERSION", "")
@@ -109,7 +109,7 @@ ACCEPTED_SETTINGS: dict[str, Any] = dict(
 #: What ``tight``, ``standard`` and ``wide`` mean as a multiple of the outline.
 CROP_SCALES: dict[str, float] = dict(getattr(_MODULE, "CROP_SCALES", {}) or {})
 
-# The action keeps its own names; upstream renamed its functions in PySCNSlice
+# The action keeps its own names; upstream renamed its functions in Auto-Organotypic
 # 0.5.0, when the outline was split into modules named for what each does.
 # `draw_scn_labels` is `outline.labels`, `automatic_scn_outline` is
 # `outline.automatic`. The action is what a run record names, so it does not

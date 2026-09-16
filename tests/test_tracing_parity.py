@@ -154,10 +154,20 @@ def test_detrend_aliases_match_the_engines_command_line(detrendable):
 
 
 def test_an_unknown_detrend_says_what_is_available(detrendable):
+    """The refusal lists the methods, so a typo does not become a search.
+
+    The unknown name is nonsense on purpose. This test used to pass "savgol",
+    which was unknown when it was written and is now an alias for
+    ``savitzky_golay`` -- Auto-Organotypic added it, and the test started
+    asserting nothing while still passing. A name that cannot ever become a
+    method is the only kind that keeps testing the refusal.
+    """
     times, values = detrendable
     with pytest.raises(ValueError) as raised:
-        tracing.detrend(values, times, "savgol")
-    assert "cubic" in str(raised.value)
+        tracing.detrend(values, times, "no_such_detrend_exists")
+    message = str(raised.value)
+    assert "no_such_detrend_exists" in message
+    assert "cubic" in message, "the refusal stopped listing what is available"
 
 
 # ------------------------------------------------------- baseline validation

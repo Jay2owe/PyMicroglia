@@ -164,7 +164,7 @@ def trace_of(frames, mask, ring):
 
 
 # ------------------------------------------- baselines, detrends and dF/F
-# Split out to ``pyscnslice.baselines`` on 2026-08-24 and re-exported here, so
+# Split out to ``auto_organotypic.baselines`` on 2026-08-24 and re-exported here, so
 # every call site in this package goes on saying ``tracing.window_mean_dff``.
 #
 # The half that left never mentions a cell: a window over a time axis, a
@@ -175,7 +175,7 @@ def trace_of(frames, mask, ring):
 # measuring the same trace off tissue and as image sharpness, and it has to
 # divide those the identical way a cell is divided or the comparison says
 # nothing. One definition, imported twice.
-from pyscnslice.baselines import (          # noqa: E402
+from auto_organotypic.baselines import (          # noqa: E402
     DEFAULT_BASELINES,
     DEFAULT_DETRENDS,
     DETREND_ALIASES,

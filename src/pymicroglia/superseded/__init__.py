@@ -1,6 +1,6 @@
 """Methods this package no longer runs, kept because records of them exist.
 
-Moved to **PySCNSlice** on 2026-08-24. This is the address it left behind, and
+Moved to **Auto-Organotypic** on 2026-08-24. This is the address it left behind, and
 the line below makes this name *be* that module, so patching, ``is``
 comparisons and identity checks all keep working.
 
@@ -12,6 +12,6 @@ supersedes so that a stored record naming
 
 import sys
 
-from pyscnslice import superseded as _moved
+from auto_organotypic import superseded as _moved
 
 sys.modules[__name__] = _moved

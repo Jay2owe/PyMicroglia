@@ -22,7 +22,7 @@ from __future__ import annotations
 __version__ = "0.2.0"
 
 #: The project this package's artefacts belong to, claimed before anything can
-#: reach the store. The store moved to PySCNSlice on 2026-08-24 along with the
+#: reach the store. The store moved to Auto-Organotypic on 2026-08-24 along with the
 #: rest of the longitudinal machinery, and it takes its location from whichever
 #: project claims it. These are the values this package always used, so an
 #: existing ``PixelStore`` goes on being found and nothing rebuilds.
@@ -34,9 +34,9 @@ __version__ = "0.2.0"
 #: claim wins, so whoever is driving keeps the store.
 PROJECT_FOLDER_NAME = "Microglia Project"
 
-from pyscnslice import config as _pyscnslice_config     # noqa: E402
+from auto_organotypic import config as _auto_organotypic_config     # noqa: E402
 
-_pyscnslice_config.use_project(
+_auto_organotypic_config.use_project(
     start=__file__,
     projects=[PROJECT_FOLDER_NAME],
     store_env=["PYMICROGLIA_STORE"],

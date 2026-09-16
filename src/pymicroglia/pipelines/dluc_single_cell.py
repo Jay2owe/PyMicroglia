@@ -67,7 +67,13 @@ PIPELINE = "dluc_single_cell"
 #: What this pipeline does, in the order it does it. Recorded at run time by
 #: :class:`~pymicroglia.pipelines.StageLog`, so gate 7 checks the calls a run
 #: actually made rather than this tuple, which is documentation.
-STAGES: tuple[str, ...] = ("register", "cosmic_rays", "measure", "display")
+#:
+#: ``cell_masks`` is here because it is a stage this pipeline *can* run, and it
+#: runs only when ``learned_mask=True``. A run that did not ask for it does not
+#: log it, which is the difference between what a pipeline offers and what a
+#: run did.
+STAGES: tuple[str, ...] = ("register", "cosmic_rays", "measure", "display",
+                           "cell_masks")
 
 DEFAULT_BASELINES: tuple[float, ...] = (24.0, 48.0)
 DEFAULT_DETRENDS: tuple[str, ...] = ("cubic", "poly6")
@@ -211,8 +217,7 @@ def _control(prepared: Prepared, measured: Measured, regions,
         rhythmic_power=settings["ls_rhythmic"],
         baseline_h=max(settings["baselines"]),
         dluc_channel=int(prepared.channels.get("dluc") or 0))
-    instrumental = bool(verdict.get("instrumental_rhythm_detected"))
-    clean = bool(verdict.get("dluc_clean", True))
+    instrumental, clean = _read_control(verdict, settings)
     if instrumental and not clean:
         review.flag("blocker", "control",
                     "A daily instrumental cycle is present AND the "
@@ -234,6 +239,56 @@ def _control(prepared: Prepared, measured: Measured, regions,
                     "No daily rhythm off tissue, in a second channel, or in "
                     "focus.", evidence=["channel_control.png"])
     return {"verdict": verdict, "result": result}
+
+
+def _read_control(verdict: Mapping[str, Any],
+                  settings: Mapping[str, Any]) -> tuple[bool, bool]:
+    """Is it the microscope, and is the bioluminescence channel carrying it?
+
+    Auto-Organotypic reported both as booleans until 2026-09-14 and now reports
+    neither: a per-recording pass or fail cannot tell a filled well's own glow
+    from the incubator, and only a comparison across the plate can. The
+    judgement is made in :func:`~pymicroglia.controls.read_findings`, in the one
+    place, so this pipeline and the ``run_controls`` action cannot come to
+    different conclusions about the same recording.
+    """
+    read = _controls.read_findings(verdict,
+                                   rhythmic_power=settings["ls_rhythmic"])
+    return read["instrumental"], not read["dluc_carries_it"]
+
+
+# ------------------------------------------- the learned mask, when asked for
+def _cell_masks(prepared: Prepared, folder: Path, review: Review, *,
+                weights=None, cut: float | None = None,
+                window_hours: float | None = None,
+                threads: int = 0, reuse: bool = True) -> dict[str, Any]:
+    """Mask every frame with the trained network, and say what it needs if it can't.
+
+    Imported here rather than at the top of the module so that a machine with no
+    torch still imports this pipeline and runs every other stage of it. The two
+    failures are turned into one sentence each that names the fix, because this
+    only runs when somebody asked for it: skipping quietly would leave them
+    looking for a mask that was never going to be written.
+    """
+    from . import cell_masks as _masking      # noqa: PLC0415 - optional extra
+
+    options: dict[str, Any] = {"weights": weights, "threads": threads,
+                               "reuse": bool(reuse)}
+    if cut is not None:
+        options["cut"] = float(cut)
+    if window_hours is not None:
+        options["window_hours"] = float(window_hours)
+    try:
+        return _masking.mask_run(prepared, Path(folder), review, **options)
+    except ImportError as exc:
+        raise ImportError(
+            "learned_mask=True needs the mask extra: "
+            'pip install "PyMicroglia[mask]". ' + str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            "learned_mask=True needs trained weights. Point "
+            "PYMICROGLIA_MASK_WEIGHTS at a run's model.pt, or pass "
+            "learned_mask_weights=. " + str(exc)) from exc
 
 
 # --------------------------------------------------------------- the outputs
@@ -389,6 +444,12 @@ def run(source=None, *, output_dir=None, output_name=None,
         skip_control: bool = False,
         ls_pmin: float = 15.0, ls_pmax: float = 40.0, ls_n: int = 800,
         ls_rhythmic: float = 0.5,
+        # --- the learned single-frame mask, off unless asked for
+        learned_mask: bool = False,
+        learned_mask_weights=None,
+        learned_mask_cut: float | None = None,
+        learned_mask_window_h: float | None = None,
+        learned_mask_threads: int = 0,
         # --- videos
         skip_videos: bool = False,
         video_hours_per_second: float = 12.0, video_fps: float | None = None,
@@ -420,6 +481,17 @@ def run(source=None, *, output_dir=None, output_name=None,
     ``if_exists`` decides what happens to a run folder that already exists:
     ``version`` (the default) keeps both, ``overwrite`` replaces, ``error``
     refuses, ``skip`` returns the previous manifest without recomputing.
+
+    ``learned_mask`` is the one stage that is **off unless asked for**. It adds
+    the single-frame network mask — probability, labels and mask, one stack
+    each — as a branch after the measurement, for the Motion project to track
+    identities through. It changes no number this run reports, and it is opt-in
+    because it needs ``PyMicroglia[mask]``, needs weights named by
+    ``PYMICROGLIA_MASK_WEIGHTS``, and carries a limit worth consenting to: the
+    network counts in pixels, so a recording at a coarser pixel size loses a
+    third to a half of its cells while still returning a plausible-looking mask.
+    When that happens the run says so in the review and in the manifest rather
+    than only in a terminal. See :mod:`~pymicroglia.pipelines.cell_masks`.
 
     The last nine parameters belong to the PowerShell wrapper and to a font
     nothing here draws with. They are accepted and ignored rather than dropped,
@@ -474,7 +546,14 @@ def run(source=None, *, output_dir=None, output_name=None,
                 "shift_mode": shift_mode, "cosmic_seed_z": cosmic_seed_z,
                 "cosmic_growth_px": cosmic_growth_px,
                 "video_hours_per_second": video_hours_per_second,
-                "skip_videos": skip_videos, "reuse": reuse}
+                "skip_videos": skip_videos, "reuse": reuse,
+                # Recorded, and deliberately not in ``settings``: the learned
+                # mask changes no measured number, so two runs that differ only
+                # in whether they asked for it are the same analysis and should
+                # share a run label rather than fork into two folders.
+                "learned_mask": bool(learned_mask),
+                "learned_mask_cut": learned_mask_cut,
+                "learned_mask_window_h": learned_mask_window_h}
 
     log = StageLog()
     notes = Review(source) if review is None else review
@@ -500,9 +579,29 @@ def run(source=None, *, output_dir=None, output_name=None,
             figures = _figures(prepared, measured, regions, folder.path,
                                settings)
 
+        masks = None
+        if learned_mask:
+            # After the measurement, always: a branch, never a step. Nothing
+            # measured above reads any of this, and check_stage_order refuses a
+            # run shaped the other way round.
+            with log("cell_masks") as entry:
+                masks = _cell_masks(prepared, folder.path, notes,
+                                    weights=learned_mask_weights,
+                                    cut=learned_mask_cut,
+                                    window_hours=learned_mask_window_h,
+                                    threads=learned_mask_threads,
+                                    reuse=reuse)
+                entry["regions"] = masks["settings"]["cells_found"]
+                entry["reused"] = bool(masks.get("reused"))
+                entry["warned"] = bool(masks["warning"])
+
         written = _write(folder.path, prepared, measured, regions, control,
                          notes, settings)
         written["outputs"].update(figures)
+        if masks is not None:
+            written["outputs"].update(masks["outputs"])
+            written["summary"]["learned_mask"] = masks["settings"]
+            written["summary"]["learned_mask"]["warning"] = masks["warning"]
         run_record.result = written["summary"]
 
     result = PipelineResult(

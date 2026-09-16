@@ -147,7 +147,7 @@ def test_a_repaired_pixel_takes_the_mean_of_its_original_neighbours(tmp_path,
     test works out from the input rather than from the run.
     """
     source, data = _spiked(tmp_path)
-    array, _ = _in_place(data, source)
+    array, _ = _in_place(data, source, replacement="reference")
 
     y, x = 30, 22
     expected = (float(data[4, 1, y, x]) + float(data[6, 1, y, x])) / 2.0

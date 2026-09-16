@@ -1,7 +1,7 @@
-"""The legacy PyMicroglia video address delegates to PySCNSlice."""
+"""The legacy PyMicroglia video address delegates to Auto-Organotypic."""
 
 from pymicroglia import video
-from pyscnslice import video as moved_video
+from auto_organotypic import video as moved_video
 
 
 def test_video_adapter_does_not_import_removed_private_modules():

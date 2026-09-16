@@ -93,11 +93,20 @@ def test_there_is_no_way_to_skip_the_control():
 
 def test_with_a_control_present_the_result_carries_it(tmp_path, store_root,
                                                       rhythmic_trace):
-    """Gate 6: the verdict travels attached, not beside.
+    """Gate 6: the control travels attached, not beside.
 
     A figure or a run record cannot then show a period without also showing
-    whether the control passed — there is no arrangement of the data in which
+    what the control measured — there is no arrangement of the data in which
     one is present and the other is not.
+
+    What travels is the **readings**, not a verdict. Auto-Organotypic stopped
+    issuing one on 2026-08-24 and said why: a slice that fills its well and
+    glows puts its own light off tissue, in the other channel and in the
+    sharpness at once, so all three legs fire on a recording that is entirely
+    healthy. The tell is that a real rhythm tracks its own recording's period
+    well by well while an instrument cycle is common-mode across the plate,
+    and a per-recording pass or fail cannot see that. So this asserts the
+    numbers arrive, and no longer that somebody has judged them.
     """
     from tests_support import two_channel_stack
 
@@ -108,32 +117,35 @@ def test_with_a_control_present_the_result_carries_it(tmp_path, store_root,
 
     store.put(controls.CONTROL_STAGE, source, {"synthetic": True},
               kind="scalars",
-              value={"passes": True, "reasons": [], "region_names": ["tissue"],
-                     "instrumental_rhythm_detected": False},
+              value={"findings": [], "region_names": ["tissue"],
+                     "rhythmic_off_tissue": False},
               name="instrumental_control", output_dir=tmp_path / "out",
               method_version=controls.METHOD_VERSION)
 
     result = rhythm.test_rhythm(source, traces=values[None, :], times_h=times,
                                 labels=["cell_1"])
 
-    assert result.control_passes is True
+    assert result.control, "the result arrived with an empty control"
     assert result.control["region_names"] == ["tissue"]
     assert result.periods[0]["period_hours"] == pytest.approx(24.0, abs=0.5)
 
     # and it is in the serialised form too, which is what a record writes
     payload = result.as_dict()
-    assert "instrumental_control" in payload
-    assert payload["control_passes"] is True
+    assert payload["instrumental_control"] == result.control
     assert set(payload) >= {"periods", "cosinor", "instrumental_control"}
 
 
-def test_a_failing_control_still_returns_but_says_so(tmp_path, store_root,
-                                                     rhythmic_trace):
-    """A failed control is a verdict, not an error.
+def test_a_control_that_found_something_still_returns_but_carries_it(
+        tmp_path, store_root, rhythmic_trace):
+    """A finding is an observation, not an error and not a refusal.
 
-    The point is that nobody can read the period without reading the verdict —
-    not that the numbers are withheld. Withholding them would push somebody
-    towards computing the period another way.
+    The point is that nobody can read the period without reading what the
+    control saw — not that the numbers are withheld. Withholding them would
+    push somebody towards computing the period another way.
+
+    Note the shape of the assertion: the finding is carried through verbatim,
+    and nothing here decides what it means. Deciding is the reader's, with the
+    rest of the plate in front of them.
     """
     from tests_support import two_channel_stack
 
@@ -143,17 +155,32 @@ def test_a_failing_control_still_returns_but_says_so(tmp_path, store_root,
     source = two_channel_stack(tmp_path)
     store.put(controls.CONTROL_STAGE, source, {"synthetic": True},
               kind="scalars",
-              value={"passes": False,
-                     "reasons": ["a rhythm is present off tissue"],
-                     "instrumental_rhythm_detected": True},
+              value={"findings": ["a rhythm is present off tissue"],
+                     "rhythmic_off_tissue": True},
               name="instrumental_control", output_dir=tmp_path / "out",
               method_version=controls.METHOD_VERSION)
 
     result = rhythm.test_rhythm(source, traces=values[None, :], times_h=times)
 
-    assert result.control_passes is False
-    assert result.control["reasons"] == ["a rhythm is present off tissue"]
+    assert result.control_findings == ["a rhythm is present off tissue"]
+    assert result.control["rhythmic_off_tissue"] is True
     assert np.isfinite(result.periods[0]["period_hours"])
+
+
+def test_a_control_stored_before_the_verdict_was_dropped_is_still_read():
+    """Gate 6b: an artefact written under the old shape is not orphaned.
+
+    ``METHOD_VERSION`` is unchanged across the move, deliberately, because it
+    reaches the artefact key. So controls stored when this recorded ``reasons``
+    and a ``passes`` boolean are still on disk and still valid measurements.
+    Auto-Organotypic reads the observations back out of ``reasons``; this
+    asserts PyMicroglia gets them through the delegation.
+    """
+    old_shape = rhythm.RhythmResult(
+        labels=["cell_1"],
+        control={"passes": False,
+                 "reasons": ["a rhythm is present off tissue"]})
+    assert old_shape.control_findings == ["a rhythm is present off tissue"]
 
 
 # ------------------------------------------- nothing is reimplemented here
@@ -205,7 +232,7 @@ def test_a_missing_workbench_raises_the_named_error(monkeypatch):
         rhythm.periodogram([0.0, 1.0], [1.0, 2.0])
 
     message = str(raised.value)
-    assert "pip install circadian-workbench" in message
+    assert "Auto-Organotypic[rhythm]" in message
     assert "hard optional" in message
 
 
@@ -215,9 +242,10 @@ def test_doctor_reports_whether_rhythm_analysis_is_available():
 
     report = knowledge.doctor()
     assert "circadian_workbench" in report
+    assert "circadian_api_version" in report
     assert "rhythm_analysis_available" in report
     assert report["rhythm_analysis_available"] is (
-        report["circadian_workbench"] is not None)
+        report["circadian_api_version"] is not None)
 
 
 # ----------------------------------------------------------- decoy placement
@@ -349,10 +377,14 @@ def test_the_detrended_residual_drops_the_reflected_ends():
                                               len(values) - length // 2])
 
 
-def test_the_verdict_names_the_bioluminescence_channel_when_it_is_told_one():
-    """Whether the dLuc channel carries the instrumental cycle decides what may
-    be reported at all, so it is a field rather than something to read off a
-    table of rows."""
+def test_the_findings_name_the_bioluminescence_channel_when_told_one():
+    """How strongly the dLuc channel itself carries the cycle is a field.
+
+    It decides what may be reported at all, so it is read off the top of the
+    result rather than hunted for in a table of rows. What it is *not* is a
+    pass mark: the companion ``dluc_clean`` boolean went when Auto-Organotypic
+    stopped judging, and the power it was derived from stayed.
+    """
     hours, values = _drifting_daily()
     frames = len(hours)
     control = controls.ControlResult(
@@ -361,12 +393,150 @@ def test_the_verdict_names_the_bioluminescence_channel_when_it_is_told_one():
         off_tissue=np.stack([values, values]),
         sharpness=np.stack([[values], [values]]))
 
-    verdict = controls._verdict(control, period_range=(15.0, 40.0),
-                                baseline_h=24.0, dluc_channel=0)
-    assert "dluc_roi_power" in verdict
-    assert verdict["dluc_clean"] is (verdict["dluc_roi_power"] <= 0.5)
+    findings = controls._verdict(control, period_range=(15.0, 40.0),
+                                 baseline_h=24.0, dluc_channel=0)
+    assert "dluc_roi_power" in findings
+    assert 0.0 <= findings["dluc_roi_power"] <= 1.0
+    assert "dluc_clean" not in findings, (
+        "a pass mark is back on the instrumental control; see "
+        "auto_organotypic.instrumental for why there is not one")
     assert len(control.times_h) == frames
 
     without = controls._verdict(control, period_range=(15.0, 40.0),
                                 baseline_h=24.0)
     assert "dluc_roi_power" not in without
+
+
+# ── the judgement Auto-Organotypic stopped making ───────────────────────────
+def _flat(level: float = 3000.0):
+    """A series with no daily cycle in it at all."""
+    hours = np.arange(0.0, 240.0, 0.5)
+    rng = np.random.default_rng(4)
+    return hours, level + rng.normal(0.0, 5.0, hours.shape)
+
+
+def _control_of(off_tissue, region, sharpness):
+    hours = off_tissue[0]
+    return controls.ControlResult(
+        times_h=hours, region_names=["region"],
+        region=np.stack([[region[1]]]),
+        off_tissue=np.stack([off_tissue[1]]),
+        sharpness=np.stack([[sharpness[1]]]))
+
+
+def test_a_rhythm_off_tissue_is_still_called_the_microscope():
+    """The judgement moved to this package; the answer must not have moved with it.
+
+    Auto-Organotypic reported ``instrumental_rhythm_detected`` and ``dluc_clean``
+    until it stopped judging per recording. Reading those names through
+    ``.get`` with a default would have survived the rename silently and said
+    "no instrumental cycle, channel clean" for every recording ever run — the
+    one answer that lets a period be reported whatever the control saw.
+    """
+    daily = _drifting_daily()
+    findings = controls._verdict(_control_of(daily, daily, daily),
+                                 period_range=(15.0, 40.0), baseline_h=24.0,
+                                 dluc_channel=0)
+    read = controls.read_findings(findings)
+
+    assert read["instrumental"] is True
+    assert read["passes"] is False
+    assert read["reasons"], "a finding that changes what may be reported, unsaid"
+    assert read["dluc_carries_it"] is True
+
+
+def test_a_recording_with_nothing_off_tissue_passes():
+    flat = _flat()
+    daily = _drifting_daily()
+    findings = controls._verdict(_control_of(flat, daily, flat),
+                                 period_range=(15.0, 40.0), baseline_h=24.0,
+                                 dluc_channel=0)
+    read = controls.read_findings(findings)
+
+    assert read["instrumental"] is False
+    assert read["passes"] is True
+
+
+def test_the_threshold_is_the_one_the_control_was_run_at():
+    """``ls_rhythmic`` decides what "carrying it" means, and is not hard-coded."""
+    findings = {"dluc_roi_power": 0.6}
+    assert controls.read_findings(findings, rhythmic_power=0.5)["dluc_carries_it"]
+    assert not controls.read_findings(findings,
+                                      rhythmic_power=0.9)["dluc_carries_it"]
+
+
+def test_the_pipeline_reads_the_control_through_the_same_function():
+    """Two callers, one conclusion.
+
+    The pipeline blocks a periodicity claim on this and the ``run_controls``
+    action reports it; the two disagreeing about one recording is worse than
+    either being wrong.
+    """
+    from pymicroglia.pipelines import dluc_single_cell
+
+    findings = {"rhythmic_off_tissue": [0], "dluc_roi_power": 0.9,
+                "findings": ["a rhythm is present off tissue"]}
+    settings = {"ls_rhythmic": 0.5}
+    instrumental, clean = dluc_single_cell._read_control(findings, settings)
+    read = controls.read_findings(findings, rhythmic_power=0.5)
+
+    assert instrumental is read["instrumental"]
+    assert clean is not read["dluc_carries_it"]
+    assert (instrumental, clean) == (True, False)
+
+
+def test_the_control_action_runs_and_reports_what_it_found(tmp_path, monkeypatch):
+    """The action end to end, because nothing else here calls it.
+
+    It read two keys Auto-Organotypic had removed and would have raised
+    ``KeyError`` on the first real call. Every test around it passed, because
+    every one of them stopped at the signature. This one does not.
+    """
+    from pymicroglia import segmentation
+    from tests_support import oscillating_stack
+
+    monkeypatch.setenv("PYMICROGLIA_STORE", str(tmp_path / "cache"))
+    monkeypatch.setenv("PYMICROGLIA_DECISIONS", str(tmp_path / "decisions"))
+
+    source = str(oscillating_stack(tmp_path, frames=48, height=96, width=96))
+    segmentation.segment(source, output_dir=str(tmp_path / "out"))
+    found = controls.run_controls(source, output_dir=str(tmp_path / "out"),
+                                  ndecoy=20)
+
+    assert found["ok"] is True
+    assert isinstance(found["passes"], bool)
+    assert isinstance(found["reasons"], list)
+    assert found["objects_tested"] >= 1
+    # Every cell in this fixture oscillates on the same 24 h clock, and so does
+    # the background it sits on, so the honest reading of it is "common-mode".
+    assert found["passes"] is False
+    assert any("off tissue" in reason for reason in found["reasons"])
+
+
+def test_a_whole_run_reaches_a_conclusion_about_the_control(tmp_path, monkeypatch):
+    """The pipeline's own control branch, which every other run test skips.
+
+    ``skip_control=True`` is how the rest of the suite keeps its runs short, so
+    the branch that decides whether a period may be reported at all was reached
+    by nothing. With the dropped keys read through ``.get`` it would have
+    written "the instrumental control passed" onto a recording whose every
+    channel carries the same daily cycle.
+    """
+    from pymicroglia.pipelines import dluc_single_cell
+    from tests_support import oscillating_stack
+
+    monkeypatch.setenv("PYMICROGLIA_STORE", str(tmp_path / "cache"))
+    monkeypatch.setenv("PYMICROGLIA_DECISIONS", str(tmp_path / "decisions"))
+
+    manifest = dluc_single_cell.run(
+        oscillating_stack(tmp_path, frames=48, height=96, width=96),
+        output_dir=tmp_path / "out", if_exists="error",
+        t0=None, t1=None, baselines=(6.0,), detrends=("cubic",), ndecoy=20,
+        skip_videos=True, skip_control=False)
+
+    control = [note for note in manifest["review"] if note["gate"] == "control"]
+    assert len(control) == 1, control
+    assert "passed" not in control[0]["headline"], (
+        "a recording whose off-tissue pixels carry the same daily cycle was "
+        "reported as having no instrumental rhythm")
+    assert "instrumental cycle is present" in control[0]["headline"]

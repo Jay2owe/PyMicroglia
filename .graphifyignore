@@ -1,0 +1,19 @@
+# What the knowledge graph is allowed to call "this codebase".
+#
+# The graph answers architecture questions, so it has to cover the library and
+# nothing that merely sits in the same folder. Without this file the rebuild
+# sweeps in whatever happens to be on disk, and a reader then cannot tell a
+# module from a build product.
+
+# Investigations, not library code. Nothing in src/ imports from here -- see
+# development/README.md -- so a call graph that mixes the two invents edges
+# that do not exist.
+development/
+
+# The built documentation site: minified vendor JavaScript, about six hundred
+# nodes of lunr search stemmers. It was in the graph and should not have been.
+site/
+
+# An unpacked source distribution: a second copy of the package, which would
+# double every symbol in it.
+pymicroglia-0.1.0/

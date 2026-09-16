@@ -308,14 +308,23 @@ def test_scalars_are_json_a_human_can_open(store_root, source, tmp_path):
 
 def test_nothing_is_stored_as_a_pickle(store_root, source, tmp_path):
     """A stored artefact has to be readable in five years by something that is
-    not this package."""
+    not this package.
+
+    Only files are artefacts. Auto-Organotypic keeps its own bookkeeping in a
+    dotted folder beside them -- one ``artefacts.json`` for the directory rather
+    than a ``.artefact.json`` twin per file, which it changed on the way to
+    0.6 -- and where it puts that is its business, not this assertion's. What is
+    this assertion's business is the extension of everything a reader would
+    open.
+    """
     store.put("tracing", source, {}, kind="array", value=np.zeros(4),
               name="t", output_dir=tmp_path / "out")
     store.put("registration", source, {}, kind="table",
               value={"frame": [0, 1]}, name="s", output_dir=tmp_path / "out")
 
     written = sorted(p.suffix for p in (tmp_path / "out").glob("*")
-                     if not p.name.endswith(tier_a.SIDECAR_SUFFIX))
+                     if p.is_file()
+                     and not p.name.endswith(tier_a.SIDECAR_SUFFIX))
     assert written == [".csv", ".npz"]
 
 
@@ -346,12 +355,24 @@ def test_scan_drops_records_whose_artefact_has_gone(store_root, source,
                         output_dir=folder, method_version="v1")
     assert len(manifest.find()) == 1
 
+    # The artefact goes. The per-file ``.artefact.json`` twin is deleted only if
+    # this folder has one: Auto-Organotypic moved to a single ``artefacts.json``
+    # per directory on 2026-09-14 and still reads the old twins, so both layouts
+    # pass here.
     written.path.unlink()
-    tier_a.sidecar_path(written.path).unlink()
-    report = store.scan(folder)
+    tier_a.sidecar_path(written.path).unlink(missing_ok=True)
+    store.scan(folder)
 
-    assert report["dropped"] == 1
+    # What matters is that nothing hands back a path to a file that is not
+    # there. Not asserted on scan's ``dropped`` count any more: that counts
+    # claims which vanished from the folder ledger, and a file deleted by hand
+    # leaves its claim behind. The guarantee moved to every lookup instead --
+    # ``find`` takes ``require_file=True`` by default -- which is the stronger
+    # place for it, because it no longer waits for somebody to run a scan.
     assert manifest.find() == []
+    assert manifest.find(require_file=False), (
+        "the claim should still be on record; it is the *lookup* that refuses "
+        "to return an artefact whose file has gone")
 
 
 def test_scanning_something_that_is_not_a_folder_says_so(store_root, tmp_path):

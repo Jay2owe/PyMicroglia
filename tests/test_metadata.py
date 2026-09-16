@@ -87,7 +87,13 @@ def test_a_file_with_no_pixel_size_says_it_is_not_calibrated(tmp_path):
 
 def test_parse_ome_on_an_empty_description_returns_empty_fields():
     parsed = metadata.parse_ome("")
-    assert parsed == {"t": None, "um": None, "names": None, "t_note": None}
+    assert parsed == {
+        "t": None,
+        "um": None,
+        "names": None,
+        "t_note": None,
+        "acquired": None,
+    }
 
 
 def test_deltat_units_other_than_seconds_are_converted():
