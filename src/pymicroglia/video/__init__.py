@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Sequence
 
+from auto_organotypic import conventions as _conventions
 from auto_organotypic import video as _moved
 
 encode = _moved.encode
@@ -207,13 +208,19 @@ def phase_green_red(source, *, output_dir=None, output_name=None,
          [("local_contrast", {"sigma_px": float(detail_blur_sigma_px)})],
          detail_display_percentiles),
     )
+    # The four views are named for their colours, and those names are the
+    # answer when nothing else decides. Inside a run that resolved its
+    # conventions the registry decides instead: ``lut=None`` lets the
+    # renderer read the current registry's map for each drawn channel, the
+    # same entry the run's trace lines use.
+    registry = _conventions.current()
     reports = []
     for suffix, channels, lut, filters, percentiles in specifications:
         reports.append(stack_to_video(
             path,
             output_name=f"{base}-{suffix}",
             channels=channels,
-            lut=lut,
+            lut=None if registry is not None else lut,
             filters=filters,
             display_range="auto",
             auto_black_percentile=float(percentiles[0]),
@@ -222,6 +229,7 @@ def phase_green_red(source, *, output_dir=None, output_name=None,
         ))
     return {
         "display_only": True,
+        "luts_from": "conventions" if registry is not None else "explicit",
         "videos": [report["output"] for report in reports],
         "display_ranges": [report.get("drawn") for report in reports],
         "reports": reports,

@@ -19,6 +19,8 @@ import time
 from pathlib import Path
 from typing import Any, Sequence
 
+from auto_organotypic import conventions as _conventions
+
 from .. import registration as _registration
 from .. import video as _video
 from ..recording import capture
@@ -33,6 +35,22 @@ METHOD_VERSION = "2026-07-23-red-sequential-phase-v1"
 PIPELINE = "phase_green_red"
 
 STAGES: tuple[str, ...] = ("register", "measure", "display")
+
+
+#: What the three physical channels are, and the colours the pipeline's name
+#: promises for the two it draws.
+CHANNEL_LUTS = {2: "green", 3: "red"}
+
+
+def _registry(source):
+    """The run's conventions for the two drawn channels, colours declared."""
+    from types import SimpleNamespace
+
+    path = Path(source)
+    recording = SimpleNamespace(path=path, field=path.stem, segment=None,
+                                channels=(1, 2, 3))
+    return _conventions.resolve([recording], channels=tuple(CHANNEL_LUTS),
+                                options={"channel_luts": dict(CHANNEL_LUTS)})
 
 
 def run(source, *, output_dir=None, output_name=None, overwrite: bool = False,
@@ -106,18 +124,33 @@ def run(source, *, output_dir=None, output_name=None, overwrite: bool = False,
 
         if videos:
             with log("display", fps=float(fps)) as entry:
-                rendered = _video.phase_green_red(
-                    outputs["registered"] or source, output_dir=folder.path,
-                    frame_interval_seconds=frame_interval_seconds, fps=fps,
-                    crf=crf,
-                    green_display_percentiles=green_display_percentiles,
-                    red_display_percentiles=red_display_percentiles,
-                    detail_display_percentiles=detail_display_percentiles,
-                    overwrite=True)
+                # The run's registry: this pipeline is named for its colours,
+                # so they are declared to the registry rather than read off
+                # the file, written beside the run as conventions.json, and
+                # made current so the four movies read their maps from it
+                # -- the one place a later figure of this run reads too.
+                registry = _registry(source)
+                written = _conventions.write(registry, folder.path)
+                previous = _conventions.use(registry)
+                try:
+                    rendered = _video.phase_green_red(
+                        outputs["registered"] or source, output_dir=folder.path,
+                        frame_interval_seconds=frame_interval_seconds, fps=fps,
+                        crf=crf,
+                        green_display_percentiles=green_display_percentiles,
+                        red_display_percentiles=red_display_percentiles,
+                        detail_display_percentiles=detail_display_percentiles,
+                        overwrite=True)
+                finally:
+                    _conventions.use(previous)
                 entry["videos"] = len(rendered.get("videos", ()))
                 outputs["videos"] = rendered.get("videos")
+                outputs["conventions"] = str(written)
                 summary["display"] = {
                     "display_only": True,
+                    "conventions": written.name,
+                    "luts_from": rendered.get("luts_from"),
+                    "channel_luts": {str(k): v for k, v in registry.channel_luts.items()},
                     "videos": rendered.get("videos"),
                     "display_ranges": rendered.get("display_ranges"),
                     "note": "contrast-stretched for viewing; no number is "

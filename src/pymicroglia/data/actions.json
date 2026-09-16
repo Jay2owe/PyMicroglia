@@ -733,6 +733,7 @@
         "ls_pmax",
         "ls_n",
         "ls_rhythmic",
+        "extra",
         "traces",
         "control",
         "times_h",
@@ -753,6 +754,7 @@
         "ls_pmax": 40.0,
         "ls_n": 800,
         "ls_rhythmic": 0.5,
+        "extra": null,
         "traces": null,
         "control": null,
         "times_h": null,
@@ -2635,6 +2637,13 @@
       "units": "-",
       "description": "Optional label TIFF marking the objects being measured. Those pixels are kept out of the bleed FIT only, so a cell sitting in a bleed trail cannot pull the model. It never changes which pixels are repaired. A label image smaller than the frame is centred in it.",
       "required": false
+    },
+    {
+      "name": "extra",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Keys filed into the rhythm record beside the verdict, for a caller that measured something about the same traces; None files nothing."
     },
     {
       "name": "fig_height_in",

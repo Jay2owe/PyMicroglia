@@ -462,6 +462,11 @@ shares its folder with one that did not — they are the same analysis.
 
 ### One command, from the instrument to identified cells
 
+Figures share Auto-Organotypic's conventions: a run resolves one registry of
+channel names, lookup tables and trace colours (`conventions.json` beside the
+run record), and the movies and trace panels drawn inside it read that
+registry rather than choosing colours their own way.
+
 `auto_microglia` is Auto-Organotypic's whole chain with microglia defaults:
 
 ```python

@@ -46,6 +46,9 @@ import re
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from auto_organotypic import baselines as _baselines
+from auto_organotypic import conventions as _conventions
+
 from . import tracing as _tracing
 
 __all__ = [
@@ -310,11 +313,19 @@ def apply_spec_json(spec_path, sources: dict[str, Any],
 # ------------------------------------------------------------- the numbers
 def detrend(times_h, values, method: str, window_h: float, degree: int,
             poly_edge_h: float) -> tuple[Any, float]:
-    """``(baseline, edge_hours)``, borrowing the baselines from ``tracing``.
+    """``(baseline, edge_hours)``: the baselines are Auto-Organotypic's.
 
-    ``edge_hours`` is what the shading paints over: the stretch at each end
-    where the baseline came from a truncated window, and where the detrended
-    trace is not comparable to the middle.
+    ``rolling_baseline``, ``polynomial_baseline`` and ``window_length`` are
+    :mod:`auto_organotypic.baselines`, called by that name since 2026-09-16
+    rather than through ``tracing``'s re-export, so this module holds no
+    baseline of its own. What is the panel's is ``edge_hours``: the stretch
+    at each end where the baseline came from a truncated window, and where
+    the detrended trace is not comparable to the middle. The panel shades
+    it by the window actually used (half its length in samples for the
+    rolling mean, a quarter of the span capped by ``poly_edge_h`` for the
+    polynomial), which is a narrower margin than
+    :func:`auto_organotypic.baselines.detrend_edge_hours` reports, and the
+    frozen panel fixtures hold it.
     """
     import numpy as np
 
@@ -324,18 +335,26 @@ def detrend(times_h, values, method: str, window_h: float, degree: int,
         return np.zeros_like(values), 0.0
     if method == "rolling":
         step = float(np.median(np.diff(times))) if len(times) > 1 else 1.0
-        length = _tracing.window_length(window_h, times) if len(times) > 1 else 1
-        return _tracing.rolling_baseline(values, length), (length // 2) * step
+        length = _baselines.window_length(window_h, times) if len(times) > 1 else 1
+        return _baselines.rolling_baseline(values, length), (length // 2) * step
     if method == "polynomial":
         span = float(times[-1] - times[0]) if len(times) > 1 else 0.0
-        return (_tracing.polynomial_baseline(times, values, int(degree)),
+        return (_baselines.polynomial_baseline(times, values, int(degree)),
                 min(float(poly_edge_h), max(0.0, span / 4.0)))
     raise ValueError(f"unknown detrend method {method!r}. "
                      f"Use rolling, polynomial or none.")
 
 
 def normalise(values, baseline, mode: str) -> tuple[Any, float]:
-    """The detrended trace divided. Returns ``(values, denominator)``."""
+    """The detrended trace divided. Returns ``(values, denominator)``.
+
+    Stays here on purpose. ``window_mean`` divides the residual by the
+    window's mean and ``baseline`` by the baseline itself, point by point;
+:func:`auto_organotypic.trace_plot.normalise_values` rescales an
+    already-detrended trace (min-max, z-score, or not at all) and has no
+    mode that divides by a baseline, so there is nothing there for these
+    two to become calls to.
+    """
     import numpy as np
 
     residual = np.asarray(values, float) - np.asarray(baseline, float)
@@ -501,6 +520,24 @@ def prepare(panels: Sequence[Mapping[str, Any]], sources: Mapping[str, Any],
                                    settings["vline_origin_h"])))
 
 
+def _default_colour(colour):
+    """The first trace's colour: the caller's, else the run's registry, else
+    the house dLuc.
+
+    Inside a run of the chain :mod:`auto_organotypic.conventions` is
+    current, and its trace colour for the run's first channel is what the
+    chain's own trace figures and movies are drawn in, so a cell's trace
+    on this panel matches them. Outside one the answer is the house colour
+    it always was.
+    """
+    if colour is not None:
+        return colour
+    registry = _conventions.current()
+    if registry is not None and registry.channels:
+        return registry.trace_colour(registry.channels[0])
+    return "dluc"
+
+
 def _explicit_palette(n: int, settings: Mapping[str, Any]) -> list[str]:
     """A caller's own cycle, by house name or by value, in the order given."""
     from .visualisation import panels as _grammar
@@ -530,7 +567,7 @@ def trace_panel(source=None, *, output_dir=None, output_name=None,
                 time_end_h: float | None = None, time_cut_stage: str = "after",
                 smooth_frames: int = 3, show_raw_trace: bool = True,
                 raw_colour: str = "raw", raw_linewidth: float = 0.6,
-                trace_linewidth: float = 2.1, colour: str = "dluc",
+                trace_linewidth: float = 2.1, colour: str | None = None,
                 colour_cycle: Sequence[str] = (),
                 colour_overflow_cmap: str = "turbo", shade_edges: bool = True,
                 shade_colour: str = "shade", poly_edge_h: float = 12.0,
@@ -589,7 +626,8 @@ def trace_panel(source=None, *, output_dir=None, output_name=None,
         "cut_stage": time_cut_stage, "smooth": int(smooth_frames),
         "show_raw": bool(show_raw_trace), "raw_colour": raw_colour,
         "raw_linewidth": float(raw_linewidth),
-        "trace_linewidth": float(trace_linewidth), "default_colour": colour,
+        "trace_linewidth": float(trace_linewidth),
+        "default_colour": _default_colour(colour),
         "cycle": list(colour_cycle), "overflow_cmap": colour_overflow_cmap,
         "shade_edges": bool(shade_edges), "shade_colour": shade_colour,
         "show_zero_line": bool(show_zero_line), "show_sd": bool(show_sd_label),

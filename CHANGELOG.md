@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Depend on `Auto-Organotypic>=0.7,<0.8`, and take that release's conventions
+  registry as the one place a run's colours live. `auto_microglia` writes
+  the chain's resolved `conventions.json` beside its own record and draws its
+  cell traces under it; `phase_green_red` declares the green and red its name
+  promises to the registry, writes it in the run folder and draws its four
+  movies from it; `cry1_dluc_photon` keeps its hand-composed purple and
+  records that it is explicit. The trace panel's first colour is the
+  registry's inside a run and the house dLuc outside one, as before.
+  `trace_tables.detrend` calls `auto_organotypic.baselines` by name and keeps
+  only the panel's own shading margin; `normalise` stays, with the reason
+  written down. Nothing this package draws changes outside a run of the
+  chain, and its frozen panel fixtures hold.
+
 - Put the learned mask **inside** Auto-Organotypic's chain rather than in a loop
   after it. That package now publishes `register_stage`, and
   `auto_microglia.register()` — called on import — adds `cell_masks` after

@@ -410,6 +410,13 @@ EXTRA_PARAMS: dict[str, list[dict]] = {
                         "because this is the slowest step in the package."},
     ],
     "test_rhythm": [
+        # Arrived with Auto-Organotypic 0.7: the chain files its per-cycle
+        # damping into the record this way.
+        {"name": "extra", "type": "mapping", "units": "-", "required": False,
+         "default": None,
+         "description": "Keys filed into the rhythm record beside the "
+                        "verdict, for a caller that measured something "
+                        "about the same traces; None files nothing."},
         {"name": "traces", "type": "path", "units": "-", "required": False,
          "default": None,
          "description": "Traces to test. Left out, the stored traces for this "

@@ -180,9 +180,11 @@ def test_auto_organotypic_alone_has_never_heard_of_this_package():
 def test_the_installed_auto_organotypic_is_one_the_pin_admits():
     """The one place an upstream change does *not* flow through on its own.
 
-    ``Auto-Organotypic>=0.6,<0.7`` is deliberate — 0.6 dropped a verdict, renamed a
-    field and moved the artefact store, and each of those reached this package
-    as a test failure. The cap means a released 0.7 will not be picked up
+    ``Auto-Organotypic>=0.7,<0.8`` is deliberate — 0.6 dropped a verdict, renamed a
+    field and moved the artefact store, and 0.7 retired the phase-alignment
+    forwarding and made the conventions registry the thing every figure reads;
+    each reached this package as a decision here. The cap means a released
+    0.8 will not be picked up
     without a decision here, and this test is where that decision gets made:
     when it fails, read 0.7's changes and move the pin, rather than widening it
     to make the red go away.

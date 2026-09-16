@@ -519,6 +519,12 @@ def _summary(source, stack, registered, crop, magnitude, ranges, outputs,
             "temporal_density": "3-frame rolling mean then Anscombe transform",
             "persistence": "5-frame rolling mean then Anscombe transform"},
         "display_ranges": ranges,
+        # Composed by hand in ``_videos`` -- dLuc photons on blue with a
+        # 0.65 red, RFP on red -- and not read from a run's conventions
+        # registry: the photon views are a rule of this pipeline, not a
+        # channel's lookup table. Recorded so a reader of the run knows.
+        "luts": {"dLuc": "dluc_purple_photon", "RFP": "red",
+                 "source": "explicit"},
         "display_only": True,
         "outputs": dict(outputs),
     }

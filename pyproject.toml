@@ -32,7 +32,7 @@ dependencies = [
     # it, removing cosmic rays and the keyed artefact store all live there now,
     # and this package's own modules of those names are shims onto them. It is
     # floored rather than pinned because the two are developed together.
-    "Auto-Organotypic>=0.6,<0.7",
+    "Auto-Organotypic>=0.7,<0.8",
     "reprofig>=0.5.1",
     "numpy>=1.24",
     "tifffile>=2023.7",
@@ -63,7 +63,7 @@ video   = ["imageio-ffmpeg"]
 # Reached through Auto-Organotypic since 2026-08-24, which is where the adapter
 # moved with the instrumental control it will not work without. One
 # declaration of the workbench floor rather than two that can drift.
-rhythm  = ["Auto-Organotypic[rhythm]>=0.6,<0.7"]
+rhythm  = ["Auto-Organotypic[rhythm]>=0.7,<0.8"]
 # The accepted automatic SCN outline. Floored, not pinned, for the same reason
 # as the workbench above: it is developed alongside this package and
 # scn_outline.py uses only its public surface. If one of those names moves, fix
@@ -74,7 +74,7 @@ rhythm  = ["Auto-Organotypic[rhythm]>=0.6,<0.7"]
 # is in this package's README, in Auto-Organotypic's, and in the message
 # ``scn_outline`` prints when the outline cannot resolve — and an extra that
 # stops existing turns all three into a warning nobody reads.
-scn     = ["Auto-Organotypic>=0.6,<0.7"]
+scn     = ["Auto-Organotypic>=0.7,<0.8"]
 test    = ["pytest>=8.0"]
 
 [project.scripts]

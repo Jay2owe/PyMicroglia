@@ -40,6 +40,8 @@ import time
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from auto_organotypic import conventions as _conventions
+
 from ..review import Review
 from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
                read_manifest, run_folder, slug, write_manifest)
@@ -387,6 +389,11 @@ def run(folder=None, *,
     # of its own keywords as well as one of ours, so it is passed by name.
     record = _chain.run_pipeline(folder, skip=skip, spatial=bool(spatial),
                                  **options)
+    # The chain's registry (channel names, lookup tables, trace colours),
+    # written beside this run's record and current for the cells below.
+    registry = _registry(folder, options)
+    conventions_path = (_conventions.write(registry, where.path)
+                        if registry is not None else None)
     for entry in record.get("stages", ()):
         # ``masks`` is read out below into ``outputs``; a second copy inside the
         # stage log is the same paths written twice in one manifest.
@@ -401,7 +408,11 @@ def run(folder=None, *,
                                "folder": str(folder),
                                "recordings": len(recordings),
                                "auto_organotypic": record.get("version", ""),
+                               "conventions": (conventions_path.name if conventions_path
+                                               else "not resolved"),
                                "skipped": list(skip)}
+    if conventions_path is not None:
+        outputs["conventions"] = str(conventions_path)
 
     # The mask ran *inside* the chain, as a registered stage, so what it did is
     # in the chain's own record rather than in a loop after it. Read back
@@ -424,10 +435,14 @@ def run(folder=None, *,
                 "cell_masks=False turned it off. Pass cell_masks=True, or "
                 "cells=False to run the chain without measuring anything.")
         with log("cells") as entry:
-            measured = _measure_every(recordings, masks, where.path, notes,
-                                      options=cell_options,
-                                      count=decoy_count, alpha=decoy_p,
-                                      seed=decoy_seed)
+            previous = _conventions.use(registry)
+            try:
+                measured = _measure_every(recordings, masks, where.path, notes,
+                                          options=cell_options,
+                                          count=decoy_count, alpha=decoy_p,
+                                          seed=decoy_seed)
+            finally:
+                _conventions.use(previous)
             entry["measured"] = len(measured)
             entry["admissible"] = sum(one.get("admissible", 0)
                                       for one in measured.values())
@@ -465,6 +480,26 @@ def run(folder=None, *,
         "recordings": len(recordings),
         "seconds": manifest["seconds"], "claim": claim})
     return manifest
+
+
+def _registry(folder, options: Mapping[str, Any]):
+    """The conventions the chain resolved for this folder, or ``None``.
+
+    Read back from the chain's own output root when it had one; otherwise
+    resolved again from the same manifest under the same options, which is
+    the same answer. A folder the chain could not index has none, and this
+    run says so rather than failing after the chain has finished.
+    """
+    root = options.get("output_root")
+    found = _conventions.load(root) if root else None
+    if found is not None:
+        return found
+    try:
+        from auto_organotypic.sources import read_manifest
+        recordings = read_manifest(folder, instrument=options.get("manifest_kind"))
+        return _conventions.resolve(recordings, options=options)
+    except Exception:
+        return None
 
 
 def _the_stages_we_turn_off_still_exist(chain: Any) -> None:
