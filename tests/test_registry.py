@@ -94,8 +94,18 @@ def test_nothing_is_pending_any_more():
     This is the number the whole plan was counting down. It started at thirteen
     and reaching zero is the claim that every protocol an agent can ask for is
     one this package can actually run.
+
+    The Motion port's stage 02 added one action that is pending *by design*:
+    ``track`` fronts a tracker reached through a dotted name outside this
+    package, and its module says so through ``status()``. So what this asserts
+    now is that the only pending actions are declared seams -- never one of
+    the protocols, and never an action whose module simply failed to land.
     """
-    assert registry.pending() == []
+    for name in registry.pending():
+        answer = registry.seam_status(registry.REGISTRY.binds_to(name))
+        assert answer is not None and answer[0] == "pending", (
+            f"{name} is pending and is not a declared seam")
+    assert set(registry.pending()) <= {"track"}
 
 
 def test_unimplemented_actions_are_pending_not_broken():

@@ -26,6 +26,8 @@ __all__ = [
     "REGISTRY",
     "MODULES",
     "pending",
+    "pending_reason",
+    "seam_status",
     "resolve",
     "build_registry",
     "CLAIM_TEMPLATES",
@@ -58,6 +60,10 @@ MODULE_NAMES: tuple[str, ...] = (
     "video",
     "pipelines.dluc_single_cell",
     "pipelines.cry1_dluc_photon",
+    # A seam: the module is here and its functions resolve, but the tracker
+    # behind them is reached by a dotted name that does not, so its ``status``
+    # is what says whether ``track`` is pending. See :func:`seam_status`.
+    "tracking",
 )
 
 
@@ -126,11 +132,64 @@ class _LocalRegistry:
         return sorted(used - declared)
 
 
-def resolve(method: str, modules: dict[str, ModuleType] | None = None):
-    """The callable behind a dotted target, or ``None`` while it is pending."""
+def seam_status(method: str,
+                modules: dict[str, ModuleType] | None = None) -> tuple[str, str] | None:
+    """What a seam module says about the target behind it, if it is one.
+
+    A **seam** is a module of this package whose functions hand off to a
+    dotted name outside it -- ``tracking`` to the Motion tracker -- so the
+    function resolves while the work it fronts does not. Such a module
+    declares ``status() -> ("ready", "") | ("pending", why)``, the shape
+    Auto-Organotypic's chain uses for a missing instrument client, and the
+    registry reads it so that ``describe`` and ``pending()`` report the
+    action's true state rather than the seam's. Returns ``None`` for an
+    ordinary module, which has no such thing to say.
+    """
+    module_name, _, _ = method.rpartition(".")
+    module = (modules if modules is not None else MODULES).get(module_name)
+    probe = getattr(module, "status", None) if module is not None else None
+    if not callable(probe):
+        return None
+    answer = probe()
+    if (isinstance(answer, tuple) and len(answer) == 2
+            and answer[0] in ("ready", "pending")):
+        return str(answer[0]), str(answer[1])
+    return None
+
+
+def pending_reason(method: str,
+                   modules: dict[str, ModuleType] | None = None) -> str:
+    """Why a target is pending, in one sentence; empty when it is not."""
+    answer = seam_status(method, modules)
+    if answer is not None:
+        return answer[1] if answer[0] == "pending" else ""
     module_name, _, attribute = method.rpartition(".")
     module = (modules if modules is not None else MODULES).get(module_name)
-    return getattr(module, attribute, None) if module is not None else None
+    if module is None:
+        return f"pymicroglia.{module_name} has not landed yet."
+    if getattr(module, attribute, None) is None:
+        return f"pymicroglia.{module_name} has no {attribute}."
+    return ""
+
+
+def resolve(method: str, modules: dict[str, ModuleType] | None = None):
+    """The callable behind a dotted target, or ``None`` while it is pending.
+
+    Pending is either the ordinary case -- the module or the attribute is not
+    there -- or a seam whose own ``status`` says the target behind it does not
+    resolve. Both are one answer here so every reader of the registry agrees.
+    """
+    module_name, _, attribute = method.rpartition(".")
+    module = (modules if modules is not None else MODULES).get(module_name)
+    if module is None:
+        return None
+    function = getattr(module, attribute, None)
+    if function is None:
+        return None
+    answer = seam_status(method, modules)
+    if answer is not None and answer[0] == "pending":
+        return None
+    return function
 
 
 def live_defaults(action: str) -> dict[str, Any]:
@@ -170,6 +229,12 @@ def _project_registry(ak):
                 if row["name"] in defaults:
                     row["default"] = defaults[row["name"]]
             return rows
+
+        def resolve(self, action: str):
+            # Through this module's :func:`resolve`, not the kit's, so a seam
+            # whose target is missing is pending here as it is everywhere
+            # else in the package.
+            return resolve(self.binds_to(action), self.modules)
 
     return ProjectRegistry
 
@@ -317,6 +382,9 @@ NEEDS_A_CLAIM: frozenset[str] = frozenset({
     "segment",
     "run_controls",
     "test_rhythm",
+    # Which pixels are which cell, across time: the same kind of conclusion
+    # as ``segment``, made over the whole recording.
+    "track",
     "dluc_single_cell",
     "cry1_dluc_photon",
     "bioluminescence",

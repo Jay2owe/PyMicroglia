@@ -458,7 +458,8 @@ def run(folder=None, *,
             entry.update({k: handoff[k] for k in ("status", "stems")})
             if handoff.get("reason"):
                 entry["reason"] = handoff["reason"]
-        outputs["motion"] = handoff["outputs"]
+            outputs["motion"] = _motion.track(handoff, where.path / _motion.FOLDER,
+                                              entry)   # pending is a state here
         summary["motion"] = {k: v for k, v in handoff.items()
                              if k != "outputs"}
 

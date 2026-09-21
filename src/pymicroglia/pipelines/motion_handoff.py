@@ -32,29 +32,27 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-__all__ = ["FOLDER", "INPUTS_NAME", "TARGET", "status", "write"]
+from .. import tracking as _tracking
+from ..tracking import TRACKER_TARGET as TARGET
+
+__all__ = ["FOLDER", "INPUTS_NAME", "TARGET", "status", "write", "track"]
 
 #: Under the run folder, so a handoff belongs to the run that produced it.
 FOLDER = "motion"
 INPUTS_NAME = "motion_inputs.json"
 
-#: The dotted name that will one day resolve. Until it does, :func:`status`
-#: reports it pending the way Auto-Organotypic reports a missing instrument
-#: client -- a line at the top of a run rather than a failure in the middle.
-TARGET = "motion.pipeline:run"
+# ``TARGET`` is :data:`pymicroglia.tracking.TRACKER_TARGET`, re-exported: the
+# dotted name that will one day resolve lives on the seam now, and this module
+# only writes what that seam's tracker reads.
 
 
 def status() -> tuple[str, str]:
-    """``("ready", "")`` once the Motion project is importable, else why not."""
-    import importlib.util
+    """``("ready", "")`` once the tracker resolves, else why not.
 
-    module = TARGET.partition(":")[0]
-    try:
-        if importlib.util.find_spec(module) is None:
-            return "pending", f"{module} is not installed."
-    except (ImportError, ValueError):
-        return "pending", f"{module} is not installed."
-    return "ready", ""
+    The seam's own answer, so a run record and ``describe track`` say the same
+    thing about the same missing module.
+    """
+    return _tracking.status()
 
 
 def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
@@ -97,6 +95,14 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
         "pinned_files": pinned,
         "still_missing": ["lag_float", "neutral_tracks", "trail_labels",
                           "trail_ages", "motion_composite"],
+        # What the tracker is expected to write back, per stem, in the words
+        # of ``pymicroglia.tracking.contract``: the five files and the
+        # decision-table root, relative to the tracker's run folder except for
+        # ``raw``, which is the pinned registered stack above. Written so the
+        # tracker and the measure step agree by file rather than by convention.
+        "expects": {stem: _tracking.expected_files(
+                        stem, entry["registered_raw"]["path"])
+                    for stem, entry in pinned.items()},
         "note": ("Written by PyMicroglia's auto_microglia pipeline. The stacks "
                  "under still_missing are Motion's own first stage, computed "
                  "from the registered stack pinned here."),
@@ -117,6 +123,31 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
                    evidence=[str(written)])
     return {"status": state, "reason": reason, "stems": len(pinned),
             "outputs": {"motion_inputs": str(written)}}
+
+
+def track(handoff: Mapping[str, Any], folder, entry: dict[str, Any]) -> dict[str, Any]:
+    """Call the seam on what :func:`write` wrote; pending is a state, not a crash.
+
+    Returns the stage's outputs: the handoff's, plus ``tracking`` -- the
+    tracker's files as a flat record -- once a tracker resolves behind
+    :data:`TARGET`. While none does, the handoff stands, the stage entry says
+    ``pending`` with the seam's own reason and the dotted name that is
+    missing, and the review note :func:`write` left is the one a person reads.
+    """
+    from ..run import ActionPending
+
+    outputs = dict(handoff["outputs"])
+    entry["target"] = TARGET
+    try:
+        result = _tracking.run(outputs["motion_inputs"], folder)
+    except ActionPending as exc:
+        entry["status"] = "pending"
+        entry["reason"] = str(exc)
+        return outputs
+    entry["status"] = "ok"
+    entry.pop("reason", None)
+    outputs["tracking"] = result.as_dict()
+    return outputs
 
 
 def _pin(path: Path, hashes: bool) -> dict[str, Any]:

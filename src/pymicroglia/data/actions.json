@@ -2005,6 +2005,28 @@
       },
       "method_version": "1",
       "source": []
+    },
+    {
+      "name": "track",
+      "summary": "Give every cell an identity that outlives a frame: link the masked regions of one recording through movement, merges, splits and temporary invisibility, and write the label stack, the unclaimed ledger, the provenance sidecar, the motion evidence and the decision tables the measure step reads. Pending until the Motion tracker is installed.",
+      "method": "tracking.run",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "inputs",
+        "folder",
+        "claim",
+        "tracker_options"
+      ],
+      "defaults": {
+        "inputs": null,
+        "folder": null,
+        "claim": "",
+        "tracker_options": null
+      },
+      "method_version": "2026-09-21-tracking-seam-v1",
+      "source": []
     }
   ],
   "params": [
@@ -2709,6 +2731,13 @@
       "description": "Write the mean-subtracted stack instead, so the fixed texture is genuinely subtracted rather than left below the display floor, at the cost of a visibly noisier background. Display only either way."
     },
     {
+      "name": "folder",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "Where the tracker writes its run: the labels, the unclaimed ledger, the provenance sidecar, the motion evidence and the decision tables, at the names 'expects' lists."
+    },
+    {
       "name": "folder_runner",
       "type": "str",
       "units": "-",
@@ -2945,6 +2974,13 @@
       "units": "-",
       "description": "Which files in the source folder count as recordings.",
       "required": false
+    },
+    {
+      "name": "inputs",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "The motion_inputs.json the auto_microglia pipeline wrote: the registered stacks and their cell masks, pinned by SHA-256, and under 'expects' the output names the tracker is to write back."
     },
     {
       "name": "isolated_event_median_size_px",
@@ -4326,6 +4362,13 @@
       "description": "Traces to test. Left out, the stored traces for this source are used."
     },
     {
+      "name": "tracker_options",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Settings handed to the tracker unchanged. Its keys are the tracker's own and are checked against its live signature once it is installed, not here."
+    },
+    {
       "name": "trust_policy_path",
       "type": "path",
       "units": "-",
@@ -4639,6 +4682,7 @@
     "test_rhythm.reuse",
     "trace_panel.poly_edge_h",
     "trace_panel.smooth_frames",
+    "track.claim",
     "unmix.input_glob",
     "unmix.reuse",
     "unmix.signal_channel"

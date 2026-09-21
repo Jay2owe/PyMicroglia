@@ -1016,6 +1016,32 @@ for _figure in ("registration_figure", "cosmic_ray_preview", "channel_figure",
                 "frames_figure", "cell_overlay", "roi_overlay"):
     DROPPED_PARAMS[_figure] = DROP_EVERYTHING
 
+#: What ``track`` takes. The tracker's own settings are not listed one by one:
+#: they are the tracker's and arrive as one mapping, checked against its live
+#: signature once it resolves, the same way ``cell_masks_options`` reaches the
+#: mask stage.
+_TRACK_PARAMS: list[dict] = [
+    {"name": "inputs", "type": "path", "units": "-", "required": True,
+     "default": None,
+     "description": "The motion_inputs.json the auto_microglia pipeline wrote: "
+                    "the registered stacks and their cell masks, pinned by "
+                    "SHA-256, and under 'expects' the output names the tracker "
+                    "is to write back."},
+    {"name": "folder", "type": "path", "units": "-", "required": True,
+     "default": None,
+     "description": "Where the tracker writes its run: the labels, the "
+                    "unclaimed ledger, the provenance sidecar, the motion "
+                    "evidence and the decision tables, at the names 'expects' "
+                    "lists."},
+    _PIPELINE_RUN[3],          # claim, worded as every pipeline words it
+    {"name": "tracker_options", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Settings handed to the tracker unchanged. Its keys are "
+                    "the tracker's own and are checked against its live "
+                    "signature once it is installed, not here."},
+]
+assert _PIPELINE_RUN[3]["name"] == "claim"
+
 #: The actions PyMicroglia exposes, and where each was copied from.
 #:
 #: ``method`` is the dotted target inside this package. Most do not exist yet;
@@ -1377,6 +1403,34 @@ def build(protocols: Path) -> dict:
         "params": [row["name"] for row in _PUBLICATION_WORKBOOK_PARAMS],
         "defaults": workbook_defaults,
         "method_version": "1",
+        "source": [],
+    })
+
+    # The tracking seam. No protocol to harvest: the action fronts the Motion
+    # tracker through ``pymicroglia.tracking.TRACKER_TARGET`` and is reported
+    # pending until that dotted name resolves.
+    for row in _TRACK_PARAMS:
+        shared = {key: value for key, value in row.items() if key != "default"}
+        known = vocabulary.get(row["name"])
+        if known is None:
+            vocabulary[row["name"]] = shared
+        elif known != shared:
+            conflicts.append(f"track.{row['name']}")
+    actions.append({
+        "name": "track",
+        "summary": "Give every cell an identity that outlives a frame: link the "
+                   "masked regions of one recording through movement, merges, "
+                   "splits and temporary invisibility, and write the label "
+                   "stack, the unclaimed ledger, the provenance sidecar, the "
+                   "motion evidence and the decision tables the measure step "
+                   "reads. Pending until the Motion tracker is installed.",
+        "method": "tracking.run",
+        "mutates": True,
+        "destructive": False,
+        "display_only": False,
+        "params": [row["name"] for row in _TRACK_PARAMS],
+        "defaults": {row["name"]: row["default"] for row in _TRACK_PARAMS},
+        "method_version": "2026-09-21-tracking-seam-v1",
         "source": [],
     })
 

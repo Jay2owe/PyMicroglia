@@ -459,10 +459,17 @@ def test_the_pipelines_available_are_exactly_the_ones_named_and_no_others():
 
 
 def test_the_two_registered_protocols_are_no_longer_pending():
-    """Gate 9: all thirteen registered protocols are backed."""
+    """Gate 9: all thirteen registered protocols are backed.
+
+    The Motion port's stage 02 added ``track``, pending by design behind a
+    declared seam; nothing else may be pending, and no protocol is.
+    """
     from pymicroglia import registry
 
-    assert registry.pending() == []
+    assert set(registry.pending()) <= {"track"}
+    for name in registry.pending():
+        answer = registry.seam_status(registry.REGISTRY.binds_to(name))
+        assert answer is not None and answer[0] == "pending", name
     assert registry.REGISTRY.binds_to("dluc_single_cell") == \
         "pipelines.dluc_single_cell.run"
     assert registry.REGISTRY.binds_to("cry1_dluc_photon") == \

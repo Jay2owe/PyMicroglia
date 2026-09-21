@@ -17,7 +17,8 @@ from typing import Any
 
 from . import catalogue, config, recording
 from ._optional import kit, kit_version
-from .registry import CLAIM_TEMPLATES, NEEDS_A_CLAIM, REGISTRY, pending
+from .registry import (CLAIM_TEMPLATES, NEEDS_A_CLAIM, REGISTRY, pending,
+                       pending_reason)
 
 __all__ = ["describe", "discover", "doctor", "validate"]
 
@@ -60,6 +61,9 @@ def _entry(name: str) -> dict[str, Any]:
         # and the rest declare it on the module that does the work.
         "method_version": recording._method_version(name),
         "pending": REGISTRY.resolve(name) is None,
+        # Empty unless pending. For a seam it names the dotted target that
+        # does not resolve, which is what to install.
+        "pending_reason": pending_reason(spec.get("method", "")),
         # Whether a run of this needs a sentence saying what it was meant to
         # show. Reported here so an agent learns it from `describe` rather than
         # from a refusal after it has already assembled the arguments.
@@ -289,8 +293,10 @@ def validate(action: str, params: dict[str, Any] | None = None) -> dict[str, Any
             f"{action} does not take {unknown}. Ask 'describe {action}' for what it does take."
         )
     if result["pending"]:
+        why = pending_reason(REGISTRY.binds_to(action))
         result["note"] = (
             f"{action} is declared but not yet implemented; it binds to "
-            f"{REGISTRY.binds_to(action)!r}, which does not exist yet."
+            f"{REGISTRY.binds_to(action)!r}, "
+            + (f"and {why}" if why else "which does not exist yet.")
         )
     return result
