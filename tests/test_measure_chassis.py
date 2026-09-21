@@ -273,8 +273,10 @@ def test_pool_writes_the_pooled_folder_and_the_manifest_section(run) -> None:
     assert fragment["movies"] == [STEM]
     assert set(fragment["tables"]) == {
         "cell_frame", "cell_summary", "frame_summary", "stub_frames",
-        "stub_channels", "history_stub_copy"}
+        "stub_channels", "history_stub_copy", "cell_summary_windowed",
+        "frame_summary_windowed", "window_change"}
     assert fragment["tables"]["history_stub_copy"]["origin_folder"] == TRACKER_FOLDER
+    assert fragment["tables"]["window_change"]["origin_folder"] == WINDOWS_FOLDER
     assert (folder / "pooled" / "cell_frame.csv").is_file()
     assert read_manifest(folder)["pooled"] == fragment
     with pytest.raises(FileExistsError, match="immutable"):

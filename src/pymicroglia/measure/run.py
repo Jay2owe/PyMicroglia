@@ -113,13 +113,16 @@ def table_values(table: pd.DataFrame) -> dict[str, list[Any]]:
         if kind == "f":
             out[str(column)] = [_nine(v) for v in series.to_numpy(dtype=float).tolist()]
         elif kind in "iu":
-            out[str(column)] = [int(v) for v in series.tolist()]
+            # A nullable integer column (pandas ``Int64``) reports kind "i"
+            # and holds ``pd.NA`` where a value is missing; Motion wrote those
+            # as blanks, and so does this.
+            out[str(column)] = [None if v is pd.NA else int(v) for v in series.tolist()]
         elif kind == "b":
-            out[str(column)] = [bool(v) for v in series.tolist()]
+            out[str(column)] = [None if v is pd.NA else bool(v) for v in series.tolist()]
         else:
             values = []
             for v in series.tolist():
-                if v is None or (isinstance(v, float) and v != v):
+                if v is None or v is pd.NA or (isinstance(v, float) and v != v):
                     values.append(None)
                 elif isinstance(v, (np.floating, float)):
                     values.append(_nine(float(v)))

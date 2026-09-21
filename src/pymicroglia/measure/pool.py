@@ -36,8 +36,10 @@ __all__ = ["STAMP_COLUMNS", "SOURCE_FOLDERS", "movie_folders", "pool_run", "pool
 #: without them cannot be pooled into anything a later stage can group by.
 STAMP_COLUMNS = ("stem", "condition", "subject")
 
-#: The kind folders a run's per-movie tables are split across.
-SOURCE_FOLDERS = ("measure", "tracker")
+#: The kind folders a run's per-movie tables are split across. ``windows``
+#: is pooled too: Motion wrote the windowed roll-ups beside the others and
+#: pooled them, and a pooled ``window_change`` is what a contrast reads.
+SOURCE_FOLDERS = ("measure", "tracker", "windows")
 
 
 def movie_folders(run_dir: Path) -> list[str]:

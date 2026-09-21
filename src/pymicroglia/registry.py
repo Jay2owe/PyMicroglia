@@ -69,6 +69,7 @@ MODULE_NAMES: tuple[str, ...] = (
     # ``tracking``: its tests come from Circadian Workbench through the one
     # importer module the rhythm stage adds, and it is pending until then.
     "measure",
+    "measure.modules",
     "measure.pool",
     "measure.windows",
     "measure.contrasts",

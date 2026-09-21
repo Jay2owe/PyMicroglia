@@ -103,8 +103,9 @@ def _registered() -> tuple[dict[str, Column], dict[str, set[str]]]:
     this file so that reading a configuration with no ``metric_groups`` block
     never pays for it.
     """
-    from . import modules  # noqa: F401  - importing registers every module
+    from . import modules
 
+    modules.load()                      # importing a module is what registers it
     columns = declared_columns()
     owners: dict[str, set[str]] = {}
     for module in (*list_modules(), *list_derived()):

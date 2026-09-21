@@ -73,12 +73,39 @@ def _as_number(text: str) -> float | None:
         return None
 
 
+#: Keys of an embedded Workbench run record that describe the machine the
+#: run happened on rather than the arithmetic. ``rhythm_methods.csv`` carries
+#: one record per fit as JSON, and its ``cwd`` is the checkout the run was
+#: made from: Motion's when frozen, this package's now.
+ENVIRONMENT_KEYS = ("cwd",)
+
+
+def _without_environment(document):
+    if isinstance(document, dict):
+        return {k: _without_environment(v) for k, v in document.items()
+                if k not in ENVIRONMENT_KEYS}
+    if isinstance(document, list):
+        return [_without_environment(v) for v in document]
+    return document
+
+
+def _same_document(left: str, right: str) -> bool:
+    """Two JSON cells that agree once the environment keys are dropped."""
+    if not (left.startswith("{") and right.startswith("{")):
+        return False
+    try:
+        a, b = json.loads(left), json.loads(right)
+    except ValueError:
+        return False
+    return _without_environment(a) == _without_environment(b)
+
+
 def _same_value(left: str, right: str) -> bool:
     if left == right:
         return True
     a, b = _as_number(left), _as_number(right)
     if a is None or b is None:
-        return False
+        return _same_document(left, right)
     if math.isnan(a) and math.isnan(b):
         return True
     if a == b:
@@ -141,8 +168,35 @@ def read_as_written(path: Path) -> "pd.DataFrame":
     return pd.read_csv(path, dtype=str, keep_default_na=False, na_filter=False)
 
 
+#: Where the ported chassis puts each of Motion's tables. Motion wrote every
+#: per-movie table under ``<stem>/tables/`` and the pooled ones under
+#: ``pooled/tables/``; PyMicroglia writes kind first (stage 03): the
+#: windowed roll-ups in ``windows/<stem>/``, the tracker's copies in
+#: ``tracker/<stem>/``, everything else measured in ``measure/<stem>/`` and
+#: the pooled tables directly in ``pooled/``.
+WINDOWED = ("cell_summary_windowed.csv", "frame_summary_windowed.csv", "window_change.csv")
+
+
+def ported_path(run: Path, rel: str) -> Path:
+    """The file in a ported run folder that holds the frozen table ``rel``."""
+    parts = rel.split("/")
+    name = parts[-1]
+    if len(parts) == 1:
+        return run / name                         # statistics.csv, at the top
+    if parts[0] == "pooled":
+        return run / "pooled" / name
+    stem = parts[0]
+    if name in WINDOWED:
+        return run / "windows" / stem / name
+    if name.startswith("history_"):
+        tracker = run / "tracker" / stem / name
+        if tracker.exists():
+            return tracker
+    return run / "measure" / stem / name
+
+
 def compare_run(run: Path, *, section: str = "measure",
-                ignore: tuple[str, ...] = ()) -> list[str]:
+                ignore: tuple[str, ...] = (), layout: str = "motion") -> list[str]:
     """Every difference between a run folder and the frozen record; empty means parity.
 
     ``section`` is ``measure`` for the measurement run, a pipeline name for a
@@ -150,7 +204,8 @@ def compare_run(run: Path, *, section: str = "measure",
     whose bytes match is accepted at once; otherwise its whole frozen copy is
     compared when the fixture holds one, and its head and tail when not.
     ``ignore`` lists relative-path prefixes to leave out; a ported run should
-    pass with none.
+    pass with none. ``layout`` is ``motion`` for a folder Motion wrote and
+    ``ported`` for one this package wrote (see :func:`ported_path`).
     """
     document = expected()
     if section.startswith("extra:"):
@@ -163,7 +218,7 @@ def compare_run(run: Path, *, section: str = "measure",
     for rel, record in tables.items():
         if rel.startswith(ignore):
             continue
-        path = run / rel
+        path = ported_path(run, rel) if layout == "ported" else run / rel
         if not path.exists():
             problems.append(f"missing {rel}")
             continue
@@ -228,6 +283,71 @@ def test_every_table_record_is_complete():
         assert len(record["tail"]) == min(3, record["rows"]), rel
         for row in (*record["head"], *record["tail"]):
             assert sorted(row) == sorted(record["columns"]), rel
+
+
+# --------------------------------------------------------------------------
+# The ported measure step against the record (stage 04)
+# --------------------------------------------------------------------------
+
+#: The one table of the ``measure`` section the ported run does not write
+#: yet: ``statistics.csv`` is the contrasts step, which reaches Circadian
+#: Workbench and lands in stage 05. Recorded here so the gap is visible.
+NOT_YET_PORTED = ("statistics.csv",)
+
+
+@pytest.fixture(scope="module")
+def ported_run(tmp_path_factory):
+    """The fixture measured by the ported modules, then pooled. Once per module."""
+    import os
+
+    from measure_stubs import fixture_copy
+    from pymicroglia.measure import load_config
+    from pymicroglia.measure.pool import pool
+    from pymicroglia.measure.run import run
+
+    folder = tmp_path_factory.mktemp("ported")
+    previous = {k: os.environ.get(k) for k in ("PYMICROGLIA_STORE", "PYMICROGLIA_INDEX")}
+    os.environ["PYMICROGLIA_STORE"] = str(folder / "cache")
+    os.environ["PYMICROGLIA_INDEX"] = str(folder / "index")
+    try:
+        config = load_config(fixture_copy(folder, keep_module_blocks=True))
+        manifest = run(config, folder / "outputs", run_label="parity",
+                       claim="the stage-01 fixture measured by the ported modules")
+        pool(manifest["run"]["folder"])
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+    return Path(manifest["run"]["folder"]), manifest
+
+
+def test_ported_measure_run_matches_the_frozen_record(ported_run):
+    """Stage 04's exit gate: every table in ``expected.json["measure"]``.
+
+    Byte-identical where the writers agree, and equal at nine significant
+    figures where they do not (the store's CSV writer spells a float or a
+    blank differently from Motion's). The Workbench run record embedded in
+    ``rhythm_methods.csv`` is compared with its ``cwd`` dropped.
+    """
+    folder, _ = ported_run
+    problems = compare_run(folder, section="measure", layout="ported",
+                           ignore=NOT_YET_PORTED)
+    assert problems == [], "\n".join(problems[:40])
+
+
+def test_ported_run_ran_every_module_the_record_names(ported_run):
+    _, manifest = ported_run
+    frozen = expected()["measure"]["manifest"]["movies"][0]["modules"]
+    (movie,) = manifest["movies"]
+    ours = {m["module"]: m for m in movie["modules"]}
+    assert set(ours) == {m["module"] for m in frozen}
+    for record in frozen:
+        assert ours[record["module"]]["status"] == record["status"], record["module"]
+        assert ours[record["module"]].get("tables", {}) == record.get("tables", {}), \
+            record["module"]
+    assert all(m["method_version"] for m in manifest["registered_modules"])
 
 
 def test_a_changed_number_is_reported(tmp_path):
