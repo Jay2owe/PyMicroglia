@@ -36,13 +36,16 @@ def _live_params(name: str) -> list[dict[str, Any]]:
     The catalogue is still the source for names, types, units and prose. Only
     the default is taken from the code, and only when the target resolves.
     """
-    from .registry import live_defaults
+    from .registry import live_choices, live_defaults
 
     live = live_defaults(name)
+    choices = live_choices(name)
     rows = catalogue.action_params(name)
     for row in rows:
         if row["name"] in live:
             row["default"] = live[row["name"]]
+        if row["name"] in choices:
+            row["choices"] = choices[row["name"]]
     return rows
 
 
@@ -280,18 +283,26 @@ def validate(action: str, params: dict[str, Any] | None = None) -> dict[str, Any
             "available": REGISTRY.names(),
         }
 
+    from .registry import check_parameters
+
     known = {row["name"] for row in catalogue.action_params(action)}
     unknown = sorted(set(params) - known)
+    # What the code can see inside the arguments the catalogue only names:
+    # an option under a nested group that no module declares, say.
+    problems = check_parameters(action, params) if not unknown else []
     result: dict[str, Any] = {
-        "ok": not unknown,
+        "ok": not unknown and not problems,
         "action": action,
         "unknown_params": unknown,
+        "problems": problems,
         "pending": REGISTRY.resolve(action) is None,
     }
     if unknown:
         result["message"] = (
             f"{action} does not take {unknown}. Ask 'describe {action}' for what it does take."
         )
+    elif problems:
+        result["message"] = "; ".join(problems)
     if result["pending"]:
         why = pending_reason(REGISTRY.binds_to(action))
         result["note"] = (

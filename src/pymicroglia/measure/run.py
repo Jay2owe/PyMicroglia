@@ -428,6 +428,7 @@ def analyse_movie(config: MeasureConfig, movie: MovieSpec, run: Path, *,
                 "tables": {key: int(len(value)) for key, value in table_outputs.items()},
                 "stacks": {key: list(value.shape) for key, value in stack_outputs.items()},
                 "parameters": {**module.defaults, **context.module_params(name)},
+                "method_version": module.method_version,
             }
         )
 
@@ -476,6 +477,7 @@ def analyse_movie(config: MeasureConfig, movie: MovieSpec, run: Path, *,
                 "seconds": round(time.perf_counter() - module_started, 3),
                 "tables": {key: int(len(value)) for key, value in produced.items()},
                 "parameters": module.parameters(context),
+                "method_version": module.method_version,
             }
         )
 
@@ -555,10 +557,11 @@ def analyse_movie(config: MeasureConfig, movie: MovieSpec, run: Path, *,
 def _registered_modules() -> list[dict]:
     return [
         {"name": m.name, "kind": "measurement", "description": m.description,
-         "requires": list(m.requires)}
+         "requires": list(m.requires), "method_version": m.method_version}
         for m in list_modules()
     ] + [
-        {"name": m.name, "kind": "derived", "description": m.description}
+        {"name": m.name, "kind": "derived", "description": m.description,
+         "method_version": m.method_version}
         for m in list_derived()
     ]
 
@@ -573,7 +576,9 @@ def run(config: MeasureConfig, output_dir, *, run_label: str | None = None,
     on -- ``version`` keeps both, ``error`` refuses, ``overwrite`` replaces,
     ``skip`` hands back the stored manifest.
     """
-    from . import modules as _modules  # noqa: F401  - importing registers every module
+    from . import modules as _modules
+
+    _modules.load()                     # importing a module is what registers it
 
     output_dir = Path(output_dir)
     selected = [m for m in config.movies if not stems or m.stem in stems]

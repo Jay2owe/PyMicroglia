@@ -219,6 +219,51 @@ def live_defaults(action: str) -> dict[str, Any]:
     return merged
 
 
+def _bound_module(action: str) -> ModuleType | None:
+    """The module the action's target lives in, or ``None`` while pending."""
+    if action not in REGISTRY:
+        return None
+    function = REGISTRY.resolve(action)
+    if function is None:
+        return None
+    import sys
+
+    return sys.modules.get(getattr(function, "__module__", "") or "")
+
+
+def live_choices(action: str) -> dict[str, list[Any]]:
+    """The values a parameter of one action may take, where the code can say.
+
+    A bound module may declare ``parameter_choices() -> {param: [values]}``;
+    ``measure`` uses it to offer the registered module names for
+    ``enabled_modules``. The catalogue's six-field rows cannot carry a list
+    that only the code knows, so ``describe`` asks here and adds a
+    ``choices`` entry to the row. Empty for every other action.
+    """
+    module = _bound_module(action)
+    probe = getattr(module, "parameter_choices", None) if module is not None else None
+    if not callable(probe):
+        return {}
+    return {str(name): list(values) for name, values in dict(probe()).items()}
+
+
+def check_parameters(action: str, params: Mapping[str, Any]) -> list[str]:
+    """Problems the bound module can see in an action's arguments before a run.
+
+    A parameter name is checked by ``validate`` against the catalogue; what
+    is *inside* a nested option group only the code can check. A bound
+    module may declare ``check_parameters(params) -> [problem, ...]`` and
+    ``validate`` reports what it says, so an unknown option under
+    ``module_options`` is refused naming the module rather than discovered
+    after the arguments have been assembled.
+    """
+    module = _bound_module(action)
+    probe = getattr(module, "check_parameters", None) if module is not None else None
+    if not callable(probe):
+        return []
+    return [str(problem) for problem in probe(dict(params))]
+
+
 def _project_registry(ak):
     """The kit's Registry, taught this project's per-action defaults.
 

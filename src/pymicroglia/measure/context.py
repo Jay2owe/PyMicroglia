@@ -167,6 +167,11 @@ class MeasurementContext:
     objects: dict[str, ObjectStack] = field(default_factory=dict)
     side: dict[str, Any] = field(default_factory=dict)   # name -> DataFrame
     params: dict = field(default_factory=dict)
+    #: The tracker's declaration of its decision tables for this movie, a
+    #: :class:`pymicroglia.tracking.contract.DecisionTables`, or ``None`` when
+    #: the tracking chain produced none. Read by the ``history`` module and by
+    #: nothing else: it is the one module allowed to open a tracking CSV.
+    decisions: Any = None
 
     @property
     def channel_names(self) -> list[str]:

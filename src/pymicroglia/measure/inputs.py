@@ -730,6 +730,7 @@ def load_movie(config: MeasureConfig, movie: MovieSpec) -> tuple[MeasurementCont
         side=side,
         valid=valid,
         params=params,
+        decisions=tracked.decisions,
     )
 
     provenance["scale"] = scale.describe()

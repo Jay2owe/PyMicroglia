@@ -30,7 +30,7 @@ from .spec import (ChannelSpec, ContrastSpec, MeasureConfig, MovieSpec,
                    ObjectSetSpec, SideTableSpec, WindowSpec, load_config)
 
 __all__ = [
-    "measure",
+    "measure", "parameter_choices", "check_parameters",
     "Scale", "ChannelStack", "ObjectStack", "MeasurementContext",
     "Column", "Output", "measurement", "derived",
     "declared_columns", "declared_tables",
@@ -73,3 +73,44 @@ def measure(movies: Sequence[Any], *, output_dir, run_label: str | None = None,
         contrasts=contrasts, metric_groups=metric_groups)
     return run(config, output_dir, run_label=run_label, if_exists=if_exists,
                claim=claim)
+
+
+def parameter_choices() -> dict[str, list[str]]:
+    """What ``describe measure`` offers as the choices for a parameter.
+
+    The module names are data in :mod:`.modules`, so listing them imports
+    none of the science.
+    """
+    from .modules import MODULE_NAMES
+
+    return {"enabled_modules": list(MODULE_NAMES)}
+
+
+def check_parameters(params: Mapping[str, Any]) -> list[str]:
+    """Problems ``validate measure`` should report before anything runs.
+
+    ``module_options`` is checked against each module's declared settings,
+    which means loading the modules; an unknown option is reported naming
+    the module, exactly as the run would refuse it. A module name nothing
+    answers to under ``enabled_modules`` is reported too.
+    """
+    problems: list[str] = []
+    options = params.get("module_options")
+    if options:
+        from . import modules as _modules
+        from .run import check_module_options
+
+        _modules.load()
+        try:
+            check_module_options(options)
+        except (TypeError, ValueError) as exc:
+            problems.append(f"module_options: {exc}")
+    enabled = params.get("enabled_modules")
+    if enabled:
+        from .modules import MODULE_NAMES
+
+        unknown = [str(name) for name in enabled if str(name) not in MODULE_NAMES]
+        if unknown:
+            problems.append(f"enabled_modules names {unknown}, which no module "
+                            f"answers to; the modules are {', '.join(MODULE_NAMES)}")
+    return problems

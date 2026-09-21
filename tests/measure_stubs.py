@@ -1,10 +1,14 @@
 """Stand-in measurement modules and a synthetic movie for the measure chassis.
 
-Stage 03 of the Motion port lands the chassis without a single science
-module: ``pymicroglia.measure.modules`` is empty until stage 04. The chassis
-still has to be tested -- the join, the folds, the roll-ups, the writer, the
-pooling -- so these tests register a handful of small stand-ins through the
-same decorators a real module uses and unregister them afterwards.
+Stage 03 of the Motion port landed the chassis without a single science
+module, and the chassis still has to be tested on its own -- the join, the
+folds, the roll-ups, the writer, the pooling -- so these tests register a
+handful of small stand-ins through the same decorators a real module uses.
+Since stage 04 the real modules are registered too, and a stand-in cannot
+sit beside them: ``stub_area`` declares ``area_px`` in ``px2`` where
+``morphology`` says ``px``, and two modules describing one column
+differently is refused by design. ``registered`` therefore puts the real
+registries aside for the duration and restores them afterwards.
 
 They are deliberately shaped like the real ones: one measurement that folds
 into the cell-frame table and writes a per-frame file of its own, one that
@@ -16,6 +20,7 @@ so the shapes the chassis is exercised over are the ones it was written for.
 
 from __future__ import annotations
 
+import functools
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -26,7 +31,8 @@ from pymicroglia.measure import (ChannelStack, Column, MeasurementContext,
                                  ObjectStack, Output, Scale, declare)
 
 __all__ = ["STUB_NAMES", "register_stubs", "forget_stubs", "registered", "stubs",
-           "movie", "channel", "objects", "side", "FIXTURE", "fixture_copy", "measured"]
+           "movie", "channel", "objects", "side", "all_tables", "FIXTURE",
+           "fixture_copy", "measured"]
 
 #: Every stand-in, in registration order.
 STUB_NAMES = ("stub_area", "stub_tracks", "stub_channel", "stub_regimes")
@@ -142,11 +148,26 @@ def forget_stubs() -> None:
 
 @contextmanager
 def registered():
+    """The stand-ins alone, with the real modules set aside and put back.
+
+    The real modules are loaded first so that the run's own ``load()``
+    inside the context finds them already imported and registers nothing.
+    """
+    from pymicroglia.measure import modules as real
+
+    real.load()
+    kept = (dict(declare.MEASUREMENTS), dict(declare.DERIVATIONS))
+    declare.MEASUREMENTS.clear()
+    declare.DERIVATIONS.clear()
     register_stubs()
     try:
         yield
     finally:
         forget_stubs()
+        declare.MEASUREMENTS.clear()
+        declare.DERIVATIONS.clear()
+        declare.MEASUREMENTS.update(kept[0])
+        declare.DERIVATIONS.update(kept[1])
 
 
 @pytest.fixture
@@ -237,20 +258,63 @@ def channel(labels: np.ndarray, noise: np.ndarray, n_frames: int) -> ChannelStac
     )
 
 
+def all_tables() -> dict[str, dict]:
+    """Every table every real module writes on :func:`movie`, module by module.
+
+    Motion's ``test_column_declarations.ALL_TABLES``: the derived modules are
+    handed a cell-frame that grows as they run, which is what
+    ``run.analyse_movie`` does and for the same reason -- ``sequence_distance``
+    reads the state number ``regimes`` folds in. Computed once per session,
+    since the rhythm fits take seconds; the real modules must be registered
+    when it is first asked for, so it is never called inside ``registered``.
+    """
+    return dict(_all_tables())
+
+
+@functools.lru_cache(maxsize=1)
+def _all_tables() -> dict[str, dict]:
+    import pandas as pd
+
+    from pymicroglia.measure import modules as real
+    from pymicroglia.measure.run import _fold_derived, _join_cell_frame
+
+    real.load()
+    context = movie()
+    written: dict[str, dict] = {}
+    tables: dict = {}
+    for module in declare.list_modules():
+        available, why = module.available(context)
+        assert available, why
+        written[module.name] = {name: frame for name, frame in module.measure(context).items()
+                                if isinstance(frame, pd.DataFrame)}
+        tables.update(written[module.name])
+    cell_frame = _join_cell_frame(tables, context)
+    for module in declare.list_derived():
+        cell_frame = _fold_derived(cell_frame, tables, set(tables))
+        missing = [c for c in module.needs_columns if c not in cell_frame.columns]
+        assert not missing, f"{module.name} needs {missing}, which no earlier module wrote"
+        produced = {name: frame for name, frame in module.derive(cell_frame, context).items()
+                    if isinstance(frame, pd.DataFrame)}
+        written[module.name] = produced
+        tables.update(produced)
+    return written
+
+
 # ------------------------------------------------------- the fixture run
 
 #: The stage-01 fixture: three tracked cells, 48 frames at 30 min, with every
 #: extra input the configuration knows how to declare.
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "motion_parity"
 
-#: The two blocks of the fixture's configuration that name stage-04 modules:
-#: ``metric_groups`` lists columns only the real modules write, ``modules``
-#: sets options on modules that are not registered until then. Both are
-#: refused on the way in, by design, so the chassis run drops them.
+#: The two blocks of the fixture's configuration that name the real modules:
+#: ``metric_groups`` lists columns only they write, ``modules`` sets options
+#: on them. A chassis run with the stand-ins alone drops both, since an
+#: option on an unregistered module is refused on the way in by design; the
+#: parity run keeps them.
 STAGE_04_BLOCKS = ("metric_groups", "modules")
 
 
-def fixture_copy(folder) -> Path:
+def fixture_copy(folder, *, keep_module_blocks: bool = False) -> Path:
     """The fixture's inputs and configuration copied beside each other.
 
     Copied rather than pointed at, so a run can never write into the package's
@@ -263,8 +327,9 @@ def fixture_copy(folder) -> Path:
     target = Path(folder) / "parity"
     shutil.copytree(FIXTURE / "inputs", target / "inputs", dirs_exist_ok=True)
     data = json.loads((FIXTURE / "config.json").read_text(encoding="utf-8"))
-    for block in STAGE_04_BLOCKS:
-        data.pop(block, None)
+    if not keep_module_blocks:
+        for block in STAGE_04_BLOCKS:
+            data.pop(block, None)
     path = target / "config.json"
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
     return path

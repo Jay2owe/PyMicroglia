@@ -311,4 +311,9 @@ def test_window_rolls_up_a_run_measured_without_windows(isolated) -> None:
 
 
 def test_the_stand_ins_leave_no_trace_after_a_run(run) -> None:
-    assert declare.list_modules() == [] and declare.list_derived() == []
+    """The stand-ins are gone and the real modules are back where they were."""
+    from pymicroglia.measure.modules import MODULE_NAMES
+
+    names = {m.name for m in (*declare.list_modules(), *declare.list_derived())}
+    assert not names & set(STUB_NAMES)
+    assert names == set(MODULE_NAMES)

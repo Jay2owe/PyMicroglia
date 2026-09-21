@@ -24,6 +24,7 @@ is measured, and the type hints that mention a table are strings.
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Iterable
 
@@ -130,6 +131,10 @@ class AnalysisModule:
     defaults: dict = field(default_factory=dict)
     produces: tuple[Column, ...] = ()
     writes: tuple[Output, ...] = ()
+    #: The module file's ``METHOD_VERSION`` at registration, recorded per
+    #: module in the run record so two runs can say whether their numbers
+    #: came from the same arithmetic. Empty for a stand-in that declares none.
+    method_version: str = ""
 
     def available(self, context: "MeasurementContext") -> tuple[bool, str]:
         """Whether this movie carries what the module reads.
@@ -163,6 +168,7 @@ class DerivedModule:
     produces: tuple[Column, ...] = ()
     writes: tuple[Output, ...] = ()
     resolve_params: Callable[["MeasurementContext"], dict] | None = None
+    method_version: str = ""
 
     def parameters(self, context: "MeasurementContext") -> dict:
         """The effective settings used by this module for one recording."""
@@ -175,6 +181,17 @@ class DerivedModule:
 #: importing a module is what registers it, exactly as in Motion.
 MEASUREMENTS: dict[str, AnalysisModule] = {}
 DERIVATIONS: dict[str, DerivedModule] = {}
+
+
+def _method_version_of(function: Callable) -> str:
+    """The ``METHOD_VERSION`` constant of the file that defines ``function``.
+
+    Read at decoration time from ``sys.modules``, where a module being
+    imported is already present, so a module declares its version once at
+    the top of its file and the registration picks it up.
+    """
+    module = sys.modules.get(getattr(function, "__module__", "") or "")
+    return str(getattr(module, "METHOD_VERSION", "") or "")
 
 
 def derived(
@@ -198,6 +215,7 @@ def derived(
             produces=tuple(produces),
             writes=tuple(writes),
             resolve_params=resolve_params,
+            method_version=_method_version_of(function),
         )
         return function
 
@@ -225,6 +243,7 @@ def measurement(
             defaults=dict(defaults or {}),
             produces=tuple(produces),
             writes=tuple(writes),
+            method_version=_method_version_of(function),
         )
         return function
 
