@@ -2027,6 +2027,106 @@
       },
       "method_version": "2026-09-21-tracking-seam-v1",
       "source": []
+    },
+    {
+      "name": "measure",
+      "summary": "Turn tracked labels into tables: one row per cell per frame, rolled up per cell and per frame, one folder per kind of table with one ledger each, and a manifest that fingerprints what went in and what came out. Every registered measurement module runs unless told which.",
+      "method": "measure.measure",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "movies",
+        "output_dir",
+        "run_label",
+        "if_exists",
+        "enabled_modules",
+        "module_options",
+        "frame_interval_min",
+        "microns_per_pixel",
+        "conditions",
+        "windows",
+        "contrasts",
+        "metric_groups",
+        "verify_hashes",
+        "claim"
+      ],
+      "defaults": {
+        "movies": null,
+        "output_dir": null,
+        "run_label": null,
+        "if_exists": "version",
+        "enabled_modules": null,
+        "module_options": null,
+        "frame_interval_min": null,
+        "microns_per_pixel": null,
+        "conditions": null,
+        "windows": [],
+        "contrasts": [],
+        "metric_groups": null,
+        "verify_hashes": true,
+        "claim": ""
+      },
+      "method_version": "2026-09-21-measure-chassis-v1",
+      "source": []
+    },
+    {
+      "name": "pool",
+      "summary": "Concatenate an existing run's per-movie tables into <run>/pooled/, recording which movies contributed to each table, how many rows each gave and which columns one movie had that another did not.",
+      "method": "measure.pool.pool",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "run_dir"
+      ],
+      "defaults": {
+        "run_dir": null
+      },
+      "method_version": "2026-09-21-measure-chassis-v1",
+      "source": []
+    },
+    {
+      "name": "window",
+      "summary": "Re-roll an existing run's summaries inside declared windows, per cell and per frame, with each window's values against its baseline window. Re-measures nothing.",
+      "method": "measure.windows.window",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "run_dir",
+        "windows",
+        "verify_hashes"
+      ],
+      "defaults": {
+        "run_dir": null,
+        "windows": [],
+        "verify_hashes": true
+      },
+      "method_version": "2026-09-21-measure-chassis-v1",
+      "source": []
+    },
+    {
+      "name": "contrasts",
+      "summary": "Test every declared contrast over an existing run's pooled tables, one row per contrast per metric, corrected within each declared family. Pending until the Circadian Workbench importer of the rhythm stage lands.",
+      "method": "measure.contrasts.contrasts",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "run_dir",
+        "contrasts",
+        "metric_groups",
+        "claim"
+      ],
+      "defaults": {
+        "run_dir": null,
+        "contrasts": [],
+        "metric_groups": null,
+        "claim": ""
+      },
+      "method_version": "2026-09-21-measure-chassis-v1",
+      "source": []
     }
   ],
   "params": [
@@ -2437,11 +2537,25 @@
       "required": false
     },
     {
+      "name": "conditions",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "The experimental groups, as the 'conditions' block of analysis_config.json: a mapping of name to stem regex, or a list of condition entries. A movie no pattern matches stops the run rather than being measured unassigned."
+    },
+    {
       "name": "content_crop",
       "type": "bool",
       "units": "-",
       "required": false,
       "description": "Crop to the largest tissue component plus a margin. Off keeps the whole common valid field."
+    },
+    {
+      "name": "contrasts",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Declared comparisons, the 'contrasts' block: table, metrics, group_by, groups, unit, test, correction, alpha. Validated here and recorded in the manifest; run by the contrasts action over the pooled tables."
     },
     {
       "name": "control",
@@ -2617,6 +2731,13 @@
       "units": "minutes",
       "required": false,
       "description": "Fallback frame spacing when the file carries no plane timestamps. A uniform assumption cannot find a pause in the recording, only hide it."
+    },
+    {
+      "name": "enabled_modules",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Which measurement modules to run, by name, in order. Left out, every registered module runs. A name no module answers to is recorded in the manifest as unregistered rather than silently dropped."
     },
     {
       "name": "encrypted_sections",
@@ -2806,6 +2927,13 @@
       "units": "h",
       "description": "Hours between frames. A wrong value rescales every period that comes out.",
       "required": false
+    },
+    {
+      "name": "frame_interval_min",
+      "type": "float",
+      "units": "minutes",
+      "required": true,
+      "description": "Minutes between consecutive label frames. Nothing in a label stack states it, and it is what turns a frame index into an hour on every table."
     },
     {
       "name": "frame_interval_minutes",
@@ -3263,6 +3391,20 @@
       "description": "Which registration engine: 'reference', the default, which runs in process, or 'ripr', a packaged Java engine. RIPR works at full resolution and refuses downsample and max_residual_px rather than ignoring them, because it uses neither."
     },
     {
+      "name": "metric_groups",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Named sets of measured columns, the 'metric_groups' block, referenced as '@name' wherever a list of columns is expected. Every member must be a column some registered module declares."
+    },
+    {
+      "name": "microns_per_pixel",
+      "type": "float",
+      "units": "um/px",
+      "required": false,
+      "description": "Pixel size. Left out, the raw stack's own metadata is read; if it states none, every length is reported in pixels and the scale is recorded as uncalibrated."
+    },
+    {
       "name": "min_cand_px",
       "type": "int",
       "units": "px",
@@ -3319,11 +3461,25 @@
       "required": false
     },
     {
+      "name": "module_options",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Settings per module: {module: {option: value}}, the 'modules' block of analysis_config.json. Every option is checked against the module's declared defaults before anything runs; an unknown one is refused."
+    },
+    {
       "name": "move_max",
       "type": "float",
       "units": "-",
       "description": "a cell moving more than this is not \"still\", px",
       "required": false
+    },
+    {
+      "name": "movies",
+      "type": "list",
+      "units": "-",
+      "required": true,
+      "description": "The movies to measure, one block each in the shape of Motion's analysis_config.json 'movies' entry: stem, labels, raw, and optionally unclaimed, evidence, provenance, history, valid_mask, channels, objects, side_tables, windows, condition, subject and the sha256 pins. Relative paths resolve against the working directory; load_config resolves them against the file."
     },
     {
       "name": "ndecoy",
@@ -3886,6 +4042,13 @@
       "description": "Polygon simplification tolerance, px. Larger drops points from the outline; a ROI simplified past a pixel or two stops matching the mask it came from."
     },
     {
+      "name": "run_dir",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "A run folder the measure action wrote: the one holding measure/<stem>/ and the manifest in its workings."
+    },
+    {
       "name": "run_label",
       "type": "str",
       "units": "-",
@@ -4418,6 +4581,13 @@
       "required": false
     },
     {
+      "name": "verify_hashes",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Refuse an input whose SHA-256 differs from the pin in its movie block. Off records the mismatch and measures anyway."
+    },
+    {
       "name": "video_fps",
       "type": "float",
       "units": "fps",
@@ -4507,6 +4677,13 @@
       "units": "%",
       "description": "Display ceiling, percentile of the input.",
       "required": false
+    },
+    {
+      "name": "windows",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Named stretches of the recording, each with from_hours/to_hours or from_frame/to_frame and an optional baseline; the 'windows' block. Half-open. Declaring none writes no windowed tables."
     },
     {
       "name": "work",
@@ -4604,6 +4781,7 @@
     "composite_video.frame_interval_minutes",
     "composite_video.input_glob",
     "composite_video.time_label_band_height",
+    "contrasts.claim",
     "cosmic_ray_preview.output_formats",
     "cry1_dluc_photon.claim",
     "cry1_dluc_photon.compression_level",
@@ -4634,6 +4812,8 @@
     "extract_traces.channels",
     "extract_traces.reuse",
     "frames_figure.output_formats",
+    "measure.claim",
+    "measure.output_dir",
     "phase_green_red_video.crf",
     "phase_green_red_video.fps",
     "phase_green_red_video.frame_interval_seconds",

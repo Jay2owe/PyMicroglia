@@ -64,6 +64,14 @@ MODULE_NAMES: tuple[str, ...] = (
     # behind them is reached by a dotted name that does not, so its ``status``
     # is what says whether ``track`` is pending. See :func:`seam_status`.
     "tracking",
+    # The measurement chassis (Motion port, stage 03): tracked labels in,
+    # tables out. ``measure.contrasts`` is a seam of the same shape as
+    # ``tracking``: its tests come from Circadian Workbench through the one
+    # importer module the rhythm stage adds, and it is pending until then.
+    "measure",
+    "measure.pool",
+    "measure.windows",
+    "measure.contrasts",
 )
 
 
@@ -368,6 +376,9 @@ CLAIM_TEMPLATES: dict[str, str] = {
                    "drawn on in {source}",
     "publication_workbook":
         "combined the ReproFig evidence for {source} into a publication workbook",
+    "measure": "measured every configured module over {source}",
+    "pool": "pooled every movie's tables in {source}",
+    "window": "re-rolled the summaries of {source} inside its declared windows",
 }
 
 #: Actions that conclude something, where no template can be honest. Which
@@ -385,6 +396,8 @@ NEEDS_A_CLAIM: frozenset[str] = frozenset({
     # Which pixels are which cell, across time: the same kind of conclusion
     # as ``segment``, made over the whole recording.
     "track",
+    # A declared comparison is a hypothesis; the run was made to test it.
+    "contrasts",
     "dluc_single_cell",
     "cry1_dluc_photon",
     "bioluminescence",
@@ -406,6 +419,19 @@ def _source_name(params: Mapping[str, Any] | None) -> str:
         tables = params.get("input_csvs") or ()
         raw = str(next(iter(tables), "") if not isinstance(tables, str)
                   else tables).strip()
+    if not raw:
+        # The measurement actions read a run folder, or a list of movies:
+        # name the folder, or the first movie's stem and how many follow.
+        raw = str(params.get("run_dir") or "").strip()
+    if not raw:
+        movies = params.get("movies") or ()
+        if movies and not isinstance(movies, str):
+            first = next(iter(movies), None)
+            stem = (first.get("stem") if isinstance(first, Mapping)
+                    else getattr(first, "stem", None))
+            if stem:
+                rest = len(movies) - 1
+                return f"{stem}" + (f" and {rest} more movie(s)" if rest else "")
     if not raw:
         return "the stack"
     name = Path(raw.replace("\\", "/")).name or raw

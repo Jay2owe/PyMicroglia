@@ -100,12 +100,16 @@ def test_nothing_is_pending_any_more():
     package, and its module says so through ``status()``. So what this asserts
     now is that the only pending actions are declared seams -- never one of
     the protocols, and never an action whose module simply failed to land.
+
+    Stage 03 added a second seam: ``contrasts`` takes its tests from
+    Circadian Workbench through the one importer module the rhythm stage
+    adds, and ``measure.contrasts.status()`` reports it pending until then.
     """
     for name in registry.pending():
         answer = registry.seam_status(registry.REGISTRY.binds_to(name))
         assert answer is not None and answer[0] == "pending", (
             f"{name} is pending and is not a declared seam")
-    assert set(registry.pending()) <= {"track"}
+    assert set(registry.pending()) <= {"track", "contrasts"}
 
 
 def test_unimplemented_actions_are_pending_not_broken():

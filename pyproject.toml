@@ -37,6 +37,13 @@ dependencies = [
     "numpy>=1.24",
     "tifffile>=2023.7",
     "scipy>=1.10",
+    # Required since 2026-09-21 (Motion port, stage 03): the measure step
+    # reaches both by default. pandas holds every table the chassis writes and
+    # scikit-image is what the morphology modules measure outlines with.
+    # Imported inside functions where a module is read by ``describe``, so
+    # the package root still imports without them.
+    "pandas>=2.0",
+    "scikit-image>=0.21",
 ]
 
 [project.optional-dependencies]

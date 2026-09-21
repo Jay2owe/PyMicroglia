@@ -1042,6 +1042,144 @@ _TRACK_PARAMS: list[dict] = [
 ]
 assert _PIPELINE_RUN[3]["name"] == "claim"
 
+#: The measurement chassis (Motion port, stage 03). No protocol to harvest:
+#: the settings are Motion's ``analysis_config.json`` blocks, taken as
+#: keyword arguments unchanged, so a configuration file reads straight in.
+_MEASURE_RUN_DIR = {
+    "name": "run_dir", "type": "path", "units": "-", "required": True,
+    "default": None,
+    "description": "A run folder the measure action wrote: the one holding "
+                   "measure/<stem>/ and the manifest in its workings."}
+
+_MEASURE_PARAMS: list[dict] = [
+    {"name": "movies", "type": "list", "units": "-", "required": True,
+     "default": None,
+     "description": "The movies to measure, one block each in the shape of "
+                    "Motion's analysis_config.json 'movies' entry: stem, "
+                    "labels, raw, and optionally unclaimed, evidence, "
+                    "provenance, history, valid_mask, channels, objects, "
+                    "side_tables, windows, condition, subject and the sha256 "
+                    "pins. Relative paths resolve against the working "
+                    "directory; load_config resolves them against the file."},
+    {"name": "output_dir", "type": "path", "units": "-", "required": True,
+     "default": None,
+     "description": "Where the run folder is made: <output_dir>/<run>/ holds "
+                    "measure/, tracker/, stacks/, windows/ and pooled/, one "
+                    "ledger per folder, with the manifest in its workings."},
+    _PIPELINE_RUN[1],          # run_label
+    _PIPELINE_RUN[0],          # if_exists
+    {"name": "enabled_modules", "type": "list", "units": "-", "required": False,
+     "default": None,
+     "description": "Which measurement modules to run, by name, in order. "
+                    "Left out, every registered module runs. A name no "
+                    "module answers to is recorded in the manifest as "
+                    "unregistered rather than silently dropped."},
+    {"name": "module_options", "type": "mapping", "units": "-", "required": False,
+     "default": None,
+     "description": "Settings per module: {module: {option: value}}, the "
+                    "'modules' block of analysis_config.json. Every option is "
+                    "checked against the module's declared defaults before "
+                    "anything runs; an unknown one is refused."},
+    {"name": "frame_interval_min", "type": "float", "units": "minutes",
+     "required": True, "default": None,
+     "description": "Minutes between consecutive label frames. Nothing in a "
+                    "label stack states it, and it is what turns a frame "
+                    "index into an hour on every table."},
+    {"name": "microns_per_pixel", "type": "float", "units": "um/px",
+     "required": False, "default": None,
+     "description": "Pixel size. Left out, the raw stack's own metadata is "
+                    "read; if it states none, every length is reported in "
+                    "pixels and the scale is recorded as uncalibrated."},
+    {"name": "conditions", "type": "mapping", "units": "-", "required": False,
+     "default": None,
+     "description": "The experimental groups, as the 'conditions' block of "
+                    "analysis_config.json: a mapping of name to stem regex, "
+                    "or a list of condition entries. A movie no pattern "
+                    "matches stops the run rather than being measured "
+                    "unassigned."},
+    {"name": "windows", "type": "list", "units": "-", "required": False,
+     "default": (),
+     "description": "Named stretches of the recording, each with from_hours/"
+                    "to_hours or from_frame/to_frame and an optional "
+                    "baseline; the 'windows' block. Half-open. Declaring none "
+                    "writes no windowed tables."},
+    {"name": "contrasts", "type": "list", "units": "-", "required": False,
+     "default": (),
+     "description": "Declared comparisons, the 'contrasts' block: table, "
+                    "metrics, group_by, groups, unit, test, correction, alpha. "
+                    "Validated here and recorded in the manifest; run by the "
+                    "contrasts action over the pooled tables."},
+    {"name": "metric_groups", "type": "mapping", "units": "-", "required": False,
+     "default": None,
+     "description": "Named sets of measured columns, the 'metric_groups' "
+                    "block, referenced as '@name' wherever a list of columns "
+                    "is expected. Every member must be a column some "
+                    "registered module declares."},
+    {"name": "verify_hashes", "type": "bool", "units": "-", "required": False,
+     "default": True,
+     "description": "Refuse an input whose SHA-256 differs from the pin in "
+                    "its movie block. Off records the mismatch and measures "
+                    "anyway."},
+    _PIPELINE_RUN[3],          # claim
+]
+
+_POOL_PARAMS: list[dict] = [_MEASURE_RUN_DIR]
+
+_WINDOW_PARAMS: list[dict] = [
+    _MEASURE_RUN_DIR,
+    _MEASURE_PARAMS[9],        # windows
+    _MEASURE_PARAMS[12],       # verify_hashes
+]
+
+_CONTRASTS_PARAMS: list[dict] = [
+    _MEASURE_RUN_DIR,
+    _MEASURE_PARAMS[10],       # contrasts
+    _MEASURE_PARAMS[11],       # metric_groups
+    _PIPELINE_RUN[3],          # claim
+]
+assert [row["name"] for row in _WINDOW_PARAMS] == ["run_dir", "windows", "verify_hashes"]
+assert [row["name"] for row in _CONTRASTS_PARAMS] == ["run_dir", "contrasts",
+                                                      "metric_groups", "claim"]
+
+_MEASURE_ACTIONS: list[dict] = [
+    {
+        "name": "measure",
+        "summary": "Turn tracked labels into tables: one row per cell per "
+                   "frame, rolled up per cell and per frame, one folder per "
+                   "kind of table with one ledger each, and a manifest that "
+                   "fingerprints what went in and what came out. Every "
+                   "registered measurement module runs unless told which.",
+        "method": "measure.measure",
+        "params": _MEASURE_PARAMS,
+    },
+    {
+        "name": "pool",
+        "summary": "Concatenate an existing run's per-movie tables into "
+                   "<run>/pooled/, recording which movies contributed to "
+                   "each table, how many rows each gave and which columns "
+                   "one movie had that another did not.",
+        "method": "measure.pool.pool",
+        "params": _POOL_PARAMS,
+    },
+    {
+        "name": "window",
+        "summary": "Re-roll an existing run's summaries inside declared "
+                   "windows, per cell and per frame, with each window's "
+                   "values against its baseline window. Re-measures nothing.",
+        "method": "measure.windows.window",
+        "params": _WINDOW_PARAMS,
+    },
+    {
+        "name": "contrasts",
+        "summary": "Test every declared contrast over an existing run's "
+                   "pooled tables, one row per contrast per metric, corrected "
+                   "within each declared family. Pending until the Circadian "
+                   "Workbench importer of the rhythm stage lands.",
+        "method": "measure.contrasts.contrasts",
+        "params": _CONTRASTS_PARAMS,
+    },
+]
+
 #: The actions PyMicroglia exposes, and where each was copied from.
 #:
 #: ``method`` is the dotted target inside this package. Most do not exist yet;
@@ -1433,6 +1571,30 @@ def build(protocols: Path) -> dict:
         "method_version": "2026-09-21-tracking-seam-v1",
         "source": [],
     })
+
+    # The measurement chassis. No protocol to harvest either: its settings are
+    # Motion's configuration blocks, and its tables are keyed in the store
+    # under ``pymicroglia.measure.run.METHOD_VERSION``.
+    for entry in _MEASURE_ACTIONS:
+        for row in entry["params"]:
+            shared = {key: value for key, value in row.items() if key != "default"}
+            known = vocabulary.get(row["name"])
+            if known is None:
+                vocabulary[row["name"]] = shared
+            elif known != shared:
+                conflicts.append(f"{entry['name']}.{row['name']}")
+        actions.append({
+            "name": entry["name"],
+            "summary": entry["summary"],
+            "method": entry["method"],
+            "mutates": True,
+            "destructive": False,
+            "display_only": False,
+            "params": [row["name"] for row in entry["params"]],
+            "defaults": {row["name"]: row["default"] for row in entry["params"]},
+            "method_version": "2026-09-21-measure-chassis-v1",
+            "source": [],
+        })
 
     return {
         "project": "pymicroglia",

@@ -462,11 +462,13 @@ def test_the_two_registered_protocols_are_no_longer_pending():
     """Gate 9: all thirteen registered protocols are backed.
 
     The Motion port's stage 02 added ``track``, pending by design behind a
-    declared seam; nothing else may be pending, and no protocol is.
+    declared seam, and stage 03 added ``contrasts``, pending behind the
+    Circadian Workbench importer the rhythm stage adds; nothing else may be
+    pending, and no protocol is.
     """
     from pymicroglia import registry
 
-    assert set(registry.pending()) <= {"track"}
+    assert set(registry.pending()) <= {"track", "contrasts"}
     for name in registry.pending():
         answer = registry.seam_status(registry.REGISTRY.binds_to(name))
         assert answer is not None and answer[0] == "pending", name
