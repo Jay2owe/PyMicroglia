@@ -1,0 +1,666 @@
+{
+  "movies": [
+    "parity_A1"
+  ],
+  "folders": [
+    "tables",
+    "tracker"
+  ],
+  "tables": {
+    "branches": {
+      "path": "branches.csv",
+      "rows": 144,
+      "columns": 11,
+      "sha256": "5db8932a2bfab2cd37f9077d068b5ecf0cc2df90183e751bdb12276e1a5bfac5",
+      "grain": [
+        "identity",
+        "frame_index",
+        "branch"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 144
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "cell_frame": {
+      "path": "cell_frame.csv",
+      "rows": 144,
+      "columns": 164,
+      "sha256": "c7bbc4ee21228e2194cf6f2f8054897295b916e2c363c933bfea3142742436b8",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 144
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "cell_object_tracks": {
+      "path": "cell_object_tracks.csv",
+      "rows": 3,
+      "columns": 14,
+      "sha256": "02584659845023c72fdd85abe172b4fc4144f646b5e8c3f8f050b6e4d20d4812",
+      "grain": [
+        "identity",
+        "object_set"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "cell_objects": {
+      "path": "cell_objects.csv",
+      "rows": 144,
+      "columns": 18,
+      "sha256": "fdf91d67afbd487798124f6ac4691fb92f2b6c3c4ab3fe341884f5bc6fc22052",
+      "grain": [
+        "identity",
+        "frame_index",
+        "object_set"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 144
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "cell_summary": {
+      "path": "cell_summary.csv",
+      "rows": 3,
+      "columns": 210,
+      "sha256": "376b4a6c76d17193258668365ce20e8a6892324c533a5a33755cc6bb7100e230",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "cell_summary_windowed": {
+      "path": "cell_summary_windowed.csv",
+      "rows": 6,
+      "columns": 167,
+      "sha256": "d2ac7c11c0c85bb7eaf36d12b7a375847187d4a1bd505b1545d4e1487b463bad",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 6
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "channel_frame": {
+      "path": "channel_frame.csv",
+      "rows": 48,
+      "columns": 13,
+      "sha256": "d54d13f37f1498639c9ea96a65e4bcd5e3e41fdbfe437626c479e1c816016692",
+      "grain": [
+        "frame_index",
+        "channel"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "channel_tracks": {
+      "path": "channel_tracks.csv",
+      "rows": 3,
+      "columns": 12,
+      "sha256": "22d8b30d0b496af75f3bd2ef568218fb14bb863fea9b2d5dc7bf4e71f0f0303d",
+      "grain": [
+        "identity",
+        "channel"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "channels": {
+      "path": "channels.csv",
+      "rows": 144,
+      "columns": 28,
+      "sha256": "008e459d002a96895d97a7ca994a7a7fe96eb93aca2c90a14dd8a5c0a68195a0",
+      "grain": [
+        "identity",
+        "frame_index",
+        "channel"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 144
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "coupling": {
+      "path": "coupling.csv",
+      "rows": 3,
+      "columns": 18,
+      "sha256": "43f15a548e0879d9a570e232fd1a970acf81978c8ce3b145fd1c4c15f755fd60",
+      "grain": [
+        "identity_a",
+        "identity_b",
+        "metric"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "frame_summary": {
+      "path": "frame_summary.csv",
+      "rows": 48,
+      "columns": 97,
+      "sha256": "5ca04f26e2f7bec37d7453e0fcb9a593f96b4c32b4bcd53786f6e69cb41ddc9f",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "frame_summary_windowed": {
+      "path": "frame_summary_windowed.csv",
+      "rows": 48,
+      "columns": 92,
+      "sha256": "85cdc94a8508320b1523ea0beadc967fd097ab7f5300464e8062364c0751e604",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "lag_profiles": {
+      "path": "lag_profiles.csv",
+      "rows": 294,
+      "columns": 16,
+      "sha256": "a1e12316ad827eaa79d697032b3527bdbb582e810df99059bdd2c72c2ab36e77",
+      "grain": [
+        "identity",
+        "metric_a",
+        "metric_b",
+        "lag_frames"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 294
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "lifecycle_cells": {
+      "path": "lifecycle_cells.csv",
+      "rows": 3,
+      "columns": 20,
+      "sha256": "a74bdf13c72ceef1d3fad23c217d3d201f1b7dde9b3a4dcf05c2065bf8fdaa34",
+      "grain": [
+        "identity"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "lifecycle_events": {
+      "path": "lifecycle_events.csv",
+      "rows": 6,
+      "columns": 18,
+      "sha256": "996ddcbdde12d83e979f3d4f5a498c2434330ba5c3466cb5e517d56a31fb7145",
+      "grain": [
+        "identity",
+        "frame_index",
+        "event"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 6
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "motion_evidence_frame": {
+      "path": "motion_evidence_frame.csv",
+      "rows": 47,
+      "columns": 32,
+      "sha256": "cec1dc28576cc35c91be4d393c615d8572c10258d7a205a1f29344a94ca3d8e4",
+      "grain": [
+        "from_frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 47
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "msd_curves": {
+      "path": "msd_curves.csv",
+      "rows": 72,
+      "columns": 9,
+      "sha256": "2c54f0e057cf3bddb4e63d9b8422d5a5092de6a93361eb53551b47a2a92187cc",
+      "grain": [
+        "identity",
+        "lag_frames"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 72
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "objects": {
+      "path": "objects.csv",
+      "rows": 96,
+      "columns": 17,
+      "sha256": "214d0a2979eceeaff30e4cfb2af4d2ef3840783fcd71dd615588af454057dd23",
+      "grain": [
+        "object_set",
+        "object",
+        "frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 96
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "presence": {
+      "path": "presence.csv",
+      "rows": 144,
+      "columns": 9,
+      "sha256": "96c4e32264440d5e940f5ec155f530708d304c42ae58b98a73d23c0e67ddbf4a",
+      "grain": [
+        "identity",
+        "frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 144
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "presence_frame": {
+      "path": "presence_frame.csv",
+      "rows": 48,
+      "columns": 15,
+      "sha256": "f79182a04bbf0741183ecadd4fb439d62198db436413e72235b53abfb48ecde1",
+      "grain": [
+        "frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "provenance_frame": {
+      "path": "provenance_frame.csv",
+      "rows": 48,
+      "columns": 14,
+      "sha256": "24818ef1ef75da7401dc23a45ccca540f31d4e2bed61732d49e2628f00f9a1b5",
+      "grain": [
+        "frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "recurrence": {
+      "path": "recurrence.csv",
+      "rows": 48,
+      "columns": 13,
+      "sha256": "5ff07dc2195153abd8eb1cc57ff7f6ce2605fb28dd7027cc1f2237ba299901c3",
+      "grain": [
+        "identity",
+        "lag_frames"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 48
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "recurrence_quantification": {
+      "path": "recurrence_quantification.csv",
+      "rows": 2,
+      "columns": 13,
+      "sha256": "76fdf268744c69f11764f54eb8ad401e56c1db08cebf25b7e0d4234356627de6",
+      "grain": [
+        "identity"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 2
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "regime_profiles": {
+      "path": "regime_profiles.csv",
+      "rows": 9,
+      "columns": 10,
+      "sha256": "b98f643fc37b2aa26b6b6df0eee7f11e6005f36c34279478ed7c793546654936",
+      "grain": [
+        "regime"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 9
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "regime_transitions": {
+      "path": "regime_transitions.csv",
+      "rows": 138,
+      "columns": 11,
+      "sha256": "aa357c96beca7c9f2b360a4c32b3ac1376fa42c1a442be3cf3dbea6c1c92efea",
+      "grain": [
+        "identity",
+        "from_frame_index"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 138
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "rhythm_methods": {
+      "path": "rhythm_methods.csv",
+      "rows": 30,
+      "columns": 33,
+      "sha256": "59fe4b93b90471c0d841fd610928576bd2554a03c2a83661ec775f5e489df538",
+      "grain": [
+        "identity",
+        "metric",
+        "method"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 30
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "rhythm_traces": {
+      "path": "rhythm_traces.csv",
+      "rows": 476,
+      "columns": 10,
+      "sha256": "89e0634fc8adcab4ea9ee7193590218b6e17dc978627441ad5c03f667ca6bcc3",
+      "grain": [
+        "identity",
+        "metric",
+        "hours"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 476
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "rhythms": {
+      "path": "rhythms.csv",
+      "rows": 10,
+      "columns": 50,
+      "sha256": "89888f383b3d9361469101717f67e8700a3c825f7a625ad46a8d589fe0dd7b04",
+      "grain": [
+        "identity",
+        "metric"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 10
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "rhythms_null": {
+      "path": "rhythms_null.csv",
+      "rows": 4,
+      "columns": 17,
+      "sha256": "3fa9536f296748bcc4435a639b8cf225dac61be9aa5b0a66b93fc4bbb482260a",
+      "grain": [
+        "metric"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 4
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "rhythms_population": {
+      "path": "rhythms_population.csv",
+      "rows": 4,
+      "columns": 13,
+      "sha256": "fd76635686e886e4332f6de74a92d574bb5ac8b005eba9f1e860810a093215de",
+      "grain": [
+        "metric",
+        "population"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 4
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "sequence_distance": {
+      "path": "sequence_distance.csv",
+      "rows": 3,
+      "columns": 8,
+      "sha256": "b107976b692e8c9ff343b4ff8f01bae3ad46610548cf4e6e26d9b216fe5d5bcb",
+      "grain": [
+        "identity_a",
+        "identity_b"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 3
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "sholl": {
+      "path": "sholl.csv",
+      "rows": 1728,
+      "columns": 15,
+      "sha256": "71f00132faeb23a405750acf07c9ae997a647719c8329c216ca87ad250eca265",
+      "grain": [
+        "identity",
+        "frame_index",
+        "scaling",
+        "ring"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 1728
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "trend": {
+      "path": "trend.csv",
+      "rows": 17,
+      "columns": 15,
+      "sha256": "621e7a715364c36837aa84257be7fdd821748565ec4eb8dcca99c01f14d19667",
+      "grain": [
+        "identity",
+        "metric"
+      ],
+      "origin": "measured",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 17
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    },
+    "window_change": {
+      "path": "window_change.csv",
+      "rows": 444,
+      "columns": 12,
+      "sha256": "d76fbf2bf8e04630f94a2dd168b84460e5f2bc50af57679c425181de885278dc",
+      "folder": "tables",
+      "movies": [
+        "parity_A1"
+      ],
+      "rows_per_movie": {
+        "parity_A1": 444
+      },
+      "columns_missing": {},
+      "movies_absent": []
+    }
+  }
+}

@@ -27,6 +27,8 @@ __all__ = [
     "ome_xml",
     "write_series",
     "shift_table",
+    "TRACKED_MOVIE_FILES",
+    "tracked_movie",
 ]
 
 CHANNEL_NAMES = ("phase", "green_biolum", "red_mCherry")
@@ -152,3 +154,138 @@ def shift_table(shifts, *, one_based: bool = True) -> dict[str, list]:
         "shift_y_px": [float(v) for v in shifts[:, 0]],
         "shift_x_px": [float(v) for v in shifts[:, 1]],
     }
+
+
+# ---------------------------------------------------------------------------
+# A tracked movie: what the Motion analysis reads, written to disk.
+#
+# Ported from ``Motion/analysis/test_column_declarations.py::_movie`` (the
+# one synthetic movie every Motion module is checked over) so that the motion
+# parity fixture and, from stage 03 of the port, ``pymicroglia.measure`` share
+# one builder. Same seed, same shapes, same three cells; the only change is
+# that each array becomes a file, because the analysis reads files.
+# ---------------------------------------------------------------------------
+
+#: What ``tracked_movie`` writes, keyed by the role the analysis config names.
+TRACKED_MOVIE_FILES = {
+    "labels": "labels.tif",
+    "raw": "raw.tif",
+    "unclaimed": "unclaimed.tif",
+    "evidence": "evidence.tif",
+    "provenance": "provenance.tif",
+    "valid_mask": "valid_mask.tif",
+    "channel:extra": "extra_channel.tif",
+    "channel:extra:shifts": "extra_shifts.csv",
+    "objects:scenery": "scenery_objects.tif",
+    "side:acquisition": "acquisition.csv",
+    "side:genotype": "genotype.csv",
+}
+
+
+def tracked_movie(folder, *, frames: int = 48, height: int = 40,
+                  width: int = 40, seed: int = 0) -> dict[str, Path]:
+    """Three tracked cells on a small field, long enough for a rhythm fit.
+
+    Deterministic from ``seed``. Returns the written files by role, in the
+    words the analysis configuration uses (see ``TRACKED_MOVIE_FILES``).
+
+    * ``labels`` (frames, y, x) uint16: cell 1 drifts on a 24 h sine, cell 2
+      shuffles sideways, cell 3 never moves.
+    * ``raw`` (frames, y, x) float32: a 24 h sine inside the outlines plus
+      uniform noise everywhere.
+    * ``unclaimed`` (frames, y, x) uint8: sparse foreground nobody claimed.
+    * ``evidence`` (frames, 5, y, x) uint16: five graded tracker channels, the
+      fifth a genuine ten-step ramp, because the age columns measure it.
+    * ``provenance`` (frames, y, x) uint8: all three bits set on a 2x2 patch.
+    * ``valid_mask`` (y, x) uint8: everything but a two-pixel border.
+    * ``extra_channel`` (frames, 2, y, x) uint16 with a C axis, so the loader
+      is made to index channel 1; it fades, differs between cells and has a
+      clipped corner. ``extra_shifts.csv`` shifts it two columns per frame,
+      so the last two analysed columns fall off the source and read blank.
+    * ``scenery_objects`` (frames, y, x) uint16 label image: one fixed shape
+      and one that drifts and touches the top edge.
+    * ``acquisition.csv`` keyed on frame_index; ``genotype.csv`` on identity.
+    """
+    import pandas as pd
+
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+    hours = np.arange(frames) / 2
+    labels = np.zeros((frames, height, width), dtype=np.uint16)
+    for frame in range(frames):
+        drift = int(2 * np.sin(2 * np.pi * hours[frame] / 24))
+        labels[frame, 8 + frame % 3:16 + frame % 3, 8 + drift:16 + drift] = 1
+        labels[frame, 24:32, 22 + frame % 4:30 + frame % 4] = 2
+        labels[frame, 4:9, 30:35] = 3
+
+    noise = np.random.default_rng(seed).random((frames, height, width))
+    signal = 100 + 30 * np.sin(2 * np.pi * hours / 24)
+    raw = ((labels > 0) * signal[:, None, None] + noise * 5).astype(np.float32)
+    unclaimed = ((labels == 0) & (noise > 0.95)).astype(np.uint8)
+
+    full = np.iinfo(np.uint16).max
+    evidence = np.zeros((frames, 5, height, width), dtype=np.uint16)
+    evidence[:, :, 9:15, 9:15] = full
+    ramp = (np.arange(36).reshape(6, 6) % 10) + 1
+    evidence[:, 4, 9:15, 9:15] = np.rint(ramp * full / 10).astype(np.uint16)
+
+    provenance = np.zeros((frames, height, width), dtype=np.uint8)
+    provenance[:, 8:10, 8:10] = 0b111
+
+    valid = np.ones((height, width), dtype=np.uint8)
+    valid[:2, :] = valid[-2:, :] = valid[:, :2] = valid[:, -2:] = 0
+
+    fade = np.linspace(1.0, 0.55, frames)[:, None, None]
+    extra = (300.0 + 90.0 * (labels == 1) + 180.0 * (labels == 2)
+             + 25.0 * noise) * fade
+    extra = np.rint(extra).astype(np.uint16)
+    # The shifts table says the source drifted two columns, so analysed column
+    # x is read from source column x + 2: the source holds the field two
+    # columns to the right, and the last two analysed columns are off it.
+    channel = np.zeros((frames, 2, height, width), dtype=np.uint16)
+    channel[:, 0] = 50
+    channel[:, 1, :, 2:] = extra[:, :, :width - 2]
+    channel[:, 1, 0:3, 2:5] = full                      # clipped corner
+
+    scenery = np.zeros((frames, height, width), dtype=np.uint16)
+    for frame in range(frames):
+        scenery[frame, 18:26, 2:8] = 1
+        drift = frame % 5
+        scenery[frame, 0:4, 30 + drift:36 + drift] = 2
+
+    written = {}
+
+    def tif(role, array, axes):
+        target = folder / TRACKED_MOVIE_FILES[role]
+        tifffile.imwrite(str(target), array, metadata={"axes": axes},
+                         photometric="minisblack")
+        written[role] = target
+
+    tif("labels", labels, "TYX")
+    tif("raw", raw, "TYX")
+    tif("unclaimed", unclaimed, "TYX")
+    tif("evidence", evidence, "TCYX")
+    tif("provenance", provenance, "TYX")
+    tif("valid_mask", valid, "YX")
+    tif("channel:extra", channel, "TCYX")
+    tif("objects:scenery", scenery, "TYX")
+
+    shifts = folder / TRACKED_MOVIE_FILES["channel:extra:shifts"]
+    pd.DataFrame({"frame": np.arange(1, frames + 1),
+                  "shift_y": np.zeros(frames, dtype=int),
+                  "shift_x": np.full(frames, -2, dtype=int)}).to_csv(
+        shifts, index=False, lineterminator="\n")
+    written["channel:extra:shifts"] = shifts
+
+    acquisition = folder / TRACKED_MOVIE_FILES["side:acquisition"]
+    pd.DataFrame({
+        "frame_index": np.arange(frames),
+        "focus": np.round(np.linspace(1.0, 0.5, frames), 6),
+        "suspect": (np.arange(frames) == 11).astype(int),
+    }).to_csv(acquisition, index=False, lineterminator="\n")
+    written["side:acquisition"] = acquisition
+    genotype = folder / TRACKED_MOVIE_FILES["side:genotype"]
+    pd.DataFrame({"identity": [1, 2, 3], "call": ["wt", "ko", "wt"]}).to_csv(
+        genotype, index=False, lineterminator="\n")
+    written["side:genotype"] = genotype
+    return written

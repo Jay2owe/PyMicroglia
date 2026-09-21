@@ -1,0 +1,2370 @@
+{
+  "analysis_package_version": "0.1.0",
+  "generated_at_utc": "2026-09-20T23:43:59.311514+00:00",
+  "theme": {
+    "preset": "house",
+    "source": "config",
+    "resolved_roles": {
+      "arrhythmic": "#B0B0B0",
+      "arrival": "#0e8f8f",
+      "caption": "#303030",
+      "channel": "#CC79A7",
+      "departure": "#c0392b",
+      "division": "#7b52ab",
+      "evidence": "#303030",
+      "evidence_gained": "#c0392b",
+      "evidence_held": "#0e8f8f",
+      "evidence_lost": "#4878A8",
+      "fit": "#303030",
+      "fusion": "#d98a17",
+      "highlight": "#c0392b",
+      "inferred": "#b3b3b3",
+      "ink": "#000000",
+      "invalid": "#8c8c8c",
+      "missing": "#e6e6e6",
+      "morphology": "#4878A8",
+      "motility": "#d98a17",
+      "named": "#303030",
+      "not_significant": "#B0B0B0",
+      "object": "#56B4E9",
+      "outline": "#0e8f8f",
+      "page": "#ffffff",
+      "reference": "#B0B0B0",
+      "reporter": "#c0392b",
+      "rhythmic": "#7b52ab",
+      "significant": "#7b52ab",
+      "stable": "#4878A8",
+      "surveillance": "#0e8f8f",
+      "unclaimed": "#d98a17",
+      "unvisited": "#000000",
+      "variable": "#c0392b",
+      "visited": "#000000"
+    },
+    "condition_colours": {
+      "control": "#4878A8"
+    },
+    "type": {
+      "title_size": 25.0,
+      "axis_size": 27.5,
+      "tick_size": 25.0,
+      "legend_size": 18.75,
+      "annotation_size": 20.0
+    },
+    "strokes": {
+      "spine_width": 2.4,
+      "tick_mark_width": 2.4,
+      "line_width": 2.88
+    },
+    "legend": {
+      "legend_location": "above",
+      "legend_pad": 0.02,
+      "legend_columns": 0
+    },
+    "figure_size": [
+      7.0,
+      5.0
+    ],
+    "hours_per_tick": 24.0,
+    "hours_tick_start": 0.0,
+    "value_ticks": {
+      "count": 5,
+      "round_to": 5.0,
+      "start": 0.0
+    },
+    "colour_bar": {
+      "width_inches": 0.18,
+      "height_inches": 2.2,
+      "gap_inches": 0.16
+    },
+    "save_dpi": 600,
+    "colormaps": {
+      "diverging_cmap": "coolwarm",
+      "sequential_cmap": "viridis",
+      "image_cmap": "gray"
+    }
+  },
+  "design": {
+    "match_against": "stem",
+    "synthetic": true,
+    "factors": [
+      "condition"
+    ],
+    "conditions": [
+      {
+        "name": "control",
+        "label": "Control (synthetic)",
+        "factor": "condition",
+        "match": [
+          "_A\\d"
+        ],
+        "colour": "#4878A8",
+        "colour_source": "declared",
+        "control": true,
+        "notes": ""
+      }
+    ],
+    "assignments": [
+      {
+        "stem": "parity_A1",
+        "condition": "control",
+        "label": "Control (synthetic)",
+        "factors": {
+          "condition": "control"
+        },
+        "source": "derived",
+        "evidence": {
+          "condition": "_A\\d"
+        },
+        "problem": null
+      }
+    ],
+    "subjects": {
+      "parity_A1": "synthetic_subject_1"
+    },
+    "warnings": [
+      "SYNTHETIC DESIGN - these groups were invented to exercise the pipeline. No number split by them means anything.",
+      "condition 'control' has one movie; nothing can be compared within it",
+      "every movie is 'control'; a comparison needs at least two groups"
+    ]
+  },
+  "finished_at_utc": "2026-09-20T23:45:28.874131+00:00",
+  "elapsed_seconds": 89.563,
+  "dataset": "SYNTHETIC motion parity fixture: three tracked cells, 48 frames at 30 min, built by PyMicroglia tests/fixtures.py::tracked_movie(seed=0)",
+  "config_path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\config.json",
+  "config_sha256": "b0d232a2bddffc29e5f333a0e1d979ac460793f0a69105b717205e3a30c982af",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.1.0",
+    "pandas": "2.2.2"
+  },
+  "registered_modules": [
+    {
+      "name": "channels",
+      "kind": "measurement",
+      "description": "Every extra imaging channel measured through the same outlines",
+      "requires": [
+        "labels",
+        "channels"
+      ]
+    },
+    {
+      "name": "contacts",
+      "kind": "measurement",
+      "description": "Identity pairs sharing a boundary in each frame and over the recording",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "intensity",
+      "kind": "measurement",
+      "description": "Reporter signal inside each outline with a local background ring",
+      "requires": [
+        "labels",
+        "raw"
+      ]
+    },
+    {
+      "name": "lifecycle",
+      "kind": "measurement",
+      "description": "How each name's track begins and ends, and which separations conserve a parent's area",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "morphology",
+      "kind": "measurement",
+      "description": "Per-cell shape: area, perimeter, circularity, solidity and skeleton branching",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "motility",
+      "kind": "measurement",
+      "description": "Centroid displacement, speed, path straightness and explored territory",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "motion_evidence",
+      "kind": "measurement",
+      "description": "Motion-evidence pixels attributed to each cell, from the tracker's own evidence stack",
+      "requires": [
+        "labels",
+        "evidence"
+      ]
+    },
+    {
+      "name": "neighbours",
+      "kind": "measurement",
+      "description": "Nearest-neighbour distance, local density, Voronoi-style domains and field tiling",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "object_geometry",
+      "kind": "measurement",
+      "description": "How far each cell is from the reference shapes, how much it overlaps, for how long",
+      "requires": [
+        "labels",
+        "objects"
+      ]
+    },
+    {
+      "name": "objects",
+      "kind": "measurement",
+      "description": "Reference shapes - vessels, plaques, a wound edge - described as shapes",
+      "requires": [
+        "labels",
+        "objects"
+      ]
+    },
+    {
+      "name": "presence",
+      "kind": "measurement",
+      "description": "Whether each identity's name is on screen in each frame, and how much foreground carries no name",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "provenance",
+      "kind": "measurement",
+      "description": "How much of each cell's footprint was attributed by reconstruction rather than by observation",
+      "requires": [
+        "labels",
+        "inferred"
+      ]
+    },
+    {
+      "name": "sholl",
+      "kind": "measurement",
+      "description": "Annular occupancy and skeleton crossings around each cell soma, at two ring widths",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "surveillance",
+      "kind": "measurement",
+      "description": "Per-cell pixel turnover between frames: processes extending and retracting",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "territory",
+      "kind": "measurement",
+      "description": "Per-pixel revisit, first ownership and per-cell cumulative coverage",
+      "requires": [
+        "labels"
+      ]
+    },
+    {
+      "name": "coupling",
+      "kind": "derived",
+      "description": "Gap-respecting lag profiles and between-cell phase similarity"
+    },
+    {
+      "name": "history",
+      "kind": "derived",
+      "description": "The tracker's own record of why a name is missing, hidden or renamed"
+    },
+    {
+      "name": "recurrence",
+      "kind": "derived",
+      "description": "Whether each cell returns to states it has been in before"
+    },
+    {
+      "name": "regimes",
+      "kind": "derived",
+      "description": "Nine per-frame subgroups from low, medium and high size crossed with movement"
+    },
+    {
+      "name": "rhythms",
+      "kind": "derived",
+      "description": "Circadian Workbench rhythm tests and period estimates per cell and measurement"
+    },
+    {
+      "name": "sequence_distance",
+      "kind": "derived",
+      "description": "How alike two cells' state sequences are, allowing one to run late"
+    },
+    {
+      "name": "territory_shape",
+      "kind": "derived",
+      "description": "Eventual territory against the cell that made it, per frame and per cell"
+    },
+    {
+      "name": "trend",
+      "kind": "derived",
+      "description": "Robust and least-squares drift per cell per measurement over the whole recording"
+    },
+    {
+      "name": "walk",
+      "kind": "derived",
+      "description": "Step direction, turning angles, directional persistence and run lengths"
+    }
+  ],
+  "movies": [
+    {
+      "stem": "parity_A1",
+      "condition": {
+        "stem": "parity_A1",
+        "condition": "control",
+        "label": "Control (synthetic)",
+        "factors": {
+          "condition": "control"
+        },
+        "source": "derived",
+        "evidence": {
+          "condition": "_A\\d"
+        },
+        "problem": null
+      },
+      "subject": "synthetic_subject_1",
+      "provenance": {
+        "stem": "parity_A1",
+        "condition": null,
+        "inputs": {
+          "labels": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\labels.tif",
+            "sha256": "2c25ffe224ccc01bb0e2d08d03d37b501e5a55cc56a834e6b5678eae350dea07",
+            "bytes": 161674,
+            "expected_sha256": "2c25ffe224ccc01bb0e2d08d03d37b501e5a55cc56a834e6b5678eae350dea07",
+            "verified": true
+          },
+          "raw": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\raw.tif",
+            "sha256": "4c258a2a31a00a3e70c45f262b8e4aa80b2b96db53b84e60f2492a3e515cc71e",
+            "bytes": 315854,
+            "expected_sha256": "4c258a2a31a00a3e70c45f262b8e4aa80b2b96db53b84e60f2492a3e515cc71e",
+            "verified": true
+          },
+          "unclaimed": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\unclaimed.tif",
+            "sha256": "d5a3503d549e7fd50eb6049ac907cc4700c4d11a1883edb7acd8c4b52ca5d193",
+            "bytes": 84874,
+            "expected_sha256": "d5a3503d549e7fd50eb6049ac907cc4700c4d11a1883edb7acd8c4b52ca5d193",
+            "verified": true
+          },
+          "evidence": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\evidence.tif",
+            "sha256": "9e6b563a22f7f0fba749417e9aa39e75ab44dc0dfe43f654cf6767c6105e47f3",
+            "bytes": 807946,
+            "expected_sha256": "9e6b563a22f7f0fba749417e9aa39e75ab44dc0dfe43f654cf6767c6105e47f3",
+            "verified": true
+          },
+          "provenance": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\provenance.tif",
+            "sha256": "bc9320d3fd4bcb638515c2bd21069d1577c0694fab913a9aff23de2d0fae36d5",
+            "bytes": 84874,
+            "expected_sha256": "bc9320d3fd4bcb638515c2bd21069d1577c0694fab913a9aff23de2d0fae36d5",
+            "verified": true
+          },
+          "valid_mask": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\valid_mask.tif",
+            "sha256": "9b35f36cb9efd9638c76cf25142414d872dc4aae9aeaa30b3416eb8066fff81c",
+            "bytes": 1872,
+            "expected_sha256": "9b35f36cb9efd9638c76cf25142414d872dc4aae9aeaa30b3416eb8066fff81c",
+            "verified": true,
+            "per_frame": false,
+            "field_px": 1600,
+            "valid_px_min": 1296,
+            "valid_px_max": 1296,
+            "valid_share_min": 0.81,
+            "valid_share_max": 0.81
+          },
+          "channel:extra": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\extra_channel.tif",
+            "name": "extra",
+            "description": "SYNTHETIC second channel: fades, differs between cells, clipped corner, shifted two columns so the last two analysed columns are off the source",
+            "channel_index": 1,
+            "frame_offset": 0,
+            "crop_origin": [
+              0,
+              0
+            ],
+            "source_shape": [
+              48,
+              40,
+              40
+            ],
+            "source_dtype": "uint16",
+            "storage_dtype": "float32",
+            "shifts": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\extra_shifts.csv",
+            "shift_y_range": [
+              0,
+              0
+            ],
+            "shift_x_range": [
+              -2,
+              -2
+            ],
+            "unsampled_fraction": 0.05,
+            "sha256": "2264cacfe00557e916c62de1adb2f850b06ef410fa36cb817fc92f01f1bbc875",
+            "expected_sha256": "2264cacfe00557e916c62de1adb2f850b06ef410fa36cb817fc92f01f1bbc875",
+            "verified": true
+          },
+          "objects:scenery": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\scenery_objects.tif",
+            "name": "scenery",
+            "description": "SYNTHETIC reference shapes: one fixed mid-field, one drifting and touching the top edge",
+            "static": false,
+            "channel_index": null,
+            "frame_offset": 0,
+            "crop_origin": [
+              0,
+              0
+            ],
+            "source_shape": [
+              48,
+              40,
+              40
+            ],
+            "source_dtype": "uint16",
+            "frames_supplied": 48,
+            "shifts": null,
+            "shift_y_range": [
+              0,
+              0
+            ],
+            "shift_x_range": [
+              0,
+              0
+            ],
+            "object_labels": 2,
+            "unreachable_px": 0,
+            "unreachable_fraction": 0.0,
+            "sha256": "9ef6c58babcc74b7b20efa2100cb7eb5d792e57b268a02cb43b13d08797b9b4b",
+            "expected_sha256": "9ef6c58babcc74b7b20efa2100cb7eb5d792e57b268a02cb43b13d08797b9b4b",
+            "verified": true
+          },
+          "side:acquisition": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\acquisition.csv",
+            "name": "acquisition",
+            "description": "SYNTHETIC per-frame log",
+            "keyed_on": "frame_index",
+            "key_space": "label",
+            "key_column": "frame_index",
+            "rows_read": 48,
+            "rows_unusable_key": 0,
+            "columns": [
+              "acquisition_focus",
+              "acquisition_suspect"
+            ],
+            "keys_matched": 48,
+            "keys_unmatched": 0,
+            "movie_rows": 48,
+            "movie_rows_covered": 48,
+            "sha256": "023069688f72c2f438fc0dd00ed26bf6fdd9091e86d16714873ac474729bf56a",
+            "expected_sha256": "023069688f72c2f438fc0dd00ed26bf6fdd9091e86d16714873ac474729bf56a",
+            "verified": true
+          },
+          "side:genotype": {
+            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\genotype.csv",
+            "name": "genotype",
+            "description": "SYNTHETIC per-cell call",
+            "keyed_on": "identity",
+            "key_space": null,
+            "key_column": "identity",
+            "rows_read": 3,
+            "rows_unusable_key": 0,
+            "columns": [
+              "genotype_call"
+            ],
+            "keys_matched": 3,
+            "keys_unmatched": 0,
+            "movie_rows": 3,
+            "movie_rows_covered": 3,
+            "sha256": "f9b1f29f967b0be2f035c130ba41f6158a4411684525f47a148ce061068c7d1d",
+            "expected_sha256": "f9b1f29f967b0be2f035c130ba41f6158a4411684525f47a148ce061068c7d1d",
+            "verified": true
+          }
+        },
+        "scale": {
+          "minutes_per_frame": 30.0,
+          "microns_per_pixel": null,
+          "calibrated": false,
+          "source": "uncalibrated",
+          "length_unit": "px",
+          "area_unit": "px2"
+        },
+        "field": {
+          "frames": 48,
+          "height": 40,
+          "width": 40
+        },
+        "identity_count": 3,
+        "hours_covered": 23.5
+      },
+      "modules": [
+        {
+          "module": "morphology",
+          "status": "done",
+          "seconds": 0.599,
+          "tables": {
+            "morphology": 144,
+            "branches": 144
+          },
+          "stacks": {},
+          "parameters": {
+            "compute_skeleton": true,
+            "min_area_px_for_skeleton": 12,
+            "min_area_px_for_shape_ratios": 8,
+            "max_plausible_circularity": 1.15
+          }
+        },
+        {
+          "module": "intensity",
+          "status": "done",
+          "seconds": 0.887,
+          "tables": {
+            "intensity": 144
+          },
+          "stacks": {},
+          "parameters": {
+            "background_ring_inner_px": 4,
+            "background_ring_outer_px": 12,
+            "min_background_px": 25,
+            "bright_threshold_multiplier": 2.0
+          }
+        },
+        {
+          "module": "channels",
+          "status": "done",
+          "seconds": 0.913,
+          "tables": {
+            "channels": 144,
+            "channel_frame": 48,
+            "channel_tracks": 3
+          },
+          "stacks": {},
+          "parameters": {
+            "background_ring_inner_px": 4,
+            "background_ring_outer_px": 12,
+            "min_background_px": 25,
+            "bright_threshold_multiplier": 2.0
+          }
+        },
+        {
+          "module": "objects",
+          "status": "done",
+          "seconds": 0.216,
+          "tables": {
+            "objects": 96
+          },
+          "stacks": {},
+          "parameters": {}
+        },
+        {
+          "module": "object_geometry",
+          "status": "done",
+          "seconds": 0.148,
+          "tables": {
+            "cell_objects": 144,
+            "cell_object_tracks": 3
+          },
+          "stacks": {},
+          "parameters": {
+            "dilation_px": 2,
+            "radius_reach_multiple": 4.0,
+            "radius_px": null
+          }
+        },
+        {
+          "module": "motility",
+          "status": "done",
+          "seconds": 0.088,
+          "tables": {
+            "motility": 144,
+            "motility_tracks": 3,
+            "msd_curves": 72
+          },
+          "stacks": {},
+          "parameters": {
+            "max_msd_lag_frames": 24,
+            "min_frames_for_track_stats": 5
+          }
+        },
+        {
+          "module": "surveillance",
+          "status": "done",
+          "seconds": 0.017,
+          "tables": {
+            "surveillance": 141
+          },
+          "stacks": {},
+          "parameters": {
+            "max_gap_frames_for_turnover": 1
+          }
+        },
+        {
+          "module": "motion_evidence",
+          "status": "done",
+          "seconds": 0.039,
+          "tables": {
+            "motion_evidence": 141,
+            "motion_evidence_frame": 47
+          },
+          "stacks": {},
+          "parameters": {
+            "channel_names": [
+              "base",
+              "lost",
+              "held",
+              "gained",
+              "trail"
+            ],
+            "trail_channel": "trail",
+            "trail_levels": null
+          }
+        },
+        {
+          "module": "presence",
+          "status": "done",
+          "seconds": 0.016,
+          "tables": {
+            "presence": 144,
+            "presence_frame": 48
+          },
+          "stacks": {},
+          "parameters": {}
+        },
+        {
+          "module": "lifecycle",
+          "status": "done",
+          "seconds": 0.011,
+          "tables": {
+            "lifecycle_events": 6,
+            "lifecycle_cells": 3
+          },
+          "stacks": {},
+          "parameters": {
+            "contact_dilation_px": 2,
+            "border_margin_px": 2,
+            "area_conservation_tolerance": 0.4,
+            "min_frames_after_split": 3,
+            "residual_foreground_fraction": 0.25,
+            "fade_frames": 3
+          }
+        },
+        {
+          "module": "territory",
+          "status": "done",
+          "seconds": 0.036,
+          "tables": {
+            "territory": 3,
+            "territory_frame": 144,
+            "territory_overlap": 0
+          },
+          "stacks": {
+            "revisit_count": [
+              40,
+              40
+            ],
+            "first_owner": [
+              40,
+              40
+            ],
+            "owner_count": [
+              40,
+              40
+            ],
+            "never_visited": [
+              40,
+              40
+            ]
+          },
+          "parameters": {
+            "core_fraction": 0.8,
+            "transient_fraction": 0.2,
+            "count_unclaimed_as_visited": true,
+            "min_union_px_for_shape": 8,
+            "max_plausible_circularity": 1.15
+          }
+        },
+        {
+          "module": "sholl",
+          "status": "done",
+          "seconds": 0.487,
+          "tables": {
+            "sholl": 1728,
+            "sholl_reach": 144
+          },
+          "stacks": {},
+          "parameters": {
+            "n_rings": 6,
+            "ring_width": null,
+            "global_reach_percentile": 99.0,
+            "centre": "soma",
+            "exclude_other_identities": true
+          }
+        },
+        {
+          "module": "contacts",
+          "status": "done",
+          "seconds": 0.044,
+          "tables": {
+            "contacts": 0,
+            "contacts_frame": 0
+          },
+          "stacks": {},
+          "parameters": {
+            "dilation_px": 2,
+            "min_shared_boundary_px": 1,
+            "include_unclaimed": false
+          }
+        },
+        {
+          "module": "neighbours",
+          "status": "done",
+          "seconds": 0.104,
+          "tables": {
+            "neighbours": 144,
+            "neighbour_frame": 48
+          },
+          "stacks": {},
+          "parameters": {
+            "radius_reach_multiple": 4.0,
+            "radius_px": null,
+            "neighbour_k": 6,
+            "density_ground": "ever_occupied"
+          }
+        },
+        {
+          "module": "provenance",
+          "status": "done",
+          "seconds": 0.008,
+          "tables": {
+            "provenance": 144,
+            "provenance_frame": 48
+          },
+          "stacks": {},
+          "parameters": {}
+        },
+        {
+          "module": "regimes",
+          "status": "done",
+          "seconds": 0.025,
+          "tables": {
+            "regimes": 141,
+            "regime_transitions": 138,
+            "regime_profiles": 9
+          },
+          "parameters": {
+            "size_column": "area_px",
+            "movement_column": "step_px_gapless",
+            "category_quantiles": [
+              0.3333333333333333,
+              0.6666666666666666
+            ],
+            "min_frames_per_cell": 12
+          }
+        },
+        {
+          "module": "recurrence",
+          "status": "done",
+          "seconds": 6.392,
+          "tables": {
+            "recurrence": 48,
+            "recurrence_quantification": 2
+          },
+          "parameters": {
+            "detrend": "robust_linear",
+            "detrend_window_hours": 24.0,
+            "detrend_polynomial_degree": 3,
+            "detrend_min_valid_fraction": 0.5,
+            "detrend_bandwidth_hours": null,
+            "detrend_low_cut_hours": 45.0,
+            "detrend_high_cut_hours": 4.0,
+            "detrend_filter_order": 2,
+            "detrend_lowess_fraction": null,
+            "detrend_lowess_iterations": 3,
+            "detrend_asls_smoothness": 1000000.0,
+            "detrend_asls_asymmetry": 0.01,
+            "detrend_asls_iterations": 10,
+            "metrics": [
+              "area_px",
+              "circularity",
+              "solidity",
+              "ramification_index",
+              "aspect_ratio",
+              "skeleton_branches",
+              "turnover_index",
+              "step_px_gapless",
+              "punctateness"
+            ],
+            "threshold_quantile": 0.1,
+            "max_lag_hours": 12.0,
+            "surrogates": 100,
+            "null_model": "ar1",
+            "random_state": 20260825,
+            "min_observations": 4
+          }
+        },
+        {
+          "module": "sequence_distance",
+          "status": "done",
+          "seconds": 0.036,
+          "tables": {
+            "sequence_distance": 3
+          },
+          "parameters": {
+            "window_hours": 4.0,
+            "min_overlap_steps": 0
+          }
+        },
+        {
+          "module": "coupling",
+          "status": "done",
+          "seconds": 20.746,
+          "tables": {
+            "lag_profiles": 294,
+            "coupling": 3
+          },
+          "parameters": {
+            "max_lag_frames": 24,
+            "metric_pairs": [
+              [
+                "turnover_index",
+                "corrected_mean"
+              ],
+              [
+                "area_px",
+                "turnover_index"
+              ]
+            ],
+            "between_metrics": [
+              "corrected_mean"
+            ],
+            "min_overlap_frames": 24,
+            "surrogates": 200,
+            "random_state": 20260825,
+            "period_search_hours": [
+              2.0,
+              48.0
+            ],
+            "period_methods": [
+              "lomb",
+              "chi_square",
+              "f"
+            ],
+            "period_estimation_method": "lomb",
+            "primary_rhythm_test": "lomb",
+            "fixed_period_hours": 24.0,
+            "workbench_config": {},
+            "jtk_periods": [
+              4.0,
+              6.0,
+              8.0,
+              12.0,
+              16.0,
+              20.0,
+              24.0,
+              28.0,
+              32.0,
+              36.0,
+              48.0
+            ],
+            "ejtk_permutations": 1000,
+            "jtk_correction": "none",
+            "jtk_seed": 20260901,
+            "min_observations": 24,
+            "min_cycles_for_confident_period": 3.0,
+            "rhythmic_alpha": 0.05,
+            "detrend": "robust_linear",
+            "detrend_window_hours": 24.0,
+            "detrend_polynomial_degree": 3,
+            "detrend_min_valid_fraction": 0.5,
+            "detrend_bandwidth_hours": null,
+            "detrend_low_cut_hours": 45.0,
+            "detrend_high_cut_hours": 4.0,
+            "detrend_filter_order": 2,
+            "detrend_lowess_fraction": null,
+            "detrend_lowess_iterations": 3,
+            "detrend_asls_smoothness": 1000000.0,
+            "detrend_asls_asymmetry": 0.01,
+            "detrend_asls_iterations": 10,
+            "differenced_columns": [
+              "gained_px",
+              "lost_px",
+              "turnover_index",
+              "extension_bias",
+              "area_change_px"
+            ],
+            "metrics": [
+              "area_px",
+              "corrected_mean",
+              "integrated_density",
+              "solidity",
+              "ramification_index",
+              "turnover_index",
+              "step_px"
+            ],
+            "descriptive_cosinor": false,
+            "daily_profile_measures": false
+          }
+        },
+        {
+          "module": "rhythms",
+          "status": "done",
+          "seconds": 53.639,
+          "tables": {
+            "rhythms": 10,
+            "rhythm_methods": 30,
+            "rhythm_traces": 476,
+            "rhythms_population": 4,
+            "rhythms_null": 4
+          },
+          "parameters": {
+            "metrics": [
+              "area_px",
+              "corrected_mean",
+              "integrated_density",
+              "solidity",
+              "ramification_index",
+              "turnover_index",
+              "step_px"
+            ],
+            "period_search_hours": [
+              2.0,
+              48.0
+            ],
+            "period_methods": [
+              "lomb",
+              "chi_square",
+              "f"
+            ],
+            "period_estimation_method": "lomb",
+            "primary_rhythm_test": "lomb",
+            "fixed_period_hours": 24.0,
+            "workbench_config": {},
+            "jtk_periods": [
+              4.0,
+              6.0,
+              8.0,
+              12.0,
+              16.0,
+              20.0,
+              24.0,
+              28.0,
+              32.0,
+              36.0,
+              48.0
+            ],
+            "ejtk_permutations": 1000,
+            "jtk_correction": "none",
+            "jtk_seed": 20260901,
+            "min_observations": 24,
+            "min_cycles_for_confident_period": 3.0,
+            "rhythmic_alpha": 0.05,
+            "detrend": "robust_linear",
+            "detrend_window_hours": 24.0,
+            "detrend_polynomial_degree": 3,
+            "detrend_min_valid_fraction": 0.5,
+            "detrend_bandwidth_hours": null,
+            "detrend_low_cut_hours": 45.0,
+            "detrend_high_cut_hours": 4.0,
+            "detrend_filter_order": 2,
+            "detrend_lowess_fraction": null,
+            "detrend_lowess_iterations": 3,
+            "detrend_asls_smoothness": 1000000.0,
+            "detrend_asls_asymmetry": 0.01,
+            "detrend_asls_iterations": 10,
+            "circadian_band_hours": [
+              20.0,
+              28.0
+            ],
+            "null_surrogates_per_cell": 5,
+            "null_model": "ar1",
+            "null_seed": 20260824,
+            "descriptive_cosinor": false,
+            "daily_profile_measures": false,
+            "bin_hours": 1.0,
+            "high_window_hours": 10.0,
+            "low_window_hours": 5.0,
+            "onset_off_hours": 6.0,
+            "onset_on_hours": 6.0,
+            "onset_threshold_percent": 80.0,
+            "min_days_for_stability": 3.0
+          }
+        },
+        {
+          "module": "trend",
+          "status": "done",
+          "seconds": 0.102,
+          "tables": {
+            "trend": 17
+          },
+          "parameters": {
+            "metrics": [
+              "area_px",
+              "corrected_mean",
+              "solidity",
+              "ramification_index",
+              "turnover_index",
+              "step_px"
+            ],
+            "min_observations": 24
+          }
+        },
+        {
+          "module": "territory_shape",
+          "status": "done",
+          "seconds": 0.008,
+          "tables": {
+            "territory_shape": 3,
+            "territory_shape_frame": 144
+          },
+          "parameters": {}
+        },
+        {
+          "module": "walk",
+          "status": "done",
+          "seconds": 0.022,
+          "tables": {
+            "walk": 144,
+            "walk_tracks": 3,
+            "walk_frame": 48
+          },
+          "parameters": {
+            "centre": "soma",
+            "min_step_px": 0.5,
+            "run_turn_threshold_deg": 90.0,
+            "max_autocorrelation_lag_frames": 24,
+            "min_turns_for_summary": 5
+          }
+        },
+        {
+          "module": "history",
+          "status": "done",
+          "seconds": 0.001,
+          "tables": {},
+          "parameters": {
+            "labels_directory": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs"
+          }
+        }
+      ],
+      "side_column_use": {
+        "regimes": {
+          "offered": [],
+          "used": []
+        },
+        "recurrence": {
+          "offered": [],
+          "used": []
+        },
+        "sequence_distance": {
+          "offered": [],
+          "used": []
+        },
+        "coupling": {
+          "offered": [],
+          "used": []
+        },
+        "rhythms": {
+          "offered": [],
+          "used": []
+        },
+        "trend": {
+          "offered": [],
+          "used": []
+        },
+        "territory_shape": {
+          "offered": [],
+          "used": []
+        },
+        "walk": {
+          "offered": [],
+          "used": []
+        },
+        "history": {
+          "offered": [],
+          "used": []
+        }
+      },
+      "windows": [
+        {
+          "name": "first_half",
+          "baseline": null,
+          "description": "SYNTHETIC. The first twelve hours.",
+          "frames": 24,
+          "hours": 12.0
+        },
+        {
+          "name": "second_half",
+          "baseline": "first_half",
+          "description": "SYNTHETIC. The second twelve hours, against the first.",
+          "frames": 24,
+          "hours": 12.0
+        }
+      ],
+      "tables": {
+        "cell_frame": {
+          "path": "cell_frame.csv",
+          "rows": 144,
+          "columns": 164,
+          "sha256": "c7bbc4ee21228e2194cf6f2f8054897295b916e2c363c933bfea3142742436b8",
+          "grain": [
+            "identity",
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "cell_summary": {
+          "path": "cell_summary.csv",
+          "rows": 3,
+          "columns": 210,
+          "sha256": "376b4a6c76d17193258668365ce20e8a6892324c533a5a33755cc6bb7100e230",
+          "grain": [
+            "identity"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "frame_summary": {
+          "path": "frame_summary.csv",
+          "rows": 48,
+          "columns": 97,
+          "sha256": "5ca04f26e2f7bec37d7453e0fcb9a593f96b4c32b4bcd53786f6e69cb41ddc9f",
+          "grain": [
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "cell_summary_windowed": {
+          "path": "cell_summary_windowed.csv",
+          "rows": 6,
+          "columns": 167,
+          "sha256": "d2ac7c11c0c85bb7eaf36d12b7a375847187d4a1bd505b1545d4e1487b463bad",
+          "grain": [
+            "identity",
+            "window"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "frame_summary_windowed": {
+          "path": "frame_summary_windowed.csv",
+          "rows": 48,
+          "columns": 92,
+          "sha256": "85cdc94a8508320b1523ea0beadc967fd097ab7f5300464e8062364c0751e604",
+          "grain": [
+            "frame_index",
+            "window"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "window_change": {
+          "path": "window_change.csv",
+          "rows": 444,
+          "columns": 12,
+          "sha256": "d76fbf2bf8e04630f94a2dd168b84460e5f2bc50af57679c425181de885278dc",
+          "grain": [
+            "identity",
+            "window",
+            "metric"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "branches": {
+          "path": "branches.csv",
+          "rows": 144,
+          "columns": 11,
+          "sha256": "5db8932a2bfab2cd37f9077d068b5ecf0cc2df90183e751bdb12276e1a5bfac5",
+          "grain": [
+            "identity",
+            "frame_index",
+            "branch"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "cell_object_tracks": {
+          "path": "cell_object_tracks.csv",
+          "rows": 3,
+          "columns": 14,
+          "sha256": "02584659845023c72fdd85abe172b4fc4144f646b5e8c3f8f050b6e4d20d4812",
+          "grain": [
+            "identity",
+            "object_set"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "cell_objects": {
+          "path": "cell_objects.csv",
+          "rows": 144,
+          "columns": 18,
+          "sha256": "fdf91d67afbd487798124f6ac4691fb92f2b6c3c4ab3fe341884f5bc6fc22052",
+          "grain": [
+            "identity",
+            "frame_index",
+            "object_set"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "channel_frame": {
+          "path": "channel_frame.csv",
+          "rows": 48,
+          "columns": 13,
+          "sha256": "d54d13f37f1498639c9ea96a65e4bcd5e3e41fdbfe437626c479e1c816016692",
+          "grain": [
+            "frame_index",
+            "channel"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "channel_tracks": {
+          "path": "channel_tracks.csv",
+          "rows": 3,
+          "columns": 12,
+          "sha256": "22d8b30d0b496af75f3bd2ef568218fb14bb863fea9b2d5dc7bf4e71f0f0303d",
+          "grain": [
+            "identity",
+            "channel"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "channels": {
+          "path": "channels.csv",
+          "rows": 144,
+          "columns": 28,
+          "sha256": "008e459d002a96895d97a7ca994a7a7fe96eb93aca2c90a14dd8a5c0a68195a0",
+          "grain": [
+            "identity",
+            "frame_index",
+            "channel"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "coupling": {
+          "path": "coupling.csv",
+          "rows": 3,
+          "columns": 18,
+          "sha256": "43f15a548e0879d9a570e232fd1a970acf81978c8ce3b145fd1c4c15f755fd60",
+          "grain": [
+            "identity_a",
+            "identity_b",
+            "metric"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "lag_profiles": {
+          "path": "lag_profiles.csv",
+          "rows": 294,
+          "columns": 16,
+          "sha256": "a1e12316ad827eaa79d697032b3527bdbb582e810df99059bdd2c72c2ab36e77",
+          "grain": [
+            "identity",
+            "metric_a",
+            "metric_b",
+            "lag_frames"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "lifecycle_cells": {
+          "path": "lifecycle_cells.csv",
+          "rows": 3,
+          "columns": 20,
+          "sha256": "a74bdf13c72ceef1d3fad23c217d3d201f1b7dde9b3a4dcf05c2065bf8fdaa34",
+          "grain": [
+            "identity"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "lifecycle_events": {
+          "path": "lifecycle_events.csv",
+          "rows": 6,
+          "columns": 18,
+          "sha256": "996ddcbdde12d83e979f3d4f5a498c2434330ba5c3466cb5e517d56a31fb7145",
+          "grain": [
+            "identity",
+            "frame_index",
+            "event"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "motion_evidence_frame": {
+          "path": "motion_evidence_frame.csv",
+          "rows": 47,
+          "columns": 32,
+          "sha256": "cec1dc28576cc35c91be4d393c615d8572c10258d7a205a1f29344a94ca3d8e4",
+          "grain": [
+            "from_frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "msd_curves": {
+          "path": "msd_curves.csv",
+          "rows": 72,
+          "columns": 9,
+          "sha256": "2c54f0e057cf3bddb4e63d9b8422d5a5092de6a93361eb53551b47a2a92187cc",
+          "grain": [
+            "identity",
+            "lag_frames"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "objects": {
+          "path": "objects.csv",
+          "rows": 96,
+          "columns": 17,
+          "sha256": "214d0a2979eceeaff30e4cfb2af4d2ef3840783fcd71dd615588af454057dd23",
+          "grain": [
+            "object_set",
+            "object",
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "presence": {
+          "path": "presence.csv",
+          "rows": 144,
+          "columns": 9,
+          "sha256": "96c4e32264440d5e940f5ec155f530708d304c42ae58b98a73d23c0e67ddbf4a",
+          "grain": [
+            "identity",
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "presence_frame": {
+          "path": "presence_frame.csv",
+          "rows": 48,
+          "columns": 15,
+          "sha256": "f79182a04bbf0741183ecadd4fb439d62198db436413e72235b53abfb48ecde1",
+          "grain": [
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "provenance_frame": {
+          "path": "provenance_frame.csv",
+          "rows": 48,
+          "columns": 14,
+          "sha256": "24818ef1ef75da7401dc23a45ccca540f31d4e2bed61732d49e2628f00f9a1b5",
+          "grain": [
+            "frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "recurrence": {
+          "path": "recurrence.csv",
+          "rows": 48,
+          "columns": 13,
+          "sha256": "5ff07dc2195153abd8eb1cc57ff7f6ce2605fb28dd7027cc1f2237ba299901c3",
+          "grain": [
+            "identity",
+            "lag_frames"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "recurrence_quantification": {
+          "path": "recurrence_quantification.csv",
+          "rows": 2,
+          "columns": 13,
+          "sha256": "76fdf268744c69f11764f54eb8ad401e56c1db08cebf25b7e0d4234356627de6",
+          "grain": [
+            "identity"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "regime_profiles": {
+          "path": "regime_profiles.csv",
+          "rows": 9,
+          "columns": 10,
+          "sha256": "b98f643fc37b2aa26b6b6df0eee7f11e6005f36c34279478ed7c793546654936",
+          "grain": [
+            "regime"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "regime_transitions": {
+          "path": "regime_transitions.csv",
+          "rows": 138,
+          "columns": 11,
+          "sha256": "aa357c96beca7c9f2b360a4c32b3ac1376fa42c1a442be3cf3dbea6c1c92efea",
+          "grain": [
+            "identity",
+            "from_frame_index"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "rhythm_methods": {
+          "path": "rhythm_methods.csv",
+          "rows": 30,
+          "columns": 33,
+          "sha256": "59fe4b93b90471c0d841fd610928576bd2554a03c2a83661ec775f5e489df538",
+          "grain": [
+            "identity",
+            "metric",
+            "method"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "rhythm_traces": {
+          "path": "rhythm_traces.csv",
+          "rows": 476,
+          "columns": 10,
+          "sha256": "89e0634fc8adcab4ea9ee7193590218b6e17dc978627441ad5c03f667ca6bcc3",
+          "grain": [
+            "identity",
+            "metric",
+            "hours"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "rhythms": {
+          "path": "rhythms.csv",
+          "rows": 10,
+          "columns": 50,
+          "sha256": "89888f383b3d9361469101717f67e8700a3c825f7a625ad46a8d589fe0dd7b04",
+          "grain": [
+            "identity",
+            "metric"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "rhythms_null": {
+          "path": "rhythms_null.csv",
+          "rows": 4,
+          "columns": 17,
+          "sha256": "3fa9536f296748bcc4435a639b8cf225dac61be9aa5b0a66b93fc4bbb482260a",
+          "grain": [
+            "metric"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "rhythms_population": {
+          "path": "rhythms_population.csv",
+          "rows": 4,
+          "columns": 13,
+          "sha256": "fd76635686e886e4332f6de74a92d574bb5ac8b005eba9f1e860810a093215de",
+          "grain": [
+            "metric",
+            "population"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "sequence_distance": {
+          "path": "sequence_distance.csv",
+          "rows": 3,
+          "columns": 8,
+          "sha256": "b107976b692e8c9ff343b4ff8f01bae3ad46610548cf4e6e26d9b216fe5d5bcb",
+          "grain": [
+            "identity_a",
+            "identity_b"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "sholl": {
+          "path": "sholl.csv",
+          "rows": 1728,
+          "columns": 15,
+          "sha256": "71f00132faeb23a405750acf07c9ae997a647719c8329c216ca87ad250eca265",
+          "grain": [
+            "identity",
+            "frame_index",
+            "scaling",
+            "ring"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        },
+        "trend": {
+          "path": "trend.csv",
+          "rows": 17,
+          "columns": 15,
+          "sha256": "621e7a715364c36837aa84257be7fdd821748565ec4eb8dcca99c01f14d19667",
+          "grain": [
+            "identity",
+            "metric"
+          ],
+          "origin": "measured",
+          "folder": "tables"
+        }
+      },
+      "stacks": {
+        "first_owner": {
+          "path": "stacks/first_owner.tif",
+          "shape": [
+            40,
+            40
+          ],
+          "dtype": "uint32",
+          "sha256": "5543eb2b91a7fcdae532e2059bb04b9f44ee74e74c220a650409491e12617b28"
+        },
+        "never_visited": {
+          "path": "stacks/never_visited.tif",
+          "shape": [
+            40,
+            40
+          ],
+          "dtype": "uint8",
+          "sha256": "de1e37e4f1f2c066172b85a372008108b0e4b8c7fdefb45c81ce20ce93c6a53c"
+        },
+        "owner_count": {
+          "path": "stacks/owner_count.tif",
+          "shape": [
+            40,
+            40
+          ],
+          "dtype": "uint16",
+          "sha256": "f12f28eb50afac02ab11a9e0d629d409093f208336213a332e8701f9f10ff108"
+        },
+        "revisit_count": {
+          "path": "stacks/revisit_count.tif",
+          "shape": [
+            40,
+            40
+          ],
+          "dtype": "uint32",
+          "sha256": "affcdecd1b1a3bc221732dd8e15fdc206d8b2fec10eae11c4fc20384c0b31001"
+        }
+      },
+      "summary": {
+        "stem": "parity_A1",
+        "frames": 48,
+        "hours_covered": 23.5,
+        "minutes_per_frame": 30.0,
+        "identities": 3,
+        "cell_frame_rows": 144,
+        "scale": {
+          "minutes_per_frame": 30.0,
+          "microns_per_pixel": null,
+          "calibrated": false,
+          "source": "uncalibrated",
+          "length_unit": "px",
+          "area_unit": "px2"
+        },
+        "coverage": {
+          "median_identities_per_frame": 3.0,
+          "cells_present_every_frame": 3,
+          "total_gap_frames": 0
+        },
+        "morphology": {
+          "median_cell_area_px": 64.0,
+          "median_solidity": 1.0,
+          "median_skeleton_px": 3.0
+        },
+        "intensity": {
+          "median_corrected_mean": 100.14180809259415,
+          "input_already_background_subtracted": false,
+          "zero_background_fraction": 0.0,
+          "median_punctateness_p90_over_median": 1.019036992863549,
+          "median_signal_to_background": 42.3412901148137
+        },
+        "surveillance": {
+          "median_turnover_index": 0.125,
+          "median_jaccard": 0.7777777777777778
+        },
+        "provenance": {
+          "labelled_px": 7344,
+          "inferred_px": 79,
+          "inferred_fraction_of_footprint": 0.010757080610021787,
+          "renamed_px": 0,
+          "added_px": 79,
+          "added_fraction_of_footprint": 0.010757080610021787,
+          "cell_frames": 144,
+          "cell_frames_touched": 31,
+          "cell_frames_with_added_px": 31,
+          "cell_frames_entirely_supplied": 0,
+          "identities": 3,
+          "identities_touched": 1,
+          "unresolved_px_outside_any_cell": 113
+        },
+        "motility": {
+          "tracks": 3,
+          "median_step_px": 1.0,
+          "median_straightness": 0.03717616720707374,
+          "median_msd_alpha": -1.0730179533382073e-15,
+          "median_speed_px_per_min": 0.045942745917989254
+        },
+        "rhythms": {
+          "cycles_covered": NaN,
+          "period_underdetermined": false,
+          "null_model": "ar1",
+          "per_metric": {
+            "corrected_mean": {
+              "cells_tested": 3,
+              "primary_rhythm_test": "lomb",
+              "period_estimation_method": "lomb",
+              "rhythmic_by_primary_test": 3,
+              "rhythmic_by_cosinor": null,
+              "rhythmic_by_both_tests": null,
+              "median_best_period_hours": 17.299999999999947,
+              "median_free_period_hours": 17.299999999999947,
+              "median_peak_hour": 7.683162827883298,
+              "phase_vector_length": 0.99998189615581,
+              "phase_rayleigh_p": 0.033565115819423105,
+              "population_mean_peak_hour": 7.692421402607938,
+              "null_false_positive_rate_primary": 1.0,
+              "excess_over_null_primary": 0.0,
+              "null_false_positive_rate_both": NaN,
+              "excess_over_null": NaN
+            },
+            "integrated_density": {
+              "cells_tested": 3,
+              "primary_rhythm_test": "lomb",
+              "period_estimation_method": "lomb",
+              "rhythmic_by_primary_test": 3,
+              "rhythmic_by_cosinor": null,
+              "rhythmic_by_both_tests": null,
+              "median_best_period_hours": 17.299999999999947,
+              "median_free_period_hours": 17.299999999999947,
+              "median_peak_hour": 7.681304610188677,
+              "phase_vector_length": 0.9999997311918589,
+              "phase_rayleigh_p": 0.033559139424855264,
+              "population_mean_peak_hour": 7.680783548708904,
+              "null_false_positive_rate_primary": 1.0,
+              "excess_over_null_primary": 0.0,
+              "null_false_positive_rate_both": NaN,
+              "excess_over_null": NaN
+            },
+            "step_px": {
+              "cells_tested": 2,
+              "primary_rhythm_test": "lomb",
+              "period_estimation_method": "lomb",
+              "rhythmic_by_primary_test": 1,
+              "rhythmic_by_cosinor": null,
+              "rhythmic_by_both_tests": null,
+              "median_best_period_hours": 2.9749999999999965,
+              "median_free_period_hours": 2.9749999999999965,
+              "median_peak_hour": 2.1923048453710985,
+              "null_false_positive_rate_primary": 0.0,
+              "excess_over_null_primary": 0.5,
+              "null_false_positive_rate_both": NaN,
+              "excess_over_null": NaN
+            },
+            "turnover_index": {
+              "cells_tested": 2,
+              "primary_rhythm_test": "lomb",
+              "period_estimation_method": "lomb",
+              "rhythmic_by_primary_test": 1,
+              "rhythmic_by_cosinor": null,
+              "rhythmic_by_both_tests": null,
+              "median_best_period_hours": 2.9749999999999965,
+              "median_free_period_hours": 2.9749999999999965,
+              "median_peak_hour": 2.2050632104022347,
+              "null_false_positive_rate_primary": 0.0,
+              "excess_over_null_primary": 0.5,
+              "null_false_positive_rate_both": NaN,
+              "excess_over_null": NaN
+            }
+          }
+        },
+        "condition": "control",
+        "condition_label": "Control (synthetic)",
+        "subject": "synthetic_subject_1"
+      },
+      "seconds": 87.216
+    }
+  ],
+  "pooled": {
+    "movies": [
+      "parity_A1"
+    ],
+    "folders": [
+      "tables",
+      "tracker"
+    ],
+    "tables": {
+      "branches": {
+        "path": "branches.csv",
+        "rows": 144,
+        "columns": 11,
+        "sha256": "5db8932a2bfab2cd37f9077d068b5ecf0cc2df90183e751bdb12276e1a5bfac5",
+        "grain": [
+          "identity",
+          "frame_index",
+          "branch"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 144
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "cell_frame": {
+        "path": "cell_frame.csv",
+        "rows": 144,
+        "columns": 164,
+        "sha256": "c7bbc4ee21228e2194cf6f2f8054897295b916e2c363c933bfea3142742436b8",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 144
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "cell_object_tracks": {
+        "path": "cell_object_tracks.csv",
+        "rows": 3,
+        "columns": 14,
+        "sha256": "02584659845023c72fdd85abe172b4fc4144f646b5e8c3f8f050b6e4d20d4812",
+        "grain": [
+          "identity",
+          "object_set"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "cell_objects": {
+        "path": "cell_objects.csv",
+        "rows": 144,
+        "columns": 18,
+        "sha256": "fdf91d67afbd487798124f6ac4691fb92f2b6c3c4ab3fe341884f5bc6fc22052",
+        "grain": [
+          "identity",
+          "frame_index",
+          "object_set"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 144
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "cell_summary": {
+        "path": "cell_summary.csv",
+        "rows": 3,
+        "columns": 210,
+        "sha256": "376b4a6c76d17193258668365ce20e8a6892324c533a5a33755cc6bb7100e230",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "cell_summary_windowed": {
+        "path": "cell_summary_windowed.csv",
+        "rows": 6,
+        "columns": 167,
+        "sha256": "d2ac7c11c0c85bb7eaf36d12b7a375847187d4a1bd505b1545d4e1487b463bad",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 6
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "channel_frame": {
+        "path": "channel_frame.csv",
+        "rows": 48,
+        "columns": 13,
+        "sha256": "d54d13f37f1498639c9ea96a65e4bcd5e3e41fdbfe437626c479e1c816016692",
+        "grain": [
+          "frame_index",
+          "channel"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "channel_tracks": {
+        "path": "channel_tracks.csv",
+        "rows": 3,
+        "columns": 12,
+        "sha256": "22d8b30d0b496af75f3bd2ef568218fb14bb863fea9b2d5dc7bf4e71f0f0303d",
+        "grain": [
+          "identity",
+          "channel"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "channels": {
+        "path": "channels.csv",
+        "rows": 144,
+        "columns": 28,
+        "sha256": "008e459d002a96895d97a7ca994a7a7fe96eb93aca2c90a14dd8a5c0a68195a0",
+        "grain": [
+          "identity",
+          "frame_index",
+          "channel"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 144
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "coupling": {
+        "path": "coupling.csv",
+        "rows": 3,
+        "columns": 18,
+        "sha256": "43f15a548e0879d9a570e232fd1a970acf81978c8ce3b145fd1c4c15f755fd60",
+        "grain": [
+          "identity_a",
+          "identity_b",
+          "metric"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "frame_summary": {
+        "path": "frame_summary.csv",
+        "rows": 48,
+        "columns": 97,
+        "sha256": "5ca04f26e2f7bec37d7453e0fcb9a593f96b4c32b4bcd53786f6e69cb41ddc9f",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "frame_summary_windowed": {
+        "path": "frame_summary_windowed.csv",
+        "rows": 48,
+        "columns": 92,
+        "sha256": "85cdc94a8508320b1523ea0beadc967fd097ab7f5300464e8062364c0751e604",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "lag_profiles": {
+        "path": "lag_profiles.csv",
+        "rows": 294,
+        "columns": 16,
+        "sha256": "a1e12316ad827eaa79d697032b3527bdbb582e810df99059bdd2c72c2ab36e77",
+        "grain": [
+          "identity",
+          "metric_a",
+          "metric_b",
+          "lag_frames"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 294
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "lifecycle_cells": {
+        "path": "lifecycle_cells.csv",
+        "rows": 3,
+        "columns": 20,
+        "sha256": "a74bdf13c72ceef1d3fad23c217d3d201f1b7dde9b3a4dcf05c2065bf8fdaa34",
+        "grain": [
+          "identity"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "lifecycle_events": {
+        "path": "lifecycle_events.csv",
+        "rows": 6,
+        "columns": 18,
+        "sha256": "996ddcbdde12d83e979f3d4f5a498c2434330ba5c3466cb5e517d56a31fb7145",
+        "grain": [
+          "identity",
+          "frame_index",
+          "event"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 6
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "motion_evidence_frame": {
+        "path": "motion_evidence_frame.csv",
+        "rows": 47,
+        "columns": 32,
+        "sha256": "cec1dc28576cc35c91be4d393c615d8572c10258d7a205a1f29344a94ca3d8e4",
+        "grain": [
+          "from_frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 47
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "msd_curves": {
+        "path": "msd_curves.csv",
+        "rows": 72,
+        "columns": 9,
+        "sha256": "2c54f0e057cf3bddb4e63d9b8422d5a5092de6a93361eb53551b47a2a92187cc",
+        "grain": [
+          "identity",
+          "lag_frames"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 72
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "objects": {
+        "path": "objects.csv",
+        "rows": 96,
+        "columns": 17,
+        "sha256": "214d0a2979eceeaff30e4cfb2af4d2ef3840783fcd71dd615588af454057dd23",
+        "grain": [
+          "object_set",
+          "object",
+          "frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 96
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "presence": {
+        "path": "presence.csv",
+        "rows": 144,
+        "columns": 9,
+        "sha256": "96c4e32264440d5e940f5ec155f530708d304c42ae58b98a73d23c0e67ddbf4a",
+        "grain": [
+          "identity",
+          "frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 144
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "presence_frame": {
+        "path": "presence_frame.csv",
+        "rows": 48,
+        "columns": 15,
+        "sha256": "f79182a04bbf0741183ecadd4fb439d62198db436413e72235b53abfb48ecde1",
+        "grain": [
+          "frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "provenance_frame": {
+        "path": "provenance_frame.csv",
+        "rows": 48,
+        "columns": 14,
+        "sha256": "24818ef1ef75da7401dc23a45ccca540f31d4e2bed61732d49e2628f00f9a1b5",
+        "grain": [
+          "frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "recurrence": {
+        "path": "recurrence.csv",
+        "rows": 48,
+        "columns": 13,
+        "sha256": "5ff07dc2195153abd8eb1cc57ff7f6ce2605fb28dd7027cc1f2237ba299901c3",
+        "grain": [
+          "identity",
+          "lag_frames"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 48
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "recurrence_quantification": {
+        "path": "recurrence_quantification.csv",
+        "rows": 2,
+        "columns": 13,
+        "sha256": "76fdf268744c69f11764f54eb8ad401e56c1db08cebf25b7e0d4234356627de6",
+        "grain": [
+          "identity"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 2
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "regime_profiles": {
+        "path": "regime_profiles.csv",
+        "rows": 9,
+        "columns": 10,
+        "sha256": "b98f643fc37b2aa26b6b6df0eee7f11e6005f36c34279478ed7c793546654936",
+        "grain": [
+          "regime"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 9
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "regime_transitions": {
+        "path": "regime_transitions.csv",
+        "rows": 138,
+        "columns": 11,
+        "sha256": "aa357c96beca7c9f2b360a4c32b3ac1376fa42c1a442be3cf3dbea6c1c92efea",
+        "grain": [
+          "identity",
+          "from_frame_index"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 138
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "rhythm_methods": {
+        "path": "rhythm_methods.csv",
+        "rows": 30,
+        "columns": 33,
+        "sha256": "59fe4b93b90471c0d841fd610928576bd2554a03c2a83661ec775f5e489df538",
+        "grain": [
+          "identity",
+          "metric",
+          "method"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 30
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "rhythm_traces": {
+        "path": "rhythm_traces.csv",
+        "rows": 476,
+        "columns": 10,
+        "sha256": "89e0634fc8adcab4ea9ee7193590218b6e17dc978627441ad5c03f667ca6bcc3",
+        "grain": [
+          "identity",
+          "metric",
+          "hours"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 476
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "rhythms": {
+        "path": "rhythms.csv",
+        "rows": 10,
+        "columns": 50,
+        "sha256": "89888f383b3d9361469101717f67e8700a3c825f7a625ad46a8d589fe0dd7b04",
+        "grain": [
+          "identity",
+          "metric"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 10
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "rhythms_null": {
+        "path": "rhythms_null.csv",
+        "rows": 4,
+        "columns": 17,
+        "sha256": "3fa9536f296748bcc4435a639b8cf225dac61be9aa5b0a66b93fc4bbb482260a",
+        "grain": [
+          "metric"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 4
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "rhythms_population": {
+        "path": "rhythms_population.csv",
+        "rows": 4,
+        "columns": 13,
+        "sha256": "fd76635686e886e4332f6de74a92d574bb5ac8b005eba9f1e860810a093215de",
+        "grain": [
+          "metric",
+          "population"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 4
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "sequence_distance": {
+        "path": "sequence_distance.csv",
+        "rows": 3,
+        "columns": 8,
+        "sha256": "b107976b692e8c9ff343b4ff8f01bae3ad46610548cf4e6e26d9b216fe5d5bcb",
+        "grain": [
+          "identity_a",
+          "identity_b"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 3
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "sholl": {
+        "path": "sholl.csv",
+        "rows": 1728,
+        "columns": 15,
+        "sha256": "71f00132faeb23a405750acf07c9ae997a647719c8329c216ca87ad250eca265",
+        "grain": [
+          "identity",
+          "frame_index",
+          "scaling",
+          "ring"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 1728
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "trend": {
+        "path": "trend.csv",
+        "rows": 17,
+        "columns": 15,
+        "sha256": "621e7a715364c36837aa84257be7fdd821748565ec4eb8dcca99c01f14d19667",
+        "grain": [
+          "identity",
+          "metric"
+        ],
+        "origin": "measured",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 17
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      },
+      "window_change": {
+        "path": "window_change.csv",
+        "rows": 444,
+        "columns": 12,
+        "sha256": "d76fbf2bf8e04630f94a2dd168b84460e5f2bc50af57679c425181de885278dc",
+        "folder": "tables",
+        "movies": [
+          "parity_A1"
+        ],
+        "rows_per_movie": {
+          "parity_A1": 444
+        },
+        "columns_missing": {},
+        "movies_absent": []
+      }
+    }
+  },
+  "statistics": {
+    "contrasts": 1,
+    "rows": 2,
+    "refused": 0,
+    "path": "statistics.csv"
+  }
+}

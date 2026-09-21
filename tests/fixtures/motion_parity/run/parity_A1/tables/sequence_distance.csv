@@ -1,0 +1,4 @@
+stem,condition,subject,identity_a,identity_b,dtw_distance,alignment_offset_hours,alignment_overlap_steps
+parity_A1,control,synthetic_subject_1,1,2,0.0571428571,2.58695652,69
+parity_A1,control,synthetic_subject_1,1,3,0.979166667,0,47
+parity_A1,control,synthetic_subject_1,2,3,0.979166667,0,47

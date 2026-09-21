@@ -1,0 +1,4 @@
+stem,condition,subject,identity_a,identity_b,metric,distance,correlation,phase_difference,phase_difference_fraction,period_a_hours,period_b_hours,pair_phase_reference_period_hours,period_estimation_method,overlap_frames,detrend,detrend_window_hours,workbench_version
+parity_A1,control,synthetic_subject_1,1,2,corrected_mean,21.5696546,0.999779199,0.0372262251,0.00215491897,17.25,17.3,17.275,lomb,48,robust_linear,24,0.8.2
+parity_A1,control,synthetic_subject_1,1,3,corrected_mean,21.5058132,0.999736185,0.0324810049,0.00188023183,17.25,17.3,17.275,lomb,48,robust_linear,24,0.8.2
+parity_A1,control,synthetic_subject_1,2,3,corrected_mean,22.0737401,0.999725217,0.00475208742,0.000274687134,17.3,17.3,17.3,lomb,48,robust_linear,24,0.8.2

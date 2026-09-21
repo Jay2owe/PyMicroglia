@@ -1,0 +1,10 @@
+stem,condition,subject,regime,regime_label,regime_size_level,regime_movement_level,regime_observations,area_px,step_px_gapless
+parity_A1,control,synthetic_subject_1,0,"Low size, low movement",low,low,47,25,0
+parity_A1,control,synthetic_subject_1,1,"Low size, medium movement",low,medium,0,25,1
+parity_A1,control,synthetic_subject_1,2,"Low size, high movement",low,high,0,25,2
+parity_A1,control,synthetic_subject_1,3,"Medium size, low movement",medium,low,0,64,0
+parity_A1,control,synthetic_subject_1,4,"Medium size, medium movement",medium,medium,0,64,1
+parity_A1,control,synthetic_subject_1,5,"Medium size, high movement",medium,high,0,64,2
+parity_A1,control,synthetic_subject_1,6,"High size, low movement",high,low,0,64,0
+parity_A1,control,synthetic_subject_1,7,"High size, medium movement",high,medium,63,64,1
+parity_A1,control,synthetic_subject_1,8,"High size, high movement",high,high,31,64,2

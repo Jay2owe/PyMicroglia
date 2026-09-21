@@ -1,0 +1,44 @@
+{
+  "match_against": "stem",
+  "synthetic": true,
+  "factors": [
+    "condition"
+  ],
+  "conditions": [
+    {
+      "name": "control",
+      "label": "Control (synthetic)",
+      "factor": "condition",
+      "match": [
+        "_A\\d"
+      ],
+      "colour": "#4878A8",
+      "colour_source": "declared",
+      "control": true,
+      "notes": ""
+    }
+  ],
+  "assignments": [
+    {
+      "stem": "parity_A1",
+      "condition": "control",
+      "label": "Control (synthetic)",
+      "factors": {
+        "condition": "control"
+      },
+      "source": "derived",
+      "evidence": {
+        "condition": "_A\\d"
+      },
+      "problem": null
+    }
+  ],
+  "subjects": {
+    "parity_A1": "synthetic_subject_1"
+  },
+  "warnings": [
+    "SYNTHETIC DESIGN - these groups were invented to exercise the pipeline. No number split by them means anything.",
+    "condition 'control' has one movie; nothing can be compared within it",
+    "every movie is 'control'; a comparison needs at least two groups"
+  ]
+}

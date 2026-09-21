@@ -1,0 +1,4 @@
+stem,condition,subject,identity,channel,channel_frames,channel_level_median,channel_level_iqr,channel_trend_per_hour,channel_trend_r2,channel_detrended_median,channel_detrended_sd
+parity_A1,control,synthetic_subject_1,1,extra,48,70.3203125,20.9453125,-1.73802343,0.99463023,-567.35699,30.6983648
+parity_A1,control,synthetic_subject_1,2,extra,48,138.671875,40.0039062,-3.46445703,0.998404889,-499.005428,18.7532508
+parity_A1,control,synthetic_subject_1,3,extra,48,0.86,1.605,-0.02016066,0.020053031,-636.797303,42.5955664

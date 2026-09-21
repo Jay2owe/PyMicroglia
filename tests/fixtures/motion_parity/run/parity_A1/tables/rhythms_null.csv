@@ -1,0 +1,5 @@
+stem,condition,subject,metric,surrogates,false_positive_rate_cosinor,false_positive_rate_lombscargle,false_positive_rate_both,false_positive_rate_primary,null_model,primary_method,cells_tested,observed_rate_cosinor,observed_rate_both,observed_rate_primary,excess_over_null_both,excess_over_null_primary
+parity_A1,control,synthetic_subject_1,corrected_mean,15,,1,,1,ar1,lomb,3,,,1,,0
+parity_A1,control,synthetic_subject_1,integrated_density,15,,1,,1,ar1,lomb,3,,,1,,0
+parity_A1,control,synthetic_subject_1,step_px,10,,0,,0,ar1,lomb,2,,,0.5,,0.5
+parity_A1,control,synthetic_subject_1,turnover_index,10,,0,,0,ar1,lomb,2,,,0.5,,0.5

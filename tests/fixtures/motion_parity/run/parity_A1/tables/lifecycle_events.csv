@@ -1,0 +1,7 @@
+stem,condition,subject,identity,frame_index,hours,event,event_status,partner_identity,touches_border,area_px,partner_area_px,parent_area_before_px,area_conservation,residual_foreground_px,residual_foreground_fraction,area_change_over_last_frames,frames_together
+parity_A1,control,synthetic_subject_1,1,0,0,present_at_start,censored,,False,64,,,,,,,
+parity_A1,control,synthetic_subject_1,1,47,23.5,present_at_end,censored,,False,64,,,,,,1,
+parity_A1,control,synthetic_subject_1,2,0,0,present_at_start,censored,,False,64,,,,,,,
+parity_A1,control,synthetic_subject_1,2,47,23.5,present_at_end,censored,,False,64,,,,,,1,
+parity_A1,control,synthetic_subject_1,3,0,0,present_at_start,censored,,False,25,,,,,,,
+parity_A1,control,synthetic_subject_1,3,47,23.5,present_at_end,censored,,False,25,,,,,,1,

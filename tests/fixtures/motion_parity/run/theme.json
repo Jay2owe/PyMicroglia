@@ -1,0 +1,19 @@
+{
+  "theme": {
+    "preset": "house"
+  },
+  "conditions": [
+    {
+      "name": "control",
+      "label": "Control (synthetic)",
+      "factor": "condition",
+      "match": [
+        "_A\\d"
+      ],
+      "colour": "#4878A8",
+      "colour_source": "declared",
+      "control": true,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+stem,condition,subject,metric,population,cells,vector_length,rayleigh_p_value,workbench_version,mean_peak_fraction,phase_reference_period_hours,mean_peak_hour,period_estimation_method
+parity_A1,control,synthetic_subject_1,corrected_mean,all_tested,3,0.999981896,0.0335651158,0.8.2,0.444648636,17.3,7.6924214,lomb
+parity_A1,control,synthetic_subject_1,corrected_mean,rhythmic_by_primary_test,3,0.999981896,0.0335651158,0.8.2,0.444648636,17.3,7.6924214,lomb
+parity_A1,control,synthetic_subject_1,integrated_density,all_tested,3,0.999999731,0.0335591394,0.8.2,0.443975928,17.3,7.68078355,lomb
+parity_A1,control,synthetic_subject_1,integrated_density,rhythmic_by_primary_test,3,0.999999731,0.0335591394,0.8.2,0.443975928,17.3,7.68078355,lomb

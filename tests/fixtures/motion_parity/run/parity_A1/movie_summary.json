@@ -1,0 +1,135 @@
+{
+  "stem": "parity_A1",
+  "frames": 48,
+  "hours_covered": 23.5,
+  "minutes_per_frame": 30.0,
+  "identities": 3,
+  "cell_frame_rows": 144,
+  "scale": {
+    "minutes_per_frame": 30.0,
+    "microns_per_pixel": null,
+    "calibrated": false,
+    "source": "uncalibrated",
+    "length_unit": "px",
+    "area_unit": "px2"
+  },
+  "coverage": {
+    "median_identities_per_frame": 3.0,
+    "cells_present_every_frame": 3,
+    "total_gap_frames": 0
+  },
+  "morphology": {
+    "median_cell_area_px": 64.0,
+    "median_solidity": 1.0,
+    "median_skeleton_px": 3.0
+  },
+  "intensity": {
+    "median_corrected_mean": 100.14180809259415,
+    "input_already_background_subtracted": false,
+    "zero_background_fraction": 0.0,
+    "median_punctateness_p90_over_median": 1.019036992863549,
+    "median_signal_to_background": 42.3412901148137
+  },
+  "surveillance": {
+    "median_turnover_index": 0.125,
+    "median_jaccard": 0.7777777777777778
+  },
+  "provenance": {
+    "labelled_px": 7344,
+    "inferred_px": 79,
+    "inferred_fraction_of_footprint": 0.010757080610021787,
+    "renamed_px": 0,
+    "added_px": 79,
+    "added_fraction_of_footprint": 0.010757080610021787,
+    "cell_frames": 144,
+    "cell_frames_touched": 31,
+    "cell_frames_with_added_px": 31,
+    "cell_frames_entirely_supplied": 0,
+    "identities": 3,
+    "identities_touched": 1,
+    "unresolved_px_outside_any_cell": 113
+  },
+  "motility": {
+    "tracks": 3,
+    "median_step_px": 1.0,
+    "median_straightness": 0.03717616720707374,
+    "median_msd_alpha": -1.0730179533382073e-15,
+    "median_speed_px_per_min": 0.045942745917989254
+  },
+  "rhythms": {
+    "cycles_covered": NaN,
+    "period_underdetermined": false,
+    "null_model": "ar1",
+    "per_metric": {
+      "corrected_mean": {
+        "cells_tested": 3,
+        "primary_rhythm_test": "lomb",
+        "period_estimation_method": "lomb",
+        "rhythmic_by_primary_test": 3,
+        "rhythmic_by_cosinor": null,
+        "rhythmic_by_both_tests": null,
+        "median_best_period_hours": 17.299999999999947,
+        "median_free_period_hours": 17.299999999999947,
+        "median_peak_hour": 7.683162827883298,
+        "phase_vector_length": 0.99998189615581,
+        "phase_rayleigh_p": 0.033565115819423105,
+        "population_mean_peak_hour": 7.692421402607938,
+        "null_false_positive_rate_primary": 1.0,
+        "excess_over_null_primary": 0.0,
+        "null_false_positive_rate_both": NaN,
+        "excess_over_null": NaN
+      },
+      "integrated_density": {
+        "cells_tested": 3,
+        "primary_rhythm_test": "lomb",
+        "period_estimation_method": "lomb",
+        "rhythmic_by_primary_test": 3,
+        "rhythmic_by_cosinor": null,
+        "rhythmic_by_both_tests": null,
+        "median_best_period_hours": 17.299999999999947,
+        "median_free_period_hours": 17.299999999999947,
+        "median_peak_hour": 7.681304610188677,
+        "phase_vector_length": 0.9999997311918589,
+        "phase_rayleigh_p": 0.033559139424855264,
+        "population_mean_peak_hour": 7.680783548708904,
+        "null_false_positive_rate_primary": 1.0,
+        "excess_over_null_primary": 0.0,
+        "null_false_positive_rate_both": NaN,
+        "excess_over_null": NaN
+      },
+      "step_px": {
+        "cells_tested": 2,
+        "primary_rhythm_test": "lomb",
+        "period_estimation_method": "lomb",
+        "rhythmic_by_primary_test": 1,
+        "rhythmic_by_cosinor": null,
+        "rhythmic_by_both_tests": null,
+        "median_best_period_hours": 2.9749999999999965,
+        "median_free_period_hours": 2.9749999999999965,
+        "median_peak_hour": 2.1923048453710985,
+        "null_false_positive_rate_primary": 0.0,
+        "excess_over_null_primary": 0.5,
+        "null_false_positive_rate_both": NaN,
+        "excess_over_null": NaN
+      },
+      "turnover_index": {
+        "cells_tested": 2,
+        "primary_rhythm_test": "lomb",
+        "period_estimation_method": "lomb",
+        "rhythmic_by_primary_test": 1,
+        "rhythmic_by_cosinor": null,
+        "rhythmic_by_both_tests": null,
+        "median_best_period_hours": 2.9749999999999965,
+        "median_free_period_hours": 2.9749999999999965,
+        "median_peak_hour": 2.2050632104022347,
+        "null_false_positive_rate_primary": 0.0,
+        "excess_over_null_primary": 0.5,
+        "null_false_positive_rate_both": NaN,
+        "excess_over_null": NaN
+      }
+    }
+  },
+  "condition": "control",
+  "condition_label": "Control (synthetic)",
+  "subject": "synthetic_subject_1"
+}

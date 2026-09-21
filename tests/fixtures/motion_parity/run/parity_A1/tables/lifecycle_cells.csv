@@ -1,0 +1,4 @@
+stem,condition,subject,identity,start_event,start_status,start_frame,start_hours,end_event,end_status,end_frame,end_hours,parent_identity,absorbed_into_identity,children,first_division_frame,first_division_hours,frames_named,gap_frames,observed_hours
+parity_A1,control,synthetic_subject_1,1,present_at_start,censored,0,0,present_at_end,censored,47,23.5,,,0,,,48,0,23.5
+parity_A1,control,synthetic_subject_1,2,present_at_start,censored,0,0,present_at_end,censored,47,23.5,,,0,,,48,0,23.5
+parity_A1,control,synthetic_subject_1,3,present_at_start,censored,0,0,present_at_end,censored,47,23.5,,,0,,,48,0,23.5

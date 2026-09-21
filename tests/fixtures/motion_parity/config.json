@@ -1,0 +1,207 @@
+{
+  "dataset": "SYNTHETIC motion parity fixture: three tracked cells, 48 frames at 30 min, built by PyMicroglia tests/fixtures.py::tracked_movie(seed=0)",
+  "frame_interval_min": 30,
+  "microns_per_pixel": null,
+  "calibration_tiffs": [],
+  "output_root": "outputs",
+  "verify_hashes": true,
+  "theme": {
+    "preset": "house"
+  },
+  "conditions": {
+    "synthetic": true,
+    "conditions": [
+      {
+        "name": "control",
+        "label": "Control (synthetic)",
+        "match": "_A\\d",
+        "colour": "blue",
+        "control": true
+      }
+    ]
+  },
+  "metric_groups": {
+    "rhythm_signals": [
+      "area_px",
+      "corrected_mean",
+      "integrated_density",
+      "solidity",
+      "ramification_index",
+      "turnover_index",
+      "step_px"
+    ]
+  },
+  "windows": [
+    {
+      "name": "first_half",
+      "from_hours": 0.0,
+      "to_hours": 12.0,
+      "description": "SYNTHETIC. The first twelve hours."
+    },
+    {
+      "name": "second_half",
+      "from_hours": 12.0,
+      "to_hours": 24.0,
+      "baseline": "first_half",
+      "description": "SYNTHETIC. The second twelve hours, against the first."
+    }
+  ],
+  "contrasts": [
+    {
+      "name": "second_half_against_first",
+      "family": "parity_window",
+      "description": "SYNTHETIC. Each cell against itself across the two halves; a paired test.",
+      "table": "cell_summary_windowed",
+      "metrics": [
+        "corrected_mean_median",
+        "integrated_density_median"
+      ],
+      "group_by": "window",
+      "groups": [
+        "second_half",
+        "first_half"
+      ],
+      "unit": "cell",
+      "test": "wilcoxon",
+      "correction": "benjamini_hochberg",
+      "alpha": 0.05
+    }
+  ],
+  "enabled_modules": [
+    "morphology",
+    "intensity",
+    "channels",
+    "objects",
+    "object_geometry",
+    "motility",
+    "surveillance",
+    "motion_evidence",
+    "presence",
+    "lifecycle",
+    "territory",
+    "sholl",
+    "contacts",
+    "regimes",
+    "recurrence",
+    "sequence_distance",
+    "coupling",
+    "rhythms",
+    "trend",
+    "neighbours",
+    "territory_shape",
+    "walk",
+    "provenance",
+    "history"
+  ],
+  "movies": [
+    {
+      "stem": "parity_A1",
+      "condition": null,
+      "subject": "synthetic_subject_1",
+      "notes": "SYNTHETIC. Written by tests/fixtures.py::tracked_movie(seed=0).",
+      "source_frame_offset": 0,
+      "labels": "inputs/labels.tif",
+      "unclaimed": "inputs/unclaimed.tif",
+      "raw": "inputs/raw.tif",
+      "evidence": "inputs/evidence.tif",
+      "provenance": "inputs/provenance.tif",
+      "valid_mask": "inputs/valid_mask.tif",
+      "channels": [
+        {
+          "name": "extra",
+          "description": "SYNTHETIC second channel: fades, differs between cells, clipped corner, shifted two columns so the last two analysed columns are off the source",
+          "path": "inputs/extra_channel.tif",
+          "channel_index": 1,
+          "crop_origin": [
+            0,
+            0
+          ],
+          "sha256": "2264cacfe00557e916c62de1adb2f850b06ef410fa36cb817fc92f01f1bbc875",
+          "shifts": "inputs/extra_shifts.csv",
+          "shift_columns": [
+            "shift_y",
+            "shift_x"
+          ],
+          "shift_scale": 1
+        }
+      ],
+      "objects": [
+        {
+          "name": "scenery",
+          "description": "SYNTHETIC reference shapes: one fixed mid-field, one drifting and touching the top edge",
+          "path": "inputs/scenery_objects.tif",
+          "static": false,
+          "crop_origin": [
+            0,
+            0
+          ],
+          "sha256": "9ef6c58babcc74b7b20efa2100cb7eb5d792e57b268a02cb43b13d08797b9b4b"
+        }
+      ],
+      "side_tables": [
+        {
+          "name": "acquisition",
+          "description": "SYNTHETIC per-frame log",
+          "path": "inputs/acquisition.csv",
+          "keyed_on": "frame_index",
+          "key_column": "frame_index",
+          "key_space": "label",
+          "columns": null,
+          "sha256": "023069688f72c2f438fc0dd00ed26bf6fdd9091e86d16714873ac474729bf56a"
+        },
+        {
+          "name": "genotype",
+          "description": "SYNTHETIC per-cell call",
+          "path": "inputs/genotype.csv",
+          "keyed_on": "identity",
+          "key_column": "identity",
+          "columns": [
+            "call"
+          ],
+          "sha256": "f9b1f29f967b0be2f035c130ba41f6158a4411684525f47a148ce061068c7d1d"
+        }
+      ],
+      "sha256": {
+        "labels": "2c25ffe224ccc01bb0e2d08d03d37b501e5a55cc56a834e6b5678eae350dea07",
+        "raw": "4c258a2a31a00a3e70c45f262b8e4aa80b2b96db53b84e60f2492a3e515cc71e",
+        "unclaimed": "d5a3503d549e7fd50eb6049ac907cc4700c4d11a1883edb7acd8c4b52ca5d193",
+        "evidence": "9e6b563a22f7f0fba749417e9aa39e75ab44dc0dfe43f654cf6767c6105e47f3",
+        "provenance": "bc9320d3fd4bcb638515c2bd21069d1577c0694fab913a9aff23de2d0fae36d5",
+        "valid_mask": "9b35f36cb9efd9638c76cf25142414d872dc4aae9aeaa30b3416eb8066fff81c"
+      }
+    }
+  ],
+  "modules": {
+    "coupling": {
+      "min_overlap_frames": 24
+    },
+    "rhythms": {
+      "metrics": [
+        "area_px",
+        "corrected_mean",
+        "integrated_density",
+        "solidity",
+        "ramification_index",
+        "turnover_index",
+        "step_px"
+      ],
+      "period_search_hours": [
+        2.0,
+        48.0
+      ],
+      "period_methods": [
+        "lomb",
+        "chi_square",
+        "f"
+      ],
+      "period_estimation_method": "lomb",
+      "primary_rhythm_test": "lomb",
+      "descriptive_cosinor": false,
+      "daily_profile_measures": false,
+      "detrend": "robust_linear",
+      "min_observations": 24,
+      "min_cycles_for_confident_period": 3.0,
+      "rhythmic_alpha": 0.05
+    }
+  }
+}

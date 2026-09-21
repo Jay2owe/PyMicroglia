@@ -1,0 +1,27 @@
+{
+  "figures": {},
+  "metric_groups": {
+    "rhythm_signals": [
+      "area_px",
+      "corrected_mean",
+      "integrated_density",
+      "solidity",
+      "ramification_index",
+      "turnover_index",
+      "step_px"
+    ]
+  },
+  "metric_groups_declared": {
+    "rhythm_signals": [
+      "area_px",
+      "corrected_mean",
+      "integrated_density",
+      "solidity",
+      "ramification_index",
+      "turnover_index",
+      "step_px"
+    ]
+  },
+  "plots_requested": [],
+  "plots": []
+}
