@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+import inspect
 
 from .recording import capture
 from .knowledge import validate
@@ -67,7 +68,10 @@ def run_recorded(action: str, *, claim: str = "", output_roots=(),
 
     with capture(action, params, claim=claim, output_roots=output_roots,
                  notebook=notebook, request=request, entry=entry) as run:
-        run.result = function(**params)
+        call_params = dict(params)
+        if "claim" in inspect.signature(function).parameters:
+            call_params["claim"] = claim
+        run.result = function(**call_params)
     return {"result": run.result, "record": dict(run.record),
             "recorded": bool(run.recorded),
             "notebook": getattr(run, "notebook", None)}

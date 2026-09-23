@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "description": "The shared writer adds a view column and unions columns across composed views. Compare each selected view, without the view column or columns introduced solely by other views, to the original table below. Original byte hashes use Windows CRLF line endings.",
+  "step_size_distribution": {
+    "distribution": "step-size-distribution:data/der/figure_data.csv"
+  },
+  "displacement_curves": {
+    "curves": "displacement-curves:data/der/figure_data.csv",
+    "alpha": "displacement-curves:data/der/cell_distribution.csv"
+  },
+  "style_metadata": {
+    "stable-traits-versus-states": {
+      "condition_hue": "Named house colours replace source hexadecimal strings; all numerical columns unchanged."
+    },
+    "negative-space": {
+      "colour": "Named house colours replace source hexadecimal strings; occupancy classes and field fractions unchanged."
+    }
+  }
+}

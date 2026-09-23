@@ -13,7 +13,7 @@ from pymicroglia.visualisation import panels
 
 
 def test_pymicroglia_svg_is_a_package_neutral_complete_master(tmp_path):
-    source = tmp_path / "trace.csv"
+    source = tmp_path / "source.csv"
     source.write_text("time,value\n0,1\n1,2\n", encoding="utf-8")
     fig, ax = plt.subplots()
     ax.plot([0.0, 1.0], [1.0, 2.0])
@@ -34,7 +34,7 @@ def test_pymicroglia_svg_is_a_package_neutral_complete_master(tmp_path):
     svg = result["figures"][0]
     record = extract_record(svg)
     assert record.producer["package"] == "PyMicroglia"
-    assert record.data_tables[0].contents == (tmp_path / "trace_plotted.csv").read_text(
+    assert record.data_tables[0].contents == (tmp_path / "trace.csv").read_text(
         encoding="utf-8"
     )
     assert record.sources[0].sha256
@@ -67,7 +67,7 @@ def test_pymicroglia_minimal_public_uses_the_safe_table_only_in_its_csv(tmp_path
     record = extract_record(result["figures"][0])
     assert record.distribution_profile == "minimal_public"
     assert record.data_tables[0].contents is None
-    sidecar = (tmp_path / "public-trace_plotted.csv").read_text(encoding="utf-8")
+    sidecar = (tmp_path / "public-trace.csv").read_text(encoding="utf-8")
     assert sidecar == "time,value\n0.000000,1.000000\n1.000000,2.000000\n"
     assert "subject" not in sidecar
 
@@ -140,3 +140,20 @@ def test_publication_module_exposes_all_carrier_operations():
     assert callable(publication.extract_artifact)
     assert callable(publication.validate_artifact)
     assert len(publication.formats()) >= 16
+
+
+def test_flat_figure_table_cannot_overwrite_its_source(tmp_path):
+    import pytest
+    source=tmp_path/"trace.csv"
+    original=b"time,value\n0,1\n1,2\n"
+    source.write_bytes(original)
+    figure,axis=plt.subplots()
+    axis.plot([0,1],[1,2])
+    try:
+        with pytest.raises(ValueError,match="overwrite a source"):
+            panels.save(figure,tmp_path/"trace.svg",table={"time":[0,1],"value":[9,8]},
+                        sources=[source],formats=("svg",),overwrite=True)
+    finally:
+        plt.close(figure)
+    assert source.read_bytes()==original
+    assert not (tmp_path/"trace.svg").exists()

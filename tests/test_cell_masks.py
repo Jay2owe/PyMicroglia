@@ -34,6 +34,7 @@ skipped on every machine that matters.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import json
 from pathlib import Path
@@ -469,8 +470,7 @@ def test_a_run_that_asks_for_it_gets_a_mask_after_the_measurement(
     assert learned["window_frames"] >= 1
     assert "warning" in learned
 
-    stored = json.loads((Path(manifest["folder"]) / "manifest.json")
-                        .read_text(encoding="utf-8"))
+    stored = read_document(Path(manifest["folder"]) / "manifest.json")
     assert stored["summary"]["learned_mask"]["cut"] == learned["cut"]
     assert any(item["gate"] == "learned_mask" for item in stored["review"])
 
@@ -491,7 +491,7 @@ def test_the_run_records_that_it_was_asked_for(isolated, stub_network):
                      .glob("*.json"))
     if not records:                      # analysis_kit is optional
         pytest.skip("analysis_kit is not installed in this interpreter")
-    stored = json.loads(records[0].read_text(encoding="utf-8"))
+    stored = read_document(records[0])
     assert stored["params"]["learned_mask"] is True
 
 

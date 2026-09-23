@@ -1,19 +1,7 @@
-"""Identity tracking: the seam the tracker drops into.
+"""Identity tracking through the frozen Motion engine shipped in this wheel.
 
-The mask says which pixels are cell in one exposure and links nothing across
-frames. Linking them -- through movement, merges, splits and temporary
-invisibility -- is the Motion project's tracker, which is not ported: its
-entry point imports over forty well-specific calibrations by name. What *is*
-settled is its output, and :mod:`.contract` writes that down so the measure
-step reads against it today and the tracker is swapped in later by changing
-:data:`TRACKER_TARGET` alone.
-
-This package is therefore a **seam**, and the registry treats it as one: its
-functions resolve, but :func:`status` says whether the target behind them
-does, and the ``track`` action is reported pending until it does. That is
-Auto-Organotypic's shape for a missing instrument client -- a line at the top
-of a run rather than an ImportError in the middle -- and the same shape
-``motion_handoff`` used before this package existed.
+The output contract remains file-based, and the dotted target remains
+replaceable for tests or a future tracker without changing measurement.
 """
 
 from __future__ import annotations
@@ -33,11 +21,11 @@ __all__ = ["TRACKER_TARGET", "status", "run", "TrackingResult",
            "DecisionTables", "expected_files", "sha256_of",
            "PROVENANCE_INFERRED", "PROVENANCE_UNRESOLVED", "PROVENANCE_ADDED"]
 
-#: The dotted ``module:attribute`` that will one day resolve to the tracker.
+#: The dotted ``module:attribute`` that resolves to the packaged tracker.
 #: One name, read at call time, so a test or a later port changes it in one
 #: place. Moved here from ``pipelines.motion_handoff.TARGET``, which now
 #: re-exports it.
-TRACKER_TARGET = "motion.pipeline:run"
+TRACKER_TARGET = "pymicroglia.tracking.engine:run"
 
 
 def _split(target: str) -> tuple[str, str]:
@@ -90,7 +78,7 @@ def _resolve(target: str):
 
 def run(inputs, folder, *, claim: str = "",
         tracker_options: Mapping[str, Any] | None = None) -> TrackingResult:
-    """Track every recording ``inputs`` names, writing under ``folder``.
+    """Track one recording in ``inputs``, writing under ``folder``.
 
     ``inputs`` is the ``motion_inputs.json`` the handoff wrote: the registered
     stacks and their masks, pinned by SHA-256, and the output names the
@@ -99,8 +87,8 @@ def run(inputs, folder, *, claim: str = "",
     live signature once it resolves, not here. ``claim`` is recorded by the
     action layer and accepted here so the catalogue and the signature agree.
 
-    Raises :class:`pymicroglia.ActionPending` naming :data:`TRACKER_TARGET`
-    while nothing resolves behind it. The tracker returns a mapping in the
+    For a multi-recording handoff, pass ``tracker_options={"stem": name}``.
+    The tracker returns a mapping in the
     words of :class:`TrackingResult.from_mapping`, and that is what comes
     back -- files, never arrays.
     """
@@ -113,7 +101,7 @@ def run(inputs, folder, *, claim: str = "",
         _, why = status()
         raise ActionPending(
             f"track is pending: {why or TRACKER_TARGET + ' does not resolve.'} "
-            "Install the tracker and re-run; the handoff file is what it reads.")
+            "The packaged tracker target is unavailable; verify the installation.")
     returned = target(inputs, folder, **dict(tracker_options or {}))
     if isinstance(returned, TrackingResult):
         return returned

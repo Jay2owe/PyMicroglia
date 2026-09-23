@@ -156,7 +156,7 @@ def test_only_panels_saves():
         f"expected exactly one ReproFig save call in the package, found "
         f"{[(str(p.relative_to(SRC)), n) for p, n, _ in hits]}")
     path, _, _ = hits[0]
-    assert path == FIGURES / "panels.py", (
+    assert path == FIGURES / "panels" / "__init__.py", (
         f"the one ReproFig save call is in {path.name}, not panels.py")
 
 
@@ -325,15 +325,9 @@ def test_the_families_are_all_classified():
     """
     from pymicroglia import visualisation
 
-    infrastructure = {
-        "__init__", "panels", "bundle", "proof_output", "save_actions",
-    }
-    modules = {path.stem for path in figure_files()
-               if path.stem not in infrastructure}
-    assert set(visualisation.FAMILIES) == modules, (
-        f"FAMILIES and the modules disagree: only in FAMILIES "
-        f"{sorted(set(visualisation.FAMILIES) - modules)}, only on disk "
-        f"{sorted(modules - set(visualisation.FAMILIES))}")
+    from pymicroglia.visualisation.figures import load
+    modules = {"qc", "traces", "overlays"} | {spec.family for spec in load().values()}
+    assert set(visualisation.FAMILIES) == modules
     for name, sentence in visualisation.FAMILIES.items():
         assert len(sentence.split()) >= 5, f"{name} has no real description"
 
@@ -345,7 +339,7 @@ def test_importing_the_figures_does_not_import_matplotlib():
     figure modules reach Matplotlib inside functions, so a machine without it
     can still resolve and describe every figure action.
     """
-    source = (FIGURES / "panels.py").read_text(encoding="utf-8")
+    source = (FIGURES / "panels" / "__init__.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
     top_level = []
     for node in tree.body:

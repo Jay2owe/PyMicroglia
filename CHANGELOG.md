@@ -1,6 +1,41 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-09-23
+
+- Add a post-Motion eligibility stage to `auto_microglia`. It defaults to
+  excluding identities with internal gaps over four hours or at least 50%
+  missing data from analysis only, while independent configurable views let
+  users apply the same exclusions to review videos and still images. Motion
+  labels and identity numbers remain unchanged.
+- Add configurable tracked-cell video and still actions over original photons,
+  using the accepted per-identity outside outlines. Width, opacity, colours,
+  contrast, display-only smoothing, timestamps and playback are selectable.
+- Require Auto-Organotypic 0.7.1 for frame-specific outline rendering.
+- Keep the `rhythm` extra installable alongside the required Circadian
+  Workbench 0.9 series.
+- Package tracked-cell measurements, state analysis, clustering, cell-following
+  videos and 84 figure actions inside PyMicroglia. The automated chain runs a
+  frozen Motion tracker through its declared target; Motion retains its active
+  tracking and review workflow.
+- Add six result-dependent workflows with explicit claims, saved replay and
+  scientific/display cache separation: rhythms, method audits, measurement
+  relationships, accepted states, spatial coordination and interventions.
+- Route all shared statistics through Circadian Workbench 0.9; preserve the
+  configured estimator, significance test, sufficiency rules and provenance.
+  Unknown rhythms have no default daily folding or common-period assumption.
+- Give saved figures named views and move their data preparation outside the
+  drawing layer. Save tables and figures through one artefact ledger per folder;
+  keep metadata documents in the shared workings directory.
+- Keep the original recording-manifest byte identity when adding figure plans,
+  so saved replay and seeded scientific calculations retain their original inputs.
+- Use explicit public parameter names where Motion meanings differed from existing
+  actions: `state_method`, `cell_count`, `ring_count` and
+  `transition_normalisation`. Historical Motion plot/film arguments are translated
+  by the compatibility command; measurement choices and numerical operations remain unchanged.
+- Include searchable package guidance, generated action descriptions and context
+  files. Add the `states` optional dependencies and preserve legacy table names
+  when reading typed saved pipeline results.
+
 
 - Depend on `Auto-Organotypic>=0.7,<0.8`, and take that release's conventions
   registry as the one place a run's colours live. `auto_microglia` writes

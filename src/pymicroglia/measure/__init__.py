@@ -39,7 +39,8 @@ __all__ = [
 ]
 
 
-def measure(movies: Sequence[Any], *, output_dir, run_label: str | None = None,
+def measure(movies: Sequence[Any] | None = None, *, output_dir,
+            analysis_config=None, run_label: str | None = None,
             if_exists: str = "version",
             enabled_modules: Sequence[str] | None = None,
             module_options: Mapping[str, Mapping[str, Any]] | None = None,
@@ -60,17 +61,45 @@ def measure(movies: Sequence[Any], *, output_dir, run_label: str | None = None,
     ``conditions``, ``windows``, ``contrasts`` and ``metric_groups`` take the
     blocks of that file unchanged.
 
+    ``analysis_config`` loads a complete existing JSON configuration, including
+    calibration, saved plot plans and pipeline declarations. Explicit arguments
+    override corresponding nonempty settings.
+
     Returns the run manifest. Every table lands through the artefact store,
     so each results folder carries exactly one ``artefacts.json``.
     """
     from .run import run
 
-    config = MeasureConfig.from_parts(
-        movies, frame_interval_min=frame_interval_min,
-        microns_per_pixel=microns_per_pixel,
-        enabled_modules=enabled_modules, module_params=module_options,
-        verify_hashes=verify_hashes, conditions=conditions, windows=windows,
-        contrasts=contrasts, metric_groups=metric_groups)
+    if analysis_config is not None:
+        config = load_config(analysis_config)
+        if movies is not None:
+            config.movies = [MovieSpec.from_dict(movie) for movie in movies]
+        if enabled_modules is not None: config.enabled_modules = list(enabled_modules)
+        if module_options is not None: config.module_params = dict(module_options)
+        # Configuration input retains calibration, display plans and workflow
+        # declarations. Scalar settings may be overridden explicitly.
+        if frame_interval_min is not None: config.frame_interval_min = frame_interval_min
+        if microns_per_pixel is not None: config.microns_per_pixel = microns_per_pixel
+        if conditions is not None:
+            from .conditions import ConditionSet
+            config.conditions = ConditionSet.from_config(conditions)
+        if windows: config.windows = [WindowSpec.from_dict(value) for value in windows]
+        if metric_groups is not None:
+            from .spec import parse_metric_groups
+            config.metric_groups = parse_metric_groups(metric_groups)
+        if contrasts:
+            from .contrasts import parse_contrasts
+            config.contrasts = parse_contrasts(contrasts, config.metric_groups)
+        if not verify_hashes: config.verify_hashes = False
+    else:
+        if movies is None:
+            raise ValueError('Provide movies or analysis_config')
+        config = MeasureConfig.from_parts(
+            movies, frame_interval_min=frame_interval_min,
+            microns_per_pixel=microns_per_pixel,
+            enabled_modules=enabled_modules, module_params=module_options,
+            verify_hashes=verify_hashes, conditions=conditions, windows=windows,
+            contrasts=contrasts, metric_groups=metric_groups)
     return run(config, output_dir, run_label=run_label, if_exists=if_exists,
                claim=claim)
 
@@ -114,3 +143,27 @@ def check_parameters(params: Mapping[str, Any]) -> list[str]:
             problems.append(f"enabled_modules names {unknown}, which no module "
                             f"answers to; the modules are {', '.join(MODULE_NAMES)}")
     return problems
+
+
+
+def _rhythm_option_contract():
+    """Nested rhythm settings as declared by measurement and its authority."""
+    from copy import deepcopy
+    from .modules.rhythms import DEFAULTS
+    from .. import workbench
+    scientific = workbench.scientific_options()
+    mapping = {"period_estimation_method": "fit_method",
+               "primary_rhythm_test": "significance_method",
+               "min_cycles_for_confident_period": "min_cycles"}
+    methods = workbench.call("period_methods").data["methods"]
+    result = {}
+    for name, default in DEFAULTS.items():
+        row = deepcopy(scientific.get(mapping.get(name, name), {}))
+        row["default"] = deepcopy(default)
+        row.setdefault("description", name.replace("_", " ").capitalize())
+        result[name] = row
+    result["period_estimation_method"]["choices"] = [m["key"] for m in methods]
+    result["primary_rhythm_test"]["choices"] = [m["key"] for m in methods if m["gives_significance"]]
+    result["period_search_hours"]["units"] = "hours"
+    result["period_search_hours"]["description"] = "Lower and upper period search bounds; a search setting, not an assumed biological period."
+    return result

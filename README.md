@@ -25,7 +25,7 @@ pip install PyMicroglia
 Optional extras: `kit` (run records and house style), `figure`, `seg`, `video`,
 `rhythm`, `scn` (the automatic SCN outline, which lives in
 [Auto-Organotypic](https://pypi.org/project/Auto-Organotypic/)), `mask` (the
-learned single-frame mask), `test`.
+learned single-frame mask), `states` (state models and clustering), `test`.
 
 ```powershell
 git clone https://github.com/Jay2owe/PyMicroglia.git
@@ -47,30 +47,30 @@ $env:PYMICROGLIA_PROTOCOLS = "/nowhere"; python -m pytest
 
 `analysis_kit` is imported softly, through `pymicroglia._optional.kit()` only:
 if the audit layer is missing, the run record is skipped and the science carries
-on. `circadian_workbench`, by contrast, is a hard optional dependency — silently
+on. `circadian_workbench`, by contrast, is a required dependency — silently
 skipping a periodogram would be worse than failing.
 
 ## What works today
 
-Stages 01 to 10, bar three gates that need stage 11's pipeline: the package,
-the parameter reader, the action registry, the command line, the artefact
-store, the image series layer, registration, cosmic-ray removal, unmixing, the
-two display filters, segmentation, regions of interest, traces, controls, the
-rhythm handoff, the figures and the videos.
+PyMicroglia includes tracked-cell measurements, state models and clustering,
+cell-following videos, 84 figure actions with selectable views, and six workflows
+for rhythms, method audits, relationships, states, coordination and interventions.
+The U-Net mask, six-file Motion input preparation, frozen Motion tracker,
+post-tracking cell eligibility, tracked-cell intensity measurement and
+configurable outline review exports now run in one automated chain.
+Circadian Workbench supplies the statistics; periods are estimated from each
+trace, with separate significance and data-sufficiency evidence.
 
 ```powershell
-pymicroglia doctor                 # healthy? and which Python is answering?
-pymicroglia discover               # 26 actions, what is implemented, what is pending
-pymicroglia describe remove_cosmic_rays
-pymicroglia validate remove_cosmic_rays seed_z=8
+pymicroglia doctor
+pymicroglia discover
+pymicroglia describe measure
+pymicroglia describe rhythm_discovery
 ```
 
-Twenty-six actions are declared and **none are pending**: every one binds to a
-function that exists. That count is how the plan reported its own progress while
-it was being built, and `validate` says which target is missing rather than
-failing obscurely. A bound action accepts exactly the parameters `describe`
-lists, checked in `tests/test_registry.py`, so a keyword an agent is shown is
-never one the call rejects six hours in.
+Every action's live description lists its accepted parameters, defaults and
+availability. Search the installed guide with
+`from pymicroglia import context; context.search("tracked recording")`.
 
 The catalogue behind `describe` ships as a data file, generated once from the
 protocol scripts and then owned by this package:
@@ -469,6 +469,14 @@ registry rather than choosing colours their own way.
 
 `auto_microglia` is Auto-Organotypic's whole chain with microglia defaults:
 
+Install the U-Net extra and point to the trained weights first; no model file
+is silently bundled or selected:
+
+```powershell
+pip install "PyMicroglia[mask]"
+$env:PYMICROGLIA_MASK_WEIGHTS = "C:\Models\microglia\model.pt"
+```
+
 ```python
 from pymicroglia.pipelines import auto_microglia
 
@@ -504,10 +512,17 @@ is complete:
   PyMicroglia named as its owner. One run, one record. The stage is opt-in
   there, so a plain Auto-Organotypic run on a machine with this package
   installed does exactly what it did before.
-- **Identity tracking is the destination.** The run ends by writing what the
-  Motion project reads — the registered stacks pinned where they are, the masks
-  beside them, each with a SHA-256. Motion is not installed yet, so that stage
-  reports `pending` rather than raising in the middle of a run.
+- **Identity tracking follows the mask automatically.** PyMicroglia builds the
+  six pinned Motion inputs, runs a frozen copy of the existing Motion rules,
+  then audits which finished identities may enter analysis, videos and images
+  before measuring the selected labels against the original unmasked photons.
+  The defaults exclude gaps over four hours or at least 50% missing data from
+  analysis only; all thresholds and destinations are configurable. Motion's
+  labels are never edited or renumbered. The automated movie and still draw
+  configurable accepted per-identity outlines over original photons. The
+  scaled, background-zeroed tracking input never supplies reported intensity,
+  and display smoothing never feeds measurement. Native-frame identities still
+  need review before acceptance.
 
 The accepted seedless detector is not used there and is untouched where it can
 be: it needs a 14 hour window and keeps only cells that hold still, which is

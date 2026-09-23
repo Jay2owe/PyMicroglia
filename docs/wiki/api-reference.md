@@ -19,7 +19,7 @@ when you want to run a named analysis operation from the command line.
 |---|---|---|
 | `run_action` | `from pymicroglia import run_action` | Run a registered action and return its scientific result. |
 | `run_recorded` | `from pymicroglia import run_recorded` | Run an action and return both the result and its run record. |
-| `REGISTRY` | `from pymicroglia import REGISTRY` | Registry of the 26 public actions. |
+| `REGISTRY` | `from pymicroglia import REGISTRY` | Registry of declared public actions. |
 | `ActionInvalid` | `from pymicroglia import ActionInvalid` | Raised for an unknown action or parameter. |
 | `ActionPending` | `from pymicroglia import ActionPending` | Raised when a declared action has no importable target. |
 | `ClaimRequired` | `from pymicroglia import ClaimRequired` | Raised when a conclusion-bearing run has no human-written claim. |
@@ -95,3 +95,13 @@ manifest = pipeline.run(
 
 Use `pymicroglia.pipelines.describe()` to list all four pipelines and their
 stage order. See the [pipeline index](pipelines/README.md).
+
+## Tracked-cell analysis
+
+- `pymicroglia.context`: packaged read-only topics, `read` and `search`.
+- `pymicroglia.tracking`: accepted-track contracts and engine availability.
+- `pymicroglia.measure`: configurations, module declarations and measurement.
+- `pymicroglia.states.states` and `pymicroglia.clustering.cluster`: learning and replay.
+- `pymicroglia.workbench`: the single statistical dependency gateway.
+- `pymicroglia.visualisation.figures`: declarations and view availability.
+- `pymicroglia.run_action`: all six workflow and figure actions by registered name.

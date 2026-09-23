@@ -1,0 +1,755 @@
+{
+  "matrix_population": {
+    "description": "saved population: all, any-significant or significant:<measurement>",
+    "type": "str"
+  },
+  "matrix_order": {
+    "description": "shared row order: saved, identity or supported reference period",
+    "type": "str"
+  },
+  "matrix_reference": {
+    "description": "saved measurement used for explicit period ordering",
+    "type": "str"
+  },
+  "matrix_representation": {
+    "description": "saved values: raw, filtered or detrended",
+    "type": "str"
+  },
+  "matrix_scale": {
+    "description": "explicit Workbench display normalization method or none",
+    "type": "str"
+  },
+  "matrix_normalization_config": {
+    "description": "public Workbench normalization parameters",
+    "type": "mapping"
+  },
+  "matrix_rows": {
+    "description": "maximum cells per recording page, shared across measurements",
+    "type": "int"
+  },
+  "matrix_metrics": {
+    "description": "saved measurements to show; empty includes all",
+    "type": "list"
+  },
+  "matrix_page": {
+    "description": "one-based page of saved time matrices",
+    "type": "int"
+  },
+  "evidence_page": {
+    "description": "one-based page of saved selected-cell evidence",
+    "type": "int"
+  },
+  "report_measurements_per_page": {
+    "description": "maximum significant measurements per cell report page",
+    "type": "int"
+  },
+  "grid_cells_per_page": {
+    "description": "maximum cells per complete measurement grid page",
+    "type": "int"
+  },
+  "cells_per_page": {
+    "description": "maximum selected relationship cells per complete report page",
+    "type": "int"
+  },
+  "reverse_cells": {
+    "description": "reverse the complete saved report cell order (true/false)",
+    "type": "mapping"
+  },
+  "display_lag_range_hours": {
+    "description": "two physical hours limiting display of a complete saved lag search",
+    "type": "list"
+  },
+  "population_groups_per_page": {
+    "description": "maximum complete saved sample/recording groups per population page",
+    "type": "int"
+  },
+  "population_group_order": {
+    "description": "comma-separated complete sample:/recording: group order",
+    "type": "list"
+  },
+  "grid_columns": {
+    "description": "columns per cell trace grid",
+    "type": "int"
+  },
+  "grid_rows": {
+    "description": "rows in an all-cell trace grid; unset computes a compact grid",
+    "type": "int"
+  },
+  "trace_normalization": {
+    "description": "Workbench normalization applied separately to each cell and measurement; none keeps original units",
+    "type": "str"
+  },
+  "trace_normalization_config": {
+    "description": "JSON object of Workbench normalization arguments",
+    "type": "mapping"
+  },
+  "overview_page": {
+    "description": "one-based page of the complete saved rhythm screen",
+    "type": "int"
+  },
+  "overview_rows": {
+    "description": "maximum cells per overview matrix page; preserves all requested cells",
+    "type": "int"
+  },
+  "overview_columns": {
+    "description": "maximum measurements per overview page",
+    "type": "int"
+  },
+  "matrix_block_size": {
+    "description": "maximum measurement rows and columns per relationship matrix page",
+    "type": "int"
+  },
+  "summary_level": {
+    "description": "saved relationship summary to display: all_cells or across_samples",
+    "type": "str"
+  },
+  "measurement_order": {
+    "description": "comma-separated order containing every requested relationship measurement",
+    "type": "list"
+  },
+  "state_page_size": {
+    "description": "maximum saved support criteria per state diagnostic page",
+    "type": "int"
+  },
+  "state_feature_page_size": {
+    "description": "maximum original-unit measurements per accepted-state profile page",
+    "type": "int"
+  },
+  "state_display_order": {
+    "description": "comma-separated order containing every accepted saved state ID",
+    "type": "list"
+  },
+  "state_display_names": {
+    "description": "JSON object mapping accepted state IDs to display labels",
+    "type": "mapping"
+  },
+  "state_cells_per_page": {
+    "description": "maximum original-clock cell timelines per page",
+    "type": "int"
+  },
+  "state_cell_order": {
+    "description": "JSON list containing every complete source/movie/cell key in display order",
+    "type": "mapping"
+  },
+  "state_show_membership": {
+    "description": "show saved model-conditional component membership below timelines (true/false)",
+    "type": "mapping"
+  },
+  "state_summary_cells_per_page": {
+    "description": "maximum cells per saved state time summary page",
+    "type": "int"
+  },
+  "state_summary_columns_per_page": {
+    "description": "maximum states or state pairs per saved state matrix page",
+    "type": "int"
+  },
+  "state_summary_views": {
+    "description": "comma-separated saved state views: occupancy, switch_rates, transitions, bouts, samples, contrasts",
+    "type": "list"
+  },
+  "state_sample_questions_per_page": {
+    "description": "maximum experimental-unit questions per saved state sample page",
+    "type": "int"
+  },
+  "state_contrasts_per_page": {
+    "description": "maximum saved state condition contrasts per page",
+    "type": "int"
+  },
+  "state_card_features": {
+    "description": "comma-separated saved feature names to show on accepted-state cards",
+    "type": "list"
+  },
+  "state_card_features_per_page": {
+    "description": "maximum original-unit feature profiles per state card page",
+    "type": "int"
+  },
+  "state_card_low_membership": {
+    "description": "include an explicitly labelled low-membership assigned example (true/false)",
+    "type": "mapping"
+  },
+  "state_card_images": {
+    "description": "include exact-observation source imagery on state cards when available (true/false)",
+    "type": "mapping"
+  },
+  "audit_candidates": {
+    "description": "saved complete candidate ids to display; empty includes all",
+    "type": "list"
+  },
+  "audit_facet": {
+    "description": "saved benchmark stratum: periods, waveforms, noise, span_hours, source_profile_id or scenario",
+    "type": "str"
+  },
+  "audit_page": {
+    "description": "one-based page of the saved audit view",
+    "type": "int"
+  },
+  "audit_page_size": {
+    "description": "maximum displayed cell or stratum rows per page",
+    "type": "int"
+  },
+  "audit_case_ids": {
+    "description": "manual saved case ids, each including movie, cell and measurement",
+    "type": "list"
+  },
+  "audit_examples_per_reason": {
+    "description": "focused examples per measurement and inspection reason",
+    "type": "int"
+  },
+  "audit_seed": {
+    "description": "seed for deterministic display-only example ordering",
+    "type": "int"
+  },
+  "spatial_metric": {
+    "description": "numeric metric mapped through space; radial_occupancy is a derived shortcut",
+    "type": "str"
+  },
+  "reference_metric": {
+    "description": "numeric reference metric for within-cell timing comparisons",
+    "type": "str"
+  },
+  "snapshot_hours": {
+    "description": "recording hours to draw; nearest actual frames, no interpolation",
+    "type": "list"
+  },
+  "snapshot_count": {
+    "description": "number of snapshots: 1 shows the final frame (default); explicit snapshot_hours take precedence",
+    "type": "int"
+  },
+  "show_history": {
+    "description": "show the complete time trace instead of only selected snapshots",
+    "type": "mapping"
+  },
+  "spatial_axis": {
+    "description": "physical coordinate used to order cells: x or y",
+    "type": "str"
+  },
+  "spatial_centre": {
+    "description": "position and optional displacement use soma or centroid",
+    "type": "str"
+  },
+  "spatial_panel_inches": {
+    "description": "minimum width of each spatial panel in inches",
+    "type": "float"
+  },
+  "spatial_point_size": {
+    "description": "area of a cell-position marker in points squared",
+    "type": "float"
+  },
+  "spatial_annotate": {
+    "description": "label cell-position markers with their identities",
+    "type": "mapping"
+  },
+  "spatial_arrows": {
+    "description": "overlay displacement since the preceding consecutive frame",
+    "type": "mapping"
+  },
+  "spatial_tracks": {
+    "description": "overlay recorded cell paths on the detected-period map",
+    "type": "mapping"
+  },
+  "spatial_track_cells": {
+    "description": "which tracks to show: rhythmic (default) or all",
+    "type": "str"
+  },
+  "spatial_track_width": {
+    "description": "track line width in points",
+    "type": "float"
+  },
+  "spatial_cmap": {
+    "description": "colour map for the selected spatial values",
+    "type": "str"
+  },
+  "phase_group_hours": {
+    "description": "centres of period groups for separate peak-time maps; empty shows peak percentage for every significant cell with an available estimate",
+    "type": "list"
+  },
+  "period_tolerance": {
+    "description": "largest relative period difference for a timing comparison",
+    "type": "float"
+  },
+  "timing_reference_hour": {
+    "description": "recording hour at which relative phase is compared",
+    "type": "float"
+  },
+  "spatial_neighbours": {
+    "description": "nearest neighbours per cell; symmetric union defines the spatial graph",
+    "type": "int"
+  },
+  "spatial_permutations": {
+    "description": "whole-trace spatial permutations for the field-level comparison",
+    "type": "int"
+  },
+  "spatial_seed": {
+    "description": "reproducible seed for spatial permutation tests",
+    "type": "int"
+  },
+  "max_inferred_fraction": {
+    "description": "exclude cell-frame metrics above this tracker-reconstructed pixel fraction",
+    "type": "float"
+  },
+  "stem": {
+    "description": "which movie in the run to draw, when the run holds more than one",
+    "type": "str"
+  },
+  "item": {
+    "description": "which item of the run's plot plan to draw; see `python -m analysis plots <run> --dry-run` for the names",
+    "type": "str"
+  },
+  "identity": {
+    "description": "which cell to draw",
+    "type": "int"
+  },
+  "hour_ticks": {
+    "description": "hours between ticks on a time axis; a factor or multiple of 24",
+    "type": "str"
+  },
+  "metrics": {
+    "description": "which measured columns the figure draws, comma separated; see its docstring",
+    "type": "list"
+  },
+  "display": {
+    "description": "which representation of the selected measurement is drawn",
+    "type": "str"
+  },
+  "hues": {
+    "description": "colours for named groups, comma separated in the figure's displayed order",
+    "type": "list"
+  },
+  "event_metric": {
+    "description": "which measured column ranks the frames used as alignment events",
+    "type": "str"
+  },
+  "event_direction": {
+    "description": "how event frames are ranked: high values, low values, or within-cell deviation",
+    "type": "str"
+  },
+  "top_events": {
+    "description": "number of top-ranked frames retained per cell",
+    "type": "int"
+  },
+  "events": {
+    "description": "names for user-selected events, comma separated",
+    "type": "list"
+  },
+  "event_times": {
+    "description": "start time of each user-selected event window, in hours",
+    "type": "list"
+  },
+  "images": {
+    "description": "how many image tiles across the top; 0 for none",
+    "type": "int"
+  },
+  "image_hours": {
+    "description": "explicit hours for the image tiles, comma separated; beats --images",
+    "type": "list"
+  },
+  "cell_lut": {
+    "description": "colour map for cell images, e.g. dluc_purple, magma, gray",
+    "type": "str"
+  },
+  "image_filter": {
+    "description": "display-only image denoising: auto-organotypic or none",
+    "type": "str"
+  },
+  "display_black_percentile": {
+    "description": "percentile of the mean image mapped to the display floor",
+    "type": "float"
+  },
+  "display_white_percentile": {
+    "description": "percentile of the image stack mapped to the display ceiling",
+    "type": "float"
+  },
+  "display_range_scope": {
+    "description": "frames used to choose the shared image display range",
+    "type": "str"
+  },
+  "display_gamma": {
+    "description": "display tone-curve exponent; below 1 lifts dim detail",
+    "type": "float"
+  },
+  "display_gain": {
+    "description": "display-only multiplier for frame departures from their mean",
+    "type": "float"
+  },
+  "display_spatial_sigma": {
+    "description": "display-only Gaussian smoothing width in pixels",
+    "type": "float"
+  },
+  "display_pool_px": {
+    "description": "spatial pooling width for adaptive display denoising, in pixels",
+    "type": "float"
+  },
+  "display_sharpness": {
+    "description": "sharpness of the adaptive display denoising transition",
+    "type": "float"
+  },
+  "display_noise_multiple": {
+    "description": "noise-floor multiplier used by adaptive display denoising",
+    "type": "float"
+  },
+  "display_pad_frames": {
+    "description": "mirrored frames at each end of adaptive display denoising",
+    "type": "int"
+  },
+  "trace_luts": {
+    "description": "colour or colour map per trace, comma separated, matched to --metrics",
+    "type": "list"
+  },
+  "map_luts": {
+    "description": "colour map per canonical spatial panel, comma separated in panel order",
+    "type": "list"
+  },
+  "matrix_lut": {
+    "description": "colour map used for numeric values in a matrix",
+    "type": "str"
+  },
+  "column_label_rotation": {
+    "description": "rotation of matrix column labels in degrees",
+    "type": "float"
+  },
+  "column_label_wrap": {
+    "description": "maximum characters per matrix column-label line; 0 disables wrapping",
+    "type": "int"
+  },
+  "map_summary": {
+    "description": "how a per-frame metric becomes one value per cell: median, mean, minimum, maximum, first, or last",
+    "type": "str"
+  },
+  "map_assignment": {
+    "description": "overlapping cell values: occupancy_weighted_mean (default), equal_mean, first, last, or most_frequent",
+    "type": "str"
+  },
+  "phase_coherence": {
+    "description": "minimum circular agreement for a phase-map mixture or tissue reference, 0 to 1",
+    "type": "float"
+  },
+  "map_range": {
+    "description": "colour limits for each spatial metric: robust percentiles or the full observed range",
+    "type": "str"
+  },
+  "density_lut": {
+    "description": "colour map used for observation density",
+    "type": "str"
+  },
+  "density_summary": {
+    "description": "summary over a density map: mean or none",
+    "type": "str"
+  },
+  "trace_layout": {
+    "description": "trace arrangement: stack or overlay",
+    "type": "str"
+  },
+  "trace_view": {
+    "description": "trace values shown: raw or detrended",
+    "type": "str"
+  },
+  "period_testing": {
+    "description": "run and show the per-cell period tests (true/false)",
+    "type": "mapping"
+  },
+  "outline": {
+    "description": "colour of the outline drawn over each image tile",
+    "type": "str"
+  },
+  "fit": {
+    "description": "which traces carry the fitted curve: a metric list, all, or empty for none",
+    "type": "list"
+  },
+  "multiple_testing": {
+    "description": "correction across a family of rhythm tests: bh, bonferroni, sidak or none",
+    "type": "str"
+  },
+  "correction_scope": {
+    "description": "multiple-testing family: every matrix cell together or each metric column separately",
+    "type": "str"
+  },
+  "min_observations": {
+    "description": "fewest measured timepoints required before a trace is tested",
+    "type": "int"
+  },
+  "min_cycles": {
+    "description": "fewest observed cycles required to treat a detected period as well constrained",
+    "type": "float"
+  },
+  "median_window_points": {
+    "description": "odd median-window width in sampling intervals; missing rows and long gaps split the filter",
+    "type": "int"
+  },
+  "panels": {
+    "description": "which panels of a multi-panel figure to draw, comma separated",
+    "type": "list"
+  },
+  "bins": {
+    "description": "how many bands a histogram panel divides its range into",
+    "type": "int"
+  },
+  "profile_bins": {
+    "description": "how many equal positions a detected cycle is divided into for comparison",
+    "type": "int"
+  },
+  "size": {
+    "description": "which column sets point size on a scatter; empty for one size",
+    "type": "str"
+  },
+  "line_width_metric": {
+    "description": "which per-cell numeric column sets trajectory line width; empty for one width",
+    "type": "str"
+  },
+  "line_width_range": {
+    "description": "smallest and largest widths as multiples of the default trajectory width",
+    "type": "list"
+  },
+  "line_dash_metric": {
+    "description": "which per-cell column sets trajectory dashes; rhythm_period_band uses rhythm results",
+    "type": "str"
+  },
+  "cells": {
+    "description": "which identities appear, comma separated, or how many longest-lived cells",
+    "type": "str"
+  },
+  "crop_padding": {
+    "description": "empty border around an image crop as a fraction of the measured object span",
+    "type": "float"
+  },
+  "quantile": {
+    "description": "data quantile used to define an event threshold",
+    "type": "float"
+  },
+  "window": {
+    "description": "frames either side of an aligned event",
+    "type": "int"
+  },
+  "max_lag": {
+    "description": "largest lag drawn, in frames unless the figure says hours",
+    "type": "float"
+  },
+  "order": {
+    "description": "row ordering used by a raster or ribbon",
+    "type": "str"
+  },
+  "max_cells": {
+    "description": "most lanes drawn, cells with an event first; 0 draws every cell",
+    "type": "int"
+  },
+  "max_families": {
+    "description": "most families drawn on the lineage panel; 0 draws every one",
+    "type": "int"
+  },
+  "lineage": {
+    "description": "join a parent's lane to a daughter's first frame (true/false)",
+    "type": "mapping"
+  },
+  "show": {
+    "description": "which lifecycle events a panel counts, comma separated",
+    "type": "list"
+  },
+  "bin_hours": {
+    "description": "width of one bin on an hours axis",
+    "type": "float"
+  },
+  "show_censored": {
+    "description": "include the recording's own start and end as events (true/false)",
+    "type": "mapping"
+  },
+  "timing": {
+    "description": "which precomputed timing column or figure alias is distributed",
+    "type": "str"
+  },
+  "period_hours": {
+    "description": "cycle length used to wrap phase displays, in hours",
+    "type": "float"
+  },
+  "period_bins": {
+    "description": "period-band boundaries in hours, comma separated",
+    "type": "list"
+  },
+  "shuffles": {
+    "description": "number of shuffled null replicates",
+    "type": "int"
+  },
+  "regime": {
+    "description": "regime number used for a within-cell contrast",
+    "type": "int"
+  },
+  "contour": {
+    "description": "occupancy-frequency contour as a share of observed frames",
+    "type": "float"
+  },
+  "coverage_view": {
+    "description": "coverage map shown: final or stages",
+    "type": "str"
+  },
+  "stages": {
+    "description": "number of evenly spaced recording stages",
+    "type": "int"
+  },
+  "thresholds": {
+    "description": "core and transient cut-offs, comma separated",
+    "type": "list"
+  },
+  "scaling": {
+    "description": "which ring width to read: cell or global",
+    "type": "str"
+  },
+  "annulus_support": {
+    "description": "smallest observable fraction of every radial annulus required for a frame",
+    "type": "float"
+  },
+  "threshold": {
+    "description": "data quantile used as a recurrence cut-off",
+    "type": "float"
+  },
+  "clusters": {
+    "description": "number of sequence groups cut from a clustering tree",
+    "type": "int"
+  },
+  "dilation": {
+    "description": "one or two contact radii in pixels, comma separated",
+    "type": "list"
+  },
+  "min_hours": {
+    "description": "minimum contact duration retained, in hours",
+    "type": "float"
+  },
+  "max_pairs": {
+    "description": "maximum longest-contacting pairs shown in a pair ledger; 0 shows all",
+    "type": "int"
+  },
+  "rhythm_metric": {
+    "description": "measurement whose rhythm result is compared between cells",
+    "type": "str"
+  },
+  "min_coverage": {
+    "description": "least share of a window a cell must be observed in before its windowed summary is drawn",
+    "type": "float"
+  },
+  "min_contested": {
+    "description": "minimum number of identities that must claim a contested pixel",
+    "type": "int"
+  },
+  "inferred_threshold": {
+    "description": "share of an outline whose ownership must be reconstructed before the frame is drawn as reconstructed; 0 means any at all",
+    "type": "float"
+  },
+  "header_x": {
+    "description": "left edge of the title, subtitle and footnote",
+    "type": "str"
+  },
+  "title_y": {
+    "description": "title, measured down from the top edge",
+    "type": "str"
+  },
+  "subtitle_y": {
+    "description": "subtitle, measured down from the top edge",
+    "type": "str"
+  },
+  "footnote_y": {
+    "description": "footnote, measured up from the bottom edge",
+    "type": "str"
+  },
+  "fit_method": {
+    "description": "Single period estimator requested by estimate_period; independent of the periodogram used for a rhythmicity verdict.",
+    "type": "str"
+  },
+  "period_methods": {
+    "description": "Estimators requested by `compare_periods`; the default runs Lomb-Scargle only.",
+    "type": "list"
+  },
+  "significance_method": {
+    "description": "Significance test, selected separately from period estimation.",
+    "type": "str"
+  },
+  "secondary_significance_method": {
+    "description": "Significance test, selected separately from period estimation.",
+    "type": "str"
+  },
+  "period_min_hours": {
+    "description": "Shortest candidate period in spectral and instantaneous-phase searches.",
+    "type": "float"
+  },
+  "period_max_hours": {
+    "description": "Longest candidate period in spectral and instantaneous-phase searches.",
+    "type": "float"
+  },
+  "rhythmic_alpha": {
+    "description": "Explicit threshold also supplied to rank tests and family correction.",
+    "type": "float"
+  },
+  "detrend": {
+    "description": "Baseline-removal method applied before extended period estimation.",
+    "type": "str"
+  },
+  "detrend_window_hours": {
+    "description": "Biological-time window for local baseline removal before period estimation; not a period search bound.",
+    "type": "float"
+  },
+  "detrend_polynomial_degree": {
+    "description": "Polynomial degree used when period detrending is polynomial.",
+    "type": "int"
+  },
+  "detrend_min_valid_fraction": {
+    "description": "Minimum valid fraction required inside a detrending window.",
+    "type": "float"
+  },
+  "detrend_bandwidth_hours": {
+    "description": "Kernel bandwidth used by kernel baseline detrending.",
+    "type": "float"
+  },
+  "detrend_low_cut_hours": {
+    "description": "Longest period retained by frequency-filter detrending.",
+    "type": "float"
+  },
+  "detrend_high_cut_hours": {
+    "description": "Shortest period retained by frequency-filter detrending.",
+    "type": "float"
+  },
+  "detrend_filter_order": {
+    "description": "Digital-filter order used by frequency-filter detrending.",
+    "type": "int"
+  },
+  "detrend_lowess_fraction": {
+    "description": "Finite-record fraction used by each LOWESS local fit; null derives it from the detrending window.",
+    "type": "float"
+  },
+  "detrend_lowess_iterations": {
+    "description": "Robust residual-reweighting passes used by LOWESS detrending.",
+    "type": "int"
+  },
+  "detrend_asls_smoothness": {
+    "description": "Second-difference smoothness penalty used by asymmetric least-squares detrending.",
+    "type": "float"
+  },
+  "detrend_asls_asymmetry": {
+    "description": "Weight given to points above an asymmetric least-squares baseline.",
+    "type": "float"
+  },
+  "detrend_asls_iterations": {
+    "description": "Reweighting passes used by asymmetric least-squares detrending.",
+    "type": "int"
+  },
+  "detrend_methods": {
+    "description": "Baseline-removal method applied before extended period estimation.",
+    "type": "list"
+  },
+  "period_config": {
+    "description": "Partial scientific settings. Omitted or None values use the shared installed defaults; invalid fresh values are rejected. Run describe_config for names, meanings, units, bounds and choices. Explicitly load old saved mappings with load_saved_settings to report compatibility conversions.",
+    "type": "mapping"
+  },
+  "overlay": {
+    "description": "Draw categorical outlines or occupancy colours over the recorded raw image.",
+    "type": "bool"
+  },
+  "descriptive_cosinor": {
+    "description": "Draw an explicitly requested descriptive cosine at the selected estimated period; it supplies no selected period or rhythm verdict.",
+    "type": "bool",
+    "units": "-"
+  },
+  "ring_count": {
+    "description": "number of Sholl rings retained for display",
+    "type": "int"
+  },
+  "transition_normalisation": {
+    "description": "matrix normalisation: row, column or none",
+    "type": "str"
+  }
+}

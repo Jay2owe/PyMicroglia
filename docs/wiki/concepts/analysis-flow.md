@@ -113,3 +113,20 @@ misleading results:
 - [Single-cell dLuc pipeline](../pipelines/dluc-single-cell.md)
 - [Artefact store](artefact-store.md)
 - [Check a run](../getting-started/check-a-run.md)
+
+## Accepted tracks and scientific workflows
+
+```text
+accepted identity labels -> per-movie measurements -> pooled tables
+                                                       |
+                                                       v
+                                           saved scientific workflows
+                                                       |
+                                                       v
+                                           figures and linked reports
+```
+
+The tracker owns identity decisions. Measurement retains its frame mapping and
+source hashes. Workflows own scientific settings and saved outcomes; display
+steps consume them without refitting. Tables and figures remain visible; machine
+documents live in the shared workings folder, with one artefact ledger per folder.

@@ -2,7 +2,7 @@
 
 ``describe`` and ``discover`` return live JSON from the installed package, so
 nobody has to open a module to find out what it takes. ``doctor`` answers "is
-this healthy?" in one call, and — the part that matters here — names the
+this healthy?" in one call, and â€” the part that matters here â€” names the
 interpreter it is running in, because "the audit silently did nothing" and "you
 ran the wrong Python" look identical from the outside.
 
@@ -11,6 +11,8 @@ equivalents return the same shapes, so the commands answer either way.
 """
 
 from __future__ import annotations
+
+import importlib.util
 
 import sys
 from typing import Any
@@ -28,7 +30,7 @@ def _live_params(name: str) -> list[dict[str, Any]]:
 
     The catalogue records what the protocol script this was copied from
     declared, and in a handful of places the package deliberately settled
-    somewhere else — ``run_controls`` searches 16-32 h where the engine searched
+    somewhere else â€” ``run_controls`` searches 16-32 h where the engine searched
     15-40, and one engine default is the *string* ``"3.0 / 8.0"``. ``describe``
     is what an agent reads before passing an argument, so it has to report what
     will happen, not what the protocol used to say.
@@ -41,6 +43,25 @@ def _live_params(name: str) -> list[dict[str, Any]]:
     live = live_defaults(name)
     choices = live_choices(name)
     rows = catalogue.action_params(name)
+    if name == "measure":
+        from .measure import _rhythm_option_contract
+        for row in rows:
+            if row["name"] == "module_options":
+                row["properties"] = {"rhythms": _rhythm_option_contract()}
+    if name in {"measure", "contrasts"}:
+        from .measure.contrasts import CONTRAST_UNITS
+        for row in rows:
+            if row["name"] == "contrasts":
+                row["items"] = {"type": "mapping", "properties": {
+                    "unit": {"type": "str", "required": True,
+                             "choices": sorted(CONTRAST_UNITS),
+                             "description": "Independent replication unit; no default. Cells from one movie are not independent biological samples."}}}
+    from .pipelines._requests import FAMILIES
+    if name in FAMILIES:
+        from .pipelines.request_contracts import contract
+        for row in rows:
+            if row["name"] == "pipeline_request":
+                row["properties"] = contract(name)
     for row in rows:
         if row["name"] in live:
             row["default"] = live[row["name"]]
@@ -120,6 +141,11 @@ def discover() -> dict[str, Any]:
             "undeclared": REGISTRY.undeclared_params(),
             "reference_dir": None,
         }
+    from .registry import seam_status
+    declared_pending = {name for name in waiting
+                        if (state := seam_status(REGISTRY.binds_to(name))) is not None
+                        and state[0] == "pending"}
+    report["missing"] = [name for name in report.get("missing", []) if name not in declared_pending]
     report["pending"] = waiting
     report["actions"] = len(REGISTRY.names())
     report["params"] = len(catalogue.param_docs())
@@ -160,7 +186,7 @@ def _dehydrated(root) -> int:
 def _imagej() -> dict[str, Any]:
     """Whether Fiji was found, and where it was looked for.
 
-    Reported so an absent bridge is checkable rather than silent — the same
+    Reported so an absent bridge is checkable rather than silent â€” the same
     discipline the audit layer gets. Nothing measured needs it: it is the door
     to the one step a person does by hand.
     """
@@ -179,17 +205,17 @@ def _workbench_version() -> str | None:
     before somebody starts a six-hour run that ends at the periodogram.
     """
     try:
-        import circadian_workbench
+        from . import workbench as circadian_workbench
     except ImportError:
         return None
-    return getattr(circadian_workbench, "__version__", "unknown")
+    return getattr(circadian_workbench, "WORKBENCH_VERSION", "unknown")
 
 
 def _workbench_api_version() -> str | None:
     """Friendly application programming interface version, when usable."""
 
     try:
-        import circadian_workbench
+        from . import workbench as circadian_workbench
     except ImportError:
         return None
     required = ("call", "trace", "population", "phases", "channels")
@@ -223,7 +249,7 @@ def doctor() -> dict[str, Any]:
     # a file without the word "dropbox" appearing anywhere in the path.
     dehydrated = _dehydrated(root)
     if dehydrated:
-        # Not "it is in Dropbox" — that is now on purpose. This is the state
+        # Not "it is in Dropbox" â€” that is now on purpose. This is the state
         # that makes a synced store worse than no store: an array that is a hit
         # by every test the store can make, and a download when it is read.
         complaints.append(
@@ -240,6 +266,17 @@ def doctor() -> dict[str, Any]:
     # than being quietly skipped.
     workbench = _workbench_version()
     workbench_api = _workbench_api_version()
+    from . import tracking
+    tracker_state, tracker_reason = tracking.status()
+    statistics_modules = ('statistics', 'group_contrasts', 'association',
+                          'sample_contrasts', 'spatial_permutation',
+                          'segmented_regression', 'contact_statistics')
+    try:
+        from . import workbench as gateway
+        statistics_ready = all(getattr(gateway, name, None) is not None
+                               for name in statistics_modules)
+    except ImportError:
+        statistics_ready = False
     # A third case again, and softer than both. A missing Fiji costs the one
     # manual step and nothing else, so it is reported and never complained
     # about: an unattended run on a server has no Fiji by design.
@@ -254,6 +291,11 @@ def doctor() -> dict[str, Any]:
         "interpreter": sys.executable,
         "analysis_kit": kit_version() or None,
         "circadian_workbench": workbench,
+        "states_available": all(importlib.util.find_spec(m) is not None for m in ("sklearn", "hmmlearn", "hdbscan", "threadpoolctl", "diptest")),
+        "tracker": {"status": tracker_state, "target": tracking.TRACKER_TARGET,
+                    "reason": tracker_reason},
+        "torch_available": importlib.util.find_spec("torch") is not None,
+        "workbench_statistics": statistics_ready,
         "circadian_api_version": workbench_api,
         "video_export_available": _video_export_available(),
         "rhythm_analysis_available": workbench_api is not None,

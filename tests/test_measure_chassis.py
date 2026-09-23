@@ -63,12 +63,9 @@ def test_describe_lists_every_parameter_with_units_and_a_live_default() -> None:
             assert row["default"] == parameter.default, name
         if row["required"]:
             assert row["default"] is None, name
-    # ``frame_interval_min`` is required in substance though the signature
-    # defaults it: the interval turns a frame index into an hour and nothing
-    # in a label stack states it. ``output_dir`` has no default in the
-    # signature, but its row is the catalogue's shared one, which the other
-    # pipelines default beside the source.
-    assert {n for n, r in rows.items() if r["required"]} == {"movies", "frame_interval_min"}
+    # Movies and interval can be supplied together through analysis_config.
+    # The action checks these conditional requirements before reading inputs.
+    assert {n for n, r in rows.items() if r["required"]} == {"output_dir"}
     assert rows["if_exists"]["default"] == "version"
     # Mechanical: the claim is filled from a template unless the caller writes one.
     assert described["claim_required"] is False
@@ -81,8 +78,7 @@ def test_the_three_follow_on_actions_are_described_too() -> None:
         described = knowledge.describe(action)
         assert described["ok"], action
         assert {row["name"] for row in described["params"]} >= {"run_dir"}, action
-    assert knowledge.describe("contrasts")["pending"] is True
-    assert "Circadian Workbench" in knowledge.describe("contrasts")["pending_reason"]
+    assert knowledge.describe("contrasts")["pending"] is False
 
 
 def test_validate_accepts_the_fixture_movies_block_verbatim() -> None:
@@ -319,3 +315,29 @@ def test_the_stand_ins_leave_no_trace_after_a_run(run) -> None:
     names = {m.name for m in (*declare.list_modules(), *declare.list_derived())}
     assert not names & set(STUB_NAMES)
     assert names == set(MODULE_NAMES)
+
+
+def test_measure_requires_movies_or_a_configuration_before_writing(tmp_path):
+    from pymicroglia.measure import measure
+    with pytest.raises(ValueError, match="movies or analysis_config"):
+        measure(output_dir=tmp_path / "out")
+    assert not (tmp_path / "out").exists()
+
+
+def test_measure_requires_an_interval_without_a_configuration(tmp_path):
+    from pymicroglia.measure import measure
+    with pytest.raises(ValueError, match="frame_interval_min is required"):
+        measure(movies=[], output_dir=tmp_path / "out")
+    assert not (tmp_path / "out").exists()
+
+
+
+def test_description_exposes_nested_rhythm_choices_and_independent_defaults():
+    rows = {r["name"]: r for r in knowledge.describe("measure")["params"]}
+    settings = rows["module_options"]["properties"]["rhythms"]
+    assert settings["period_search_hours"]["default"] == [2., 48.]
+    assert settings["min_observations"]["default"] == 24
+    assert settings["min_cycles_for_confident_period"]["default"] == 3.
+    assert "fft_nlls" in settings["period_estimation_method"]["choices"]
+    assert "cosinor" not in settings["primary_rhythm_test"]["choices"]
+    assert settings["daily_profile_measures"]["default"] is False

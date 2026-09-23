@@ -52,9 +52,23 @@ __all__ = ["FAMILIES", "panels", "traces", "qc", "overlays", "bundle"]
 #: spirit of PyFLASH's describe-coverage sets: a new family that nobody
 #: classified is a test failure rather than an omission somebody notices later.
 FAMILIES: dict[str, str] = {
+    "morphology": "how saved cell shapes change across distance and time",
+    "coupling": "how saved measurements relate within individual cells",
+    "surveillance": "how much tracked footprint is gained, lost and retained over time",
+    "spatial": "where saved cell measurements and supported timing occur in the field",
+    "motility": "how recorded cell positions change between observations",
+    "review": "what the saved observations and diagnostics show before interpreting them",
+    "audit": "which period methods are supported by independent saved checks",
+    "rhythms": "what periods and evidence were saved for each measured trace",
+    "relationships": "how saved measurements relate within and across cells",
+    "behaviour": "which shared cell states the saved evidence supports",
+    "coordination": "which cells share supported changes at their measured positions",
+    "intervention": "how measured responses change around a declared intervention",
     "traces": "time traces stacked one panel per cell or region",
     "qc": "did this processing step do what it claims",
     "overlays": "which pixels became an object, over the tissue they came from",
 }
 
 from . import bundle, overlays, panels, qc, traces  # noqa: E402
+
+from .figures import available_views

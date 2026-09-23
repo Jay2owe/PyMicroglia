@@ -13,6 +13,7 @@ stage 11 with it.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import json
 import os
@@ -349,7 +350,7 @@ def test_the_reference_traces_match(store_root):
     from pymicroglia import io
 
     labels = tifffile.imread(REFERENCE / "cell_masks_labels.tif")
-    summary = json.loads((REFERENCE / "summary.json").read_text(encoding="utf-8"))
+    summary = read_document(REFERENCE / "summary.json")
     stack = np.asarray(np.load(folder / BUNDLE, mmap_mode="r"))
     frames = stack.shape[0]
     planes = [stack[index] for index in range(frames)]

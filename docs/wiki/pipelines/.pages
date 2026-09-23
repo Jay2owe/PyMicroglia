@@ -2,3 +2,9 @@ nav:
   - Pipeline Index: README.md
   - Single-cell dLuc: dluc-single-cell.md
   - Cry1-dLuc Photon: cry1-dluc-photon.md
+  - Rhythm discovery: rhythm_discovery.md
+  - Method audit: method_audit.md
+  - Measurement relationships: measurement_relationships.md
+  - Cell behaviour states: behaviour_states.md
+  - Spatial coordination: spatial_coordination.md
+  - Intervention response: intervention_response.md

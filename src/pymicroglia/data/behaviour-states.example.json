@@ -1,0 +1,39 @@
+{
+  "pipeline": "cell-behaviour-states",
+  "name": "cell-behaviour-states",
+  "features": ["corrected_mean", "area_px"],
+  "observation": {"kind": "frame"},
+  "representation": "raw",
+  "learning": {
+    "balance": "sample_cell",
+    "max_observations_per_cell": 100,
+    "min_observations": 24,
+    "seed": 17,
+    "scaling": {"method": "standard"},
+    "missing": {"method": "complete_case", "max_fraction": 0}
+  },
+  "candidates": [
+    {"method": "gaussian_mixture", "components": 1, "covariance_type": "full", "reg_covar": 0.001, "n_init": 5, "max_iter": 300, "seed": 17},
+    {"method": "gaussian_mixture", "components": 2, "covariance_type": "full", "reg_covar": 0.001, "n_init": 5, "max_iter": 300, "seed": 17}
+  ],
+  "validation": {
+    "unit": "biological_sample",
+    "split": {"method": "group_shuffle", "development_fraction": 0.25, "confirmation_fraction": 0.25, "seed": 18},
+    "min_groups": {"learning": 3, "development": 40, "confirmation": 40},
+    "independence_justification": "Replace with the experiment's justification for independent biological samples"
+  },
+  "support": {
+    "method": "heldout_multimodality",
+    "sampling_population": "Replace with the intended common measurement-generating population for independent validation samples"
+  },
+  "assignment": {"min_probability": 0.8, "outlier_quantile": 0.01, "min_observed_fraction": 1},
+  "statistics": {
+    "interval_rule": "adjacent_midpoint",
+    "max_gap_hours": 2,
+    "transition_interval_hours": [0.4, 0.6],
+    "sample_aggregation": "mean",
+    "comparison": {"method": "none"}
+  },
+  "biological_samples": {},
+  "conditions": {}
+}

@@ -38,7 +38,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
-from .. import _optional
+from ... import _optional
 
 __all__ = [
     "Panels",
@@ -343,7 +343,7 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
          width: float | None = None, height: float | None = None,
          format_options: Mapping[str, Any] | None = None,
          allow_reencode: bool = False,
-         overwrite: bool = True, bundle: bool = True,
+         overwrite: bool = True, bundle: bool = False, ledger: bool = True,
          slug: str | None = None, notes: Iterable[str] = (),
          drawn: Any = None, proof: bool = False,
          statistical_specs: Sequence[Mapping[str, Any]] = (),
@@ -363,8 +363,8 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     without it:
 
     * the figure itself, in every requested format;
-    * ``<stem>_plotted.csv`` — the values actually drawn, column per series;
-    * ``<stem>_provenance.json`` — every source with its SHA256, the settings
+    * ``<stem>.csv`` — the values actually drawn, column per series;
+    * the folder artefact ledger — every source with its SHA256, the settings
       in force, and the stored artefacts the figure was drawn from;
     * ``<stem>_bundle/`` — the same thing in the ``plot-that`` layout, so a
       figure a registered action produced is already an audited bundle.
@@ -373,7 +373,7 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     inside the PNG cannot be checked, re-drawn at another size, or compared
     with the run that produced it.
     """
-    from . import bundle as bundles
+    from .. import bundle as bundles
     from reprofig import (
         SourceReference,
         approved_public_tables,
@@ -383,7 +383,8 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
         table_from_data,
         validate_artifact,
     )
-    from .. import __version__
+    from ... import __version__
+    from reprofig.schema import json_safe
 
     target = Path(path).expanduser().resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -407,6 +408,9 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     settings = dict(settings or {})
     settings.setdefault("theme", getattr(figure, "_pymicroglia_theme", ENGINE_THEME))
     described = bundles.describe_sources(sources)
+    table_target = Path(f"{stem}.csv").resolve()
+    if any(row.get("exists") and Path(row["path"]).resolve() == table_target for row in described):
+        raise ValueError("Figure table would overwrite a source; choose a different output directory or name")
     exact_table = table_from_data(
         bundles.table_bytes(table),
         name="plotted_data",
@@ -437,11 +441,11 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
             "drawn": drawn,
         },
         data_tables=[exact_table],
-        statistics=list(statistics),
+        statistics=json_safe(list(statistics)),
         statistics_status=statistics_status,
         sources=source_records,
     )
-    from .proof_output import prepare_proof
+    from ..proof_output import prepare_proof
 
     proof, policy = prepare_proof(
         figure, master_record, exact_table, claim=claim,
@@ -488,24 +492,26 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
             }
             if set(keyed) & {"svg", "pdf", "png", "jpeg", "tiff", "webp", "avif", "heif"}:
                 selected_options = keyed.get(requested)
-        final_record = save_figure(
-            figure,
-            out,
-            record=variant_record,
-            figure_profile=figure_profile,
-            dpi=render_dpi,
-            dpi_preset=dpi_preset,
-            render_preset=render_preset,
-            width=width,
-            height=height,
-            format_options=selected_options,
-            savefig_kwargs={"bbox_inches": "tight"},
-            allow_reencode=allow_reencode,
-            safe_columns=figure_safe_columns,
-            public_sources=public_sources,
-            proof=proof,
-            proof_policy=policy if policy else None,
-        )
+        from .._delivery import render_destination
+        with render_destination(out) as staged:
+            final_record = save_figure(
+                figure,
+                staged,
+                record=variant_record,
+                figure_profile=figure_profile,
+                dpi=render_dpi,
+                dpi_preset=dpi_preset,
+                render_preset=render_preset,
+                width=width,
+                height=height,
+                format_options=selected_options,
+                savefig_kwargs={"bbox_inches": "tight"},
+                allow_reencode=allow_reencode,
+                safe_columns=figure_safe_columns,
+                public_sources=public_sources,
+                proof=proof,
+                proof_policy=policy if policy else None,
+            )
         if proof:
             # Protected sections are reused across carrier variants, while
             # each signature is rebound to that carrier's visual reference.
@@ -526,11 +532,10 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
         if out.parent != root / "fig":
             written.append(out)
 
-    table_path = Path(f"{stem}_plotted.csv")
+    table_path = Path(f"{stem}.csv")
     table_path.parent.mkdir(parents=True, exist_ok=True)
     table_path.write_bytes((companion_table.contents or "").encode("utf-8"))
 
-    provenance_path = Path(f"{stem}_provenance.json")
     public_output = figure_profile != "master"
     sidecar_sources = [] if public_output else described
     sidecar_settings = {} if public_output else settings
@@ -538,11 +543,12 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     sidecar_claim = "Publication-safe figure derivative" if public_output else claim
     sidecar_notes = [] if public_output else list(notes)
     sidecar_drawn = None if public_output else drawn
-    bundles.write_provenance(
-        provenance_path, sources=sidecar_sources, figures=written, table=table_path,
-        settings=sidecar_settings, artefacts=sidecar_artefacts,
-        claim=sidecar_claim, notes=sidecar_notes,
-        drawn=sidecar_drawn)
+    provenance_path = None
+    if ledger:
+        from .._ledger import record
+        provenance_path = record(written, table_path, sources=sidecar_sources,
+            settings=sidecar_settings, artefacts=sidecar_artefacts, claim=sidecar_claim,
+            notes=sidecar_notes, drawn=sidecar_drawn)
 
     result: dict[str, Any] = {
         "figures": written,
@@ -552,7 +558,7 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
         "bundle": None,
     }
     if proof:
-        from .proof_output import proof_summary
+        from ..proof_output import proof_summary
 
         result["proof"] = proof_summary(
             [out for out, _render_dpi in renders], policy
@@ -564,7 +570,7 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
             settings=sidecar_settings, notes=sidecar_notes,
             table_csv=(companion_table.contents or "").encode("utf-8"))
     if broker_policy_path:
-        from .proof_output import promote_outputs
+        from ..proof_output import promote_outputs
 
         result["broker"] = promote_outputs(
             written, policy_path=broker_policy_path,
@@ -573,4 +579,4 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
     return result
 
 
-from .save_actions import default_output_dir, save_for
+from ..save_actions import default_output_dir, save_for

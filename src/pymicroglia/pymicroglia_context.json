@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "package": "pymicroglia",
+  "distribution": "PyMicroglia",
+  "version": "0.3.0",
+  "reader": {
+    "purpose": "Read-only package usage orientation",
+    "python": "from pymicroglia import context; context.read(format='json')",
+    "topic": "context.read('measure', format='json')",
+    "search": "context.search('period search range')"
+  },
+  "topics": [
+    {
+      "topic": "overview",
+      "title": "PyMicroglia analysis guide",
+      "content": "# PyMicroglia analysis guide\n\nPyMicroglia measures tracked microglia, learns frame-level states and whole-cell\ngroups, and builds scientific workflows, figures and review films.\nAuto-Organotypic owns image processing, shared file records and video encoding.\nCircadian Workbench owns statistical and rhythm calculations.\n\n```\naccepted tracks -> measured tables -> scientific workflows\n                         |                    |\n                         +--- figures/films --+\n```\n\nUse `pymicroglia discover` for actions, `pymicroglia describe ACTION` for their\ncurrent parameters and `pymicroglia doctor` for installed capabilities.\n`from pymicroglia import context; context.read('quickstart')` reads this guide.\n`context.search('period search range')` searches it without opening data.\n"
+    },
+    {
+      "topic": "quickstart",
+      "title": "Start from accepted tracks",
+      "content": "# Start from accepted tracks\n\nInstall optional learning, figure and video dependencies with\n`python -m pip install \"PyMicroglia[states,figure,video]\"`.\n\n1. Inspect `pymicroglia describe measure` and prepare movie declarations in the\n   established analysis configuration format.\n2. Read the configuration with `pymicroglia.measure.load_config(path)`.\n   Relative paths resolve against the file. Pass the configuration to\n   `pymicroglia.measure.run.run(config, output, claim=question)`.\n3. Pool multiple recordings before a scientific workflow. Inspect\n   `pymicroglia describe pool` for recording and condition inputs.\n4. Run a workflow over saved measurements, then open its linked HTML report.\n5. Use a figure action's named view and display settings to revise presentation.\n\nActions that conclude something require `claim`: the question being examined.\nPublic Python calls use `pymicroglia.run_action('ACTION', claim=question, **params)`.\nThe command-line form is `pymicroglia run ACTION key=value --claim \"question\"`.\n\nThe existing-output default is `version`, preserving the preceding run.\nOther policies are `skip`, `error` and `overwrite`. A scientific workflow with\n`skip` reuses verified completed steps in that same folder.\n"
+    },
+    {
+      "topic": "inputs",
+      "title": "Recording and measurement inputs",
+      "content": "# Recording and measurement inputs\n\nA movie declaration identifies accepted labels, raw images and tracking exports.\nMeasurements retain accepted cell identities and label-to-source frame mapping.\nFrame interval and spatial calibration must describe the original recording.\n\n`pymicroglia.measure.load_config(path)` accepts movies, enabled modules,\nper-module settings, conditions, windows, contrasts, metric groups, channels,\nobject sets and explicitly granted side tables. Validation rejects unknown\nsettings and ambiguous joins. Relative paths resolve against the configuration.\n\nKeep recording, cell, biological sample and condition identifiers distinct.\nA cell is not automatically an independent biological replicate. Pooled inputs\nretain recording identifiers, separating repeated numeric cell identities.\nWorkflow requests resolve metric groups to recorded column lists.\n"
+    },
+    {
+      "topic": "tracking",
+      "title": "Tracking boundary",
+      "content": "# Tracking boundary\n\n`pymicroglia.tracking` runs a frozen Motion engine shipped in the wheel.\n`tracking.status()` reports whether its entry point resolves. The handoff\nfirst builds Motion's six pinned inputs from the U-Net mask and registered\nphotons; no fallback segmentation or tracking rule is substituted.\n\nThe contract records accepted labels, identity ownership, tracking tables,\nsource images, frame mapping and fingerprints. Existing verified outputs can\nbe measured without rerunning tracking. Motion retains its assignment objective,\nremembered identities, review TIFFs and issue annotations. Biological signal\nis measured from the original unmasked photons, not Motion's scaled counts.\n\nThe automated chain then audits which finished identities may enter each\nconsumer. By default, an internal gap longer than four hours or a missing\nfraction of at least 0.5 excludes a cell from analysis only; videos and still\nimages keep all identities for review. `eligibility_max_gap_h`,\n`eligibility_max_missing_fraction`, and `eligibility_exclude_from` make the\nlimits and the `analysis`, `videos`, and `images` destinations independent.\nFiltered views preserve identity numbers and never feed back into Motion.\n\n`tracked_cell_video` and `tracked_cell_image` draw the accepted per-identity\noutside boundaries over original photons. Outline width, opacity and colours,\ncontrast, display-only smoothing, timestamps, playback speed, and the still\nframe are configurable. Use `pymicroglia describe cell_eligibility`,\n`pymicroglia describe tracked_cell_video`, or\n`pymicroglia describe tracked_cell_image` for the live parameters.\n"
+    },
+    {
+      "topic": "measure",
+      "title": "Measure accepted identities",
+      "content": "# Measure accepted identities\n\n`pymicroglia.measure.measure(movies, output_dir=..., claim=...)` runs declared\nmodules over accepted identities. `enabled_modules` chooses modules;\n`module_options` supplies validated settings by module name.\n`frame_interval_min` and `microns_per_pixel` supply calibration where needed.\n\nThe registry declares required inputs, tables, columns and units.\n`pymicroglia.measure.parameter_choices()` lists module choices.\nDisabled optional evidence remains unavailable.\n\nMovie tables retain identity and frame keys. Pooling retains recording origin.\nWindows summarize declared observations. Contrasts aggregate to the declared\nreplication unit before calling Circadian Workbench. Input hashes and applied\nmodule settings travel with the run.\n"
+    },
+    {
+      "topic": "rhythms",
+      "title": "Unknown microglial rhythms",
+      "content": "# Unknown microglial rhythms\n\nDifferent cells and measurements can have short, approximately daily, long,\nmultiple or undetectable rhythms. A period search range is an analysis setting,\nnot evidence of one shared tissue clock.\n\n`period_estimation_method` supplies period and fit diagnostics.\n`primary_rhythm_test` supplies significance. Choose them separately from live\nCircadian Workbench methods. All calculations cross `pymicroglia.workbench`;\na local estimator or fallback never replaces the requested method.\n\nFresh-fit figures expose estimator, significance test, `period_config`,\nsearch bounds, every detrending control, alpha, multiple-testing correction,\nminimum observations and minimum cycles. Defaults are 2–48 hours, alpha 0.05,\n24 observations and three observed cycles. Unset methods and detrending inherit\nthe run's rhythm settings. Saved-result figures retain the recorded methods,\nWorkbench version and settings without silently refitting.\n\nFit quality, rhythmicity, period support and data sufficiency are separate.\nUnresolved is not arrhythmic. Daily measures require an explicitly justified\ndaily question and recorded opt-in. Phase comparison needs supported compatible\nperiods; converting to cycle fractions establishes no synchrony.\nTissue period maps summarize contributing cells with occupancy-time-weighted\naveraging by default; they do not detect a rhythm at each pixel.\n"
+    },
+    {
+      "topic": "states",
+      "title": "Learn and replay cell states",
+      "content": "# Learn and replay cell states\n\nThe `states` action learns a shared vocabulary of cell-frame measurements.\nChoose features, learning method, candidate state counts, held-out grouping and\nseed. `state_options` supplies remaining validated StateOptions fields.\n\nTraining and validation remain distinct. Unsupported state structure is an\nexplicit result. `replay` applies a saved dictionary without refitting.\nOccupancy, transitions, bouts and trajectories describe accepted assignments.\nOptional state rhythms use separately configured estimators and significance\ntests. Holding out cells is not biological-sample validation.\n\nInstall the `states` extra for learning dependencies. The `behaviour_states`\nworkflow adds declared validation, observed profiles, original-time timelines,\nsample comparisons and a linked saved report.\n\n\nChoose the public learning algorithm with `state_method`; `method` belongs\nto the registration action. Detailed learning settings remain in\n`state_options`.\n"
+    },
+    {
+      "topic": "clustering",
+      "title": "Group whole-cell fingerprints",
+      "content": "# Group whole-cell fingerprints\n\nThe `cluster` action groups whole-cell summaries using the validated\n`clustering_options` mapping. A whole-cell fingerprint describes an identity\nover its observed recording; frame-level states describe individual observations.\n\nKeep training, validation and sample groups explicit. A learned group describes\nthe supplied features, not an established cell type. Trajectory comparisons\nretain declared time-warping settings. Changing a scientific setting or seed\nchanges provenance; changing a colour does not refit a model.\n"
+    },
+    {
+      "topic": "lifecycle",
+      "title": "Lifecycle review and cell films",
+      "content": "# Lifecycle review and cell films\n\nLifecycle tables retain accepted starts, ends and intervening events.\nDiscover event names from `pymicroglia.measure.modules.lifecycle.EVENTS`.\nFilm rendering does not infer events again.\n\nThe display-only `follow` action accepts a saved run, recording stem,\nidentities, events, cell limit and span. Choose `recording`, `lifespan` or\n`event`; the last makes one clip around each selected event, with\n`event_hours` on either side. `dry_run=True` returns frame and caption\nplans without writing films. Source frame alignment is retained.\n\nAuto-Organotypic supplies display filtering and video encoding. Frame images\nare retained only with `keep_frames=True`. Films do not alter measurements,\nsegmentation, ownership or event decisions.\n"
+    },
+    {
+      "topic": "figures",
+      "title": "Figures and independent views",
+      "content": "# Figures and independent views\n\nOne action names one figure. `describe` lists view choices and options.\nLeaving `view` unset composes the figure. Review figures carry\n`purpose='review'`; they are not statistical findings.\n\n`pymicroglia.visualisation.figures.available_views(key, run, stem=...)` checks\ndeclared input availability. `view_availability` includes refusal reasons.\nNeither estimates periods. Scientific eligibility can still refuse an\nunsupported question.\n\nFresh-fit figures expose the shared rhythm option contract. Saved pipeline\nfigures select an `item` from the run's `figure_plans`, binding exact\ncompleted evidence and hashes. Presentation changes cannot replace those inputs.\n\nPreparation precedes drawing. The shared ReproFig exporter saves images,\nplotted CSV data, supporting evidence and a folder ledger. Text, theme, formats,\ndimensions and source hashes are recorded. Display filters leave measurements\nunchanged.\n\n\nSholl figures use `ring_count` for the number of retained radial rings.\nThe separate trace action's `rings` argument remains a label image.\nTransition matrices use `transition_normalisation` (`row`, `column` or\n`none`); this is separate from fluorescence trace normalisation.\nCell films use `cell_count` to cap automatic selection; figure `cells`\nselects identities or a count according to its documented syntax.\n"
+    },
+    {
+      "topic": "pipelines",
+      "title": "Six saved scientific workflows",
+      "content": "# Six saved scientific workflows\n\nWorkflow actions read saved measurements; multiple movies require pooled tables.\nEach takes `run`, `pipeline_request` (a request object or JSON path),\noptional presentation, step selection through `only`, output policy and claim.\nThe separate run-envelope `request` is descriptive text.\n\n| Action | Request pipeline name | Question |\n|---|---|---|\n| rhythm_discovery | rhythm-discovery | Cell detection, supported periods and compatible timing |\n| method_audit | method-selection-audit | Method development and independent confirmation |\n| measurement_relationships | measurement-relationships | Within-cell, between-cell and lag associations |\n| behaviour_states | cell-behaviour-states | Supported shared states and observed dynamics |\n| spatial_coordination | spatial-coordination | Spatial evidence, proximity and compatible timing |\n| intervention_response | intervention-response | Declared responses, controls and sample effects |\n\nRequests retain measurements, population, samples and scientific settings.\nSelecting steps includes their prerequisites. Reuse requires matching scientific\nidentities, producer code and evidence hashes. Unavailable dependencies retain\ntheir reasons. Opening the linked `index.html` performs no fresh science.\n\nA prepared request can be submitted with\n`run_action('rhythm_discovery', run=folder, pipeline_request=request_path,\nif_exists='skip', claim=question)`. Audit profile export is an explicit\nselection of saved decisions; rendering does not select a method.\n"
+    },
+    {
+      "topic": "records",
+      "title": "Files, provenance and replay",
+      "content": "# Files, provenance and replay\n\nVisible folders contain tables, figures and reports. Machine documents live in\nthe shared Auto-Organotypic workings folder, currently `.auto-organotypic`.\nOne shared `artefacts.json` ledger describes each output folder.\nKeep ledgers with their files when copying or archiving results.\n\nScientific workflow tables use CSV with JSON-encoded cells, preserving nested\nnative diagnostics, exact numbers, empty text and missing values. Column types\nlive in the ledger. Read them with\n`pymicroglia.pipelines._screening.read_table(path)`.\nVerified fingerprints cover bytes and type contracts.\n\nCompletion documents hold each outcome once. Execution records reference those\noutcomes and record each invocation. Legacy JSON tables and inline execution\nrecords remain readable without rewriting. Figures bind exact completions and\nreject altered evidence or selections. Report copies retain table contracts\nand relative navigation.\n"
+    },
+    {
+      "topic": "troubleshooting",
+      "title": "Check a refused or incomplete run",
+      "content": "# Check a refused or incomplete run\n\nStart with `pymicroglia doctor` and `pymicroglia describe ACTION`.\nPending tracking and missing learning dependencies are different cases.\nInstall the named extra for an unavailable method; no fallback changes science.\n\nCheck saved table names, recording identity, metric groups and sample mapping.\nFresh-fit figures need observation and analysis settings. Saved-result figures\nneed their exact figure-plan item and unchanged completed evidence.\n\nA changed-hash error is a provenance failure. Preserve the old result and\ncreate a new version from intended inputs; do not edit hashes to force reuse.\nAssigning a 24-hour period does not resolve unsupported evidence.\n\nStep outcomes and linked reports explain unavailable results. Disabled questions\nand untestable traces remain visible. If Windows retries report a persistent\nfile lock, close the application holding that destination.\n"
+    }
+  ]
+}

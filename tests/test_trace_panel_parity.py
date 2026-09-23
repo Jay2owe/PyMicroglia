@@ -22,6 +22,7 @@ shipped; the folder's README says exactly how.
 
 from __future__ import annotations
 
+from tests.figure_record_helpers import figure_record
 import csv
 import json
 from pathlib import Path
@@ -72,7 +73,7 @@ def test_every_plotted_value_matches_the_engine(tmp_path, panel_module):
     panel_module.trace_panel(INPUT, output_path=str(tmp_path / "port.png"),
                              overwrite=True)
 
-    mine = read_table(tmp_path / "port_plotted.csv")
+    mine = read_table(tmp_path / "port.csv")
     theirs = read_table(REFERENCE / "engine_full_plotted.csv")
 
     assert set(mine) == set(theirs), (
@@ -237,7 +238,7 @@ def test_the_small_figures_values_match_too(tmp_path, panel_module):
     """The same window, cut and merged, checked in numbers as well as pixels."""
     panel_module.trace_panel(INPUT, output_path=str(tmp_path / "small.png"),
                              overwrite=True, **SMALL)
-    mine = read_table(tmp_path / "small_plotted.csv")
+    mine = read_table(tmp_path / "small.csv")
     theirs = read_table(REFERENCE / "engine_small_plotted.csv")
     assert set(mine) == set(theirs)
     for name in theirs:
@@ -285,13 +286,13 @@ def test_the_figure_arrives_as_a_provenance_bundle(tmp_path, panel_module):
 def test_the_provenance_names_the_settings_and_the_claim(tmp_path, panel_module):
     result = panel_module.trace_panel(
         INPUT, output_path=str(tmp_path / "port.png"), overwrite=True, **SMALL)
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
 
     assert record["settings"]["normalise"] == "window_mean"
     assert record["settings"]["theme"] == "engine"
     assert record["claim"]
     assert record["generated_from"][0]["sha256"]
-    assert record["plotted_table"].endswith("_plotted.csv")
+    assert record["plotted_table"].endswith(".csv")
 
 
 def test_the_provenance_records_what_the_engines_did(tmp_path, panel_module):
@@ -304,7 +305,7 @@ def test_the_provenance_records_what_the_engines_did(tmp_path, panel_module):
     """
     result = panel_module.trace_panel(
         INPUT, output_path=str(tmp_path / "port.png"), overwrite=True)
-    mine = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    mine = figure_record(result)
     theirs = json.loads((REFERENCE / "engine_full_provenance.json")
                         .read_text(encoding="utf-8"))
 
@@ -379,7 +380,7 @@ def test_the_json_spec_still_reads_the_engines_setting_names(tmp_path,
         overwrite=True)
     assert result["panels"] == 2
 
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["settings"]["window_h"] == 48.0
     assert record["settings"]["cut_stage"] == "before"
     assert record["settings"]["show_raw"] is False

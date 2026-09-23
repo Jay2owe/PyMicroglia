@@ -1,0 +1,18 @@
+{
+  "pipeline": "measurement-relationships",
+  "name": "measurement-relationships",
+  "measurements": ["corrected_mean", "area_px"],
+  "pairs": {"mode": "explicit", "pairs": [["corrected_mean", "area_px"]]},
+  "representation": "raw",
+  "within_cell": {"enabled": true, "statistic": "spearman", "evidence": {"method": "none"}},
+  "lag": {"enabled": false},
+  "between_cells": {"enabled": false},
+  "sample_summary": {"enabled": false},
+  "support": {
+    "min_observations": 24,
+    "min_span_hours": 12,
+    "max_gap_hours": 2,
+    "matching": "exact",
+    "matching_tolerance_hours": 0
+  }
+}

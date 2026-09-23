@@ -1018,15 +1018,13 @@ for _figure in ("registration_figure", "cosmic_ray_preview", "channel_figure",
 
 #: What ``track`` takes. The tracker's own settings are not listed one by one:
 #: they are the tracker's and arrive as one mapping, checked against its live
-#: signature once it resolves, the same way ``cell_masks_options`` reaches the
-#: mask stage.
+#: signature. The packaged tracker accepts an optional ``stem`` selector.
 _TRACK_PARAMS: list[dict] = [
     {"name": "inputs", "type": "path", "units": "-", "required": True,
      "default": None,
-     "description": "The motion_inputs.json the auto_microglia pipeline wrote: "
-                    "the registered stacks and their cell masks, pinned by "
-                    "SHA-256, and under 'expects' the output names the tracker "
-                    "is to write back."},
+     "description": "The motion_inputs.json written after U-Net masking: "
+                    "six prepared stacks per recording, original photon "
+                    "measurements and output names, pinned by SHA-256."},
     {"name": "folder", "type": "path", "units": "-", "required": True,
      "default": None,
      "description": "Where the tracker writes its run: the labels, the "
@@ -1036,9 +1034,8 @@ _TRACK_PARAMS: list[dict] = [
     _PIPELINE_RUN[3],          # claim, worded as every pipeline words it
     {"name": "tracker_options", "type": "mapping", "units": "-",
      "required": False, "default": None,
-     "description": "Settings handed to the tracker unchanged. Its keys are "
-                    "the tracker's own and are checked against its live "
-                    "signature once it is installed, not here."},
+     "description": "Optional packaged-engine selector, normally stem for a "
+                    "multi-recording handoff; it does not change tracking rules."},
 ]
 assert _PIPELINE_RUN[3]["name"] == "claim"
 
@@ -1052,7 +1049,7 @@ _MEASURE_RUN_DIR = {
                    "measure/<stem>/ and the manifest in its workings."}
 
 _MEASURE_PARAMS: list[dict] = [
-    {"name": "movies", "type": "list", "units": "-", "required": True,
+    {"name": "movies", "type": "list", "units": "-", "required": False,
      "default": None,
      "description": "The movies to measure, one block each in the shape of "
                     "Motion's analysis_config.json 'movies' entry: stem, "
@@ -1081,8 +1078,9 @@ _MEASURE_PARAMS: list[dict] = [
                     "checked against the module's declared defaults before "
                     "anything runs; an unknown one is refused."},
     {"name": "frame_interval_min", "type": "float", "units": "minutes",
-     "required": True, "default": None,
-     "description": "Minutes between consecutive label frames. Nothing in a "
+     "required": False, "default": None,
+     "description": "Minutes between consecutive label frames; required unless "
+                    "analysis_config supplies the interval. Nothing in a "
                     "label stack states it, and it is what turns a frame "
                     "index into an hour on every table."},
     {"name": "microns_per_pixel", "type": "float", "units": "um/px",
@@ -1121,6 +1119,8 @@ _MEASURE_PARAMS: list[dict] = [
                     "its movie block. Off records the mismatch and measures "
                     "anyway."},
     _PIPELINE_RUN[3],          # claim
+    {"name": "analysis_config", "type": "path", "units": "-", "required": False,
+     "default": None, "description": "Existing Motion analysis configuration JSON. Preserves calibration, plot plans and pipeline declarations; supply this or movies. Relative input paths resolve against this file."},
 ]
 
 _POOL_PARAMS: list[dict] = [_MEASURE_RUN_DIR]
@@ -1140,6 +1140,134 @@ _CONTRASTS_PARAMS: list[dict] = [
 assert [row["name"] for row in _WINDOW_PARAMS] == ["run_dir", "windows", "verify_hashes"]
 assert [row["name"] for row in _CONTRASTS_PARAMS] == ["run_dir", "contrasts",
                                                       "metric_groups", "claim"]
+
+_GAP_PARAMS: list[dict] = [
+    {"name": "source", "type": "path", "units": "-", "required": True,
+     "default": None,
+     "description": "Accepted per-cell, per-frame identity CSV from the completed native Motion handoff. It is read, never edited."},
+    {"name": "accepted_sparse_labels", "type": "path", "units": "-",
+     "required": True, "default": None,
+     "description": "Accepted sparse identity-label TIFF used to recover the observed outlines on both sides of a gap."},
+    {"name": "cells_native", "type": "path", "units": "-",
+     "required": True, "default": None,
+     "description": "Native single-frame cell-label TIFF. A component anywhere in the predicted corridor rejects the gap."},
+    {"name": "photons_native", "type": "path", "units": "-",
+     "required": True, "default": None,
+     "description": "Original unsmoothed native photon TIFF measured under an eligible outline; display images cannot be used."},
+    {"name": "merge_events", "type": "path", "units": "-",
+     "required": True, "default": None,
+     "description": "Accepted merge-event CSV; every identity named on either side is excluded from gap filling."},
+    {"name": "frame_interval_h", "type": "float", "units": "hours/frame",
+     "required": True, "default": None,
+     "description": "Hours per native frame, used to timestamp measurement-only rows."},
+    {"name": "excluded_identities", "type": "list", "units": "identities",
+     "required": True, "default": None,
+     "description": "Explicit additional identity exclusions, including manually recognised merges absent from the event CSV. Pass an empty list only when there are none."},
+    {"name": "output_dir", "type": "path", "units": "-",
+     "required": True, "default": None,
+     "description": "New folder for separate gap-audit and measurement-only tables; existing outputs are never overwritten."},
+    {"name": "max_gap_frames", "type": "int", "units": "missing native frames",
+     "required": False, "default": 5,
+     "description": "Maximum consecutive missing frames to consider, from 1 to 15. Raising it adds eligible longer gaps but never changes tracking, merge exclusions or observed measurements."},
+]
+
+_ELIGIBILITY_PARAMS: list[dict] = [
+    COMMON_PARAMS[0], COMMON_PARAMS[1],
+    {"name": "frame_interval_h", "type": "float", "units": "hours/frame",
+     "required": True, "default": None,
+     "description": "Hours between tracked label frames, used to express the longest internal absence in experimental time."},
+    {"name": "max_gap_hours", "type": "float", "units": "hours",
+     "required": False, "default": 4.0,
+     "description": "Exclude an identity when its longest internal absence is greater than this duration. Exactly this duration remains eligible."},
+    {"name": "max_missing_fraction", "type": "float", "units": "fraction",
+     "required": False, "default": 0.5,
+     "description": "Exclude an identity when this fraction or more of the complete tracked window is missing, including late arrival or early loss."},
+    {"name": "exclude_from", "type": "list", "units": "destinations",
+     "required": False, "default": ("analysis",),
+     "description": "Independent outputs that receive filtered label views: analysis, videos and/or images. Motion labels are never edited."},
+    COMMON_PARAMS[3], _PIPELINE_RUN[3],
+]
+
+_TRACKED_DISPLAY_COMMON: list[dict] = [
+    COMMON_PARAMS[0],
+    {"name": "labels", "type": "path", "units": "-", "required": True,
+     "default": None,
+     "description": "Time-resolved Motion identity labels, either unchanged or the destination-specific eligibility view."},
+    COMMON_PARAMS[1], COMMON_PARAMS[2], COMMON_PARAMS[3],
+    {"name": "source_frame_offset", "type": "int", "units": "frames",
+     "required": False, "default": 0,
+     "description": "Number of leading original-photon frames before the first tracked label frame."},
+    {"name": "frame_interval_h", "type": "float", "units": "hours/frame",
+     "required": False, "default": None,
+     "description": "Hours between frames, used only for the displayed timestamp and playback speed."},
+    {"name": "outline_width_px", "type": "int", "units": "px",
+     "required": False, "default": 1,
+     "description": "Whole-pixel width of the coloured boundary immediately outside each tracked cell."},
+    {"name": "outline_opacity", "type": "float", "units": "fraction",
+     "required": False, "default": 1.0,
+     "description": "Outline opacity from zero to one."},
+    {"name": "outline_colours", "type": "str_or_list", "units": "RGB",
+     "required": False, "default": "accepted",
+     "description": "The accepted 12-colour identity cycle, or a custom list of RGB triples."},
+    {"name": "smooth_sigma_px", "type": "float", "units": "px",
+     "required": False, "default": 1.6,
+     "description": "Display-only spatial Gaussian smoothing; original photons remain unchanged for measurement."},
+    {"name": "black_percentile", "type": "float", "units": "percentile",
+     "required": False, "default": 20.0,
+     "description": "Fixed black point estimated from the rendered original-photon window."},
+    {"name": "white_percentile", "type": "float", "units": "percentile",
+     "required": False, "default": 99.5,
+     "description": "Fixed white point estimated from the rendered original-photon window."},
+    {"name": "timestamp", "type": "int", "units": "-",
+     "required": False, "default": True,
+     "description": "Draw elapsed experimental time on the display export."},
+    {"name": "timestamp_position", "type": "str", "units": "-",
+     "required": False, "default": "top-left",
+     "description": "Corner or edge position for the elapsed-time label."},
+]
+
+_TRACKED_VIDEO_PARAMS: list[dict] = _TRACKED_DISPLAY_COMMON + [
+    {"name": "hours_per_second", "type": "float", "units": "experimental hours/s",
+     "required": False, "default": 6.0,
+     "description": "Playback rate in experimental hours per second."},
+    {"name": "smooth_frames", "type": "int", "units": "frames",
+     "required": False, "default": 7,
+     "description": "Display-only centred temporal smoothing window; zero disables it."},
+    {"name": "timestamp_format", "type": "str", "units": "-",
+     "required": False, "default": "elapsed",
+     "description": "Timestamp text format accepted by the shared video renderer."},
+    {"name": "crf", "type": "int", "units": "-", "required": False,
+     "default": 16,
+     "description": "H.264 constant-rate-factor quality setting; lower is larger and higher quality."},
+    _PIPELINE_RUN[3],
+]
+
+_TRACKED_IMAGE_PARAMS: list[dict] = _TRACKED_DISPLAY_COMMON + [
+    {"name": "frame_index", "type": "int", "units": "tracked frames",
+     "required": False, "default": None,
+     "description": "Zero-based tracked frame to draw. Left out, the middle tracked frame is used."},
+    {"name": "image_format", "type": "str", "units": "-",
+     "required": False, "default": "png",
+     "description": "Image file format for the display-only still."},
+    _PIPELINE_RUN[3],
+]
+
+_HANDOFF_ACTIONS: list[dict] = [
+    {"name": "cell_eligibility",
+     "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
+     "method": "eligibility.evaluate", "params": _ELIGIBILITY_PARAMS,
+     "method_version": "2026-09-22-cell-eligibility-v1"},
+    {"name": "tracked_cell_video",
+     "summary": "Draw configurable per-identity outlines over the original photon movie using the accepted review-video display defaults.",
+     "method": "video.tracked_cell_video", "params": _TRACKED_VIDEO_PARAMS,
+     "display_only": True,
+     "method_version": "2026-09-22-tracked-outline-display-v1"},
+    {"name": "tracked_cell_image",
+     "summary": "Draw configurable per-identity outlines over one original-photon frame for a still quality-control image.",
+     "method": "visualisation.overlays.tracked_cell_image",
+     "params": _TRACKED_IMAGE_PARAMS, "display_only": True,
+     "method_version": "2026-09-22-tracked-outline-display-v1"},
+]
 
 _MEASURE_ACTIONS: list[dict] = [
     {
@@ -1177,6 +1305,12 @@ _MEASURE_ACTIONS: list[dict] = [
                    "Workbench importer of the rhythm stage lands.",
         "method": "measure.contrasts.contrasts",
         "params": _CONTRASTS_PARAMS,
+    },
+    {
+        "name": "measure_missing_gaps",
+        "summary": "Optionally measure original photons in stable missing-cell gaps after tracking, using the nearest accepted outline; write separate proposal rows only.",
+        "method": "measure.gaps.measure_missing_gaps",
+        "params": _GAP_PARAMS,
     },
 ]
 
@@ -1544,9 +1678,7 @@ def build(protocols: Path) -> dict:
         "source": [],
     })
 
-    # The tracking seam. No protocol to harvest: the action fronts the Motion
-    # tracker through ``pymicroglia.tracking.TRACKER_TARGET`` and is reported
-    # pending until that dotted name resolves.
+    # The packaged Motion engine is reached through the replaceable target.
     for row in _TRACK_PARAMS:
         shared = {key: value for key, value in row.items() if key != "default"}
         known = vocabulary.get(row["name"])
@@ -1561,38 +1693,56 @@ def build(protocols: Path) -> dict:
                    "splits and temporary invisibility, and write the label "
                    "stack, the unclaimed ledger, the provenance sidecar, the "
                    "motion evidence and the decision tables the measure step "
-                   "reads. Pending until the Motion tracker is installed.",
+                   "reads. Runs the frozen Motion engine shipped with the wheel.",
         "method": "tracking.run",
         "mutates": True,
         "destructive": False,
         "display_only": False,
         "params": [row["name"] for row in _TRACK_PARAMS],
         "defaults": {row["name"]: row["default"] for row in _TRACK_PARAMS},
-        "method_version": "2026-09-21-tracking-seam-v1",
+        "method_version": "2026-09-22-frozen-motion-engine-v1",
         "source": [],
     })
 
     # The measurement chassis. No protocol to harvest either: its settings are
     # Motion's configuration blocks, and its tables are keyed in the store
     # under ``pymicroglia.measure.run.METHOD_VERSION``.
-    for entry in _MEASURE_ACTIONS:
+    from motion_catalogue import actions as motion_actions
+    for entry in [*_MEASURE_ACTIONS, *_HANDOFF_ACTIONS,
+                  *motion_actions([*_FIGURE_COMMON,*_FIGURE_SIZE])]:
         for row in entry["params"]:
             shared = {key: value for key, value in row.items() if key != "default"}
             known = vocabulary.get(row["name"])
             if known is None:
                 vocabulary[row["name"]] = shared
-            elif known != shared:
-                conflicts.append(f"{entry['name']}.{row['name']}")
+            else:
+                # The port reuses established meanings. Requiredness and choices
+                # are action constraints; neither changes a parameter's meaning.
+                if known["type"] != shared["type"]:
+                    raise ValueError(f"Rename incompatible parameter {entry['name']}.{row['name']}: "
+                                     f"{known['type']} versus {shared['type']}")
+                if entry["name"] != "measure_missing_gaps":
+                    for field in ("type", "units", "description"):
+                        row[field] = known.get(field, "-")
         actions.append({
             "name": entry["name"],
             "summary": entry["summary"],
             "method": entry["method"],
             "mutates": True,
             "destructive": False,
-            "display_only": False,
+            "display_only": entry.get("display_only",False),
             "params": [row["name"] for row in entry["params"]],
             "defaults": {row["name"]: row["default"] for row in entry["params"]},
-            "method_version": "2026-09-21-measure-chassis-v1",
+            # Choices and conditional requirements belong to the action.
+            # Preserve its complete declared contract alongside shared prose.
+            "parameter_details": {row["name"]: {key: value for key, value in row.items()
+                                   if key not in {"name", "default"}}
+                                  for row in entry["params"]},
+            "method_version": entry.get(
+                "method_version",
+                "2026-09-22-nearest-outline-gap-measurement-v1"
+                if entry["name"] == "measure_missing_gaps"
+                else "2026-09-21-measure-chassis-v1"),
             "source": [],
         })
 

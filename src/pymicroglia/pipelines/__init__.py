@@ -89,6 +89,13 @@ PIPELINE_NAMES: tuple[str, ...] = (
     "cry1_dluc_photon",
     "bioluminescence",
     "phase_green_red",
+    'rhythm_discovery',
+    'method_audit',
+    'measurement_relationships',
+    'behaviour_states',
+    'spatial_coordination',
+    'intervention_response',
+
 )
 
 #: What to do about a run folder that already exists.
@@ -513,3 +520,8 @@ def default_output_root(source, *, folder: str = "AI_Exports") -> Path:
 
 def _iter_paths(values: Iterable[Any]) -> list[str]:
     return [str(value) for value in values if value is not None]
+
+
+def parse(entries, groups=None):
+    from ._requests import parse as parse_requests
+    return parse_requests(entries, groups)

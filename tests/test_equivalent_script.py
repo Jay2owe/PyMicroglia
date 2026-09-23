@@ -16,6 +16,7 @@ contains spaces and most contain one of those letters.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import ast
 import hashlib
@@ -269,7 +270,7 @@ def test_the_script_reproduces_the_run_in_a_fresh_interpreter(tmp_path, monkeypa
 
     records = sorted((results / ".analysis-kit" / "records").glob("*.json"))
     assert len(records) == 1
-    record = json.loads(records[0].read_text(encoding="utf-8"))
+    record = read_document(records[0])
 
     before = _file_digests(results)
     keys = {item["stage"]: item["digest"] for item in record["artefacts"]}

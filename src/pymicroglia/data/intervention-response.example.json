@@ -1,0 +1,20 @@
+{
+  "pipeline": "intervention-response",
+  "measurements": [
+    {"column": "reporter_custom", "table": "cell_frame", "summary": "mean"},
+    {"column": "shape_custom", "table": "cell_frame", "summary": "median"}
+  ],
+  "anchors": {
+    "example-recording": {"hours": 48, "kind": "intervention", "label": "Recorded intervention time"}
+  },
+  "windows": [
+    {"name": "baseline", "coordinate": "relative_hours", "start": -48, "end": 0},
+    {"name": "followup", "coordinate": "relative_hours", "start": 0, "end": 48, "baseline": "baseline"}
+  ],
+  "support": {"min_observations": 4, "min_valid_fraction": 0.8, "min_coverage": 0.8, "max_gap_hours": 0.6},
+  "evidence": {"method": "none"},
+  "controls": {"enabled": false},
+  "timing": {"enabled": false},
+  "rhythms": {"enabled": false},
+  "coordinated": {"enabled": false}
+}

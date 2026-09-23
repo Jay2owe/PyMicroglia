@@ -77,15 +77,21 @@ def _as_number(text: str) -> float | None:
 #: run happened on rather than the arithmetic. ``rhythm_methods.csv`` carries
 #: one record per fit as JSON, and its ``cwd`` is the checkout the run was
 #: made from: Motion's when frozen, this package's now.
-ENVIRONMENT_KEYS = ("cwd",)
+ENVIRONMENT_KEYS = ("cwd", "thread_environment")
 
 
-def _without_environment(document):
+PRODUCER_FIELDS = {
+    ('environment','code_sha256'),
+    ('environment','versions'),
+}
+
+
+def _without_environment(document, path=()):
     if isinstance(document, dict):
-        return {k: _without_environment(v) for k, v in document.items()
-                if k not in ENVIRONMENT_KEYS}
+        return {k: _without_environment(v,path+(k,)) for k, v in document.items()
+                if k not in ENVIRONMENT_KEYS and path+(k,) not in PRODUCER_FIELDS}
     if isinstance(document, list):
-        return [_without_environment(v) for v in document]
+        return [_without_environment(v,path) for v in document]
     return document
 
 
@@ -111,6 +117,16 @@ def _same_value(left: str, right: str) -> bool:
     if a == b:
         return True
     return f"{a:.{SIGNIFICANT_FIGURES}g}" == f"{b:.{SIGNIFICANT_FIGURES}g}"
+
+
+def _same_cell(column,left,right):
+    # Stage 05 intentionally upgrades the statistics authority. The 2026-09-22
+    # full-cell audit found only these version/hash/cwd differences; settings,
+    # estimator, significance and all numerical results remain compared.
+    if column=='workbench_version' and right=='0.8.2':
+        from pymicroglia.workbench import WORKBENCH_VERSION
+        return left==WORKBENCH_VERSION
+    return _same_value(left,right)
 
 
 def _row_differences(frame: "pd.DataFrame", record: dict, rel: str) -> list[str]:
@@ -139,7 +155,7 @@ def _row_differences(frame: "pd.DataFrame", record: dict, rel: str) -> list[str]
             continue
         actual = frame.iloc[index]
         for column, value in frozen.items():
-            if not _same_value(str(actual[column]), str(value)):
+            if not _same_cell(column,str(actual[column]),str(value)):
                 problems.append(
                     f"{rel} row {index} {column}: {actual[column]!r} != frozen {value!r}")
     return problems
@@ -156,7 +172,7 @@ def _frame_differences(actual: "pd.DataFrame", frozen: "pd.DataFrame", rel: str)
         left = actual[column].astype(str).to_numpy()
         right = frozen[column].astype(str).to_numpy()
         for index in (left != right).nonzero()[0]:
-            if not _same_value(left[index], right[index]):
+            if not _same_cell(column,left[index],right[index]):
                 problems.append(
                     f"{rel} row {index} {column}: {left[index]!r} != frozen {right[index]!r}")
                 if len(problems) > 50:
@@ -182,7 +198,7 @@ def ported_path(run: Path, rel: str) -> Path:
     parts = rel.split("/")
     name = parts[-1]
     if len(parts) == 1:
-        return run / name                         # statistics.csv, at the top
+        return run / 'pooled' / name if name=='statistics.csv' else run / name
     if parts[0] == "pooled":
         return run / "pooled" / name
     stem = parts[0]
@@ -292,7 +308,7 @@ def test_every_table_record_is_complete():
 #: The one table of the ``measure`` section the ported run does not write
 #: yet: ``statistics.csv`` is the contrasts step, which reaches Circadian
 #: Workbench and lands in stage 05. Recorded here so the gap is visible.
-NOT_YET_PORTED = ("statistics.csv",)
+NOT_YET_PORTED = ()
 
 
 @pytest.fixture(scope="module")
@@ -314,6 +330,8 @@ def ported_run(tmp_path_factory):
         manifest = run(config, folder / "outputs", run_label="parity",
                        claim="the stage-01 fixture measured by the ported modules")
         pool(manifest["run"]["folder"])
+        from pymicroglia.measure.contrasts import contrasts
+        contrasts(manifest["run"]["folder"])
     finally:
         for key, value in previous.items():
             if value is None:

@@ -21,6 +21,10 @@ manifest = auto_microglia.run(
 )
 ```
 
+The U-Net stage needs `pip install "PyMicroglia[mask]"` and either
+`PYMICROGLIA_MASK_WEIGHTS` or `mask_weights=` pointing at the chosen trained
+`model.pt`. The Motion engine itself is included in the PyMicroglia wheel.
+
 ## What it runs
 
 ```
@@ -33,14 +37,21 @@ acquire → index → trim_before_crop → broad_crop → trim → register → 
                                   cell_masks  ← a stage of that chain,
                                        │        written and owned here
                                        ▼
-                                  cells → motion
+                                  cells → motion_inputs → motion
+                                                             |
+                                                             v
+                                                        eligibility
+                                                        /    |    \
+                                                       v     v     v
+                                              measurement  video  image
                                   (this package's own, after the chain returns)
 ```
 
 Everything up to `split` is Auto-Organotypic's, named rather than copied.
 `cell_masks` is **registered into** that chain by this package — it runs inside
 the run, in that position, and the chain's own record says PyMicroglia owns it.
-`cells` and `motion` are this package's own steps on what comes back.
+The later cell, Motion-input, tracking, eligibility, tracked-measurement and
+review-display steps are this package's own steps on what comes back.
 
 ## The differences, and nothing else
 
@@ -51,7 +62,12 @@ the run, in that position, and the chain's own record says PyMicroglia owns it.
 | `spatial` | on | **off** | Tissue-square traces across the outline, for the same reason. |
 | `cell_masks` | off (opt-in) | **on** | A stage *of* that chain, registered into it by this package after `split`. The learned single-frame mask is what finds the cells here, so this pipeline asks for it — by naming its settings, which is that chain's own way of asking. A plain Auto-Organotypic run on this machine is unchanged. |
 | `cells` | — | **on** | Region traces, the instrumental control and the rhythm verdict, run on those cell labels by Auto-Organotypic's own `region_trace`, plus the decoy admissibility test that has no equivalent there. |
-| `motion` | — | **on** | Identity tracking is what the mask is for; pending until the Motion project is installed. |
+| `motion_inputs` | — | **on** | Makes six pinned stacks from registered photons and the per-frame mask. |
+| `motion` | — | **on** | Runs the packaged, frozen Motion engine without changing its rules. |
+| `eligibility` | — | **on** | Audits final identities after tracking. By default, gaps over four hours or at least 50% missing data exclude a cell from analysis only. |
+| `tracked_measurement` | — | **on** | Reads tracked labels against original unmasked photons, not Motion's scaled input. |
+| `tracked_video` | — | **on** | Draws accepted per-identity outlines over the original photons for review. |
+| `tracked_image` | — | **on** | Draws the same outlines on one original-photon frame. |
 
 ### Turning them back on
 
@@ -170,44 +186,86 @@ over a long record a wandering cell's pixels are shared with wherever it went,
 and the region is then not one cell. That is the limitation the Motion project
 exists to remove.
 
-## Handing off to Motion
+## From mask to tracked photons
 
-Motion is a separate, unfinished piece of work. The `motion` stage does not track
-anything; it writes what Motion reads and reports itself `pending` the way the
-chain reports a missing instrument client — a visible state at the top of a run,
-not an `ImportError` in the middle.
+`motion_inputs` writes six SHA-256-pinned files per recording: masked and
+count-scaled raw, lag ratio, neutral tracks, trail labels, trail ages and a
+five-channel evidence stack. It also saves the original registered photons
+separately. Motion's established `run_base` stages then run automatically in
+an isolated child process from the frozen engine shipped in the wheel. No
+tracking thresholds or identity-assignment rules are changed.
 
-`motion/motion_inputs.json` uses Motion's own `config.json` vocabulary, so it
-drops into that file rather than needing translation:
+`tracked_measurement` uses the accepted labels and **original unmasked
+photons** for the `intensity` module. Motion's masked, scaled raw exists only
+to preserve its tracking gates; it is never the biological signal reported
+for a cell. The Motion run writes a full-field review TIFF. Native-frame
+identities are provisional until that review is accepted.
 
-```json
-{
-  "dataset": "MCG_04",
-  "stems": ["MCG 04 - 1 - 595"],
-  "frame_interval_min": 33.29,
-  "input_space": "registered",
-  "pinned_files": {
-    "MCG 04 - 1 - 595": {
-      "registered_raw": {"path": "...", "sha256": "..."},
-      "cell_mask": {"path": "...", "sha256": "..."},
-      "cell_mask_still": {"path": "...", "sha256": "..."}
-    }
-  },
-  "still_missing": ["lag_float", "neutral_tracks", "trail_labels",
-                    "trail_ages", "motion_composite"]
-}
+## Which tracked cells go downstream
+
+Think of eligibility as a set of transparent copies laid over the finished
+track: it can hide a rejected identity from a consumer, but it never erases or
+renumbers the Motion result underneath.
+
+The defaults are:
+
+- exclude a cell when its longest internal absence is **greater than 4 hours**;
+  exactly 4 hours remains eligible;
+- exclude a cell when **50% or more** of the complete tracked window is
+  missing, including a late arrival or early loss;
+- apply those exclusions to analysis only; videos and images keep every cell
+  so the evidence for an exclusion remains visible.
+
+Each run writes `cell_eligibility.csv`, `eligibility.json`, and one
+identity-preserving label view for every destination selected in
+`eligibility_exclude_from`.
+
+```python
+auto_microglia.run(
+    folder,
+    eligibility_max_gap_h=6.0,
+    eligibility_max_missing_fraction=0.40,
+    eligibility_exclude_from=("analysis", "videos", "images"),
+)
 ```
 
-Two things are deliberately absent. The registered stacks are **pinned where they
-already are** rather than copied: copying ten gigabytes per well to give it a
-different name is not a handoff. And the motion-evidence stacks under
-`still_missing` are Motion's own first stage's output, computed from the
-registered stack named here — writing empty entries for them would make the file
-look complete when the work it describes has not been done.
+Use any subset of `analysis`, `videos`, and `images`. Set `eligibility=False`
+to pass the unchanged Motion labels to all three.
 
-`motion_hashes=False` writes `null` where each SHA-256 goes. Motion will not
-accept that; the option exists because a full hash is a full read of every stack,
-and that cost is worth choosing to defer rather than discovering inside a run.
+## Configuring the tracked-cell outlines
+
+The review movie and still use original photons. Smoothing, contrast and
+outlines are display-only and cannot feed a measurement. Defaults reproduce
+the accepted tuning review: a one-pixel outside boundary, the accepted
+12-colour identity cycle, seven-frame temporal smoothing, 1.6-pixel spatial
+smoothing, fixed 20th–99.5th percentile contrast, and six experimental hours
+per second.
+
+```python
+auto_microglia.run(
+    folder,
+    tracked_video_options={
+        "outline_width_px": 2,
+        "outline_opacity": 0.75,
+        "outline_colours": [(255, 70, 70), (80, 210, 255)],
+        "smooth_frames": 5,
+        "smooth_sigma_px": 1.0,
+        "black_percentile": 15,
+        "white_percentile": 99.7,
+        "hours_per_second": 8,
+        "timestamp": True,
+    },
+    tracked_image_options={
+        "frame_index": 20,
+        "outline_width_px": 2,
+        "outline_opacity": 0.75,
+    },
+)
+```
+
+`tracked_video=False` or `tracked_image=False` skips that export. The
+standalone actions are `tracked_cell_video`, `tracked_cell_image`, and
+`cell_eligibility`; `pymicroglia describe <name>` lists every live option.
 
 ## Not masking the same pictures twice
 
@@ -271,9 +329,9 @@ def track(state, options):
     return {"tracked": len(state["recordings"])}
 
 chain.register_stage(
-    chain.Stage("tracking", "Motion", "motion.pipeline:run",
+chain.Stage("tracking", "AnotherTracker", "other_tracker.pipeline:run",
                 "link cell identities across frames",
-                needs="motion[track]", probes=("torch",), opt_in=True),
+                needs="other-tracker", opt_in=True),
     track, after="cell_masks")
 ```
 
@@ -283,8 +341,8 @@ twice:
 | | |
 |---|---|
 | `stages=("tracking",)`, `skip=`, `since="tracking"` | selected by name like any other |
-| `tracking_options={...}` | checked against `motion.pipeline:run`'s **live signature** before a single stage runs, so a typo costs a message rather than the registration that would have run first |
-| the run record | one record for the whole run, with `"owner": "Motion"` on that stage |
+| `tracking_options={...}` | checked against `other_tracker.pipeline:run`'s live signature before a single stage runs |
+| the run record | one record for the whole run, with `"owner": "AnotherTracker"` on that stage |
 | `on_progress` | a watcher hears about it alongside everything else |
 | the package missing | `pending` at the top of the run, with the line that installs it — never an `ImportError` in the middle |
 | `verdict=` (optional) | its own row in the `what_would_run` staleness grid; without one the grid says `unknown` rather than guessing |

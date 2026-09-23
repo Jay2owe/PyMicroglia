@@ -19,9 +19,8 @@ with ``skip``, so the two cannot drift.
 here the mask is what finds the cells, so a measurement made before it measured
 something else.
 
-**Motion is pending, visibly.** The handoff is written, the stage says
-``pending``, and the review carries a note that says what to install. A stage
-that silently did nothing would be indistinguishable from a stage that worked.
+**Motion runs after input preparation.** The handoff contains six pinned
+stacks, the tracking stage runs, and review flags identities as provisional.
 
 The network is never run and neither is the chain: both are replaced. These are
 claims about wiring, and a test that needed an instrument and 40 MB of weights
@@ -30,6 +29,7 @@ matters.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import json
 from pathlib import Path
@@ -39,6 +39,87 @@ import pytest
 
 from pymicroglia import pipelines
 from pymicroglia.pipelines import auto_microglia, motion_handoff
+
+
+@pytest.fixture(autouse=True)
+def fake_motion_engine(monkeypatch):
+    """Wiring tests stop at Motion's numerical boundary, tested separately."""
+    monkeypatch.setattr(auto_microglia._Registered, "dluc",
+                        property(lambda self: np.ones((3, 16, 16), np.float32)))
+
+    def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset):
+        import tifffile
+
+        folder = Path(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+        pins = {}
+        for role in ("registered_raw", "lag_float", "neutral_tracks",
+                     "trail_labels", "trail_ages", "motion_composite"):
+            name = f"{stem}_{role}.tif"
+            (folder / name).write_bytes(role.encode())
+            key = ("relative_to_registered_input_dir" if role == "registered_raw"
+                   else "relative_to_motion_input_dir")
+            pins[role] = {key: name, "sha256": "a" * 64}
+        config = folder / "motion_config.json"
+        config.write_text("{}", encoding="utf-8")
+        measurement_raw = folder / f"{stem}_registered_photons.tif"
+        tifffile.imwrite(measurement_raw,
+                         np.ones((5, 16, 16), np.float32),
+                         photometric="minisblack")
+        return {"stem": stem, "config": str(config), "pins": pins,
+                "masked_photon_scale": 1.0,
+                "measurement_raw": str(measurement_raw),
+                "measurement_raw_sha256": "b" * 64,
+                "frame_interval_min": frame_interval_min}
+
+    class Result:
+        def __init__(self, labels):
+            self.labels = labels
+
+        def as_dict(self):
+            return {"stem": "fake", "labels": str(self.labels),
+                    "source_frame_offset": 2, "sha256": {}}
+
+    def track(inputs, folder, **options):
+        import tifffile
+
+        folder = Path(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+        labels = np.zeros((3, 16, 16), np.uint16)
+        labels[:, 3:7, 3:7] = 1
+        path = folder / "tracked.tif"
+        tifffile.imwrite(path, labels, photometric="minisblack")
+        return Result(path)
+
+    from pymicroglia import measure as measure_module
+
+    def measure(movies, *, output_dir, **options):
+        assert movies[0]["raw"].endswith("_registered_photons.tif")
+        assert movies[0]["raw"] != movies[0]["labels"]
+        assert options["enabled_modules"] == ("intensity",)
+        return {"run": {"folder": str(output_dir), "run_label": "fake"}}
+
+    monkeypatch.setattr(motion_handoff._prepare, "build", build)
+    monkeypatch.setattr(motion_handoff._tracking, "run", track)
+    monkeypatch.setattr(measure_module, "measure", measure)
+
+    from pymicroglia import video as video_module
+    from pymicroglia.visualisation import overlays as overlay_module
+
+    monkeypatch.setattr(
+        video_module, "tracked_cell_video",
+        lambda source, **options: {
+            "output": str(Path(options["output_dir"]) / "tracked.mp4"),
+            "eligibility_labels": str(options["labels"]),
+            "display_only": True,
+        })
+    monkeypatch.setattr(
+        overlay_module, "tracked_cell_image",
+        lambda source, **options: {
+            "output": str(Path(options["output_dir"]) / "tracked.png"),
+            "eligibility_labels": str(options["labels"]),
+            "display_only": True,
+        })
 
 
 # ── a chain that is not the chain ───────────────────────────────────────────
@@ -131,6 +212,37 @@ def fake_mask(monkeypatch):
     monkeypatch.setattr(cell_masks, "mask_run", mask_run)
     monkeypatch.setattr(cell_masks, "mask_still", mask_still)
     return asked
+
+
+def test_eligibility_defaults_filter_analysis_but_leave_review_visuals_complete(
+        fake_chain, fake_mask, fake_measurement, tmp_path):
+    manifest = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out")
+    stem, result = next(iter(manifest["outputs"]["eligibility"].items()))
+
+    assert result["exclude_from"] == ["analysis"]
+    assert result["views"]["analysis"]["filtered"] is True
+    assert result["views"]["videos"]["filtered"] is False
+    assert result["views"]["images"]["filtered"] is False
+    assert (manifest["outputs"]["tracked_video"][stem]
+            ["eligibility_labels"] == result["views"]["videos"]["labels"])
+    assert (manifest["outputs"]["tracked_image"][stem]
+            ["eligibility_labels"] == result["views"]["images"]["labels"])
+
+
+def test_user_can_filter_analysis_video_and_image_independently(
+        fake_chain, fake_mask, fake_measurement, tmp_path):
+    manifest = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out",
+        eligibility_exclude_from=("analysis", "videos", "images"))
+    stem, result = next(iter(manifest["outputs"]["eligibility"].items()))
+
+    assert all(result["views"][name]["filtered"]
+               for name in ("analysis", "videos", "images"))
+    assert (manifest["outputs"]["tracked_video"][stem]
+            ["eligibility_labels"] == result["views"]["videos"]["labels"])
+    assert (manifest["outputs"]["tracked_image"][stem]
+            ["eligibility_labels"] == result["views"]["images"]["labels"])
 
 
 @pytest.fixture
@@ -468,29 +580,31 @@ def test_the_cells_are_measured_by_auto_organotypics_own_engine(one_run):
 
 
 # ── Motion is pending, and says so ──────────────────────────────────────────
-def test_the_motion_stage_is_pending_and_names_what_would_make_it_ready(
-        one_run):
+def test_motion_preparation_then_tracking_run_by_default(one_run):
     manifest, _, _ = one_run
-    stage = next(entry for entry in manifest["stages"]
-                 if entry["stage"] == "motion")
-    assert stage["status"] == "pending"
-    assert "not installed" in stage["reason"]
+    stages = {row["stage"]: row for row in manifest["stages"]}
+    assert stages["motion_inputs"]["status"] == "ready"
+    assert stages["motion"]["status"] == "ok"
+    assert manifest["outputs"]["motion"]["tracking"]
+    assert stages["tracked_measurement"]["recordings"] == 1
+    measured = next(iter(manifest["outputs"]["tracked_measurement"].values()))
+    assert measured["run_label"] == "fake"
+    assert Path(measured["folder"]).parent.name == "tracked_measurement"
 
 
-def test_the_pending_stage_reaches_the_review_and_not_only_the_manifest(
-        one_run):
-    """A stage that did nothing must be visible where a person actually looks."""
+def test_the_native_identity_review_gate_is_visible(one_run):
+    """Automatic execution does not imply identity acceptance."""
     manifest, _, _ = one_run
     motion = [row for row in manifest["review"] if row["gate"] == "motion"]
-    assert motion, "the pending Motion stage left no note in the review"
-    assert "Install the Motion project" in motion[0]["remedy"]
+    assert motion
+    assert "full-field Motion TIFF" in motion[0]["remedy"]
 
 
 def test_motion_gets_a_file_it_can_verify_rather_than_a_folder_to_guess_at(
         one_run):
     manifest, chain, _ = one_run
     written = Path(manifest["outputs"]["motion"]["motion_inputs"])
-    payload = json.loads(written.read_text(encoding="utf-8"))
+    payload = read_document(written)
     stem = Path(chain["stack"]).stem
     pinned = payload["pinned_files"][stem]
     assert len(pinned["registered_raw"]["sha256"]) == 64
@@ -499,18 +613,16 @@ def test_motion_gets_a_file_it_can_verify_rather_than_a_folder_to_guess_at(
     assert payload["frame_interval_min"] == pytest.approx(1997.4 / 60.0)
 
 
-def test_the_evidence_motion_has_to_compute_itself_is_named_not_faked(
-        one_run):
-    """Empty entries would make this file look complete when it is not."""
+def test_all_six_motion_inputs_are_prepared_and_pinned(one_run):
     manifest, _, _ = one_run
-    payload = json.loads(
-        Path(manifest["outputs"]["motion"]["motion_inputs"]).read_text(
-            encoding="utf-8"))
-    assert set(payload["still_missing"]) == {
+    payload = read_document(Path(manifest["outputs"]["motion"]["motion_inputs"]))
+    assert payload["still_missing"] == []
+    required = {
         "lag_float", "neutral_tracks", "trail_labels", "trail_ages",
         "motion_composite"}
     for entry in payload["pinned_files"].values():
-        assert not set(entry) & set(payload["still_missing"])
+        assert required <= set(entry)
+        assert all(len(entry[name]["sha256"]) == 64 for name in required)
 
 
 def test_skipping_the_hashes_is_a_choice_that_shows_in_the_file(tmp_path):
@@ -523,16 +635,13 @@ def test_skipping_the_hashes_is_a_choice_that_shows_in_the_file(tmp_path):
     stack.write_bytes(b"pixels")
     out = motion_handoff.write([{"path": str(stack)}], {}, tmp_path,
                                dataset="d", hashes=False)
-    payload = json.loads(Path(out["outputs"]["motion_inputs"]).read_text(
-        encoding="utf-8"))
+    payload = read_document(Path(out["outputs"]["motion_inputs"]))
     assert payload["pinned_files"]["one"]["registered_raw"]["sha256"] is None
 
 
-def test_the_handoff_reports_pending_while_motion_is_not_installed():
-    """Auto-Organotypic's shape for a missing package: a state, not a crash."""
+def test_the_packaged_tracker_is_ready():
     state, reason = motion_handoff.status()
-    assert state == "pending"
-    assert motion_handoff.TARGET.partition(":")[0] in reason
+    assert (state, reason) == ("ready", "")
 
 
 # ── the run record ──────────────────────────────────────────────────────────
@@ -774,7 +883,7 @@ def test_a_third_packages_stage_runs_inside_this_pipeline_and_is_recorded(
 
     table.register_stage(
         table.Stage("cell_count", "SomebodyElse",
-                    "tests.test_auto_microglia:_somebody_elses_stage",
+                    f"{__name__}:_somebody_elses_stage",
                     "count objects in each recording",
                     needs="somebodyelse[count]", opt_in=True),
         count, after="split")
@@ -806,7 +915,7 @@ def test_a_third_packages_stage_does_not_disturb_the_order_checks(
     """
     table.register_stage(
         table.Stage("cell_count", "SomebodyElse",
-                    "tests.test_auto_microglia:_somebody_elses_stage",
+                    f"{__name__}:_somebody_elses_stage",
                     "count objects", needs="somebodyelse[count]", opt_in=True),
         lambda state, options: {"counted": len(state["recordings"])},
         after="cell_masks")

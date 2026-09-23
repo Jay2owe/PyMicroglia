@@ -5,7 +5,7 @@ one manifest and review for the whole run.
 
 | Pipeline | Entry point | Purpose |
 |---|---|---|
-| `auto_microglia` | Python pipeline | Auto-Organotypic's whole chain — instrument pull, broad crop, RIPR registration, split — with microglia defaults, and the learned cell mask registered into that chain as a stage of it, then cell traces and the handoff to Motion. |
+| `auto_microglia` | Python pipeline | Auto-Organotypic registration and splitting, then U-Net masks, six Motion inputs, automatic frozen Motion tracking, configurable post-tracking eligibility, original-photon measurement, and outline review exports. |
 | `dluc_single_cell` | Registered action and Python pipeline | Single-cell segmentation, traces, decoys, instrumental controls, rhythm tests, figures, and videos. |
 | `cry1_dluc_photon` | Registered action and Python pipeline | Registration and photon-aware review products for multichannel Cry1-dLuc recordings. |
 | `bioluminescence` | Python pipeline | General registration, cosmic-ray cleaning, optional segmentation and rhythm analysis, then display. |
@@ -56,3 +56,12 @@ manifest = pipeline.run(
 - [Analysis flow](../concepts/analysis-flow.md)
 - [Artefact store](../concepts/artefact-store.md)
 - [Check a run](../getting-started/check-a-run.md)
+
+## Saved tracked-cell workflows
+
+- [Rhythm discovery](rhythm_discovery.md)
+- [Method audit](method_audit.md)
+- [Measurement relationships](measurement_relationships.md)
+- [Cell behaviour states](behaviour_states.md)
+- [Spatial coordination](spatial_coordination.md)
+- [Intervention response](intervention_response.md)

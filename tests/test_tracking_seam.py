@@ -10,6 +10,7 @@ now says what it expects back.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import json
 import shutil
@@ -31,7 +32,7 @@ CONFIG = FIXTURE / "config.json"
 @pytest.fixture(scope="module")
 def movie() -> dict:
     """The one movie the stage-01 fixture configuration names."""
-    document = json.loads(CONFIG.read_text(encoding="utf-8"))
+    document = read_document(CONFIG)
     (entry,) = document["movies"]
     return entry
 
@@ -193,49 +194,42 @@ def test_from_folder_says_what_it_needs_when_something_is_missing(tmp_path):
 
 
 # ── pending, visibly ────────────────────────────────────────────────────────
-def test_the_seam_reports_pending_and_names_the_dotted_target():
+def test_the_seam_resolves_the_packaged_tracker():
     state, reason = tracking.status()
-    assert state == "pending"
-    assert tracking.TRACKER_TARGET in reason
-    assert motion_handoff.TARGET == tracking.TRACKER_TARGET == "motion.pipeline:run"
+    assert (state, reason) == ("ready", "")
+    assert motion_handoff.TARGET == tracking.TRACKER_TARGET == \
+        "pymicroglia.tracking.engine:run"
     assert motion_handoff.status() == tracking.status()
 
 
-def test_run_raises_action_pending_naming_the_target(tmp_path):
-    from pymicroglia import ActionPending
-
-    with pytest.raises(ActionPending) as caught:
+def test_run_needs_a_prepared_handoff(tmp_path):
+    with pytest.raises(FileNotFoundError):
         tracking.run(tmp_path / "motion_inputs.json", tmp_path)
-    assert tracking.TRACKER_TARGET in str(caught.value)
 
 
-def test_the_track_action_is_pending_in_the_registry_and_in_describe():
-    """Exit gate 2: ``describe track`` says pending and names the target."""
-    assert "track" in registry.pending()
+def test_the_track_action_is_ready_in_the_registry_and_in_describe():
+    assert "track" not in registry.pending()
     assert registry.REGISTRY.binds_to("track") == "tracking.run"
-    assert registry.REGISTRY.resolve("track") is None
+    assert registry.REGISTRY.resolve("track") is tracking.run
     assert registry.seam_status("tracking.run") == tracking.status()
 
     payload = knowledge.describe("track")
     assert payload["ok"] is True
-    assert payload["pending"] is True
-    assert tracking.TRACKER_TARGET in payload["pending_reason"]
+    assert payload["pending"] is False
     assert payload["claim_required"] is True
     assert {row["name"] for row in payload["params"]} == \
         {"inputs", "folder", "claim", "tracker_options"}
 
     check = knowledge.validate("track", {"inputs": "x", "folder": "y"})
-    assert check["ok"] is True and check["pending"] is True
-    assert tracking.TRACKER_TARGET in check["note"]
+    assert check["ok"] is True and check["pending"] is False
 
 
-def test_cli_describe_track_reports_pending(capsys):
+def test_cli_describe_track_reports_ready(capsys):
     from pymicroglia.cli import main
 
     assert main(["describe", "track"]) == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["pending"] is True
-    assert tracking.TRACKER_TARGET in payload["pending_reason"]
+    assert payload["pending"] is False
 
 
 def test_an_ordinary_module_is_not_a_seam():
@@ -281,8 +275,7 @@ def test_motion_inputs_carries_what_the_tracker_is_expected_to_write(tmp_path):
     stack.write_bytes(b"registered")
     out = motion_handoff.write([{"path": str(stack)}], {}, tmp_path,
                                dataset="d", hashes=True)
-    payload = json.loads(Path(out["outputs"]["motion_inputs"]).read_text(
-        encoding="utf-8"))
+    payload = read_document(Path(out["outputs"]["motion_inputs"]))
     # The keys Motion already reads are untouched.
     assert {"dataset", "stems", "input_space", "pinned_files"} <= set(payload)
     expects = payload["expects"]["well_A1"]

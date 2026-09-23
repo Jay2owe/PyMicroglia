@@ -29,6 +29,30 @@ PROTOCOLS_ENV = "PYMICROGLIA_PROTOCOLS"
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
+@pytest.fixture(autouse=True, scope="session")
+def isolated_session_store(tmp_path_factory):
+    """Keep module/session fixtures away from real stores before test setup."""
+    root=tmp_path_factory.mktemp("session_store")
+    with pytest.MonkeyPatch.context() as patch:
+        for prefix in ("AUTO_ORGANOTYPIC", "PYMICROGLIA"):
+            patch.delenv(prefix+"_INDEX", raising=False)
+            patch.setenv(prefix+"_STORE", str(root/"pixels"))
+            patch.setenv(prefix+"_DECISIONS", str(root/"decisions"))
+        yield root
+
+
+@pytest.fixture(autouse=True)
+def isolated_artifact_index(tmp_path_factory, isolated_session_store):
+    """Synthetic pipeline claims must never enter the user's artefact index."""
+    root=tmp_path_factory.mktemp('artifact_store')
+    with pytest.MonkeyPatch.context() as patch:
+        for prefix in ('AUTO_ORGANOTYPIC','PYMICROGLIA'):
+            patch.delenv(prefix+'_INDEX',raising=False)
+            patch.setenv(prefix+'_STORE',str(root/'pixels'))
+            patch.setenv(prefix+'_DECISIONS',str(root/'decisions'))
+        yield root
+
+
 def protocols_root() -> Path | None:
     """The ``Protocols`` folder to verify against, or ``None`` if unavailable."""
     override = os.environ.get(PROTOCOLS_ENV)

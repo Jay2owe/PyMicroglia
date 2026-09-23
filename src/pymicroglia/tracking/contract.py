@@ -1,10 +1,8 @@
 """What a tracker hands back, by file and never by array.
 
-The tracker in ``Motion/code/`` is not ported; its *output* is what the whole
-downstream analysis already consumes, and that output is five files and a
-folder of decision tables. This module writes that shape down as data so the
-measure step reads against it, a different tracker can satisfy it, and the
-Motion tracker drops in later by changing one dotted name.
+The frozen Motion tracker ships inside PyMicroglia. Its output is five files
+and a folder of decision tables. This module keeps that shape as data so the
+measurement step reads files rather than tracker arrays.
 
 Every path here is a path. A tracker that returned arrays would have to be in
 the same process as the measurement, and the one thing this seam exists to
@@ -14,7 +12,7 @@ Today's file names are the Motion tracker's, recorded in
 :data:`MOTION_OUTPUTS` and :data:`MOTION_DECISIONS_ROOT` from
 ``Motion/analysis_config.example.json`` and its ``README.md`` "Output"
 section, so that :meth:`TrackingResult.from_folder` can read a finished Motion
-run before any port. They are data on this contract, not constants in the
+run. They are data on this contract, not constants in the
 measure step: a different tracker declares different names.
 """
 

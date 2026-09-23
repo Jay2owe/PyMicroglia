@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy.stats import rankdata
 
 from pymicroglia import workbench
 from pymicroglia.measure.context import MeasurementContext
@@ -45,40 +44,13 @@ def _parameters(context: MeasurementContext) -> dict:
     return {**params, **workbench.detrend_settings(params)}
 
 
-def _correlation(left: np.ndarray, right: np.ndarray) -> float:
-    usable = np.isfinite(left) & np.isfinite(right)
-    if usable.sum() < 3:
-        return float("nan")
-    a, b = left[usable], right[usable]
-    if np.allclose(a, a[0]) or np.allclose(b, b[0]):
-        return float("nan")
-    return float(np.corrcoef(a, b)[0, 1])
+_correlation = workbench.contact_statistics.correlation
 
 
-def _ar1(values: np.ndarray, generator: np.random.Generator) -> np.ndarray:
-    values = np.asarray(values, dtype=float)
-    centred = values - np.nanmean(values)
-    if len(values) < 3 or np.allclose(centred, 0):
-        return generator.permutation(values)
-    denominator = float(np.sum(centred[:-1] ** 2))
-    phi = float(np.sum(centred[1:] * centred[:-1]) / denominator) if denominator else 0.0
-    phi = float(np.clip(phi, -0.98, 0.98))
-    sigma = float(np.nanstd(centred) * np.sqrt(max(1.0 - phi * phi, 1e-6)))
-    out = np.empty(len(values), dtype=float)
-    out[0] = generator.normal(0, np.nanstd(centred) or 1.0)
-    for index in range(1, len(out)):
-        out[index] = phi * out[index - 1] + generator.normal(0, sigma)
-    return out + np.nanmean(values)
+_ar1 = workbench.contact_statistics.ar1
 
 
-def _phase_randomised(values: np.ndarray, generator: np.random.Generator) -> np.ndarray:
-    values = np.asarray(values, dtype=float)
-    centred = values - np.nanmean(values)
-    spectrum = np.fft.rfft(centred)
-    if len(spectrum) > 2:
-        phases = generator.uniform(0, 2 * np.pi, len(spectrum) - 2)
-        spectrum[1:-1] = np.abs(spectrum[1:-1]) * np.exp(1j * phases)
-    return np.fft.irfft(spectrum, n=len(values)) + np.nanmean(values)
+_phase_randomised = workbench.contact_statistics.phase_randomised
 
 
 def _lag_values(
@@ -95,153 +67,16 @@ def _lag_values(
     return np.asarray(a, dtype=float), np.asarray(b, dtype=float)
 
 
-def _circular_difference(left: float, right: float, period: float) -> float:
-    raw = abs((left - right) % period)
-    return float(min(raw, period - raw))
+_circular_difference = workbench.contact_statistics.circular_difference
 
 
-def _pair_differences(left: np.ndarray, right: np.ndarray,
-                      circular_period: float | None) -> np.ndarray:
-    """Absolute pair differences, optionally wrapped around a circular scale."""
-    difference = np.abs(np.asarray(left, dtype=float) - np.asarray(right, dtype=float))
-    if circular_period is not None:
-        period = float(circular_period)
-        if not np.isfinite(period) or period <= 0:
-            raise ValueError("circular_period must be finite and positive")
-        difference = np.minimum(np.mod(difference, period),
-                                period - np.mod(difference, period))
-    return difference
+_pair_differences = workbench.contact_statistics._pair_differences
 
 
-def _row_correlations(left: np.ndarray, right: np.ndarray) -> np.ndarray:
-    """Pearson correlations between one vector and each row of a matrix."""
-    left = np.asarray(left, dtype=float)
-    right = np.asarray(right, dtype=float)
-    left_centre = left - np.mean(left)
-    right_centre = right - np.mean(right, axis=1, keepdims=True)
-    denominator = np.sqrt(
-        np.sum(left_centre ** 2) * np.sum(right_centre ** 2, axis=1)
-    )
-    numerator = np.sum(right_centre * left_centre[None, :], axis=1)
-    return np.divide(
-        numerator, denominator,
-        out=np.full(len(right), np.nan, dtype=float), where=denominator > 0,
-    )
+_row_correlations = workbench.contact_statistics._row_correlations
 
 
-def contact_metric_permutation_test(
-    contacts: pd.DataFrame,
-    values: pd.Series,
-    *,
-    circular_period: float | None = None,
-    shuffles: int = 10_000,
-    random_state: int = 24_051_986,
-) -> tuple[pd.DataFrame, dict[str, float | int | str]]:
-    """Compare contact-pair differences with values shuffled over the same network.
-
-    The contact edges and their repeated-cell structure never move. Only the
-    cell-level measurement is reassigned, so a highly connected cell remains a
-    highly connected node in every null replicate. The returned duration test
-    is Spearman's rank correlation between contact hours and pair difference;
-    negative values mean longer-contacting pairs are more alike.
-    """
-    required = {"identity_a", "identity_b", "hours_in_contact"}
-    missing = required - set(contacts.columns)
-    if missing:
-        raise KeyError(f"contacts are missing {sorted(missing)}")
-    shuffles = int(shuffles)
-    if shuffles < 100:
-        raise ValueError("shuffles must be at least 100 for a useful null interval")
-
-    series = pd.to_numeric(values, errors="coerce").dropna()
-    if not series.index.is_unique:
-        series = series.groupby(level=0).median()
-    identities = series.index.to_numpy()
-    position = {int(identity): index for index, identity in enumerate(identities)}
-    eligible = contacts[
-        contacts["identity_a"].isin(identities)
-        & contacts["identity_b"].isin(identities)
-    ].copy()
-    eligible = eligible.sort_values(
-        ["hours_in_contact", "identity_a", "identity_b"],
-        ascending=[False, True, True], kind="mergesort",
-    ).reset_index(drop=True)
-    columns = [
-        "identity_a", "identity_b", "hours_in_contact", "value_a", "value_b",
-        "pair_difference", "random_mean_difference", "difference_ratio",
-    ]
-    if len(eligible) < 3 or len(series) < 3:
-        return pd.DataFrame(columns=columns), {
-            "status": "too_few_pairs", "cells_available": int(len(series)),
-            "pairs": int(len(eligible)), "shuffles": shuffles,
-            "random_state": int(random_state),
-        }
-
-    left_index = np.asarray([position[int(value)] for value in eligible["identity_a"]], dtype=int)
-    right_index = np.asarray([position[int(value)] for value in eligible["identity_b"]], dtype=int)
-    cell_values = series.to_numpy(dtype=float)
-    observed_differences = _pair_differences(
-        cell_values[left_index], cell_values[right_index], circular_period,
-    )
-
-    generator = np.random.default_rng(int(random_state))
-    # Sorting independent uniform draws yields independent uniform permutations
-    # and makes all replicates one vectorised operation rather than a slow loop.
-    orders = np.argsort(
-        generator.random((shuffles, len(cell_values))), axis=1, kind="quicksort"
-    )
-    shuffled_values = cell_values[orders]
-    shuffled_differences = _pair_differences(
-        shuffled_values[:, left_index], shuffled_values[:, right_index],
-        circular_period,
-    )
-    null_means = np.mean(shuffled_differences, axis=1)
-    observed_mean = float(np.mean(observed_differences))
-    null_mean = float(np.mean(null_means))
-    difference_ratio = observed_mean / null_mean if null_mean > 0 else np.nan
-
-    lower_tail = (1 + np.count_nonzero(null_means <= observed_mean)) / (shuffles + 1)
-    upper_tail = (1 + np.count_nonzero(null_means >= observed_mean)) / (shuffles + 1)
-    similarity_p = float(min(1.0, 2.0 * min(lower_tail, upper_tail)))
-
-    contact_ranks = rankdata(eligible["hours_in_contact"].to_numpy(dtype=float))
-    observed_rank = rankdata(observed_differences)
-    duration_rho = float(_row_correlations(contact_ranks, observed_rank[None, :])[0])
-    shuffled_ranks = rankdata(shuffled_differences, axis=1)
-    null_rho = _row_correlations(contact_ranks, shuffled_ranks)
-    finite_rho = null_rho[np.isfinite(null_rho)]
-    duration_p = (
-        float((1 + np.count_nonzero(np.abs(finite_rho) >= abs(duration_rho)))
-              / (len(finite_rho) + 1))
-        if np.isfinite(duration_rho) and len(finite_rho) else np.nan
-    )
-
-    pair_data = eligible[["identity_a", "identity_b", "hours_in_contact"]].copy()
-    pair_data["value_a"] = cell_values[left_index]
-    pair_data["value_b"] = cell_values[right_index]
-    pair_data["pair_difference"] = observed_differences
-    pair_data["random_mean_difference"] = null_mean
-    pair_data["difference_ratio"] = (
-        observed_differences / null_mean if null_mean > 0 else np.nan
-    )
-    null_ratio = null_means / null_mean if null_mean > 0 else np.full(shuffles, np.nan)
-    return pair_data[columns], {
-        "status": "ok",
-        "cells_available": int(len(series)),
-        "pairs": int(len(eligible)),
-        "observed_mean_difference": observed_mean,
-        "random_mean_difference": null_mean,
-        "difference_ratio": float(difference_ratio),
-        "similarity_null_lo": float(np.nanquantile(null_ratio, 0.025)),
-        "similarity_null_hi": float(np.nanquantile(null_ratio, 0.975)),
-        "similarity_p_value": similarity_p,
-        "duration_spearman_rho": duration_rho,
-        "duration_null_lo": float(np.nanquantile(finite_rho, 0.025)),
-        "duration_null_hi": float(np.nanquantile(finite_rho, 0.975)),
-        "duration_p_value": duration_p,
-        "shuffles": shuffles,
-        "random_state": int(random_state),
-    }
+contact_metric_permutation_test = workbench.contact_statistics.contact_metric_permutation_test
 
 
 #: Two tables that answer different questions with the same arithmetic: whether

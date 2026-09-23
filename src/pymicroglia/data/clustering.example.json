@@ -1,0 +1,18 @@
+{
+  "latent_dimensions": 8,
+  "hidden_width": 32,
+  "epochs": 300,
+  "patience": 30,
+  "learning_rate": 0.001,
+  "noise_sd": 0.1,
+  "weight_decay": 0.001,
+  "max_feature_missing": 0.3,
+  "max_cell_missing": 0.3,
+  "correlation_cutoff": 0.98,
+  "min_cluster_size": 8,
+  "min_samples": 5,
+  "validation_fraction": 0.2,
+  "split_by": "subject",
+  "seed": 42,
+  "repeats": 3
+}

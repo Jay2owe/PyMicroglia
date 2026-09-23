@@ -187,6 +187,9 @@ def test_discover_reports_counts_and_pending():
     assert report["params"] > 0
     assert report["param_uses"] >= report["params"]
     assert set(report["pending"]) == set(registry.pending())
+    assert not report["missing"]
+    assert not report["unregistered"]
+    assert not report["undocumented"]
 
 
 def test_validate_rejects_an_unknown_parameter():

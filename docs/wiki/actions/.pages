@@ -1,3 +1,10 @@
 nav:
   - Action Index: README.md
   - Using Actions: using-actions.md
+  - Tracking handoff: tracking.md
+  - Tracked-cell measurements: measure.md
+  - Unknown rhythms: rhythms.md
+  - Cell-frame states: states.md
+  - Whole-cell groups: clustering.md
+  - Lifecycle and films: lifecycle.md
+  - Figures and views: figures.md

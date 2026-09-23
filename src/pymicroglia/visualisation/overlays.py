@@ -27,12 +27,80 @@ from typing import Any, Mapping, Sequence
 from . import panels as _panels
 from . import qc as _qc
 
-__all__ = ["OUTLINE_CYCLE", "cell_overlay", "outline", "roi_overlay"]
+__all__ = ["OUTLINE_CYCLE", "cell_overlay", "outline", "roi_overlay",
+           "tracked_cell_image"]
 
 #: Object outlines cycle through the house reporter colours. Positional, not
 #: semantic: object 3's colour means "the third one", nothing more, which is
 #: why it comes from a cycle rather than from a name.
 OUTLINE_CYCLE = "semantic"
+
+
+def tracked_cell_image(source, *, labels, output_dir=None, output_name=None,
+                       overwrite: bool = False,
+                       frame_index: int | None = None,
+                       source_frame_offset: int = 0,
+                       frame_interval_h: float | None = None,
+                       outline_width_px: int = 1,
+                       outline_opacity: float = 1.0,
+                       outline_colours: Any = "accepted",
+                       smooth_sigma_px: float = 1.6,
+                       black_percentile: float = 20.0,
+                       white_percentile: float = 99.5,
+                       timestamp: bool = True,
+                       timestamp_position: str = "top-left",
+                       image_format: str = "png", claim: str = "") -> dict[str, Any]:
+    """One original-photon frame carrying its tracked-cell outlines.
+
+    ``labels`` is the eligibility view chosen for images.  The default is the
+    middle tracked frame; ``frame_index`` is zero-based in the tracked stack,
+    while the shared image renderer receives the corresponding one-based frame
+    number from the original photon stack.
+    """
+    del claim
+    import tifffile
+    from auto_organotypic.image import stack_to_image
+    from .tracked_outlines import overlay as tracked_overlay
+
+    label_path = Path(labels)
+    with tifffile.TiffFile(label_path) as opened:
+        shape = tuple(int(value) for value in opened.series[0].shape)
+    if len(shape) != 3:
+        raise ValueError(f"tracked_cell_image needs (T,Y,X) labels; got {shape}")
+    selected = shape[0] // 2 if frame_index is None else int(frame_index)
+    if not 0 <= selected < shape[0]:
+        raise ValueError(f"frame_index must be between 0 and {shape[0] - 1}")
+    offset = int(source_frame_offset)
+    if offset < 0:
+        raise ValueError("source_frame_offset must be zero or greater")
+    report = stack_to_image(
+        source,
+        output_dir=output_dir,
+        output_name=output_name or f"{Path(source).stem}_tracked_cells",
+        overwrite=overwrite,
+        channels=1,
+        when=offset + selected + 1,
+        frame_interval_h=frame_interval_h,
+        lut="grays",
+        display_range="auto",
+        field_of_view="measurement",
+        soft_range=None,
+        auto_black_percentile=float(black_percentile),
+        auto_white_percentile=float(white_percentile),
+        range_sample_frames=1,
+        smooth_sigma_px=float(smooth_sigma_px),
+        outline=tracked_overlay(label_path, width_px=outline_width_px,
+                                opacity=outline_opacity,
+                                colours=outline_colours,
+                                frame_index=selected),
+        outline_mode="only",
+        timestamp=bool(timestamp),
+        timestamp_position=timestamp_position,
+        image_format=image_format,
+    )
+    return {**report, "display_only": True,
+            "tracked_frame_index": selected,
+            "eligibility_labels": str(label_path)}
 
 
 def outline(axis, mask, *, colour: str, width: float = 1.5,

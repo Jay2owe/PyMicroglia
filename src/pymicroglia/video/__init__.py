@@ -26,7 +26,75 @@ __all__ = [
     "red_only",
     "timestamped_composite",
     "phase_green_red",
+    "tracked_cell_video",
 ]
+
+
+def tracked_cell_video(source, *, labels, output_dir=None, output_name=None,
+                       overwrite: bool = False,
+                       source_frame_offset: int = 0,
+                       frame_interval_h: float | None = None,
+                       hours_per_second: float = 6.0,
+                       outline_width_px: int = 1,
+                       outline_opacity: float = 1.0,
+                       outline_colours: Any = "accepted",
+                       smooth_frames: int = 7,
+                       smooth_sigma_px: float = 1.6,
+                       black_percentile: float = 20.0,
+                       white_percentile: float = 99.5,
+                       timestamp: bool = True,
+                       timestamp_position: str = "top-left",
+                       timestamp_format: str = "elapsed",
+                       crf: int = 16, claim: str = "") -> dict[str, Any]:
+    """Original photons with one coloured outline per tracked identity.
+
+    The overlay is display only.  ``labels`` may be the unchanged Motion stack
+    or the eligibility view chosen for videos; either way, its identity numbers
+    are preserved.  Contrast is fixed over the complete rendered window and
+    smoothing is applied only by the renderer, after all measurements.
+    """
+    del claim
+    import tifffile
+
+    from ..visualisation.tracked_outlines import overlay
+
+    label_path = Path(labels)
+    with tifffile.TiffFile(label_path) as opened:
+        shape = tuple(int(value) for value in opened.series[0].shape)
+    if len(shape) != 3:
+        raise ValueError(f"tracked_cell_video needs (T,Y,X) labels; got {shape}")
+    offset = int(source_frame_offset)
+    if offset < 0:
+        raise ValueError("source_frame_offset must be zero or greater")
+    report = stack_to_video(
+        source,
+        output_dir=output_dir,
+        output_name=output_name or f"{Path(source).stem}_tracked_cells",
+        overwrite=overwrite,
+        channels=1,
+        first_frame=offset,
+        frames=shape[0],
+        hours_per_second=float(hours_per_second),
+        frame_interval_h=frame_interval_h,
+        lut="grays",
+        display_range="auto",
+        field_of_view="measurement",
+        soft_range=None,
+        auto_black_percentile=float(black_percentile),
+        auto_white_percentile=float(white_percentile),
+        range_sample_frames=shape[0],
+        smooth_frames=int(smooth_frames),
+        smooth_sigma_px=float(smooth_sigma_px),
+        outline=overlay(label_path, width_px=outline_width_px,
+                        opacity=outline_opacity, colours=outline_colours),
+        outline_mode="only",
+        timestamp=bool(timestamp),
+        timestamp_position=timestamp_position,
+        timestamp_format=timestamp_format,
+        crf=int(crf),
+    )
+    return {**report, "display_only": True,
+            "eligibility_labels": str(label_path)}
 
 
 def _one_source(source: Any, pattern: str) -> Path:

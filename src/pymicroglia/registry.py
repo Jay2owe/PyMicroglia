@@ -1,7 +1,7 @@
 """What an agent may ask PyMicroglia to do.
 
 Actions bind to their implementation by **dotted name**, not by callable, so the
-registry imports before the science modules exist — the same reason PyFLASH's
+registry imports before the science modules exist â€” the same reason PyFLASH's
 plot registry holds strings. An action whose target cannot be resolved is
 reported as *pending*: thirteen of them are today, and that number falls to zero
 as the stages land. A half-ported package is then a visible state rather than a
@@ -64,15 +64,27 @@ MODULE_NAMES: tuple[str, ...] = (
     # behind them is reached by a dotted name that does not, so its ``status``
     # is what says whether ``track`` is pending. See :func:`seam_status`.
     "tracking",
+    "eligibility",
     # The measurement chassis (Motion port, stage 03): tracked labels in,
     # tables out. ``measure.contrasts`` is a seam of the same shape as
     # ``tracking``: its tests come from Circadian Workbench through the one
     # importer module the rhythm stage adds, and it is pending until then.
     "measure",
-    "measure.modules",
     "measure.pool",
     "measure.windows",
     "measure.contrasts",
+    "measure.gaps",
+    "states",
+    "clustering",
+    "figure_tables.actions",
+    "figure_tables.film_action",
+    'pipelines.rhythm_discovery',
+    'pipelines.method_audit',
+    'pipelines.measurement_relationships',
+    'pipelines.behaviour_states',
+    'pipelines.spatial_coordination',
+    'pipelines.intervention_response',
+
 )
 
 
@@ -206,7 +218,7 @@ def live_defaults(action: str) -> dict[str, Any]:
 
     The catalogue records what the protocol script this was copied from
     declared; the function records what runs. They agree almost everywhere and
-    disagree in sixty-five places — ``run_controls`` searches 16-32 h where the
+    disagree in sixty-five places â€” ``run_controls`` searches 16-32 h where the
     engine searched 15-40, and one engine default is the *string* ``"3.0 / 8.0"``.
 
     ``describe`` is read by an agent immediately before it passes an argument,
@@ -241,11 +253,22 @@ def live_choices(action: str) -> dict[str, list[Any]]:
     that only the code knows, so ``describe`` asks here and adds a
     ``choices`` entry to the row. Empty for every other action.
     """
+    declared = {row["name"]: list(row["choices"])
+                for row in catalogue.action_params(action) if "choices" in row}
+    if REGISTRY.binds_to(action).startswith("figure_tables.actions."):
+        from .visualisation.figures import load
+        from . import workbench
+        spec = load()[action]
+        if spec.refits:
+            methods = workbench.call("period_methods").data["methods"]
+            declared["fit_method"] = [row["key"] for row in methods]
+            declared["significance_method"] = [row["key"] for row in methods
+                                               if row["gives_significance"]]
     module = _bound_module(action)
     probe = getattr(module, "parameter_choices", None) if module is not None else None
     if not callable(probe):
-        return {}
-    return {str(name): list(values) for name, values in dict(probe()).items()}
+        return declared
+    return {**declared, **{str(name): list(values) for name, values in dict(probe()).items()}}
 
 
 def check_parameters(action: str, params: Mapping[str, Any]) -> list[str]:
@@ -272,12 +295,17 @@ def _project_registry(ak):
     may honestly mean different values in different actions, and a shared entry
     holding one would misreport every other. PyMicroglia has both halves, so it
     merges them at the single accessor ``describe``, ``discover`` and the
-    catalogue generator all read — rather than in three places that would drift.
+    catalogue generator all read â€” rather than in three places that would drift.
     """
 
     class ProjectRegistry(ak.Registry):
         def action_params(self, action: str) -> list[dict[str, Any]]:
-            rows = super().action_params(action)
+            # The gap action reuses familiar names for different input files.
+            # Keep its action-specific requiredness and prose at the runner's
+            # front door rather than falling back to the shared vocabulary.
+            rows = (catalogue.action_params(action)
+                    if action == "measure_missing_gaps"
+                    else super().action_params(action))
             defaults = live_defaults(action)
             for row in rows:
                 if row["name"] in defaults:
@@ -297,7 +325,7 @@ def build_registry(reference_dir=None):
     """The kit's Registry when it is installed, otherwise the local stand-in.
 
     ``reference_dir`` is where the generated action catalogue lives. Only the
-    skill's runner passes one — it is what lets ``discover`` report an action
+    skill's runner passes one â€” it is what lets ``discover`` report an action
     nobody documented, and the package itself has no docs folder to point at.
     """
     from . import __version__
@@ -333,13 +361,13 @@ def _covered_functions() -> dict[str, tuple[str, ...]]:
     Computed from the bindings rather than typed out, so it cannot rot: a module
     is covered by the actions bound to it, and every public function in that
     module is a step inside one of them. ``segmentation.somata_by_prominence``
-    is not a thing to call — it is part of what ``segment`` does.
+    is not a thing to call â€” it is part of what ``segment`` does.
 
     This is what stops ``discover`` reporting a hundred helpers as "a public
     function nobody exposed". That check earns its keep on a project whose
     action layer is behind its backend; here the twenty-six actions *are* the
     surface, and the catalogue is generated from the protocols they were copied
-    from. What stays live is the check that matters — an action bound to a name
+    from. What stays live is the check that matters â€” an action bound to a name
     that has since moved.
     """
     by_module: dict[str, list[str]] = {}
@@ -386,7 +414,7 @@ class ClaimRequired(ValueError):
 #: not a default: it is filled in when the run happens and it names the file, so
 #: a search for a recording's name finds every run that touched it.
 #:
-#: These are the mechanical actions — the ones whose point is the file that comes
+#: These are the mechanical actions â€” the ones whose point is the file that comes
 #: out. "Cleaned the spikes out of MCG_04" is the whole of what that run meant,
 #: and making somebody retype it would turn the field into boilerplate, which is
 #: the failure this is guarding against rather than the one it looks like.
@@ -423,19 +451,33 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "publication_workbook":
         "combined the ReproFig evidence for {source} into a publication workbook",
     "measure": "measured every configured module over {source}",
+    "measure_missing_gaps": "measured eligible missing-cell frames from {source} without changing tracking",
+    "cell_eligibility": "audited which tracked identities from {source} may enter each downstream output",
+    "tracked_cell_video": "drew tracked-cell outlines over the original photons from {source}",
+    "tracked_cell_image": "drew tracked-cell outlines over one original-photon frame from {source}",
     "pool": "pooled every movie's tables in {source}",
     "window": "re-rolled the summaries of {source} inside its declared windows",
 }
 
+# Display actions record what was drawn, without inventing a biological finding.
+CLAIM_TEMPLATES.update({
+    entry["name"]: "drew " + entry["summary"] + " from {source}"
+    for entry in catalogue.actions()
+    if entry["method"].startswith("figure_tables.actions.")
+})
+CLAIM_TEMPLATES["follow"] = "reviewed accepted cell identities from {source}"
+
+
 #: Actions that conclude something, where no template can be honest. Which
 #: objects are cells, whether a trace is rhythmic, whether a decoy beat the
-#: signal — a run of one of these was made to find something out, and the only
+#: signal â€” a run of one of these was made to find something out, and the only
 #: person who knows what is the one who started it. These refuse an empty claim
 #: at the front door, where a refusal costs nothing.
 #:
 #: ``bioluminescence`` and ``phase_green_red`` are pipelines rather than
 #: registered actions; they record runs all the same, so they are listed here.
-NEEDS_A_CLAIM: frozenset[str] = frozenset({
+NEEDS_A_CLAIM: frozenset[str] = frozenset({'rhythm_discovery', 'method_audit', 'measurement_relationships', 'behaviour_states', 'spatial_coordination', 'intervention_response',
+    "states", "cluster",
     "segment",
     "run_controls",
     "test_rhythm",
@@ -468,7 +510,7 @@ def _source_name(params: Mapping[str, Any] | None) -> str:
     if not raw:
         # The measurement actions read a run folder, or a list of movies:
         # name the folder, or the first movie's stem and how many follow.
-        raw = str(params.get("run_dir") or "").strip()
+        raw = str(params.get("run_dir") or params.get("run") or params.get("analysis_config") or "").strip()
     if not raw:
         movies = params.get("movies") or ()
         if movies and not isinstance(movies, str):
@@ -494,7 +536,7 @@ def claim_for(action: str, claim: str = "",
 
     A claim the caller wrote always wins. Otherwise a mechanical action fills in
     its template and an interpretive one records nothing and says so, rather
-    than restating its own summary — a thousand rows all reading "segment cells
+    than restating its own summary â€” a thousand rows all reading "segment cells
     by soma prominence" is a thousand rows nobody can skim.
     """
     text = str(claim or "").strip()

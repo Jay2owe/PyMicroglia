@@ -1,20 +1,4 @@
-"""Declared comparisons over a pooled run: the vocabulary, and a seam.
-
-Motion's ``analysis/contrasts.py`` runs each declared contrast with a
-``scipy.stats`` test and takes its effect sizes, degeneracy guard and
-p-value corrections from ``circadian_workbench.statistics``. That import is
-the Workbench seam, which the rhythm stage of the port (05) owns and which
-this package reaches through exactly one importer module. Until that module
-lands, this one holds what a configuration needs -- which tests exist, which
-are paired, which take one group, which corrections exist -- so a contrasts
-block is validated on the way in, and reports the ``contrasts`` action
-pending through :func:`status`, the shape the registry reads for the tracking
-seam.
-
-Nothing here computes a statistic. When the importer lands, ``contrasts``
-below is filled in and :func:`status` answers ready; the action's signature
-and the catalogue entry do not change.
-"""
+"""Declared comparisons over pooled tables; statistics belong to Workbench."""
 
 from __future__ import annotations
 
@@ -77,7 +61,7 @@ COLUMNS: tuple[str, ...] = (
 #: The dotted target the tests and corrections will come from: the one module
 #: allowed to import Circadian Workbench, which stage 05 of the port writes.
 #: Read at call time so a later stage changes it in one place.
-STATISTICS_TARGET = "pymicroglia.rhythm_workbench:statistics"
+STATISTICS_TARGET = "pymicroglia.workbench:group_contrasts"
 
 
 
@@ -320,19 +304,31 @@ def status() -> tuple[str, str]:
 def contrasts(run_dir, *, contrasts: Sequence[Mapping[str, Any]] = (),
               metric_groups: Mapping[str, Any] | None = None,
               claim: str = "") -> dict[str, Any]:
-    """Test every declared contrast over an existing run's pooled tables.
+    """Test declared comparisons through Workbench and record the pooled table."""
+    import pandas as pd
+    from .. import store, workbench
+    from .run import read_manifest, write_manifest, write_table, manifest_path
 
-    ``run_dir`` is a run folder ``measure`` wrote and ``pool`` has pooled;
-    ``contrasts`` is the list of contrast blocks in the configuration's own
-    shape, or empty to use the ones the run's manifest recorded. Writes
-    ``pooled/statistics.csv`` and records the result in the run manifest.
-
-    Pending until :func:`status` answers ready; calling it before then says
-    so rather than computing anything.
-    """
-    state, why = status()
-    if state != "ready":
-        raise RuntimeError(f"contrasts is pending: {why}")
-    raise NotImplementedError(  # pragma: no cover - reached only once stage 05 lands
-        "the Workbench importer resolved but this seam has not been filled in; "
-        f"see {Path(__file__).name}")
+    root = Path(run_dir)
+    manifest = read_manifest(root)
+    settings = manifest.get("settings", {})
+    groups = metric_groups if metric_groups is not None else settings.get("metric_groups", {})
+    specs = parse_contrasts(contrasts or settings.get("contrasts", []), groups)
+    tables, missing, sources = {}, {}, []
+    for spec in specs:
+        path = root / "pooled" / (spec.table + ".csv")
+        tables[spec.table] = pd.read_csv(path) if path.is_file() else None
+        if path.is_file():
+            sources.append(path)
+        missing[spec.table] = (manifest.get("pooled") or {}).get("tables", {}).get(
+            spec.table, {}).get("columns_missing", {})
+    result = workbench.group_contrasts.group_contrasts(
+        tables, specs, columns_missing=missing)
+    source = store.collection(sources or [manifest_path(root)],
+                              path=str(root / "pooled" / "statistics.csv"))
+    record = write_table(result, name="statistics", folder=root / "pooled",
+                         source=source, params={"contrasts": [c.as_dict() for c in specs],
+                         "claim": claim, "workbench_version": workbench.WORKBENCH_VERSION})
+    manifest["statistics"] = record
+    write_manifest(root, manifest)
+    return record

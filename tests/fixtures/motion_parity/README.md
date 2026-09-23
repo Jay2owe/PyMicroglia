@@ -21,7 +21,7 @@ ported code writes; an empty list of differences is parity. Stage 01 of
 |---|---|
 | `inputs/` | the synthetic movie, written by `tests/fixtures.py::tracked_movie(seed=0)`: labels, raw, unclaimed, evidence, provenance, a valid mask, one extra channel with a shifts table, one object set, two side tables |
 | `config.json` | the Motion analysis configuration: every module enabled, two windows, one paired contrast, one metric group, the shared circadian defaults (2–48 h search, alpha 0.05, 24 observations, 3 cycles, `lomb` for both the estimator and the test, `robust_linear` detrend); every input pinned by SHA-256 |
-| `run/` | the run's CSV and JSON files copied verbatim (tables, `statistics.csv`, manifests, summaries; never the stacks or figures), so a later stage can diff a whole table rather than three rows of it. `pooled/tables/` is not copied: with one movie every pooled table is byte-identical to the per-movie one, which `expected.json` records by hash |
+| `run/` | the run's CSV and JSON files (tables, `statistics.csv`, manifests, summaries; never the stacks or figures), so a later stage can diff a whole table rather than three rows of it. Manifest input paths are relative to this fixture; machine-specific paths in embedded Workbench environment records were replaced with `<fixture-root>` before publication. Numerical values and scientific settings are unchanged. The affected table hash in `expected.json` was updated. `pooled/tables/` is not copied: with one movie every pooled table is byte-identical to the per-movie one, which `expected.json` records by hash |
 | `expected.json` | the frozen record, sections below |
 | `freeze.py` | the one-shot that wrote `expected.json` from finished output folders |
 
@@ -152,3 +152,15 @@ Recorded as the expected outcome, not dropped:
 - Pipeline demo tables that carry absolute paths in cells (the linked-index
   and source tables) are frozen by hash and scrubbed sample rows; a port
   that runs them in a new folder will need to scrub before comparing.
+
+## Original source retirement
+
+On 2026-09-22 the original `Motion/analysis` source folder was retired locally
+after the complete port verification. Motion now contains three compatibility
+files forwarding the legacy commands to PyMicroglia. No retirement commit or
+public release has been made. The original 1,285 files are retained in
+`development/motion-analysis-backup/analysis-20260922-061053.zip`, relative to
+the PyMicroglia root, with every file checked against the SHA-256 inventory in
+`development/motion-analysis-backup/manifest.json`. The historical fixture
+and its original expected outcomes above remain the reference. The live
+replacement is verified by `development/motion-retirement-verification.json`.

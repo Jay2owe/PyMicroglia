@@ -27,11 +27,12 @@ here -- it needs a 14 hour window and keeps only cells that hold still, which
 excludes exactly the microglia this project is about -- and is untouched where
 it can be used.
 
-**Identity tracking is the destination.** The mask says which pixels are cell in
-one exposure and links nothing across frames. The Motion project does that, and
-this pipeline ends by writing what Motion reads. Motion is not installed yet, so
-that stage reports ``pending`` the way the chain reports a missing instrument
-client: a visible state at the top of a run, not an ImportError in the middle.
+**Identity tracking follows the mask.** The mask says which pixels are cell in
+one exposure and links nothing across frames. This pipeline prepares Motion's
+six inputs, runs its frozen tracking engine automatically, then measures the
+accepted labels against original unmasked photons. A separate eligibility
+stage decides which unchanged identities reach analysis, videos and still
+images; it never feeds back into tracking.
 """
 
 from __future__ import annotations
@@ -51,7 +52,7 @@ __all__ = ["METHOD_VERSION", "PIPELINE", "STAGES", "AO_STAGES", "NOT_OURS",
            "MASK_STAGE", "differences", "register", "run"]
 
 PIPELINE = "auto_microglia"
-METHOD_VERSION = "2026-09-15-auto-microglia-v1"
+METHOD_VERSION = "2026-09-22-auto-microglia-eligibility-v3"
 
 #: Auto-Organotypic's stages this pipeline leaves out by default, and why. Each
 #: is a *default*, not a removal: the matching keyword turns it back on.
@@ -103,10 +104,14 @@ AO_STAGES: tuple[str, ...] = ("acquire", "index", "trim_before_crop",
 #: This package's three, in the order they run. ``cell_masks`` is not after the
 #: chain any more -- it is a stage *of* the chain, registered into it after
 #: ``split``, so that is where it is listed.
-OURS: tuple[str, ...] = ("cell_masks", "cells", "motion")
+OURS: tuple[str, ...] = ("cell_masks", "cells", "motion_inputs", "motion",
+                         "eligibility", "tracked_measurement", "tracked_video",
+                         "tracked_image")
 _AFTER = AO_STAGES.index("split") + 1
-STAGES: tuple[str, ...] = (AO_STAGES[:_AFTER] + ("cell_masks",)
-                           + AO_STAGES[_AFTER:] + ("cells", "motion"))
+STAGES: tuple[str, ...] = (
+    AO_STAGES[:_AFTER] + ("cell_masks",) + AO_STAGES[_AFTER:]
+    + ("cells", "motion_inputs", "motion", "eligibility",
+       "tracked_measurement", "tracked_video", "tracked_image"))
 
 
 def differences() -> list[dict[str, Any]]:
@@ -133,9 +138,26 @@ def differences() -> list[dict[str, Any]]:
                 "verdict, run on those cell labels by Auto-Organotypic's own "
                 "region_trace, plus the decoy admissibility test that has no "
                 "equivalent there"},
+        {"setting": "motion_inputs", "auto_organotypic": None, "here": True,
+         "why": "the U-Net mask must zero background and provide all six pinned "
+                "evidence stacks before Motion can link cell identities"},
         {"setting": "motion", "auto_organotypic": None, "here": True,
-         "why": "identity tracking is what the mask is for; pending until the "
-                "Motion project is installed"},
+         "why": "identity tracking is what the mask is for; the frozen Motion "
+                "engine now runs automatically after its input stacks are prepared"},
+        {"setting": "eligibility", "auto_organotypic": None, "here": True,
+         "why": "final Motion identities are audited before downstream use; "
+                "the default excludes gaps over four hours or at least half "
+                "missing data from analysis only, without changing tracking"},
+        {"setting": "tracked_measurement", "auto_organotypic": None,
+         "here": True,
+         "why": "tracked labels are measured against original unmasked photons "
+                "rather than the masked and scaled input Motion tracks"},
+        {"setting": "tracked_video", "auto_organotypic": None, "here": True,
+         "why": "the accepted per-identity outlines are drawn over original "
+                "photons as a display-only review movie"},
+        {"setting": "tracked_image", "auto_organotypic": None, "here": True,
+         "why": "one representative original-photon frame carries the same "
+                "configurable tracked-cell outlines"},
     ]
 
 
@@ -266,6 +288,16 @@ def run(folder=None, *,
         cell_masks: bool = True,
         cells: bool = True,
         motion: bool = True,
+        eligibility: bool = True,
+        eligibility_max_gap_h: float = 4.0,
+        eligibility_max_missing_fraction: float = 0.5,
+        eligibility_exclude_from: str | Sequence[str] = ("analysis",),
+        tracked_measurement: bool = True,
+        tracked_measure_modules: Sequence[str] = ("intensity",),
+        tracked_video: bool = True,
+        tracked_video_options: Mapping[str, Any] | None = None,
+        tracked_image: bool = True,
+        tracked_image_options: Mapping[str, Any] | None = None,
         # --- the mask, when it runs
         mask_weights=None, mask_cut: float | None = None,
         mask_window_h: float | None = None, mask_threads: int = 0,
@@ -315,10 +347,16 @@ def run(folder=None, *,
     ``region_trace.run`` unchanged, the way ``trace_options`` does in the chain
     above.
 
-    ``motion=True`` (the default) writes what the Motion project reads and
-    records the stage as pending until Motion is installed. Nothing here tracks
-    anything: the mask and the raw signal are the handoff, and the identities
-    are Motion's to decide.
+    ``motion=True`` (the default) prepares the six Motion input stacks and
+    automatically runs the frozen Motion engine. Its tracking rules are
+    unchanged; native-frame identities remain subject to human review.
+
+    ``eligibility=True`` audits those final identities before downstream use.
+    By default, a longest internal gap over four hours or at least 50% missing
+    tracked frames excludes a cell from analysis. ``eligibility_exclude_from``
+    independently chooses ``analysis``, ``videos`` and ``images``; review
+    visuals retain every identity by default so an exclusion cannot hide its
+    own evidence.
 
     Returns the run manifest: Auto-Organotypic's own run record for the stages
     it ran, this pipeline's stages appended in the same shape, and the review.
@@ -356,6 +394,11 @@ def run(folder=None, *,
     label = str(run_label or slug(Path(folder).name,
                                   {"outline": outline, "cells": cells,
                                    "cell_masks": cell_masks,
+                                   "eligibility_max_gap_h": eligibility_max_gap_h,
+                                   "eligibility_max_missing_fraction":
+                                       eligibility_max_missing_fraction,
+                                   "eligibility_exclude_from":
+                                       eligibility_exclude_from,
                                    "method": METHOD_VERSION}))
     where = run_folder(root, PIPELINE, label, if_exists)
     if where.reuse:
@@ -450,7 +493,7 @@ def run(folder=None, *,
         summary["cells"] = {path: one["summary"] for path, one in measured.items()}
 
     if motion:
-        with log("motion") as entry:
+        with log("motion_inputs") as entry:
             handoff = _motion.write(
                 recordings, masks, where.path, notes,
                 dataset=motion_dataset or Path(folder).name,
@@ -458,10 +501,50 @@ def run(folder=None, *,
             entry.update({k: handoff[k] for k in ("status", "stems")})
             if handoff.get("reason"):
                 entry["reason"] = handoff["reason"]
+        with log("motion") as entry:
             outputs["motion"] = _motion.track(handoff, where.path / _motion.FOLDER,
-                                              entry)   # pending is a state here
+                                              entry)
         summary["motion"] = {k: v for k, v in handoff.items()
                              if k != "outputs"}
+        eligibility_results = _eligible_tracks(
+            outputs["motion"]["tracking"], handoff, where.path,
+            enabled=eligibility, max_gap_h=eligibility_max_gap_h,
+            max_missing_fraction=eligibility_max_missing_fraction,
+            exclude_from=eligibility_exclude_from)
+        if eligibility:
+            with log("eligibility") as entry:
+                entry["recordings"] = len(eligibility_results)
+                entry["eligible"] = sum(
+                    len(result["eligible_identities"])
+                    for result in eligibility_results.values())
+                entry["excluded"] = sum(
+                    len(result["excluded_identities"])
+                    for result in eligibility_results.values())
+            outputs["eligibility"] = eligibility_results
+        if tracked_measurement:
+            with log("tracked_measurement") as entry:
+                measured_tracks = _measure_tracked(
+                    outputs["motion"]["tracking"], handoff,
+                    where.path, modules=tracked_measure_modules,
+                    eligibility=eligibility_results)
+                entry["recordings"] = len(measured_tracks)
+            outputs["tracked_measurement"] = measured_tracks
+        if tracked_video:
+            with log("tracked_video") as entry:
+                videos = _tracked_videos(
+                    outputs["motion"]["tracking"], handoff,
+                    eligibility_results, where.path,
+                    options=tracked_video_options)
+                entry["recordings"] = len(videos)
+            outputs["tracked_video"] = videos
+        if tracked_image:
+            with log("tracked_image") as entry:
+                images = _tracked_images(
+                    outputs["motion"]["tracking"], handoff,
+                    eligibility_results, where.path,
+                    options=tracked_image_options)
+                entry["recordings"] = len(images)
+            outputs["tracked_image"] = images
 
     check_stage_order(log.names)
     _the_mask_feeds_the_measurement(log.names)
@@ -481,6 +564,139 @@ def run(folder=None, *,
         "recordings": len(recordings),
         "seconds": manifest["seconds"], "claim": claim})
     return manifest
+
+
+def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
+                     folder: Path, *, modules: Sequence[str],
+                     eligibility: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Measure accepted labels against original photons, never Motion counts."""
+    import json
+
+    from .. import measure as _measurement
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    out = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        decisions = result.get("decisions")
+        raw_path = prepared["measurement_raw"]
+        selected = ((eligibility or {}).get(stem, {}).get("views", {})
+                    .get("analysis", {}))
+        labels_path = selected.get("labels", result["labels"])
+        label_sha = selected.get("sha256", result.get("sha256", {}).get("labels"))
+        movie = {
+            "stem": stem, "labels": labels_path, "raw": raw_path,
+            "unclaimed": result.get("unclaimed"),
+            "provenance": result.get("provenance"),
+            "evidence": result.get("evidence"),
+            "history": decisions.get("root") if isinstance(decisions, Mapping)
+                       else None,
+            "source_frame_offset": result["source_frame_offset"],
+            "sha256": {**{role: digest for role, digest in
+                          result.get("sha256", {}).items()
+                          if role not in ("raw", "labels")},
+                       "labels": label_sha,
+                       "raw": prepared["measurement_raw_sha256"]},
+        }
+        measured = _measurement.measure(
+            [movie], output_dir=folder / "tracked_measurement" / stem,
+            frame_interval_min=prepared["frame_interval_min"],
+            enabled_modules=tuple(modules), if_exists="error")
+        run_record = measured["run"]
+        out[stem] = {"folder": run_record["folder"],
+                     "run_label": run_record["run_label"]}
+    return out
+
+
+def _eligible_tracks(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
+                     folder: Path, *, enabled: bool, max_gap_h: float,
+                     max_missing_fraction: float,
+                     exclude_from: str | Sequence[str]) -> dict[str, Any]:
+    """Destination views over final identities; Motion files remain untouched."""
+    import json
+    from ..eligibility import DESTINATIONS, evaluate
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    out = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        if enabled:
+            out[stem] = evaluate(
+                result["labels"], output_dir=folder / "eligibility" / stem,
+                frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+                max_gap_hours=max_gap_h,
+                max_missing_fraction=max_missing_fraction,
+                exclude_from=exclude_from)
+        else:
+            digest = result.get("sha256", {}).get("labels")
+            out[stem] = {
+                "eligible_identities": [], "excluded_identities": [],
+                "exclude_from": [],
+                "views": {destination: {
+                    "labels": result["labels"], "filtered": False,
+                    "sha256": digest,
+                } for destination in DESTINATIONS},
+                "audit": None, "report": None,
+            }
+    return out
+
+
+def _tracked_videos(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
+                    eligibility: Mapping[str, Any], folder: Path, *,
+                    options: Mapping[str, Any] | None) -> dict[str, Any]:
+    import json
+    from ..video import tracked_cell_video
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    settings = dict(options or {})
+    reserved = {"labels", "output_dir", "source_frame_offset",
+                "frame_interval_h"}
+    conflicts = reserved.intersection(settings)
+    if conflicts:
+        raise ValueError("tracked_video_options cannot replace pipeline-owned "
+                         f"inputs: {', '.join(sorted(conflicts))}")
+    out = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        labels = eligibility[stem]["views"]["videos"]["labels"]
+        out[stem] = tracked_cell_video(
+            prepared["measurement_raw"], labels=labels,
+            output_dir=folder / "tracked_video" / stem,
+            source_frame_offset=result["source_frame_offset"],
+            frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+            **settings)
+    return out
+
+
+def _tracked_images(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
+                    eligibility: Mapping[str, Any], folder: Path, *,
+                    options: Mapping[str, Any] | None) -> dict[str, Any]:
+    import json
+    from ..visualisation.overlays import tracked_cell_image
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    settings = dict(options or {})
+    reserved = {"labels", "output_dir", "source_frame_offset",
+                "frame_interval_h"}
+    conflicts = reserved.intersection(settings)
+    if conflicts:
+        raise ValueError("tracked_image_options cannot replace pipeline-owned "
+                         f"inputs: {', '.join(sorted(conflicts))}")
+    out = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        labels = eligibility[stem]["views"]["images"]["labels"]
+        out[stem] = tracked_cell_image(
+            prepared["measurement_raw"], labels=labels,
+            output_dir=folder / "tracked_image" / stem,
+            source_frame_offset=result["source_frame_offset"],
+            frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+            **settings)
+    return out
 
 
 def _registry(folder, options: Mapping[str, Any]):

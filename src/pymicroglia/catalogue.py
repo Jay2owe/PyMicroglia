@@ -80,6 +80,7 @@ def action_params(name: str) -> list[dict[str, Any]]:
             "name": param, "type": "?", "units": "-", "required": False,
             "default": None, "description": "",
         }
+        row.update(entry.get("parameter_details", {}).get(param, {}))
         row["default"] = entry["defaults"].get(param)
         rows.append(row)
     return rows

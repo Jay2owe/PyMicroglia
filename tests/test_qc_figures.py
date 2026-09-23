@@ -16,6 +16,7 @@ artefact it needs is not there.
 
 from __future__ import annotations
 
+from tests.figure_record_helpers import figure_record
 import csv
 import json
 from pathlib import Path
@@ -77,7 +78,7 @@ def test_the_registration_figure_is_drawn_from_the_stored_shift_table(
     assert [float(v) for v in drawn["shift_x_px"]] == [0.0, 1.5, -0.5]
     assert [float(v) for v in drawn["residual_magnitude_px"]] == [0.0, 0.036, 0.01]
 
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["artefacts_drawn"], "the figure did not name what it drew"
     assert record["artefacts_drawn"][0]["stage"] == \
         registration.REGISTRATION_STAGE
@@ -131,7 +132,7 @@ def test_the_preview_can_be_pointed_at_a_frame_and_a_cleaned_stack(
     result = qc.cosmic_ray_preview(stack, output_dir=tmp_path / "figs",
                                    overwrite=True, frame=3, cleaned=cleaned,
                                    mask=mask)
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["settings"]["frame"] == 3
 
 
@@ -158,7 +159,7 @@ def test_the_frames_figure_reports_first_middle_and_last(tmp_path, store_root,
     result = qc.frames_figure(stack, output_dir=tmp_path / "figs",
                               overwrite=True, channels="dluc=0,struct=1")
 
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["settings"]["frames"] == [0, 4, 7]
     drawn = read_table(result["table"])
     assert [int(float(v)) for v in drawn["frame"]] == [0, 4, 7]
@@ -173,7 +174,7 @@ def test_an_unassigned_stack_still_draws_by_position(tmp_path, store_root,
     result = qc.frames_figure(stack, output_dir=tmp_path / "figs",
                               overwrite=True,
                               channels={"dluc": None, "struct": None})
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert set(record["settings"]["channels"]) == {"channel_0", "channel_1"}
 
 
@@ -197,7 +198,7 @@ def test_the_cell_overlay_draws_the_stored_segmentation(tmp_path, store_root,
     for index, area in zip(drawn["label"], drawn["area_px"]):
         assert float(area) == float((found.labels == int(float(index))).sum())
 
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["artefacts_drawn"][0]["stage"] == \
         segmentation.SEGMENTATION_STAGE
 
@@ -216,13 +217,13 @@ def test_the_overlay_says_which_image_it_drew_over(tmp_path, store_root, stack):
 
     quiet = overlays.cell_overlay(stack, output_dir=tmp_path / "a",
                                   overwrite=True, labels=labels)
-    record = json.loads(Path(quiet["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(quiet)
     assert record["settings"]["background"] == "frame 0 only"
 
     told = overlays.cell_overlay(stack, output_dir=tmp_path / "b",
                                  overwrite=True, labels=labels,
                                  background=np.ones((120, 120)))
-    record = json.loads(Path(told["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(told)
     assert record["settings"]["background"] == "accumulated profile, supplied"
 
 
@@ -257,7 +258,7 @@ def test_sweep_candidates_are_drawn_dashed_and_recorded(tmp_path, store_root,
     drawn = read_table(result["table"])
     assert [float(v) for v in drawn["sweep_candidate"]] == [0.0, 1.0]
 
-    record = json.loads(Path(result["provenance"]).read_text(encoding="utf-8"))
+    record = figure_record(result)
     assert record["settings"]["candidates"] == [2]
 
 
@@ -277,20 +278,15 @@ def test_the_roi_overlay_draws_the_polygons_it_was_given(tmp_path, store_root,
 
 
 # ---------------------------------------------------------------- the bundle
-def test_every_qc_figure_arrives_as_a_bundle(tmp_path, store_root, stack):
-    """Same door, same layout, for a figure nobody asked a bundle for."""
+def test_every_qc_figure_records_its_exact_sources_and_table_once(tmp_path, store_root, stack):
     from pymicroglia.visualisation import qc
-
+    from auto_organotypic.store.ledger import entry_for
     result = qc.channel_figure(stack, output_dir=tmp_path / "figs",
                                overwrite=True, channels="dluc=0,struct=1")
-    bundle = Path(result["bundle"])
-    assert (bundle / "data" / "der" / "figure_data.csv").is_file()
-    assert (bundle / "data" / "sources.csv").is_file()
-    assert (bundle / "fig" / "channel_identity.svg").is_file()
-    assert (bundle / "fig" / "preview.png").is_file()
-
-    # the source here is a TIFF, so it is hashed and copied like any other
-    with open(bundle / "data" / "sources.csv", encoding="utf-8") as handle:
-        row = next(csv.DictReader(handle))
-    assert row["sha256"]
-    assert row["file_name"] == Path(stack).name
+    assert result["bundle"] is None
+    assert Path(result["table"]).is_file()
+    assert Path(result["provenance"]).is_file()
+    record = entry_for(result["figures"][0])
+    assert record["extra"]["table"] == Path(result["table"]).name
+    row = record["extra"]["sources"][0]
+    assert row["sha256"] and row["file_name"] == Path(stack).name

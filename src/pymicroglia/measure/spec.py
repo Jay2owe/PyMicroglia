@@ -582,6 +582,8 @@ class MeasureConfig:
     conditions: ConditionSet = field(default_factory=ConditionSet)
     #: Carried through to the manifest as a section, unread here (stage 07).
     figures: dict = field(default_factory=dict)
+    plots: list = field(default_factory=list)
+    pipelines: list = field(default_factory=list)
     windows: list[WindowSpec] = field(default_factory=list)
     contrasts: list[ContrastSpec] = field(default_factory=list)
     metric_groups: dict = field(default_factory=dict)
@@ -639,7 +641,7 @@ class MeasureConfig:
     def from_mapping(cls, data: Mapping[str, Any], *, root: Path | None = None,
                      source_path: Path | None = None) -> "MeasureConfig":
         """The JSON shape of Motion's ``analysis_config.json``, unchanged."""
-        return cls.from_parts(
+        result = cls.from_parts(
             data["movies"],
             frame_interval_min=float(data["frame_interval_min"]),
             root=root,
@@ -658,6 +660,14 @@ class MeasureConfig:
             output_root=data.get("output_root", "outputs"),
             source_path=source_path,
         )
+
+        from ..pipelines._requests import parse
+        result.pipelines = parse(data.get("pipelines"), result.metric_groups)
+        plots = data.get("plots", [])
+        if not isinstance(plots, list) or any(not isinstance(p, dict) for p in plots):
+            raise ValueError("plots must be a list of figure declarations")
+        result.plots = plots
+        return result
 
     # --------------------------------------------------------------- windows
 
@@ -697,6 +707,8 @@ class MeasureConfig:
     def settings(self) -> dict[str, Any]:
         """The run's settings as the manifest records them."""
         return {
+            "pipelines": [p.declaration.as_dict() for p in self.pipelines],
+            "plots": self.plots,
             "dataset": self.dataset,
             "frame_interval_min": self.frame_interval_min,
             "microns_per_pixel": self.microns_per_pixel,
@@ -705,6 +717,8 @@ class MeasureConfig:
             "modules": dict(self.module_params),
             "verify_hashes": self.verify_hashes,
             "windows": [w.as_dict() for w in self.windows],
+            "recording_windows": {m.stem: [w.as_dict() for w in m.windows]
+                                  for m in self.movies if m.windows},
             "contrasts": [c.as_dict() for c in self.contrasts],
             "metric_groups": {name: list(group.columns)
                               for name, group in self.metric_groups.items()},

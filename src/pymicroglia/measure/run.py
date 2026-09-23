@@ -589,6 +589,8 @@ def run(config: MeasureConfig, output_dir, *, run_label: str | None = None,
         raise ValueError(f"no configured movies match {stems}")
 
     settings = config.settings()
+    settings["recording_windows"] = {name: windows for name, windows in settings["recording_windows"].items()
+                                     if name in {m.stem for m in selected}}
     label = run_label or slug("measure", {
         **settings, "movies": [m.as_dict() for m in selected],
         "modules": list(modules or []), "method_version": METHOD_VERSION})

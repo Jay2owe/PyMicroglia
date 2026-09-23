@@ -32,7 +32,7 @@ dependencies = [
     # it, removing cosmic rays and the keyed artefact store all live there now,
     # and this package's own modules of those names are shims onto them. It is
     # floored rather than pinned because the two are developed together.
-    "Auto-Organotypic>=0.7,<0.8",
+    "Auto-Organotypic>=0.7.1,<0.8",
     "reprofig>=0.5.1",
     "numpy>=1.24",
     "tifffile>=2023.7",
@@ -43,14 +43,22 @@ dependencies = [
     # Imported inside functions where a module is read by ``describe``, so
     # the package root still imports without them.
     "pandas>=2.0",
+    "circadian-workbench>=0.9,<0.10",
     "scikit-image>=0.21",
+    # The automatic Motion stage executes the isolated frozen engine bundled
+    # in this wheel; these are its runtime dependencies.
+    "Pillow>=10",
+    "scikit-learn>=1.3,<2",
+    "diptest>=0.11,<0.12",
+    "arch>=8,<9",
 ]
 
 [project.optional-dependencies]
+states = ["scikit-learn>=1.3", "hmmlearn", "hdbscan", "threadpoolctl", "diptest"]
 kit     = ["analysis-kit>=0.1.0"]
 # The kit is listed here as well as under `kit`, and for a different reason.
 # There it is the audit layer, which is soft: a missing run record costs a
-# record. Here it is the house palette, and it is hard — pymicroglia's figure
+# record. Here it is the house palette, and it is hard â€” pymicroglia's figure
 # modules hold no colour table of their own and raise `FigureStyleMissing`
 # rather than substituting anything, because drawing in the wrong colours is
 # the drift the shared palette exists to stop.
@@ -65,23 +73,22 @@ mask    = ["torch>=2.0", "scikit-image>=0.21"]
 video   = ["imageio-ffmpeg"]
 # Floored, not pinned to one release: the workbench is being developed
 # alongside this package. The moved adapter uses Circadian Workbench's public
-# package-root facade only. If that contract changes, fix the adapter — never
+# package-root facade only. If that contract changes, fix the adapter â€” never
 # fork the implementation into this package.
-# Reached through Auto-Organotypic since 2026-08-24, which is where the adapter
-# moved with the instrumental control it will not work without. One
-# declaration of the workbench floor rather than two that can drift.
-rhythm  = ["Auto-Organotypic[rhythm]>=0.7,<0.8"]
+# Keep the historical extra name, but use the already-required Workbench 0.9
+# range. Auto-Organotypic's independent rhythm extra targets Workbench 0.8.
+rhythm  = ["circadian-workbench>=0.9,<0.10"]
 # The accepted automatic SCN outline. Floored, not pinned, for the same reason
 # as the workbench above: it is developed alongside this package and
 # scn_outline.py uses only its public surface. If one of those names moves, fix
-# the delegate — never fork the implementation back into this package.
+# the delegate â€” never fork the implementation back into this package.
 #
 # Kept, and now redundant: Auto-Organotypic is a required dependency above, so this
 # extra adds nothing. It stays declared because `pip install "PyMicroglia[scn]"`
 # is in this package's README, in Auto-Organotypic's, and in the message
-# ``scn_outline`` prints when the outline cannot resolve — and an extra that
+# ``scn_outline`` prints when the outline cannot resolve â€” and an extra that
 # stops existing turns all three into a warning nobody reads.
-scn     = ["Auto-Organotypic>=0.7,<0.8"]
+scn     = ["Auto-Organotypic>=0.7.1,<0.8"]
 test    = ["pytest>=8.0"]
 
 [project.scripts]
@@ -97,7 +104,8 @@ package-dir = { "" = "src" }
 include-package-data = true
 
 [tool.setuptools.package-data]
-pymicroglia = ["data/*.json"]
+pymicroglia = ["data/*.json", "guide/*.md", "pymicroglia_context.json",
+               "tracking/data/*.zip"]
 
 [tool.setuptools.dynamic]
 version = { attr = "pymicroglia.__version__" }

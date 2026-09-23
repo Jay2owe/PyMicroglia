@@ -104,24 +104,7 @@ def _detrend(
 
 
 def _surrogate(values: np.ndarray, model: str, generator: np.random.Generator) -> np.ndarray:
-    """A trace with the same statistics as this cell but no rhythm."""
-    if model == "shuffle":
-        return generator.permutation(values)
-    if model == "ar1":
-        centred = values - values.mean()
-        if len(centred) < 3 or np.allclose(centred, 0):
-            return generator.permutation(values)
-        denominator = float(np.sum(centred[:-1] ** 2))
-        phi = float(np.sum(centred[1:] * centred[:-1]) / denominator) if denominator > 0 else 0.0
-        phi = float(np.clip(phi, -0.98, 0.98))
-        sigma = float(np.std(centred) * np.sqrt(max(1.0 - phi ** 2, 1e-6)))
-        out = np.empty(len(centred))
-        out[0] = generator.normal(0.0, np.std(centred))
-        noise = generator.normal(0.0, sigma, len(centred) - 1)
-        for i in range(1, len(centred)):
-            out[i] = phi * out[i - 1] + noise[i - 1]
-        return out + values.mean()
-    raise ValueError(f"unknown null model {model!r}")
+    return workbench.surrogate(values, model, generator)
 
 
 # Public compatibility names retained for existing figure builders. Every

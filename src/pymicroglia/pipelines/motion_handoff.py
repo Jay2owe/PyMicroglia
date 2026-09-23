@@ -1,28 +1,8 @@
-"""What the Motion project reads, written where it can read it.
+"""Prepare Motion's six pinned inputs, then run its frozen tracking rules.
 
-Not a pipeline and not a stage of one: a handoff. The Motion project tracks
-microglial identity through movement, merges, splits and temporary invisibility,
-and it is a separate piece of work that is not finished. This module is the
-seam, written now so that porting Motion is a matter of resolving one dotted
-name rather than of agreeing an interface afterwards.
-
-Motion pins every input it reads by a relative path and a SHA-256 and checks
-both before it analyses anything, which is a good rule and the reason this
-writes a mapping rather than a folder somebody has to describe by hand. Its
-vocabulary -- ``dataset``, ``stems``, ``input_space``, ``pinned_files`` -- is
-Motion's own ``config.json``, copied deliberately so that what is written here
-drops into that file instead of needing translation on the way in.
-
-Two things are deliberately **not** written.
-
-The registered stacks are pinned where they already are rather than copied.
-Copying ten gigabytes per well to give it a different name is not a handoff.
-
-The motion-evidence stacks Motion also pins -- ``lag_float``,
-``neutral_tracks``, ``trail_labels``, ``trail_ages``, ``motion_composite`` --
-are its own first stage's output, computed from the registered stack named here.
-Writing empty entries for them would make this file look complete when the work
-it describes has not been done.
+The original registered photons are saved separately for measurement; only
+the scaled, mask-zeroed copy enters Motion. A manifest pins both kinds of
+input, and the tracker returns file paths, never arrays.
 """
 
 from __future__ import annotations
@@ -33,6 +13,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .. import tracking as _tracking
+from ..tracking import prepare as _prepare
 from ..tracking import TRACKER_TARGET as TARGET
 
 __all__ = ["FOLDER", "INPUTS_NAME", "TARGET", "status", "write", "track"]
@@ -42,8 +23,8 @@ FOLDER = "motion"
 INPUTS_NAME = "motion_inputs.json"
 
 # ``TARGET`` is :data:`pymicroglia.tracking.TRACKER_TARGET`, re-exported: the
-# dotted name that will one day resolve lives on the seam now, and this module
-# only writes what that seam's tracker reads.
+# dotted name of the packaged tracker lives on the seam, and this module only
+# writes what that seam's tracker reads.
 
 
 def status() -> tuple[str, str]:
@@ -57,7 +38,7 @@ def status() -> tuple[str, str]:
 
 def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
           dataset: str = "", hashes: bool = True) -> dict[str, Any]:
-    """Pin the registered stacks and their masks, and say what is still missing.
+    """Build and pin Motion inputs for every per-frame mask.
 
     ``hashes=False`` writes ``null`` where each SHA-256 goes. Motion will not
     accept that, and the option exists because a full hash is a full read of
@@ -68,10 +49,11 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
     target.mkdir(parents=True, exist_ok=True)
 
     pinned: dict[str, Any] = {}
+    prepared: dict[str, Any] = {}
     interval_min = 0.0
     for row in recordings:
         path = Path(str(row["path"]))
-        entry = {"registered_raw": _pin(path, hashes)}
+        entry = {"source_registered": _pin(path, hashes)}
         mask = masks.get(str(path)) if masks else None
         if mask is not None:
             entry["cell_mask"] = _pin(Path(mask["outputs"]["mask_cells"]),
@@ -80,10 +62,31 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
             if still.get("mask_cells_still"):
                 entry["cell_mask_still"] = _pin(
                     Path(still["mask_cells_still"]), hashes)
-        pinned[path.stem] = entry
         seconds = row.get("interval_s") or {}
-        if isinstance(seconds, Mapping) and seconds.get("value"):
-            interval_min = float(seconds["value"]) / 60.0
+        this_interval = (float(seconds["value"]) / 60.0
+                         if isinstance(seconds, Mapping) and seconds.get("value")
+                         else 0.0)
+        if this_interval:
+            interval_min = this_interval
+        if mask is not None:
+            if this_interval <= 0:
+                raise ValueError(f"{path.name}: Motion needs a frame interval")
+            from .auto_microglia import _Registered
+
+            made = _prepare.build(
+                path.stem, _Registered(path, row).dluc,
+                mask["outputs"]["mask_cells"], target / path.stem,
+                frame_interval_min=this_interval,
+                dataset=dataset or path.stem)
+            prepared[path.stem] = made
+            entry["measurement_raw"] = _pin(Path(made["measurement_raw"]), hashes)
+            for role, pin in made["pins"].items():
+                relative = (pin.get("relative_to_registered_input_dir")
+                            or pin.get("relative_to_motion_input_dir"))
+                entry[role] = _pin(target / path.stem / relative, hashes)
+        else:
+            entry["registered_raw"] = _pin(path, hashes)
+        pinned[path.stem] = entry
 
     payload = {
         "dataset": dataset,
@@ -93,8 +96,10 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
         "registered_input_dir": (str(Path(recordings[0]["path"]).parent)
                                  if recordings else ""),
         "pinned_files": pinned,
-        "still_missing": ["lag_float", "neutral_tracks", "trail_labels",
-                          "trail_ages", "motion_composite"],
+        "prepared": prepared,
+        "still_missing": ([] if len(prepared) == len(pinned) else
+                          ["lag_float", "neutral_tracks", "trail_labels",
+                           "trail_ages", "motion_composite"]),
         # What the tracker is expected to write back, per stem, in the words
         # of ``pymicroglia.tracking.contract``: the five files and the
         # decision-table root, relative to the tracker's run folder except for
@@ -103,50 +108,49 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
         "expects": {stem: _tracking.expected_files(
                         stem, entry["registered_raw"]["path"])
                     for stem, entry in pinned.items()},
-        "note": ("Written by PyMicroglia's auto_microglia pipeline. The stacks "
-                 "under still_missing are Motion's own first stage, computed "
-                 "from the registered stack pinned here."),
+        "note": ("U-Net masks and registered photons prepared by PyMicroglia. "
+                 "Motion's frozen accepted stages run on the six pinned stacks; "
+                 "the source photons remain separate for measurement."),
     }
     written = target / INPUTS_NAME
     written.write_text(json.dumps(payload, indent=1), encoding="utf-8")
 
     state, reason = status()
-    if notes is not None and state == "pending":
-        notes.note("motion", chosen="handed off, not run", confidence="medium",
-                   changes_result=False,
-                   why=f"{reason} The registered stacks and their masks are "
-                       f"written and pinned; nothing has linked a region in "
-                       f"one frame to a region in the next, so no cell here "
-                       f"has an identity that outlives a frame.",
-                   remedy="Install the Motion project and re-run: the stage "
-                          "resolves and this file is what it reads.",
+    if notes is not None and prepared:
+        notes.note("motion", chosen="automatic frozen Motion tracker",
+                   confidence="medium", changes_result=True,
+                   why="The current native-frame Motion identities are provisional; "
+                       "a completed run still needs identity review before its "
+                       "measurements are treated as accepted.",
+                   remedy="Review the full-field Motion TIFF and identity tables.",
                    evidence=[str(written)])
     return {"status": state, "reason": reason, "stems": len(pinned),
             "outputs": {"motion_inputs": str(written)}}
 
 
 def track(handoff: Mapping[str, Any], folder, entry: dict[str, Any]) -> dict[str, Any]:
-    """Call the seam on what :func:`write` wrote; pending is a state, not a crash.
-
-    Returns the stage's outputs: the handoff's, plus ``tracking`` -- the
-    tracker's files as a flat record -- once a tracker resolves behind
-    :data:`TARGET`. While none does, the handoff stands, the stage entry says
-    ``pending`` with the seam's own reason and the dotted name that is
-    missing, and the review note :func:`write` left is the one a person reads.
-    """
+    """Run the packaged tracker once per stem and return its file records."""
     from ..run import ActionPending
 
     outputs = dict(handoff["outputs"])
     entry["target"] = TARGET
+    manifest = json.loads(Path(outputs["motion_inputs"]).read_text(encoding="utf-8"))
+    if manifest["still_missing"]:
+        raise ValueError("motion=True needs a per-frame U-Net mask for every "
+                         "recording; pass cell_masks=True")
+    results = {}
     try:
-        result = _tracking.run(outputs["motion_inputs"], folder)
+        for stem in manifest["stems"]:
+            result = _tracking.run(outputs["motion_inputs"], folder,
+                                   tracker_options={"stem": stem})
+            results[stem] = result.as_dict()
     except ActionPending as exc:
         entry["status"] = "pending"
         entry["reason"] = str(exc)
         return outputs
     entry["status"] = "ok"
     entry.pop("reason", None)
-    outputs["tracking"] = result.as_dict()
+    outputs["tracking"] = results
     return outputs
 
 

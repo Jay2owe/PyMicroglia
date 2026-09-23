@@ -130,7 +130,7 @@
   "finished_at_utc": "2026-09-20T23:45:28.874131+00:00",
   "elapsed_seconds": 89.563,
   "dataset": "SYNTHETIC motion parity fixture: three tracked cells, 48 frames at 30 min, built by PyMicroglia tests/fixtures.py::tracked_movie(seed=0)",
-  "config_path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\config.json",
+  "config_path": "../config.json",
   "config_sha256": "b0d232a2bddffc29e5f333a0e1d979ac460793f0a69105b717205e3a30c982af",
   "environment": {
     "python": "3.12.10",
@@ -333,42 +333,42 @@
         "condition": null,
         "inputs": {
           "labels": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\labels.tif",
+            "path": "../inputs/labels.tif",
             "sha256": "2c25ffe224ccc01bb0e2d08d03d37b501e5a55cc56a834e6b5678eae350dea07",
             "bytes": 161674,
             "expected_sha256": "2c25ffe224ccc01bb0e2d08d03d37b501e5a55cc56a834e6b5678eae350dea07",
             "verified": true
           },
           "raw": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\raw.tif",
+            "path": "../inputs/raw.tif",
             "sha256": "4c258a2a31a00a3e70c45f262b8e4aa80b2b96db53b84e60f2492a3e515cc71e",
             "bytes": 315854,
             "expected_sha256": "4c258a2a31a00a3e70c45f262b8e4aa80b2b96db53b84e60f2492a3e515cc71e",
             "verified": true
           },
           "unclaimed": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\unclaimed.tif",
+            "path": "../inputs/unclaimed.tif",
             "sha256": "d5a3503d549e7fd50eb6049ac907cc4700c4d11a1883edb7acd8c4b52ca5d193",
             "bytes": 84874,
             "expected_sha256": "d5a3503d549e7fd50eb6049ac907cc4700c4d11a1883edb7acd8c4b52ca5d193",
             "verified": true
           },
           "evidence": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\evidence.tif",
+            "path": "../inputs/evidence.tif",
             "sha256": "9e6b563a22f7f0fba749417e9aa39e75ab44dc0dfe43f654cf6767c6105e47f3",
             "bytes": 807946,
             "expected_sha256": "9e6b563a22f7f0fba749417e9aa39e75ab44dc0dfe43f654cf6767c6105e47f3",
             "verified": true
           },
           "provenance": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\provenance.tif",
+            "path": "../inputs/provenance.tif",
             "sha256": "bc9320d3fd4bcb638515c2bd21069d1577c0694fab913a9aff23de2d0fae36d5",
             "bytes": 84874,
             "expected_sha256": "bc9320d3fd4bcb638515c2bd21069d1577c0694fab913a9aff23de2d0fae36d5",
             "verified": true
           },
           "valid_mask": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\valid_mask.tif",
+            "path": "../inputs/valid_mask.tif",
             "sha256": "9b35f36cb9efd9638c76cf25142414d872dc4aae9aeaa30b3416eb8066fff81c",
             "bytes": 1872,
             "expected_sha256": "9b35f36cb9efd9638c76cf25142414d872dc4aae9aeaa30b3416eb8066fff81c",
@@ -381,7 +381,7 @@
             "valid_share_max": 0.81
           },
           "channel:extra": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\extra_channel.tif",
+            "path": "../inputs/extra_channel.tif",
             "name": "extra",
             "description": "SYNTHETIC second channel: fades, differs between cells, clipped corner, shifted two columns so the last two analysed columns are off the source",
             "channel_index": 1,
@@ -397,7 +397,7 @@
             ],
             "source_dtype": "uint16",
             "storage_dtype": "float32",
-            "shifts": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\extra_shifts.csv",
+            "shifts": "../inputs/extra_shifts.csv",
             "shift_y_range": [
               0,
               0
@@ -412,7 +412,7 @@
             "verified": true
           },
           "objects:scenery": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\scenery_objects.tif",
+            "path": "../inputs/scenery_objects.tif",
             "name": "scenery",
             "description": "SYNTHETIC reference shapes: one fixed mid-field, one drifting and touching the top edge",
             "static": false,
@@ -446,7 +446,7 @@
             "verified": true
           },
           "side:acquisition": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\acquisition.csv",
+            "path": "../inputs/acquisition.csv",
             "name": "acquisition",
             "description": "SYNTHETIC per-frame log",
             "keyed_on": "frame_index",
@@ -467,7 +467,7 @@
             "verified": true
           },
           "side:genotype": {
-            "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs\\genotype.csv",
+            "path": "../inputs/genotype.csv",
             "name": "genotype",
             "description": "SYNTHETIC per-cell call",
             "keyed_on": "identity",
@@ -1047,7 +1047,7 @@
           "seconds": 0.001,
           "tables": {},
           "parameters": {
-            "labels_directory": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\tests\\fixtures\\motion_parity\\inputs"
+            "labels_directory": "../inputs"
           }
         }
       ],
@@ -1423,7 +1423,7 @@
           "path": "rhythm_methods.csv",
           "rows": 30,
           "columns": 33,
-          "sha256": "59fe4b93b90471c0d841fd610928576bd2554a03c2a83661ec775f5e489df538",
+          "sha256": "78bf22e76adc4e4af603cb93b008940c991f53a4e8c87bdf65702b3e0a8fbe28",
           "grain": [
             "identity",
             "metric",
@@ -2185,7 +2185,7 @@
         "path": "rhythm_methods.csv",
         "rows": 30,
         "columns": 33,
-        "sha256": "59fe4b93b90471c0d841fd610928576bd2554a03c2a83661ec775f5e489df538",
+        "sha256": "78bf22e76adc4e4af603cb93b008940c991f53a4e8c87bdf65702b3e0a8fbe28",
         "grain": [
           "identity",
           "metric",

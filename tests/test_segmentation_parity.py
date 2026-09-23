@@ -17,6 +17,7 @@ and calling it parity.
 """
 
 from __future__ import annotations
+from pymicroglia._results import read_document
 
 import inspect
 import os
@@ -343,7 +344,7 @@ def test_the_reference_labels_match(store_root):
     from pymicroglia.pipelines import StackView
 
     expected_labels = tifffile.imread(REFERENCE / "cell_masks_labels.tif")
-    summary = json.loads((REFERENCE / "summary.json").read_text(encoding="utf-8"))
+    summary = read_document(REFERENCE / "summary.json")
 
     stack = np.asarray(np.load(folder / BUNDLE[0], mmap_mode="r"))
     outside = np.load(folder / "off_tissue.npy")
@@ -382,8 +383,7 @@ def test_the_reference_labels_match(store_root):
     for row in objects:
         numbered[row["_mask"]] = row["label"]
 
-    times = np.asarray(json.loads(
-        (folder / "reference.json").read_text(encoding="utf-8"))["times_h"],
+    times = np.asarray(read_document(folder / "reference.json")["times_h"],
         float)
     verdicts = {row["label"]: row for row in controls.decoy_test(
         None, 0, numbered, tissue, times, baseline_h=max(summary["baselines"]),

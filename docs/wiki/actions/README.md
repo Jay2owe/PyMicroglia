@@ -66,3 +66,13 @@ pymicroglia describe remove_cosmic_rays
 
 The catalogue ships with the package, while `discover` checks that every
 declared target imports in the current environment.
+
+## Tracked-cell analysis
+
+- [Tracking handoff](tracking.md)
+- [Tracked-cell measurements](measure.md)
+- [Unknown rhythms](rhythms.md)
+- [Cell-frame states](states.md)
+- [Whole-cell groups](clustering.md)
+- [Lifecycle and films](lifecycle.md)
+- [Figures and views](figures.md)

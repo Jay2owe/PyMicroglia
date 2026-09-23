@@ -19,7 +19,7 @@ from __future__ import annotations
 #: 0.2.0 is the release in which the longitudinal machinery left. Anything
 #: below it carries its own registration, cosmic-ray rule and artefact
 #: store, so the two cannot be mixed in one environment.
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 #: The project this package's artefacts belong to, claimed before anything can
 #: reach the store. The store moved to Auto-Organotypic on 2026-08-24 along with the
@@ -41,6 +41,7 @@ _auto_organotypic_config.use_project(
     projects=[PROJECT_FOLDER_NAME],
     store_env=["PYMICROGLIA_STORE"],
     index_env=["PYMICROGLIA_INDEX"],
+    decisions_env=["PYMICROGLIA_DECISIONS"],
     cache_gb_env=["PYMICROGLIA_CACHE_GB"],
     cache_dirname="pymicroglia",
     producer="pymicroglia",
