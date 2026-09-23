@@ -62,7 +62,7 @@ def test_the_rebuildable_tier_accepts_a_synced_folder(tmp_path, monkeypatch):
     assert tier_b.root() == synced
 
 
-def test_the_default_root_is_the_projects_own_store(monkeypatch):
+def test_the_default_root_is_the_projects_own_store(monkeypatch, tmp_path):
     """Beside the analysis, named for what it holds.
 
     A person who finds twenty gigabytes in their Dropbox has to be able to tell
@@ -70,9 +70,13 @@ def test_the_default_root_is_the_projects_own_store(monkeypatch):
     the folder name is for.
     """
     monkeypatch.delenv("PYMICROGLIA_STORE", raising=False)
-    root = config.store_root()
+    monkeypatch.delenv("AUTO_ORGANOTYPIC_STORE", raising=False)
+    project = tmp_path / "Microglia Project"
+    source = project / "PyMicroglia" / "src" / "pymicroglia" / "__init__.py"
+    source.parent.mkdir(parents=True)
+    root = config.store_root(start=source, projects=(project.name,))
     assert root.name == config.STORE_DIRNAME
-    assert root.parent == config.project_root()
+    assert root.parent == config.project_root(start=source, names=(project.name,))
 
 
 def test_every_tier_b_path_sits_under_the_configured_root(store_root):

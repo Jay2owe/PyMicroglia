@@ -10,7 +10,7 @@
 - Add configurable tracked-cell video and still actions over original photons,
   using the accepted per-identity outside outlines. Width, opacity, colours,
   contrast, display-only smoothing, timestamps and playback are selectable.
-- Require Auto-Organotypic 0.7.1 for frame-specific outline rendering.
+- Require Auto-Organotypic 0.7.2 for frame-specific outline rendering.
 - Keep the `rhythm` extra installable alongside the required Circadian
   Workbench 0.9 series.
 - Package tracked-cell measurements, state analysis, clustering, cell-following

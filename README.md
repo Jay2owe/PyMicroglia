@@ -22,7 +22,8 @@ cooked dish.
 pip install PyMicroglia
 ```
 
-Optional extras: `kit` (run records and house style), `figure`, `seg`, `video`,
+Optional extras: `kit` (run records and house style), `figure`, `seg`, `register`
+(image registration), `video`,
 `rhythm`, `scn` (the automatic SCN outline, which lives in
 [Auto-Organotypic](https://pypi.org/project/Auto-Organotypic/)), `mask` (the
 learned single-frame mask), `states` (state models and clustering), `test`.

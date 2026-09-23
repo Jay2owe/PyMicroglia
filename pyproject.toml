@@ -32,7 +32,7 @@ dependencies = [
     # it, removing cosmic rays and the keyed artefact store all live there now,
     # and this package's own modules of those names are shims onto them. It is
     # floored rather than pinned because the two are developed together.
-    "Auto-Organotypic>=0.7.1,<0.8",
+    "Auto-Organotypic>=0.7.2,<0.8",
     "reprofig>=0.5.1",
     "numpy>=1.24",
     "tifffile>=2023.7",
@@ -54,7 +54,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-states = ["scikit-learn>=1.3", "hmmlearn", "hdbscan", "threadpoolctl", "diptest"]
+states = ["scikit-learn>=1.3", "hmmlearn", "hdbscan", "threadpoolctl", "diptest", "tslearn>=0.9,<1"]
 kit     = ["analysis-kit>=0.1.0"]
 # The kit is listed here as well as under `kit`, and for a different reason.
 # There it is the audit layer, which is soft: a missing run record costs a
@@ -62,8 +62,10 @@ kit     = ["analysis-kit>=0.1.0"]
 # modules hold no colour table of their own and raise `FigureStyleMissing`
 # rather than substituting anything, because drawing in the wrong colours is
 # the drift the shared palette exists to stop.
-figure  = ["matplotlib>=3.7", "analysis-kit>=0.1.0"]
+# The accepted trace-panel review pixels were frozen with Matplotlib 3.9.2.
+figure  = ["matplotlib==3.9.2", "analysis-kit>=0.1.0"]
 seg     = ["scikit-image>=0.21"]
+register = ["Auto-Organotypic[register]>=0.7.2,<0.8"]
 # The learned single-frame mask. Torch is the network; scikit-image is the
 # watershed that grows a seed into a cell. OpenCV is not listed and is not
 # required: `learned_mask.filters` falls back to SciPy without it, and the only
@@ -88,7 +90,7 @@ rhythm  = ["circadian-workbench>=0.9,<0.10"]
 # is in this package's README, in Auto-Organotypic's, and in the message
 # ``scn_outline`` prints when the outline cannot resolve â€” and an extra that
 # stops existing turns all three into a warning nobody reads.
-scn     = ["Auto-Organotypic>=0.7.1,<0.8"]
+scn     = ["Auto-Organotypic>=0.7.2,<0.8"]
 test    = ["pytest>=8.0"]
 
 [project.scripts]

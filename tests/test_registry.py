@@ -234,9 +234,14 @@ def test_doctor_reports_where_the_store_is_without_complaining_about_it(
                    for complaint in report["complaints"])
 
 
-def test_store_root_is_the_project_store_by_default(monkeypatch):
+def test_store_root_is_the_project_store_by_default(monkeypatch, tmp_path):
     monkeypatch.delenv("PYMICROGLIA_STORE", raising=False)
-    assert config.store_root().name == config.STORE_DIRNAME
+    monkeypatch.delenv("AUTO_ORGANOTYPIC_STORE", raising=False)
+    project = tmp_path / "Microglia Project"
+    source = project / "PyMicroglia" / "src" / "pymicroglia" / "__init__.py"
+    source.parent.mkdir(parents=True)
+    assert config.store_root(start=source, projects=(project.name,)) == (
+        project / config.STORE_DIRNAME)
 
 
 def test_cache_cap_is_configurable(monkeypatch):
