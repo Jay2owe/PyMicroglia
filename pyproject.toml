@@ -43,7 +43,7 @@ dependencies = [
     # Imported inside functions where a module is read by ``describe``, so
     # the package root still imports without them.
     "pandas>=2.0",
-    "circadian-workbench>=0.9,<0.10",
+    "circadian-workbench>=0.9.8,<0.10",
     "scikit-image>=0.21",
     # The automatic Motion stage executes the isolated frozen engine bundled
     # in this wheel; these are its runtime dependencies.
@@ -79,7 +79,7 @@ video   = ["imageio-ffmpeg"]
 # fork the implementation into this package.
 # Keep the historical extra name, but use the already-required Workbench 0.9
 # range. Auto-Organotypic's independent rhythm extra targets Workbench 0.8.
-rhythm  = ["circadian-workbench>=0.9,<0.10"]
+rhythm  = ["circadian-workbench>=0.9.8,<0.10"]
 # The accepted automatic SCN outline. Floored, not pinned, for the same reason
 # as the workbench above: it is developed alongside this package and
 # scn_outline.py uses only its public surface. If one of those names moves, fix
