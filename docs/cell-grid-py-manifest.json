@@ -1,0 +1,216 @@
+{
+  "title": "Tracked-cell image and video grids in PyMicroglia",
+  "end_goal": "Each recording gains a still grid with all tracked cells across each cell's chosen circadian cycle and a video grid with all tracked cells through the full recording. Every frame uses a cell-centred crop of original photons; the default crop is based on the largest tracked footprint, with own-cell and explicit pixel-size options. Auto-Organotypic's shared grids provide appearance, labels, timing and saving.",
+  "why": "Existing tracked-cell exports outline the whole field or follow individual cells, while the shared grids show fixed recording positions. The reusable tile-source seam built in Auto-Organotypic lets PyMicroglia supply moving cell views to those existing grids without a second rendering implementation.",
+  "architecture": "Original photon TIFF + destination-specific eligible label stack -> PyMicroglia lazy CellTile sources -> auto_organotypic.grid.stack_to_grid / auto_organotypic.video_grid.stack_to_video_grid -> existing visual/images and visual/videos output records. The canonical design is in ../Auto-Organotypic/docs/consolidation/cell-centred-grid-visualisations.md; complete the Auto-Organotypic tile-source plan before executing PyMicroglia stage 01.",
+  "house_rules": "Read AGENTS.md and the canonical consolidation design. PyMicroglia owns only tracking-aware crops, trace inputs and pipeline wiring; Auto-Organotypic owns rendering. Source photons and tracked labels remain unchanged. Preserve all tracked identities in the selected images/videos eligibility views and show missing states. Use the same lookup tables, ranges, captions, grid layout and save conventions by passing through upstream options. Stage only this work amid the dirty tree. Run focused checks; no Graphify refresh unless requested or an explicit release check requires it.",
+  "stages": [
+    {
+      "number": "01",
+      "title": "moving-cell-tile-sources",
+      "why": "Give the shared grid renderers one lazy, original-photon tile source per tracked identity with a fixed crop that follows its position.",
+      "depends_on": [],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "src/pymicroglia/figure_tables/follow.py",
+        "src/pymicroglia/eligibility.py",
+        "src/pymicroglia/tracking/engine.py",
+        "src/pymicroglia/visualisation/tracked_outlines.py",
+        "tests/test_follow.py"
+      ],
+      "scope": [
+        "Build one source per positive identity in the destination's eligible labels, using the recorded source-frame offset.",
+        "Derive per-frame centroids and full-life required crop size from labels; never assume the morphology module ran.",
+        "Implement crop_basis='largest_cell' default, 'own_cell', and exact crop_size_px=(width,height); automatic crops use Auto-Organotypic final-outline tight/standard/wide factors.",
+        "Return original numeric photon crops lazily; pad at image edges without shifting centre or biasing auto contrast.",
+        "Mark missing identities, hold their last known centre for location only, and calculate a display-only cell brightness trace from observed labelled pixels."
+      ],
+      "out_of_scope": [
+        "Still-grid action and cycle selection belong to stage 02.",
+        "Video-grid action belongs to stage 03.",
+        "Pipeline wiring belongs to stage 04."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/cell_tiles.py",
+          "change": "NEW",
+          "reason": "Tracking-aware generic tile sources and crop policy"
+        },
+        {
+          "path": "tests/test_cell_tiles.py",
+          "change": "NEW",
+          "reason": "Moving centres, footprint sizing, offset, padding, missing frames and trace checks"
+        }
+      ],
+      "implementation_sketch": "Proposed factory: cell_tiles(raw, labels, *, source_frame_offset=0, frame_interval_h=None, crop_basis='largest_cell', crop='tight', crop_size_px=None, identity_prefix='Cell') -> list[auto_organotypic.render.tile_source.TileSource]. For each observed identity and frame, compute centroid of exactly its labelled pixels and maximum x/y distance from centroid to its own pixels. The default square side covers the maximum reach of every included identity over all frames, then multiply by the accepted final-outline crop factor (tight 1.05, standard 1.25, wide 1.50); import the factor from Auto-Organotypic rather than duplicating it. Own-cell uses one side per identity. Exact (width,height) bypasses the preset and refuses clipping with a named minimum. Before first observation use the first centre; during/after gaps use the last centre, but mark every absent frame. Crop only original photons. Keep a shared raw reader and pass a serialisable source/label fingerprint, identity and crop recipe to the upstream TileSource. Trace points come from raw photons within observed identity masks and are display-only.",
+      "exit_gate": [
+        "python -m pytest tests/test_cell_tiles.py tests/test_follow.py -q",
+        "Two cells, a long thin shape, an edge crossing and an internal gap remain correctly centred with no clipped observed footprint.",
+        "The raw and label TIFF hashes are unchanged; source_frame_offset maps every label frame to its correct photon frame."
+      ],
+      "known_risks": "A large cell must be found by maximum centred extent, not just area. Own-cell crops must retain native pixel scale with symmetric grid padding. Existing default analysis eligibility may exclude cells retained for images, so do not require tracked measurement tables.",
+      "size": "1–2 days"
+    },
+    {
+      "number": "02",
+      "title": "cell-cycle-image-grid",
+      "why": "Render all tracked cells as rows across each cell's best cycle using Auto-Organotypic's still grid, with shared recording or event time available.",
+      "depends_on": [
+        "01"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "src/pymicroglia/eligibility.py",
+        "src/pymicroglia/pipelines/_auto_microglia_support.py",
+        "tests/test_follow.py"
+      ],
+      "scope": [
+        "Provide a public PyMicroglia still-grid action that constructs cells from the images eligibility view and calls auto_organotypic.grid.stack_to_grid.",
+        "Default to the upstream chain's six requested moments, best scored cycle and circadian-time captions.",
+        "Expose an optional shared recording-time or event-relative window using the upstream grid's alignment and time options.",
+        "Account for short missing trace gaps only for cycle scoring; long gaps invalidate affected cycles. Retain cells without a complete cycle as labelled unavailable rows.",
+        "Forward existing upstream contrast, clipping, label, layout and file-format settings without copying their defaults."
+      ],
+      "out_of_scope": [
+        "Moving crop calculations belong to stage 01.",
+        "Video-grid action belongs to stage 03.",
+        "Automated pipeline wiring belongs to stage 04."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/cell_image_grid.py",
+          "change": "NEW",
+          "reason": "Still-grid action and shared option forwarding"
+        },
+        {
+          "path": "tests/test_cell_image_grid.py",
+          "change": "NEW",
+          "reason": "Best-cycle, shared-time, missing-cycle and saved-grid behaviour"
+        }
+      ],
+      "implementation_sketch": "Proposed call: cell_image_grid(raw, labels, *, output_dir=None, output_name=None, source_frame_offset=0, crop_basis='largest_cell', crop='tight', crop_size_px=None, shared_time=None, **grid_options). Construct TileSources via cell_tiles, then call auto_organotypic.grid.stack_to_grid(tiles, moments=6, align='best', time_scale='ct', **grid_options) unless options explicitly override. shared_time selects actual common source/event hours and sets elapsed/event labels rather than CT. Supply observed-cell display traces to the existing timebase score; the first-cycle exclusion and score formula stay upstream. A cell with no scorable complete cycle remains a named unavailable row. Direct outputs use upstream AI_Exports grid rules; pass output_dir/name through unchanged.",
+      "exit_gate": [
+        "python -m pytest tests/test_cell_image_grid.py -q",
+        "A fixture with differently phased cells shows each chosen cycle under correct CT labels; shared-time mode selects the same source hours across rows.",
+        "Every identity in the images eligibility view appears, including one excluded from analysis; no unobserved frame is claimed as a cell."
+      ],
+      "known_risks": "Auto-Organotypic's best cycle is a score combining swing, fit and phase agreement, not literal maximum amplitude. Do not silently substitute elapsed labels for failed CT alignment. Grid kwargs must be validated against upstream signatures.",
+      "size": "1–2 days"
+    },
+    {
+      "number": "03",
+      "title": "cell-video-grid",
+      "why": "Render every tracked cell through the full source movie via Auto-Organotypic's existing video grid.",
+      "depends_on": [
+        "01",
+        "02"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "src/pymicroglia/video/__init__.py",
+        "tests/test_video_parity.py"
+      ],
+      "scope": [
+        "Provide a public PyMicroglia video-grid action built from the videos eligibility view and moving cell tiles.",
+        "Default to every source frame in order on one recording clock; keep all existing video-grid layout, timestamp, speed, contrast and encoder controls.",
+        "Expose explicit phase/window settings where the upstream grid supports them; record any truncation or resampling.",
+        "Keep missing-cell frames as current raw photon crops with visible missing status; never duplicate an old image."
+      ],
+      "out_of_scope": [
+        "Cell crop policy belongs to stage 01.",
+        "Still-grid selection belongs to stage 02.",
+        "Pipeline wiring belongs to stage 04."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/cell_video_grid.py",
+          "change": "NEW",
+          "reason": "Video-grid action forwarding shared options"
+        },
+        {
+          "path": "tests/test_cell_video_grid.py",
+          "change": "NEW",
+          "reason": "Full-duration synchronized frames, missing labels and video options"
+        }
+      ],
+      "implementation_sketch": "Proposed call: cell_video_grid(raw, labels, *, output_dir=None, output_name=None, source_frame_offset=0, crop_basis='largest_cell', crop='tight', crop_size_px=None, **video_options). Construct TileSources via cell_tiles and call auto_organotypic.video_grid.stack_to_video_grid(tiles, align='start', **video_options). Tile source returns the current source-frame numeric crop while reporting whether that identity was observed; downstream renderer handles colour, range, text, layout and encoding. Use upstream AI_Exports video-grid directory rules for direct calls. Reject output dimensions exceeding encoder limits rather than scaling cells.",
+      "exit_gate": [
+        "python -m pytest tests/test_cell_video_grid.py tests/test_video_parity.py -q",
+        "Output frame count equals the complete requested source window and every tile depicts the same source frame at each output step.",
+        "No identity in the videos eligibility view is omitted, including one excluded from analysis."
+      ],
+      "known_risks": "A missing cell still has raw photons at the held location; mark missing so this is not mistaken for observation. Encoder limits can be hit with many cells; report dimensions and a user-adjustable setting rather than silently shrinking tiles.",
+      "size": "1–2 days"
+    },
+    {
+      "number": "04",
+      "title": "pipeline-and-discoverability",
+      "why": "Make the new grids part of the automated microglia run and expose their settings and saved outputs to users.",
+      "depends_on": [
+        "02",
+        "03"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "src/pymicroglia/pipelines/auto_microglia.py",
+        "src/pymicroglia/pipelines/_auto_microglia_support.py",
+        "src/pymicroglia/guide/pipelines.md",
+        "tests/test_auto_microglia.py"
+      ],
+      "scope": [
+        "Run image and video cell grids after tracking and eligibility, independently of tracked measurement.",
+        "Add separate switches and *_options mappings with upstream option pass-through and preflight validation.",
+        "Use images/videos eligibility views independently; keep existing whole-field exports and tracked-outline outputs.",
+        "Save within the run's visual/images and visual/videos paths; include display-only output records, included identities, crop settings and links in the run manifest/index.",
+        "Update public guidance/action discovery for the new entry points and run a small end-to-end fixture."
+      ],
+      "out_of_scope": [
+        "Do not change Auto-Organotypic rendering internals in this package.",
+        "No full-suite run or Graphify rebuild unless explicitly requested or a required gate."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/pipelines/auto_microglia.py",
+          "change": "MODIFY",
+          "reason": "Stage flags, order and manifest outputs"
+        },
+        {
+          "path": "src/pymicroglia/pipelines/_auto_microglia_support.py",
+          "change": "MODIFY",
+          "reason": "Per-recording grid calls using destination-specific eligible labels"
+        },
+        {
+          "path": "src/pymicroglia/guide/pipelines.md",
+          "change": "MODIFY",
+          "reason": "Public explanation of both grids and controls"
+        },
+        {
+          "path": "tests/test_auto_microglia.py",
+          "change": "MODIFY",
+          "reason": "Pipeline defaults and output contracts"
+        },
+        {
+          "path": "tests/test_cell_grid_pipeline.py",
+          "change": "NEW",
+          "reason": "Small end-to-end run, output paths and resume checks"
+        }
+      ],
+      "implementation_sketch": "Add tracked_cell_grid and tracked_cell_video_grid (or concise equivalent) after eligibility in STAGES and the pipeline signature, with distinct *_options mappings. Reuse the existing motion_inputs document to find measurement_raw, source_frame_offset, cadence and eligibility[stem]['views']['images'/'videos']['labels']; pass one recording per call to cell_image_grid/cell_video_grid. Place outputs under where.path/'visual'/'images' and where.path/'visual'/'videos'. Treat settings and output path as part of the run key, keep overwrite/resume conventions, and update the index/manifest with artefact paths rather than embedding files. Add the new actions to existing public discovery in the package's established style.",
+      "exit_gate": [
+        "python -m pytest tests/test_auto_microglia.py tests/test_cell_grid_pipeline.py tests/test_cell_eligibility.py -q",
+        "One complete synthetic recording writes both display-only grids under the expected visual folders and the manifest links them.",
+        "Disabling tracked measurement does not prevent either grid; independent images/videos eligibility selections are honoured; resume does not overwrite valid outputs."
+      ],
+      "known_risks": "The pipeline has other in-flight uncommitted edits; stage only changed hunks and preserve them. A full-grid movie can be large; do not silently reduce identities, duration or native pixel scale.",
+      "size": "1–2 days"
+    }
+  ]
+}
