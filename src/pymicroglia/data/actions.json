@@ -2783,6 +2783,246 @@
       "source": []
     },
     {
+      "name": "cell_image_grid",
+      "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
+      "method": "visualisation.cell_image_grid.cell_image_grid",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "raw",
+        "labels",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "source_frame_offset",
+        "crop_basis",
+        "crop",
+        "crop_rectangle_px",
+        "trace_channel",
+        "max_trace_gap_h",
+        "display_options",
+        "shared_time",
+        "event_hour"
+      ],
+      "defaults": {
+        "raw": null,
+        "labels": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "source_frame_offset": 0,
+        "crop_basis": "largest_cell",
+        "crop": "tight",
+        "crop_rectangle_px": null,
+        "trace_channel": 1,
+        "max_trace_gap_h": 4.0,
+        "display_options": null,
+        "shared_time": null,
+        "event_hour": null
+      },
+      "parameter_details": {
+        "raw": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "Original photon time-lapse TIFF."
+        },
+        "labels": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "A label image to trace. Left out, the stored segmentation for this source is used."
+        },
+        "output_dir": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Where results are written. Defaults to an AI_Exports folder beside the source, which is where every protocol in this project already puts them."
+        },
+        "output_name": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Exact name for the primary output. Defaults to the source stem plus the action's own suffix."
+        },
+        "overwrite": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Replace an existing output. Off by default: refusing to overwrite is what stops a re-run destroying the figures you were comparing against."
+        },
+        "source_frame_offset": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Number of leading original-photon frames before the first tracked label frame."
+        },
+        "crop_basis": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Use one crop size from the largest cell, or size each cell independently."
+        },
+        "crop": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Accepted final-outline crop margin: tight, standard or wide."
+        },
+        "crop_rectangle_px": {
+          "type": "tuple",
+          "units": "px",
+          "required": false,
+          "description": "Exact (width, height) crop in original image pixels."
+        },
+        "trace_channel": {
+          "type": "int",
+          "units": "one-based channel",
+          "required": false,
+          "description": "Photon channel used for display-only cycle or phase selection."
+        },
+        "max_trace_gap_h": {
+          "type": "float",
+          "units": "hours",
+          "required": false,
+          "description": "Longest internal missing trace gap bridged for display-only timing."
+        },
+        "display_options": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
+        },
+        "shared_time": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "None for each cell's best cycle, recording for shared source hours, or event for event-relative hours."
+        },
+        "event_hour": {
+          "type": "float",
+          "units": "source hours",
+          "required": false,
+          "description": "Source hour treated as zero when shared_time is event."
+        }
+      },
+      "method_version": "2026-09-24-cell-grids-v1",
+      "source": []
+    },
+    {
+      "name": "cell_video_grid",
+      "summary": "Play every selected tracked cell through the original recording in one moving, centred video grid.",
+      "method": "visualisation.cell_video_grid.cell_video_grid",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "raw",
+        "labels",
+        "output_dir",
+        "output_name",
+        "overwrite",
+        "source_frame_offset",
+        "crop_basis",
+        "crop",
+        "crop_rectangle_px",
+        "trace_channel",
+        "max_trace_gap_h",
+        "display_options"
+      ],
+      "defaults": {
+        "raw": null,
+        "labels": null,
+        "output_dir": null,
+        "output_name": null,
+        "overwrite": false,
+        "source_frame_offset": 0,
+        "crop_basis": "largest_cell",
+        "crop": "tight",
+        "crop_rectangle_px": null,
+        "trace_channel": 1,
+        "max_trace_gap_h": 4.0,
+        "display_options": null
+      },
+      "parameter_details": {
+        "raw": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "Original photon time-lapse TIFF."
+        },
+        "labels": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "A label image to trace. Left out, the stored segmentation for this source is used."
+        },
+        "output_dir": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Where results are written. Defaults to an AI_Exports folder beside the source, which is where every protocol in this project already puts them."
+        },
+        "output_name": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Exact name for the primary output. Defaults to the source stem plus the action's own suffix."
+        },
+        "overwrite": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Replace an existing output. Off by default: refusing to overwrite is what stops a re-run destroying the figures you were comparing against."
+        },
+        "source_frame_offset": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Number of leading original-photon frames before the first tracked label frame."
+        },
+        "crop_basis": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Use one crop size from the largest cell, or size each cell independently."
+        },
+        "crop": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Accepted final-outline crop margin: tight, standard or wide."
+        },
+        "crop_rectangle_px": {
+          "type": "tuple",
+          "units": "px",
+          "required": false,
+          "description": "Exact (width, height) crop in original image pixels."
+        },
+        "trace_channel": {
+          "type": "int",
+          "units": "one-based channel",
+          "required": false,
+          "description": "Photon channel used for display-only cycle or phase selection."
+        },
+        "max_trace_gap_h": {
+          "type": "float",
+          "units": "hours",
+          "required": false,
+          "description": "Longest internal missing trace gap bridged for display-only timing."
+        },
+        "display_options": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
+        }
+      },
+      "method_version": "2026-09-24-cell-grids-v1",
+      "source": []
+    },
+    {
       "name": "states",
       "summary": "Learn shared cell-frame states and describe their dynamics and separately tested rhythms.",
       "method": "states.states",
@@ -3086,7 +3326,7 @@
           "type": "mapping",
           "units": "-",
           "required": false,
-          "description": "Display options."
+          "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
         },
         "output_dir": {
           "type": "path",
@@ -4232,6 +4472,10 @@
         "trace_normalization_config",
         "hour_ticks",
         "period_testing",
+        "fft_component_test",
+        "component_surrogates",
+        "component_block_hours",
+        "component_seed",
         "fit_method",
         "significance_method",
         "period_config",
@@ -4300,16 +4544,23 @@
         "trace_normalization_config": {},
         "hour_ticks": 12.0,
         "period_testing": true,
-        "fit_method": null,
+        "fft_component_test": true,
+        "component_surrogates": 199,
+        "component_block_hours": 4.0,
+        "component_seed": 20260923,
+        "fit_method": "fft_nlls",
         "significance_method": null,
-        "period_config": {},
+        "period_config": {
+          "nlls_max_components": 5,
+          "nlls_improvement_alpha": 0.05
+        },
         "period_min_hours": 2.0,
         "period_max_hours": 48.0,
         "rhythmic_alpha": 0.05,
         "multiple_testing": "none",
         "min_observations": 24,
-        "min_cycles": 3.0,
-        "detrend": null,
+        "min_cycles": 2.0,
+        "detrend": "robust_linear",
         "detrend_window_hours": null,
         "detrend_polynomial_degree": null,
         "detrend_min_valid_fraction": null,
@@ -4566,6 +4817,30 @@
           "units": "-",
           "required": false,
           "description": "run and show the per-cell period tests (true/false)"
+        },
+        "fft_component_test": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Use the median3 then mean3, robust-linear and FFT-NLLS component test for cell-grid rhythm calls; false restores the selected periodogram test."
+        },
+        "component_surrogates": {
+          "type": "int",
+          "units": "-",
+          "required": false,
+          "description": "Number of four-hour block-residual surrogate traces used to test each fitted FFT component."
+        },
+        "component_block_hours": {
+          "type": "float",
+          "units": "-",
+          "required": false,
+          "description": "Duration in hours of intact residual blocks shuffled by the FFT component test."
+        },
+        "component_seed": {
+          "type": "int",
+          "units": "-",
+          "required": false,
+          "description": "Base random seed for the deterministic FFT component surrogate test."
         },
         "fit_method": {
           "type": "str",
@@ -32325,6 +32600,27 @@
       "description": "maximum characters per matrix column-label line; 0 disables wrapping"
     },
     {
+      "name": "component_block_hours",
+      "type": "float",
+      "units": "-",
+      "required": false,
+      "description": "Duration in hours of intact residual blocks shuffled by the FFT component test."
+    },
+    {
+      "name": "component_seed",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Base random seed for the deterministic FFT component surrogate test."
+    },
+    {
+      "name": "component_surrogates",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Number of four-hour block-residual surrogate traces used to test each fitted FFT component."
+    },
+    {
       "name": "compression_level",
       "type": "int",
       "units": "level",
@@ -32406,6 +32702,20 @@
       "required": false
     },
     {
+      "name": "crop",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Accepted final-outline crop margin: tight, standard or wide."
+    },
+    {
+      "name": "crop_basis",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Use one crop size from the largest cell, or size each cell independently."
+    },
+    {
       "name": "crop_mode",
       "type": "str",
       "units": "-",
@@ -32432,6 +32742,13 @@
       "units": "-",
       "required": false,
       "description": "Crop px."
+    },
+    {
+      "name": "crop_rectangle_px",
+      "type": "tuple",
+      "units": "px",
+      "required": false,
+      "description": "Exact (width, height) crop in original image pixels."
     },
     {
       "name": "crop_region",
@@ -32687,7 +33004,7 @@
       "type": "mapping",
       "units": "-",
       "required": false,
-      "description": "Display options."
+      "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
     },
     {
       "name": "display_pad_frames",
@@ -32837,6 +33154,13 @@
       "description": "how event frames are ranked: high values, low values, or within-cell deviation"
     },
     {
+      "name": "event_hour",
+      "type": "float",
+      "units": "source hours",
+      "required": false,
+      "description": "Source hour treated as zero when shared_time is event."
+    },
+    {
       "name": "event_hours",
       "type": "float",
       "units": "-",
@@ -32912,6 +33236,13 @@
       "units": "-",
       "required": false,
       "description": "Snapshot measurement columns to use; null selects eligible measured features."
+    },
+    {
+      "name": "fft_component_test",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Use the median3 then mean3, robust-linear and FFT-NLLS component test for cell-grid rhythm calls; false restores the selected periodogram test."
     },
     {
       "name": "fig_height_in",
@@ -33835,6 +34166,13 @@
       "required": false
     },
     {
+      "name": "max_trace_gap_h",
+      "type": "float",
+      "units": "hours",
+      "required": false,
+      "description": "Longest internal missing trace gap bridged for display-only timing."
+    },
+    {
       "name": "measurement_order",
       "type": "list",
       "units": "-",
@@ -34507,6 +34845,13 @@
       "description": "data quantile used to define an event threshold"
     },
     {
+      "name": "raw",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "Original photon time-lapse TIFF."
+    },
+    {
       "name": "raw_colour",
       "type": "str",
       "units": "-",
@@ -34918,6 +35263,13 @@
       "units": "-",
       "description": "True gives every panel the same y range, so amplitudes compare by eye but dim cells vanish.",
       "required": false
+    },
+    {
+      "name": "shared_time",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "None for each cell's best cycle, recording for shared source hours, or event for event-relative hours."
     },
     {
       "name": "sharpness",
@@ -35632,6 +35984,13 @@
       "units": "-",
       "required": false,
       "description": "number of top-ranked frames retained per cell"
+    },
+    {
+      "name": "trace_channel",
+      "type": "int",
+      "units": "one-based channel",
+      "required": false,
+      "description": "Photon channel used for display-only cycle or phase selection."
     },
     {
       "name": "trace_layout",

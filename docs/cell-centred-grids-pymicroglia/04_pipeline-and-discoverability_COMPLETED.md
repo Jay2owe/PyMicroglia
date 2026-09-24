@@ -1,6 +1,6 @@
 # Stage 04: pipeline-and-discoverability
 
-<!-- plan-records: {"depends_on": ["02", "03"], "exit_gate": ["python -m pytest tests/test_auto_microglia.py tests/test_cell_grid_pipeline.py tests/test_cell_eligibility.py -q", "One complete synthetic recording writes both display-only grids under the expected visual folders and the manifest links them.", "Disabling tracked measurement does not prevent either grid; independent images/videos eligibility selections are honoured; resume does not overwrite valid outputs."], "files_touched": [{"change": "MODIFY", "path": "src/pymicroglia/pipelines/auto_microglia.py", "reason": "Stage flags, order and manifest outputs"}, {"change": "MODIFY", "path": "src/pymicroglia/pipelines/_auto_microglia_support.py", "reason": "Per-recording grid calls using destination-specific eligible labels"}, {"change": "MODIFY", "path": "src/pymicroglia/guide/pipelines.md", "reason": "Public explanation of both grids and controls"}, {"change": "MODIFY", "path": "tests/test_auto_microglia.py", "reason": "Pipeline defaults and output contracts"}, {"change": "NEW", "path": "tests/test_cell_grid_pipeline.py", "reason": "Small end-to-end run, output paths and resume checks"}], "read_first": ["00_overview.md", "AGENTS.md", "CLAUDE.md", "src/pymicroglia/pipelines/auto_microglia.py", "src/pymicroglia/pipelines/_auto_microglia_support.py", "src/pymicroglia/guide/pipelines.md", "tests/test_auto_microglia.py"]} -->
+<!-- plan-records: {"depends_on": ["02", "03"], "exit_gate": ["python -m pytest tests/test_auto_microglia.py tests/test_cell_grid_pipeline.py tests/test_cell_eligibility.py -q", "One complete synthetic recording writes both display-only grids under the expected visual folders and the manifest links them.", "Disabling tracked measurement does not prevent either grid; independent images/videos eligibility selections are honoured; resume does not overwrite valid outputs."], "files_touched": [{"change": "MODIFY", "path": "src/pymicroglia/pipelines/auto_microglia.py", "reason": "Stage flags, order and manifest outputs"}, {"change": "MODIFY", "path": "src/pymicroglia/pipelines/_auto_microglia_support.py", "reason": "Per-recording grid calls using destination-specific eligible labels"}, {"change": "MODIFY", "path": "src/pymicroglia/guide/pipelines.md", "reason": "Public explanation of both grids and controls"}, {"change": "MODIFY", "path": "tests/test_auto_microglia.py", "reason": "Pipeline defaults and output contracts"}, {"change": "NEW", "path": "tests/test_cell_grid_pipeline.py", "reason": "Small end-to-end run, output paths and resume checks"}, {"change": "MODIFY", "path": "src/pymicroglia/registry.py", "reason": "Discover direct grid actions"}, {"change": "MODIFY", "path": "src/pymicroglia/data/actions.json", "reason": "Package action contracts"}, {"change": "MODIFY", "path": "tools/regenerate_catalogue.py", "reason": "Regenerate action contracts"}, {"change": "MODIFY", "path": "src/pymicroglia/visualisation/cell_image_grid.py", "reason": "Accept catalogue display-options mapping"}, {"change": "MODIFY", "path": "src/pymicroglia/visualisation/cell_video_grid.py", "reason": "Accept catalogue display-options mapping"}], "read_first": ["00_overview.md", "AGENTS.md", "CLAUDE.md", "src/pymicroglia/pipelines/auto_microglia.py", "src/pymicroglia/pipelines/_auto_microglia_support.py", "src/pymicroglia/guide/pipelines.md", "tests/test_auto_microglia.py"]} -->
 
 ## Why this stage exists
 
@@ -40,6 +40,11 @@ Make the new grids part of the automated microglia run and expose their settings
 | src/pymicroglia/pipelines/auto_microglia.py | MODIFY | Stage flags, order and manifest outputs |
 | src/pymicroglia/pipelines/_auto_microglia_support.py | MODIFY | Per-recording grid calls using destination-specific eligible labels |
 | src/pymicroglia/guide/pipelines.md | MODIFY | Public explanation of both grids and controls |
+| src/pymicroglia/registry.py | MODIFY | Discover direct grid actions |
+| src/pymicroglia/data/actions.json | MODIFY | Package their action contracts |
+| tools/regenerate_catalogue.py | MODIFY | Regenerate the two new action contracts |
+| src/pymicroglia/visualisation/cell_image_grid.py | MODIFY | Accept catalogue display-options mapping |
+| src/pymicroglia/visualisation/cell_video_grid.py | MODIFY | Accept catalogue display-options mapping |
 | tests/test_auto_microglia.py | MODIFY | Pipeline defaults and output contracts |
 | tests/test_cell_grid_pipeline.py | NEW | Small end-to-end run, output paths and resume checks |
 
@@ -56,3 +61,7 @@ Add tracked_cell_grid and tracked_cell_video_grid (or concise equivalent) after 
 ## Known risks
 
 The pipeline has other in-flight uncommitted edits; stage only changed hunks and preserve them. A full-grid movie can be large; do not silently reduce identities, duration or native pixel scale.
+
+## Execution status
+
+Completed. The pipeline wiring, direct action catalogue and guide are implemented. The focused gate passed (58 tests across cell crops, both grids, pipeline wiring and eligibility). The source file list above records the additional action-discovery edits made during execution.

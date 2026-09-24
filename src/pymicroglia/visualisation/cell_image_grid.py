@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 
@@ -97,10 +97,13 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     source_frame_offset: int = 0,
                     crop_basis: str = "largest_cell", crop: str = "tight",
                     crop_size_px: tuple[int, int] | None = None,
+                    crop_rectangle_px: tuple[int, int] | None = None,
                     shared_time: str | None = None,
                     event_hour: float | None = None,
                     max_trace_gap_h: float = 4.0,
-                    trace_channel: int = 1, **grid_options) -> dict[str, Any]:
+                    trace_channel: int = 1,
+                    display_options: Mapping[str, Any] | None = None,
+                    **grid_options) -> dict[str, Any]:
     """Draw all identities in the supplied images label view as grid rows.
 
     Default columns show each cell's own best scored cycle on circadian time.
@@ -112,6 +115,11 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         raise ValueError("shared_time must be None, 'recording' or 'event'")
     if shared_time == "event" and event_hour is None:
         raise ValueError("shared_time='event' needs event_hour in source hours")
+    if crop_rectangle_px is not None:
+        if crop_size_px is not None:
+            raise ValueError("give crop_size_px or crop_rectangle_px, not both")
+        crop_size_px = crop_rectangle_px
+    grid_options = {**dict(display_options or {}), **grid_options}
     if not np.isfinite(float(max_trace_gap_h)) or float(max_trace_gap_h) < 0:
         raise ValueError("max_trace_gap_h must be nonnegative")
     tiles = cell_tiles(

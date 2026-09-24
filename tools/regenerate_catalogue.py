@@ -1252,6 +1252,44 @@ _TRACKED_IMAGE_PARAMS: list[dict] = _TRACKED_DISPLAY_COMMON + [
     _PIPELINE_RUN[3],
 ]
 
+_CELL_GRID_COMMON: list[dict] = [
+    {"name": "raw", "type": "path", "units": "-", "required": True,
+     "default": None, "description": "Original photon time-lapse TIFF."},
+    {"name": "labels", "type": "path", "units": "-", "required": True,
+     "default": None, "description": "Destination-specific tracked identity labels TIFF."},
+    COMMON_PARAMS[1], COMMON_PARAMS[2], COMMON_PARAMS[3],
+    {"name": "source_frame_offset", "type": "int", "units": "frames",
+     "required": False, "default": 0,
+     "description": "Number of original photon frames before the first label frame."},
+    {"name": "crop_basis", "type": "str", "units": "-",
+     "required": False, "default": "largest_cell",
+     "description": "Use one crop size from the largest cell, or size each cell independently."},
+    {"name": "crop", "type": "str", "units": "-",
+     "required": False, "default": "tight",
+     "description": "Accepted final-outline crop margin: tight, standard or wide."},
+    {"name": "crop_rectangle_px", "type": "tuple", "units": "px",
+     "required": False, "default": None,
+     "description": "Exact (width, height) crop in original image pixels."},
+    {"name": "trace_channel", "type": "int", "units": "one-based channel",
+     "required": False, "default": 1,
+     "description": "Photon channel used for display-only cycle or phase selection."},
+    {"name": "max_trace_gap_h", "type": "float", "units": "hours",
+     "required": False, "default": 4.0,
+     "description": "Longest internal missing trace gap bridged for display-only timing."},
+    {"name": "display_options", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."},
+]
+
+_CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "shared_time", "type": "str", "units": "-",
+     "required": False, "default": None,
+     "description": "None for each cell's best cycle, recording for shared source hours, or event for event-relative hours."},
+    {"name": "event_hour", "type": "float", "units": "source hours",
+     "required": False, "default": None,
+     "description": "Source hour treated as zero when shared_time is event."},
+]
+
 _HANDOFF_ACTIONS: list[dict] = [
     {"name": "cell_eligibility",
      "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
@@ -1267,6 +1305,16 @@ _HANDOFF_ACTIONS: list[dict] = [
      "method": "visualisation.overlays.tracked_cell_image",
      "params": _TRACKED_IMAGE_PARAMS, "display_only": True,
      "method_version": "2026-09-22-tracked-outline-display-v1"},
+    {"name": "cell_image_grid",
+     "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
+     "method": "visualisation.cell_image_grid.cell_image_grid",
+     "params": _CELL_IMAGE_GRID_PARAMS, "display_only": True,
+     "method_version": "2026-09-24-cell-grids-v1"},
+    {"name": "cell_video_grid",
+     "summary": "Play every selected tracked cell through the original recording in one moving, centred video grid.",
+     "method": "visualisation.cell_video_grid.cell_video_grid",
+     "params": _CELL_GRID_COMMON, "display_only": True,
+     "method_version": "2026-09-24-cell-grids-v1"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [

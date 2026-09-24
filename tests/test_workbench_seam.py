@@ -17,6 +17,17 @@ def test_only_the_public_seam_imports_workbench():
     assert importers == {"workbench.py"}
 
 
+def test_fft_component_gateway_does_not_require_package_attribute(monkeypatch):
+    import circadian_workbench as core
+    from pymicroglia import workbench
+
+    monkeypatch.delattr(core, "component_significance", raising=False)
+    expected = [{"period_hours": 24.0, "status": "ok"}]
+    monkeypatch.setattr(workbench, "_test_components", lambda *args, **kwargs: expected)
+
+    assert workbench.test_fft_components([0.0, 1.0], [1.0, 2.0], [24.0]) == expected
+
+
 def test_late_start_normalization_keeps_recording_time():
     from pymicroglia import workbench
     hours = np.arange(12., 30., .5)

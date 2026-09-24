@@ -42,6 +42,8 @@ def _period_annotation(evidence, identity, metrics, labels):
             text = f'{period:.3g} h'
             if not bool(result.get('supported_period', True)):
                 text += ' (limited)'
+            if bool(result.get('alternate_fft_component', False)):
+                text += f" [component {int(result.get('period_source_component'))}]"
             if np.isfinite(q_value):
                 text += f', q={q_value:.2g}'
             elif np.isfinite(p_value):
@@ -110,7 +112,8 @@ def draw(points, settings, evidence=None, *, canvas=None):
         if row != rows - 1 and index + columns < len(identities):
             ax.tick_params(labelbottom=False)
     if period_style:
-        handles = [Line2D([], [], color=house_colour('circadian_red'), linewidth=2, label=f"Significant period test (uncorrected p < {settings.get('rhythmic_alpha', 0.05):g})"), Line2D([], [], color=house_colour('nan_text'), linewidth=2, label='Other cells')]
+        test_label = ('Conditional FFT component' if settings.get('fft_component_test') else 'Significant period test')
+        handles = [Line2D([], [], color=house_colour('circadian_red'), linewidth=2, label=f"{test_label} (uncorrected p < {settings.get('rhythmic_alpha', 0.05):g})"), Line2D([], [], color=house_colour('nan_text'), linewidth=2, label='Other cells')]
         if 'descriptive_fit' in points and points.descriptive_fit.notna().any():
             handles.append(Line2D([], [], color=house_colour('dark'), linewidth=2, linestyle=':', label=settings.get('fit_label') or 'Descriptive cosinor fit'))
         grid.update(wspace=0.18, hspace=0.4)

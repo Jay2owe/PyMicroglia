@@ -49,14 +49,15 @@ from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
 from . import motion_handoff as _motion
 from ._auto_microglia_support import (
     _measure_tracked, _eligible_tracks, _tracked_videos, _tracked_images,
-    _mask_every, _measure_every, _small,
+    _cell_grids, _validate_cell_grid_options,
+    _mask_every, _measure_every, _small, _Registered,
 )
 
 __all__ = ["METHOD_VERSION", "PIPELINE", "STAGES", "AO_STAGES", "NOT_OURS",
            "MASK_STAGE", "differences", "register", "run"]
 
 PIPELINE = "auto_microglia"
-METHOD_VERSION = "2026-09-22-auto-microglia-eligibility-v3"
+METHOD_VERSION = "2026-09-24-auto-microglia-cell-grids-v4"
 
 #: Auto-Organotypic's stages this pipeline leaves out by default, and why. Each
 #: is a *default*, not a removal: the matching keyword turns it back on.
@@ -109,12 +110,14 @@ AO_STAGES: tuple[str, ...] = ("acquire", "index", "trim_before_crop",
 #: chain any more -- it is a stage *of* the chain, registered into it after
 #: ``split``, so that is where it is listed.
 OURS: tuple[str, ...] = ("cell_masks", "cells", "motion_inputs", "motion",
-                         "eligibility", "tracked_measurement", "tracked_video",
+                         "eligibility", "tracked_cell_grid",
+                         "tracked_cell_video_grid", "tracked_measurement", "tracked_video",
                          "tracked_image")
 _AFTER = AO_STAGES.index("split") + 1
 STAGES: tuple[str, ...] = (
     AO_STAGES[:_AFTER] + ("cell_masks",) + AO_STAGES[_AFTER:]
     + ("cells", "motion_inputs", "motion", "eligibility",
+       "tracked_cell_grid", "tracked_cell_video_grid",
        "tracked_measurement", "tracked_video", "tracked_image"))
 
 
@@ -156,6 +159,14 @@ def differences() -> list[dict[str, Any]]:
          "here": True,
          "why": "tracked labels are measured against original unmasked photons "
                 "rather than the masked and scaled input Motion tracks"},
+        {"setting": "tracked_cell_grid", "auto_organotypic": None,
+         "here": True,
+         "why": "all cells in the images eligibility view are shown across "
+                "their own best circadian cycle using the shared image grid"},
+        {"setting": "tracked_cell_video_grid", "auto_organotypic": None,
+         "here": True,
+         "why": "all cells in the videos eligibility view follow their "
+                "positions through the full original photon recording"},
         {"setting": "tracked_video", "auto_organotypic": None, "here": True,
          "why": "the accepted per-identity outlines are drawn over original "
                 "photons as a display-only review movie"},
@@ -298,6 +309,10 @@ def run(folder=None, *,
         eligibility_exclude_from: str | Sequence[str] = ("analysis",),
         tracked_measurement: bool = True,
         tracked_measure_modules: Sequence[str] = ("intensity",),
+        tracked_cell_grid: bool = True,
+        tracked_cell_grid_options: Mapping[str, Any] | None = None,
+        tracked_cell_video_grid: bool = True,
+        tracked_cell_video_grid_options: Mapping[str, Any] | None = None,
         tracked_video: bool = True,
         tracked_video_options: Mapping[str, Any] | None = None,
         tracked_image: bool = True,
@@ -384,6 +399,8 @@ def run(folder=None, *,
             "them out and let the cell mask find the regions instead.")
 
     _the_stages_we_turn_off_still_exist(_chain)
+    _validate_cell_grid_options(tracked_cell_grid_options,
+                                tracked_cell_video_grid_options)
 
     if chain_review is not None:
         options["review"] = bool(chain_review)
@@ -403,6 +420,11 @@ def run(folder=None, *,
                                        eligibility_max_missing_fraction,
                                    "eligibility_exclude_from":
                                        eligibility_exclude_from,
+                                   "tracked_cell_grid": tracked_cell_grid,
+                                   "tracked_cell_grid_options": tracked_cell_grid_options,
+                                   "tracked_cell_video_grid": tracked_cell_video_grid,
+                                   "tracked_cell_video_grid_options":
+                                       tracked_cell_video_grid_options,
                                    "method": METHOD_VERSION}))
     where = run_folder(root, PIPELINE, label, if_exists)
     if where.reuse:
@@ -525,6 +547,22 @@ def run(folder=None, *,
                     len(result["excluded_identities"])
                     for result in eligibility_results.values())
             outputs["eligibility"] = eligibility_results
+        if tracked_cell_grid:
+            with log("tracked_cell_grid") as entry:
+                grids = _cell_grids(
+                    "images", outputs["motion"]["tracking"], handoff,
+                    eligibility_results, where.path,
+                    options=tracked_cell_grid_options)
+                entry["recordings"] = len(grids)
+            outputs["tracked_cell_grid"] = grids
+        if tracked_cell_video_grid:
+            with log("tracked_cell_video_grid") as entry:
+                videos_grid = _cell_grids(
+                    "videos", outputs["motion"]["tracking"], handoff,
+                    eligibility_results, where.path,
+                    options=tracked_cell_video_grid_options)
+                entry["recordings"] = len(videos_grid)
+            outputs["tracked_cell_video_grid"] = videos_grid
         if tracked_measurement:
             with log("tracked_measurement") as entry:
                 measured_tracks = _measure_tracked(

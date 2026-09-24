@@ -447,6 +447,22 @@
     "description": "run and show the per-cell period tests (true/false)",
     "type": "mapping"
   },
+  "fft_component_test": {
+    "description": "Use the median3 then mean3, robust-linear and FFT-NLLS component test for cell-grid rhythm calls; false restores the selected periodogram test.",
+    "type": "bool"
+  },
+  "component_surrogates": {
+    "description": "Number of four-hour block-residual surrogate traces used to test each fitted FFT component.",
+    "type": "int"
+  },
+  "component_block_hours": {
+    "description": "Duration in hours of intact residual blocks shuffled by the FFT component test.",
+    "type": "float"
+  },
+  "component_seed": {
+    "description": "Base random seed for the deterministic FFT component surrogate test.",
+    "type": "int"
+  },
   "outline": {
     "description": "colour of the outline drawn over each image tile",
     "type": "str"

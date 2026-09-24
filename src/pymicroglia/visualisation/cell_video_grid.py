@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 
@@ -17,8 +17,10 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     source_frame_offset: int = 0,
                     crop_basis: str = "largest_cell", crop: str = "tight",
                     crop_size_px: tuple[int, int] | None = None,
+                    crop_rectangle_px: tuple[int, int] | None = None,
                     trace_channel: int = 1,
                     max_trace_gap_h: float = 4.0,
+                    display_options: Mapping[str, Any] | None = None,
                     **video_options) -> dict[str, Any]:
     """Play every requested source frame with each cell centred in its tile.
 
@@ -26,6 +28,11 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     cell follows the same original source-frame clock; explicit alignment,
     playback, labels, contrast and encoding options go to the shared renderer.
     """
+    if crop_rectangle_px is not None:
+        if crop_size_px is not None:
+            raise ValueError("give crop_size_px or crop_rectangle_px, not both")
+        crop_size_px = crop_rectangle_px
+    video_options = {**dict(display_options or {}), **video_options}
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,
         frame_interval_h=video_options.get("frame_interval_h"),

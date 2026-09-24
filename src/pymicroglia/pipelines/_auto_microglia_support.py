@@ -8,6 +8,93 @@ from typing import Any, Mapping, Sequence
 from ..review import Review
 
 
+def _validate_cell_grid_options(image_options: Mapping[str, Any] | None,
+                                video_options: Mapping[str, Any] | None) -> None:
+    """Reject misspelled visual settings before running the upstream chain."""
+    import inspect
+    from auto_organotypic import grid, video_grid
+    from ..visualisation.cell_image_grid import cell_image_grid
+    from ..visualisation.cell_video_grid import cell_video_grid
+
+    for label, supplied, wrapper, upstream in (
+            ("tracked_cell_grid_options", image_options, cell_image_grid,
+             grid.stack_to_grid),
+            ("tracked_cell_video_grid_options", video_options, cell_video_grid,
+             video_grid.stack_to_video_grid)):
+        if supplied is None:
+            continue
+        if not isinstance(supplied, Mapping):
+            raise TypeError(f"{label} must be a settings mapping")
+        reserved = {"raw", "labels", "sources", "output_dir",
+                    "source_frame_offset", "frame_interval_h"}
+        forbidden = sorted(reserved.intersection(supplied))
+        if forbidden:
+            raise ValueError(f"{label} cannot replace pipeline-owned inputs: "
+                             + ", ".join(forbidden))
+        allowed = (set(inspect.signature(wrapper).parameters) |
+                   set(inspect.signature(upstream).parameters))
+        unknown = sorted(set(supplied) - allowed)
+        if unknown:
+            raise ValueError(f"{label} has unknown setting(s): "
+                             + ", ".join(map(str, unknown)))
+        nested = supplied.get("display_options", {})
+        if not isinstance(nested, Mapping):
+            raise TypeError(f"{label}.display_options must be a mapping")
+        bad_nested = sorted(set(nested) - set(inspect.signature(upstream).parameters))
+        if bad_nested:
+            raise ValueError(f"{label}.display_options has unknown setting(s): "
+                             + ", ".join(map(str, bad_nested)))
+
+
+def _cell_grids(kind: str, tracking: Mapping[str, Any],
+                handoff: Mapping[str, Any], eligibility: Mapping[str, Any],
+                folder: Path, *, options: Mapping[str, Any] | None = None
+                ) -> dict[str, Any]:
+    """Render one recording per call with its own eligibility label view."""
+    import json
+    from ..visualisation.cell_image_grid import cell_image_grid
+    from ..visualisation.cell_video_grid import cell_video_grid
+
+    if kind not in ("images", "videos"):
+        raise ValueError("cell grid destination must be images or videos")
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    settings = dict(options or {})
+    name = settings.pop("output_name", None)
+    action = cell_image_grid if kind == "images" else cell_video_grid
+    out: dict[str, Any] = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        labels = eligibility[stem]["views"][kind]["labels"]
+        destination = folder / "visual" / kind / stem
+        try:
+            report = action(
+                prepared["measurement_raw"], labels,
+                output_dir=destination,
+                output_name=name or f"{stem}_cell_{'grid' if kind == 'images' else 'video_grid'}",
+                source_frame_offset=int(result["source_frame_offset"]),
+                frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+                **settings)
+        except ValueError as error:
+            if "contains no tracked cells" not in str(error):
+                raise
+            out[stem] = {"status": "no cells in selected eligibility view",
+                         "eligibility_labels": str(labels),
+                         "display_only": True, "output": None}
+            continue
+        out[stem] = {
+            "output": report["output"], "display_only": True,
+            "eligibility_labels": str(labels),
+            "cell_identities": report["cell_grid"]["cell_identities"],
+            "source_frame_offset": int(result["source_frame_offset"]),
+            "crop": [one["provenance"]["crop_size_px"]
+                     for one in report.get("tile_sources", [])],
+            **({"cycle_selection": report["cell_grid"]["cycle_selection"]}
+               if kind == "images" else {}),
+        }
+    return out
+
+
 def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
                      folder: Path, *, modules: Sequence[str],
                      eligibility: Mapping[str, Any] | None = None) -> dict[str, Any]:

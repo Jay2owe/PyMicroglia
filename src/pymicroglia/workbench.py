@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 
 import circadian_workbench as cw
+from circadian_workbench.component_significance import test_components as _test_components
 
 WORKBENCH_VERSION = cw.__version__
 
@@ -171,6 +172,13 @@ def filter_rhythm_trace(hours, values, filtering):
                 if key in {"method", "window_hours", "max_gap_hours", "min_observations"}}
     completed = cw.filter_trace(hours, values, filtering=settings)
     return {**deepcopy(completed.data), "workbench_run_record": deepcopy(completed.run_record)}
+
+
+def test_fft_components(hours, detrended_values, periods_hours, **settings):
+    """Use Workbench's conditional, block-surrogate component test."""
+    return _test_components(
+        hours, detrended_values, periods_hours, **settings
+    )
 
 def benchmark_score_interval(units, *, confidence, bounds):
     """Uncertainty for declared independent simulation units, computed by Workbench."""

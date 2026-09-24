@@ -139,8 +139,10 @@ def test_registered_builder_fits_original_values_and_keeps_display_separate(monk
 
     def estimate(hours, values, params, method):
         received.append((method, np.asarray(values, float).copy(), params['detrend']))
-        return {'status': 'ok', 'period_hours': 4.0, 'p_value': 0.01, 'workbench_run_record_json': '{}'}
+        return {'status': 'ok', 'period_hours': 4.0, 'components': [{'period_hours': 4.0, 'selected': True}], 'diagnostics': {}, 'workbench_run_record_json': '{}'}
     monkeypatch.setattr(circadian, 'estimate_one', estimate)
+    monkeypatch.setattr(circadian, 'detrend_trace', lambda hours, values, params: {'values': list(values)})
+    monkeypatch.setattr(preparation, 'test_cell_components', lambda *args, **kwargs: ([{'component': 1, 'status': 'ok', 'period_hours': 4.0, 'empirical_p_uncorrected': 0.01}], {'component': 1, 'status': 'ok', 'period_hours': 4.0, 'empirical_p_uncorrected': 0.01, 'selected_fft_component': True}))
     ctx = SimpleNamespace(spec=spec, name='all-cell-trace-grid', table=lambda _: original.copy(), option=options.__getitem__, module_params=lambda _: {})
     prepared, evidence = preparation.prepare(ctx, options)
     data = prepared['traces']
@@ -150,13 +152,38 @@ def test_registered_builder_fits_original_values_and_keeps_display_separate(monk
         assert len(result.axes) == 2
         assert len(result.figure_data) == 16
         assert set(result.auxiliary['statistics.csv'].rhythm_status) == {'rhythmic'}
-        assert [method for method, _, _ in received] == ['lomb', 'lomb']
+        assert [method for method, _, _ in received] == ['fft_nlls', 'fft_nlls']
         assert all((detrend == 'robust_linear' for _, _, detrend in received))
-        np.testing.assert_array_equal(received[0][1], original.loc[original.identity.eq(2), 'corrected_mean'])
+        np.testing.assert_array_equal(received[0][1], preparation.median_then_mean(original.loc[original.identity.eq(2), 'corrected_mean'].to_numpy(float)))
         assert not np.allclose(received[0][1], result.figure_data.loc[result.figure_data.identity.eq(2), 'value'].to_numpy(float))
     finally:
         import matplotlib.pyplot as plt
         plt.close(result.figure)
+
+def test_fft_grid_reports_the_period_tested_by_its_displayed_p_value(monkeypatch):
+    resolved = _resolved()
+    resolved['method'] = 'fft_nlls'
+    resolved['multiple_testing'] = 'none'
+    monkeypatch.setattr(circadian, 'estimate_one', lambda *args, **kwargs: {
+        'status': 'ok', 'period_hours': 30.0,
+        'components': [{'period_hours': 30.0, 'selected': True},
+                       {'period_hours': 12.0, 'selected': False}],
+        'diagnostics': {},
+    })
+    monkeypatch.setattr(circadian, 'detrend_trace', lambda hours, values, params: {'values': list(values)})
+    monkeypatch.setattr(preparation, 'test_cell_components', lambda *args, **kwargs: (
+        [{'component': 1, 'period_hours': 30.0, 'status': 'ok', 'empirical_p_uncorrected': .2},
+         {'component': 2, 'period_hours': 12.0, 'status': 'ok', 'empirical_p_uncorrected': .1}],
+        None,
+    ))
+    _, evidence = preparation.trace_data(
+        _frame(), ['corrected_mean'], [2], resolved, 'raw', 'none', {},
+        fft_component_test=True, recording='test',
+    )
+    assert evidence.period_hours.iloc[0] == 12.0
+    assert evidence.p_value.iloc[0] == .1
+    assert evidence.rhythm_status.iloc[0] == 'not rhythmic'
+
 
 def test_reference_period_style_changes_display_only(monkeypatch):
     helpers = _functions()
@@ -185,6 +212,7 @@ def test_fft_nlls_period_style_uses_the_actual_multicomponent_fit(monkeypatch):
     helpers = _functions()
     points, tests = helpers['trace_data'](_frame(), ['corrected_mean'], [2], _resolved(), 'detrended', 'minmax', {})
     points.loc[points.frame_index.eq(0), ['processed_value', 'value']] = np.nan
+    points.loc[points.frame_index.eq(3), ['processed_value', 'value']] = np.nan
     tests.loc[:, 'estimation_method'] = 'fft_nlls'
     tests.loc[:, 'period_hours'] = 4.0
     tests.loc[:, 'estimate_status'] = 'ok'
@@ -201,8 +229,10 @@ def test_fft_nlls_period_style_uses_the_actual_multicomponent_fit(monkeypatch):
     slope, intercept = np.linalg.lstsq(np.column_stack([processed[usable], np.ones(usable.sum())]), displayed[usable], rcond=None)[0]
     expected = slope * native + intercept
     expected[segment.hours.to_numpy(float) < segment.loc[usable, 'hours'].min()] = np.nan
+    expected[~usable] = np.nan
     np.testing.assert_allclose(segment.descriptive_fit, expected, equal_nan=True)
     assert np.isnan(segment.descriptive_fit.iloc[0])
+    assert np.isnan(segment.loc[segment.frame_index.eq(3), 'descriptive_fit']).all()
     assert set(segment.fit_kind) == {'actual summed FFT-NLLS fit'}
 
 

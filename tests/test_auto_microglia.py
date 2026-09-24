@@ -120,6 +120,21 @@ def fake_motion_engine(monkeypatch):
             "eligibility_labels": str(options["labels"]),
             "display_only": True,
         })
+    from pymicroglia.visualisation import cell_image_grid as image_grid_module
+    from pymicroglia.visualisation import cell_video_grid as video_grid_module
+
+    def fake_grid(source, labels, **options):
+        suffix = ".png" if "images" in str(options["output_dir"]) else ".mp4"
+        return {
+            "output": str(Path(options["output_dir"]) /
+                          (str(options["output_name"]) + suffix)),
+            "tile_sources": [{"provenance": {"crop_size_px": [5, 5]}}],
+            "cell_grid": {"cell_identities": ["1"], "cycle_selection": []},
+            "display_only": True,
+        }
+
+    monkeypatch.setattr(image_grid_module, "cell_image_grid", fake_grid)
+    monkeypatch.setattr(video_grid_module, "cell_video_grid", fake_grid)
 
 
 # ── a chain that is not the chain ───────────────────────────────────────────
@@ -228,6 +243,10 @@ def test_eligibility_defaults_filter_analysis_but_leave_review_visuals_complete(
             ["eligibility_labels"] == result["views"]["videos"]["labels"])
     assert (manifest["outputs"]["tracked_image"][stem]
             ["eligibility_labels"] == result["views"]["images"]["labels"])
+    assert (manifest["outputs"]["tracked_cell_grid"][stem]
+            ["eligibility_labels"] == result["views"]["images"]["labels"])
+    assert (manifest["outputs"]["tracked_cell_video_grid"][stem]
+            ["eligibility_labels"] == result["views"]["videos"]["labels"])
 
 
 def test_user_can_filter_analysis_video_and_image_independently(
@@ -243,6 +262,31 @@ def test_user_can_filter_analysis_video_and_image_independently(
             ["eligibility_labels"] == result["views"]["videos"]["labels"])
     assert (manifest["outputs"]["tracked_image"][stem]
             ["eligibility_labels"] == result["views"]["images"]["labels"])
+    assert (manifest["outputs"]["tracked_cell_grid"][stem]
+            ["eligibility_labels"] == result["views"]["images"]["labels"])
+    assert (manifest["outputs"]["tracked_cell_video_grid"][stem]
+            ["eligibility_labels"] == result["views"]["videos"]["labels"])
+
+
+def test_cell_grids_do_not_depend_on_tracked_measurement_and_resume(
+        fake_chain, fake_mask, fake_measurement, tmp_path, monkeypatch):
+    folder = str(tmp_path / "source")
+    first = auto_microglia.run(
+        folder, output_dir=tmp_path / "out", tracked_measurement=False,
+        tracked_video=False, tracked_image=False)
+    assert "tracked_measurement" not in first["outputs"]
+    assert first["outputs"]["tracked_cell_grid"]
+    assert first["outputs"]["tracked_cell_video_grid"]
+    assert all("visual/images" in row["output"].replace("\\", "/")
+               for row in first["outputs"]["tracked_cell_grid"].values())
+    assert all("visual/videos" in row["output"].replace("\\", "/")
+               for row in first["outputs"]["tracked_cell_video_grid"].values())
+    monkeypatch.setattr(auto_microglia, "_cell_grids",
+                        lambda *a, **k: pytest.fail("resume reran a cell grid"))
+    resumed = auto_microglia.run(
+        folder, output_dir=tmp_path / "out", tracked_measurement=False,
+        tracked_video=False, tracked_image=False, if_exists="skip")
+    assert resumed["reused"] is True
 
 
 @pytest.fixture
@@ -263,7 +307,8 @@ def fake_measurement(monkeypatch):
         return {"regions": 2, "table": [{"label": 1}, {"label": 2}]}
 
     monkeypatch.setattr(region_trace, "run", run)
-    monkeypatch.setattr(auto_microglia, "_admissible",
+    from pymicroglia.pipelines import _auto_microglia_support as _support
+    monkeypatch.setattr(_support, "_admissible",
                         lambda *a, **k: {"admissible": 2, "tested": 2,
                                          "tissue_channel": 2,
                                          "decoys": "on tissue, absolute counts"})

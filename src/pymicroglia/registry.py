@@ -56,6 +56,8 @@ MODULE_NAMES: tuple[str, ...] = (
     "trace_tables",
     "visualisation.qc",
     "visualisation.overlays",
+    "visualisation.cell_image_grid",
+    "visualisation.cell_video_grid",
     "publication",
     "video",
     "pipelines.dluc_single_cell",
