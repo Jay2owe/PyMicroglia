@@ -3073,6 +3073,7 @@
         "display_options",
         "centre_method",
         "centre_smoothing_frames",
+        "centre_deadband_fraction",
         "missing_centre"
       ],
       "defaults": {
@@ -3103,6 +3104,7 @@
         "display_options": null,
         "centre_method": "mask",
         "centre_smoothing_frames": 5,
+        "centre_deadband_fraction": 0.05,
         "missing_centre": "interpolate"
       },
       "parameter_details": {
@@ -3268,6 +3270,12 @@
           "required": false,
           "description": "Centered odd-frame median then triangular mean for video crop centers; zero disables smoothing. Original masks and photons are unchanged."
         },
+        "centre_deadband_fraction": {
+          "type": "float",
+          "units": "fraction of tile short side",
+          "required": false,
+          "description": "Hold a video crop until its smoothed center moves more than this fraction of the tile's short side; follow only the excess. Zero disables it."
+        },
         "missing_centre": {
           "type": "str",
           "units": "-",
@@ -3275,7 +3283,7 @@
           "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."
         }
       },
-      "method_version": "2026-09-24-cell-video-grid-v5",
+      "method_version": "2026-09-24-cell-video-grid-v6",
       "source": []
     },
     {
@@ -32777,6 +32785,13 @@
       "units": "-",
       "description": "half-width of the stationarity box, px",
       "required": false
+    },
+    {
+      "name": "centre_deadband_fraction",
+      "type": "float",
+      "units": "fraction of tile short side",
+      "required": false,
+      "description": "Hold a video crop until its smoothed center moves more than this fraction of the tile's short side; follow only the excess. Zero disables it."
     },
     {
       "name": "centre_method",

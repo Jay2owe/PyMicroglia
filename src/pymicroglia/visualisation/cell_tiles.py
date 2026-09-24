@@ -123,6 +123,29 @@ def _smooth_centres(centres: np.ndarray, frames: int) -> np.ndarray:
         for axis in range(2)], axis=1)
 
 
+def _hold_small_movements(centres: np.ndarray, threshold_px: float) -> np.ndarray:
+    """Keep a crop still until the candidate moves beyond its pixel deadband."""
+    if threshold_px == 0:
+        return centres
+    held = np.empty_like(centres)
+    held[0] = centres[0]
+    for index in range(1, len(centres)):
+        delta = centres[index] - held[index - 1]
+        distance = float(np.hypot(delta[0], delta[1]))
+        held[index] = held[index - 1]
+        if distance > threshold_px:
+            held[index] += delta * ((distance - threshold_px) / distance)
+    return held
+
+
+def _reach_for_bounds(bounds: np.ndarray, centres: np.ndarray,
+                      known: np.ndarray) -> list[int]:
+    rounded = np.rint(centres[known])
+    cell_bounds = bounds[known]
+    return [int(np.max(np.abs(cell_bounds[:, :2] - rounded[:, :1]))),
+            int(np.max(np.abs(cell_bounds[:, 2:] - rounded[:, 1:])))]
+
+
 def _mask_centre(yy: np.ndarray, xx: np.ndarray, photons: np.ndarray,
                  method: str) -> tuple[float, float]:
     """Find an observed mask's centre without changing its measured trace."""
@@ -151,6 +174,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                identity_prefix: str = "Cell", trace_channel: int = 1,
                missing_centre: str = "hold", outline: bool = False,
                centre_smoothing_frames: int = 0,
+               centre_deadband_fraction: float = 0.0,
                centre_method: str = "mask",
                mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
@@ -186,6 +210,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             centre_smoothing_frames < 0 or
             (centre_smoothing_frames != 0 and centre_smoothing_frames % 2 != 1)):
         raise ValueError("centre_smoothing_frames must be zero or a positive odd integer")
+    if (isinstance(centre_deadband_fraction, bool) or
+            not np.isfinite(float(centre_deadband_fraction)) or
+            not 0 <= float(centre_deadband_fraction) <= 1):
+        raise ValueError("centre_deadband_fraction must be between zero and one")
     if not isinstance(outline, bool):
         raise ValueError("outline must be true or false")
     if mask_style not in ("outline", "fill"):
@@ -282,11 +310,22 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                     centres[identity][index] = held
         centres[identity] = _smooth_centres(centres[identity],
                                            centre_smoothing_frames)
-        rounded = np.rint(centres[identity][known])
-        cell_bounds = bounds[identity][known]
-        reaches[identity] = [
-            int(np.max(np.abs(cell_bounds[:, :2] - rounded[:, :1]))),
-            int(np.max(np.abs(cell_bounds[:, 2:] - rounded[:, 1:]))) ]
+        reaches[identity] = _reach_for_bounds(
+            bounds[identity], centres[identity], known)
+    common_reach = (max(one[0] for one in reaches.values()),
+                    max(one[1] for one in reaches.values()))
+    deadband_px = {}
+    for identity in ids:
+        reference_size = (explicit if explicit is not None else
+                          _size_for(common_reach if basis == "largest_cell"
+                                    else tuple(reaches[identity]), mode))
+        deadband_px[identity] = (float(centre_deadband_fraction) *
+                                 min(reference_size))
+        centres[identity] = _hold_small_movements(
+            centres[identity], deadband_px[identity])
+        reaches[identity] = _reach_for_bounds(
+            bounds[identity], centres[identity],
+            np.flatnonzero(observed[identity]))
     common_reach = (max(one[0] for one in reaches.values()),
                     max(one[1] for one in reaches.values()))
     raw_fingerprint = store.fingerprint(raw_path).as_dict()
@@ -351,6 +390,9 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "frame_interval_h": float(interval or 1.0),
                       "missing_centre": missing_centre,
                       "centre_smoothing_frames": centre_smoothing_frames,
+                      "centre_deadband_fraction": float(centre_deadband_fraction),
+                      "centre_deadband_px": float(deadband_px[identity]),
+                      "centre_deadband_reference": "pre-deadband crop short side",
                       "centre_smoothing_method": ("median then triangular mean"
                                                   if centre_smoothing_frames else "none"),
                       "centre_method": centre_method,

@@ -1345,6 +1345,9 @@ _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
     {"name": "centre_smoothing_frames", "type": "int", "units": "frames",
      "required": False, "default": 5,
      "description": "Centered odd-frame median then triangular mean for video crop centers; zero disables smoothing. Original masks and photons are unchanged."},
+    {"name": "centre_deadband_fraction", "type": "float", "units": "fraction of tile short side",
+     "required": False, "default": 0.05,
+     "description": "Hold a video crop until its smoothed center moves more than this fraction of the tile's short side; follow only the excess. Zero disables it."},
     {"name": "missing_centre", "type": "str", "units": "-",
      "required": False, "default": "interpolate",
      "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."},
@@ -1374,7 +1377,7 @@ _HANDOFF_ACTIONS: list[dict] = [
      "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
      "method": "visualisation.cell_video_grid.cell_video_grid",
      "params": _CELL_VIDEO_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-video-grid-v5"},
+     "method_version": "2026-09-24-cell-video-grid-v6"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [

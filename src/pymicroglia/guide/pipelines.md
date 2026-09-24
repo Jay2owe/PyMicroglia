@@ -90,6 +90,9 @@ default, then steady the moving crop with a centered five-frame median and
 triangular mean (`centre_smoothing_frames=5`). Set this to zero for exact
 frame-by-frame centers, or another positive odd window for a different
 amount of smoothing. The observed outline follows the original mask.
+`centre_deadband_fraction=0.05` then keeps a video crop still until its
+candidate center moves more than 5% of that tile's short side. Beyond that
+boundary the crop follows only the excess movement. Set zero to disable it.
 
 Both grids outline each observed cell by default. Set `outline_colour` to a
 named colour or RGB triple, `outline_width_px` to a pixel width, and

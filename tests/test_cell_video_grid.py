@@ -7,7 +7,8 @@ import pytest
 import tifffile
 
 from auto_organotypic.video import encode
-from pymicroglia.visualisation.cell_tiles import cell_tiles
+from pymicroglia.visualisation.cell_tiles import (
+    _hold_small_movements, cell_tiles)
 from pymicroglia.visualisation.cell_video_grid import cell_video_grid
 
 pytestmark = pytest.mark.skipif(not encode.available(), reason="ffmpeg unavailable")
@@ -54,6 +55,7 @@ def test_full_recording_keeps_all_cells_and_marks_missing(tmp_path, monkeypatch)
     assert report["cell_grid"]["outline"] is True
     assert report["cell_grid"]["missing_centre"] == "interpolate"
     assert report["cell_grid"]["centre_smoothing_frames"] == 5
+    assert report["cell_grid"]["centre_deadband_fraction"] == 0.05
     assert report["well_label_position"] == "top-left"
     width = report["image_width"]
     # Cell 2 remains observed; its central photon pixel brightens on every
@@ -119,11 +121,47 @@ def test_smoothing_steadies_crop_but_keeps_observed_mask_and_trace(tmp_path):
     assert steady.provenance["centre_smoothing_frames"] == 5
 
 
+def test_crop_deadband_holds_small_shifts_then_follows_excess():
+    candidate = np.array([[4., 10.], [4., 11.], [4., 11.9],
+                          [4., 12.1], [4., 14.1]])
+    held = _hold_small_movements(candidate, 2.0)
+    np.testing.assert_allclose(held[:, 1], [10., 10., 10., 10.1, 12.1])
+    np.testing.assert_array_equal(held[:, 0], 4.)
+    np.testing.assert_array_equal(_hold_small_movements(candidate, 0),
+                                  candidate)
+
+
 @pytest.mark.parametrize("window", [-1, 2, True])
 def test_bad_centre_smoothing_window_is_rejected(tmp_path, window):
     with pytest.raises(ValueError, match="centre_smoothing_frames"):
         cell_tiles(tmp_path / "raw.tif", np.zeros((1, 2, 2), np.uint8),
                    centre_smoothing_frames=window)
+
+
+@pytest.mark.parametrize("threshold", [-1, float("nan"), 1.1, True])
+def test_bad_centre_deadband_is_rejected(tmp_path, threshold):
+    with pytest.raises(ValueError, match="centre_deadband_fraction"):
+        cell_tiles(tmp_path / "raw.tif", np.zeros((1, 2, 2), np.uint8),
+                   centre_deadband_fraction=threshold)
+
+
+def test_relative_deadband_scales_with_crop_width(tmp_path):
+    raw = np.zeros((4, 1, 20, 30), np.uint16)
+    labels = np.zeros((4, 20, 30), np.uint16)
+    for frame, x in enumerate((10, 11, 12, 13)):
+        raw[frame, 0, 10, 10] = 100
+        labels[frame, 10, x] = 1
+    raw_path, labels_path = tmp_path / "raw.tif", tmp_path / "labels.tif"
+    tifffile.imwrite(raw_path, raw, imagej=True, metadata={"axes": "TCYX"})
+    tifffile.imwrite(labels_path, labels, imagej=True, metadata={"axes": "TYX"})
+    tile = cell_tiles(raw_path, labels_path, frame_interval_h=1,
+                      crop_size_px=(20, 20), centre_deadband_fraction=.1)[0]
+    assert tile.provenance["centre_deadband_px"] == 2.0
+    with tile.open_series() as view:
+        assert view.frame(0, 0)[10, 10] == 100
+        assert view.frame(1, 0)[10, 10] == 100
+        assert view.frame(2, 0)[10, 10] == 100
+        assert view.frame(3, 0)[10, 9] == 100
 
 
 def test_video_grid_frame_gap_limit_is_optional(tmp_path):

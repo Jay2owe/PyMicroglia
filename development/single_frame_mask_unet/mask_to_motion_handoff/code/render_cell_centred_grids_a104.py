@@ -31,6 +31,7 @@ def main() -> None:
     parser.add_argument("--image-crop-basis", default="largest_cell")
     parser.add_argument("--video-centre-method", default="mask")
     parser.add_argument("--video-centre-smoothing-frames", type=int, default=0)
+    parser.add_argument("--video-centre-deadband-fraction", type=float, default=0)
     parser.add_argument("--video-crop-basis", default="largest_cell")
     parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
@@ -48,6 +49,7 @@ def main() -> None:
               "image_crop_basis": args.image_crop_basis,
               "video_centre_method": args.video_centre_method,
               "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
+              "video_centre_deadband_fraction": args.video_centre_deadband_fraction,
               "video_crop_basis": args.video_crop_basis,
               "crop": args.crop,
               "counts_gain": args.counts_gain,
@@ -73,6 +75,7 @@ def main() -> None:
         crop_basis=args.video_crop_basis, crop=args.crop,
         centre_method=args.video_centre_method,
         centre_smoothing_frames=args.video_centre_smoothing_frames,
+        centre_deadband_fraction=args.video_centre_deadband_fraction,
         profile="fast", crf=args.video_crf,
         encoder_options=["-level", "6.2"], **common)
     write_json(args.outdir / "video_report.json", video)
