@@ -94,6 +94,12 @@ amount of smoothing. The observed outline follows the original mask.
 candidate center moves more than 5% of that tile's short side. Beyond that
 boundary the crop follows only the excess movement. Set zero to disable it.
 
+For stills with `crop_basis="own_cell"`, `fill_tile=True` enlarges each
+individual tight crop to fill the common grid slot. The cell outline is drawn
+at its requested width after enlargement, and the scale bar reflects that
+cell's zoom. Set `fill_tile=False` to preserve the unscaled source pixels and
+their black padding. Video crops keep their fixed native-pixel size.
+
 Both grids draw a physical scale bar by default when pixel calibration is
 available. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre
 per pixel metadata, `scale_bar_um=50` for a fixed length, or

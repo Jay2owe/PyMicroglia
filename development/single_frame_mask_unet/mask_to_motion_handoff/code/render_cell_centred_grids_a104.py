@@ -31,6 +31,8 @@ def main() -> None:
     parser.add_argument("--outline-width-px", type=int, required=True)
     parser.add_argument("--image-centre-method", default="mask")
     parser.add_argument("--image-crop-basis", default="largest_cell")
+    parser.add_argument("--no-image-fill-tile", dest="image_fill_tile",
+                        action="store_false", default=True)
     parser.add_argument("--video-centre-method", default="mask")
     parser.add_argument("--video-centre-smoothing-frames", type=int, default=0)
     parser.add_argument("--video-centre-deadband-fraction", type=float, default=0)
@@ -51,6 +53,7 @@ def main() -> None:
               "outline_width_px": args.outline_width_px,
               "image_centre_method": args.image_centre_method,
               "image_crop_basis": args.image_crop_basis,
+              "image_fill_tile": args.image_fill_tile,
               "video_centre_method": args.video_centre_method,
               "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
               "video_centre_deadband_fraction": args.video_centre_deadband_fraction,
@@ -73,6 +76,7 @@ def main() -> None:
     image = cell_image_grid(args.raw, args.labels,
                             output_name="image.png",
                             crop_basis=args.image_crop_basis, crop=args.crop,
+                            fill_tile=args.image_fill_tile,
                             centre_method=args.image_centre_method, **common)
     write_json(args.outdir / "image_report.json", image)
     video = cell_video_grid(

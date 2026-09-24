@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 from pathlib import Path
 from threading import RLock
@@ -50,16 +50,25 @@ class _CellView:
     original: Any
     centres: np.ndarray
     size: tuple[int, int]
+    display_size: tuple[int, int] | None = None
+    source_um_per_px: float | None = None
 
     @property
     def shape(self):
         frames, channels, _height, _width = self.original.shape
-        width, height = self.size
+        width, height = self.display_size or self.size
         return frames, channels, height, width
 
     @property
     def meta(self):
-        return self.original.meta
+        physical = self.source_um_per_px
+        if physical is None:
+            physical = getattr(self.original.meta, "um_per_px", None)
+        if physical is None:
+            return self.original.meta
+        width = (self.display_size or self.size)[0]
+        return replace(self.original.meta,
+                       um_per_px=float(physical) * self.size[0] / width)
 
     @property
     def dtype(self):
@@ -71,8 +80,28 @@ class _CellView:
 
     def frame(self, time: int, channel: int):
         image = self.original.frame(int(time), int(channel))
-        return _window(image, self.centres[int(time)], self.size,
+        crop = _window(image, self.centres[int(time)], self.size,
                        fill=np.nan, dtype=np.float32)
+        return (_resize_photons(crop, self.display_size)
+                if self.display_size and self.display_size != self.size else crop)
+
+
+def _resize_photons(crop: np.ndarray, size: tuple[int, int]) -> np.ndarray:
+    """Fill a common grid slot while preserving valid edge intensities."""
+    from PIL import Image
+
+    if np.isfinite(crop).all():
+        return np.asarray(Image.fromarray(crop).resize(
+            size, Image.Resampling.BILINEAR), np.float32)
+    valid = np.isfinite(crop).astype(np.float32)
+    values = np.nan_to_num(crop, nan=0.0)
+    numerator = np.asarray(Image.fromarray(values).resize(
+        size, Image.Resampling.BILINEAR), np.float32)
+    denominator = np.asarray(Image.fromarray(valid).resize(
+        size, Image.Resampling.BILINEAR), np.float32)
+    out = np.full(numerator.shape, np.nan, np.float32)
+    np.divide(numerator, denominator, out=out, where=denominator > .5)
+    return out
 
 
 def _window(image, centre, size, *, fill, dtype):
@@ -176,6 +205,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                centre_smoothing_frames: int = 0,
                centre_deadband_fraction: float = 0.0,
                centre_method: str = "mask",
+               fill_tile: bool = False,
+               um_per_px: float | None = None,
                mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
                outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
@@ -183,6 +214,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                unavailable_label: str = "CELL NOT OBSERVED",
                ) -> list[TileSource]:
     """One moving, native-pixel tile per positive tracked identity.
+
+    ``fill_tile=True`` enlarges each own-cell still crop to the largest crop's
+    grid slot, then adjusts its pixel calibration. The observed mask outline
+    is drawn after enlargement so its requested width stays exact.
 
     ``labels`` is the selected images or videos eligibility view. Its frame
     zero maps to photon frame ``source_frame_offset``. Missing identities use
@@ -216,6 +251,11 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("centre_deadband_fraction must be between zero and one")
     if not isinstance(outline, bool):
         raise ValueError("outline must be true or false")
+    if not isinstance(fill_tile, bool):
+        raise ValueError("fill_tile must be true or false")
+    if um_per_px is not None and (not np.isfinite(float(um_per_px)) or
+                                  float(um_per_px) <= 0):
+        raise ValueError("um_per_px must be a positive finite number")
     if mask_style not in ("outline", "fill"):
         raise ValueError("mask_style must be 'outline' or 'fill'")
     if not 0 <= float(mask_opacity) <= 1:
@@ -328,6 +368,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             np.flatnonzero(observed[identity]))
     common_reach = (max(one[0] for one in reaches.values()),
                     max(one[1] for one in reaches.values()))
+    common_size = explicit if explicit is not None else _size_for(common_reach, mode)
     raw_fingerprint = store.fingerprint(raw_path).as_dict()
     display_fingerprint = (store.fingerprint(display_path).as_dict()
                            if display_raw is not None else raw_fingerprint)
@@ -349,18 +390,22 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         else:
             size = _size_for(common_reach if basis == "largest_cell"
                              else tuple(required), mode)
+        display_size = common_size if fill_tile else size
         unavailable = {int(index): "tracked mask absent"
                        for index in range(total) if not observed[identity][index]}
-        def opener(centres_for_cell=centres[identity], size_for_cell=size):
+        def opener(centres_for_cell=centres[identity], size_for_cell=size,
+                   display_size_for_cell=display_size):
             @contextmanager
             def opened_view():
                 with display_shared.acquire() as original:
-                    yield _CellView(original, centres_for_cell, size_for_cell)
+                    yield _CellView(original, centres_for_cell, size_for_cell,
+                                    display_size_for_cell, um_per_px)
             return opened_view()
 
         def frame_overlay(rgb, frame, *, cell=identity,
                           centres_for_cell=centres[identity],
-                          size_for_cell=size):
+                          size_for_cell=size,
+                          display_size_for_cell=display_size):
             index = int(frame) - offset
             if not 0 <= index < len(label_values):
                 return rgb
@@ -368,6 +413,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                                   centres_for_cell[int(frame)], size_for_cell,
                                   fill=0, dtype=label_values.dtype)
             mask = crop_labels == cell
+            if display_size_for_cell != size_for_cell:
+                from PIL import Image
+                mask = np.asarray(Image.fromarray(mask.astype(np.uint8)).resize(
+                    display_size_for_cell, Image.Resampling.NEAREST), bool)
             if mask_style == "fill":
                 return _outlines.paint_mask_fill(
                     rgb, mask, colour=outline_colour, opacity=mask_opacity)
@@ -387,6 +436,12 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop_basis": basis if explicit is None else "pixels",
                       "crop": mode if explicit is None else None,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
+                      "display_size_px": list(display_size),
+                      "tile_fill": bool(fill_tile),
+                      "source_um_per_px": (float(um_per_px)
+                                           if um_per_px is not None else None),
+                      "um_per_display_px": (float(um_per_px) * size[0] / display_size[0]
+                                            if um_per_px is not None else None),
                       "frame_interval_h": float(interval or 1.0),
                       "missing_centre": missing_centre,
                       "centre_smoothing_frames": centre_smoothing_frames,

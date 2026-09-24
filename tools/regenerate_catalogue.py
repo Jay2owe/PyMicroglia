@@ -1335,6 +1335,9 @@ _CELL_GRID_COMMON: list[dict] = [
 ]
 
 _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "fill_tile", "type": "bool", "units": "-",
+     "required": False, "default": True,
+     "description": "Enlarge each tight own-cell still crop to fill its grid slot without black padding; rescales the physical bar and draws the outline at its requested pixel width. False preserves native-pixel padding."},
     {"name": "centre_method", "type": "str", "units": "-",
      "required": False, "default": "intensity_weighted",
      "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."},

@@ -2834,6 +2834,7 @@
         "um_per_px",
         "scale_bar_um",
         "display_options",
+        "fill_tile",
         "centre_method",
         "shared_time",
         "event_hour"
@@ -2867,6 +2868,7 @@
         "um_per_px": null,
         "scale_bar_um": null,
         "display_options": null,
+        "fill_tile": true,
         "centre_method": "intensity_weighted",
         "shared_time": null,
         "event_hour": null
@@ -3039,6 +3041,12 @@
           "units": "-",
           "required": false,
           "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
+        },
+        "fill_tile": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Enlarge each tight own-cell still crop to fill its grid slot without black padding; rescales the physical bar and draws the outline at its requested pixel width. False preserves native-pixel padding."
         },
         "centre_method": {
           "type": "str",
@@ -33618,6 +33626,13 @@
       "units": "s",
       "description": "How long to keep retrying a delete or replace that Dropbox or antivirus has locked. Raise it on a slow-syncing folder.",
       "required": false
+    },
+    {
+      "name": "fill_tile",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Enlarge each tight own-cell still crop to fill its grid slot without black padding; rescales the physical bar and draws the outline at its requested pixel width. False preserves native-pixel padding."
     },
     {
       "name": "first_frame",
