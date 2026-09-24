@@ -35,8 +35,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     The labels are the selected videos eligibility view. By default every
     cell follows the same original source-frame clock; explicit alignment,
     playback, labels, contrast and encoding options go to the shared renderer.
-    The default is a purple photon ramp, names outside the image, and cyan
-    outlines from the observed mask. Pass ``show_outline=False`` to hide them.
+    The default is a purple photon ramp, top-left names, and cyan outlines
+    from the observed mask. Pass ``show_outline=False`` to hide them.
     """
     video_options = {**dict(display_options or {}), **video_options}
     crop_size_px = video_options.pop("crop_size_px", None)
@@ -51,7 +51,6 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     outline_colour = video_options.pop("outline_colour", outline_colour)
     outline_width_px = video_options.pop("outline_width_px", outline_width_px)
     outline_opacity = video_options.pop("outline_opacity", outline_opacity)
-    video_options.setdefault("well_label_position", "left")
     video_options.setdefault("lut", "dluc_purple")
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,

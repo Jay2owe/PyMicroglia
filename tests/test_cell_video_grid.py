@@ -53,7 +53,7 @@ def test_full_recording_keeps_all_cells_and_marks_missing(tmp_path, monkeypatch)
     assert report["cell_grid"]["clock"] == "original source frame order"
     assert report["cell_grid"]["outline"] is True
     assert report["cell_grid"]["missing_centre"] == "interpolate"
-    assert report["well_label_position"] == "left"
+    assert report["well_label_position"] == "top-left"
     width = report["image_width"]
     # Cell 2 remains observed; its central photon pixel brightens on every
     # original frame from the first labelled source frame onward.
