@@ -9,9 +9,13 @@ from typing import Any, Mapping
 import numpy as np
 
 from auto_organotypic import grid, timebase
+from auto_organotypic.render.outlines import (DEFAULT_COLOUR,
+                                              DEFAULT_OPACITY,
+                                              DEFAULT_WIDTH_PX)
 
 from .cell_tiles import cell_tiles
 from .cell_selection import select_cell_tiles
+from .cell_display import prepare_cell_display
 
 
 def _runs(indices: np.ndarray) -> list[list[int]]:
@@ -109,6 +113,13 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     max_gap_frames: int | None = None,
                     max_missing_frames: int | None = None,
                     max_missing_fraction: float | None = None,
+                    show_outline: bool = True,
+                    outline_colour: Any = DEFAULT_COLOUR,
+                    outline_width_px: int = DEFAULT_WIDTH_PX,
+                    outline_opacity: float = DEFAULT_OPACITY,
+                    mask_style: str = "outline",
+                    mask_opacity: float = 0.35,
+                    display_filter: str | Mapping[str, Any] | None = None,
                     display_options: Mapping[str, Any] | None = None,
                     **grid_options) -> dict[str, Any]:
     """Draw all identities in the supplied images label view as grid rows.
@@ -118,13 +129,24 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     hours relative to ``event_hour``. All other visual options pass directly to
     :func:`auto_organotypic.grid.stack_to_grid`. Optional quality limits and
     ``significant_period_only`` select rows before the largest-cell crop is
-    sized; the default keeps every identity.
+    sized; the default keeps every identity. The observed mask is outlined by
+    default. ``mask_style='fill'`` tints its interior with ``mask_opacity``.
+    ``display_filter={'method': 'a104'}`` filters only rendered full frames;
+    cell traces and cycle selection remain on the original photons.
     """
     if shared_time not in (None, "recording", "event"):
         raise ValueError("shared_time must be None, 'recording' or 'event'")
     if shared_time == "event" and event_hour is None:
         raise ValueError("shared_time='event' needs event_hour in source hours")
     grid_options = {**dict(display_options or {}), **grid_options}
+    show_outline = grid_options.pop("show_outline", show_outline)
+    show_outline = grid_options.pop("outline", show_outline)
+    outline_colour = grid_options.pop("outline_colour", outline_colour)
+    outline_width_px = grid_options.pop("outline_width_px", outline_width_px)
+    outline_opacity = grid_options.pop("outline_opacity", outline_opacity)
+    mask_style = grid_options.pop("mask_style", mask_style)
+    mask_opacity = grid_options.pop("mask_opacity", mask_opacity)
+    display_filter = grid_options.pop("display_filter", display_filter)
     crop_size_px = grid_options.pop("crop_size_px", None)
     if crop_rectangle_px is not None:
         if crop_size_px is not None:
@@ -148,12 +170,24 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
             max_gap_frames=max_gap_frames,
             max_missing_frames=max_missing_frames,
             max_missing_fraction=max_missing_fraction)
+    display_raw, a104_range, display_report = prepare_cell_display(
+        raw, display_filter)
+    if a104_range is not None:
+        grid_options.setdefault("display_range", a104_range)
+        grid_options.setdefault("lut", "dluc_purple")
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,
         frame_interval_h=grid_options.get("frame_interval_h"),
+        display_raw=display_raw,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
-        trace_channel=trace_channel)
+        trace_channel=trace_channel, outline=show_outline,
+        outline_colour=outline_colour, outline_width_px=outline_width_px,
+        outline_opacity=outline_opacity, mask_style=mask_style,
+        mask_opacity=mask_opacity)
+    if display_raw is not None and tiles:
+        grid_options.setdefault("frame_interval_h",
+                                tiles[0].provenance["frame_interval_h"])
     defaults: dict[str, Any] = {"moments": 6}
     if "when" in grid_options and "moments" not in grid_options:
         defaults.pop("moments")
@@ -208,6 +242,13 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "cell_identities": [tile.key for tile in tiles],
         "source_frame_offset": int(source_frame_offset),
         "max_trace_gap_h": float(max_trace_gap_h),
+        "mask_style": mask_style if show_outline else "none",
+        "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
+                           else outline_colour),
+        "outline_width_px": int(outline_width_px),
+        "outline_opacity": float(outline_opacity),
+        "mask_opacity": float(mask_opacity),
+        "display_filter": display_report,
         "selection": selection,
     }
     return report

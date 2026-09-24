@@ -2823,6 +2823,13 @@
         "max_gap_frames",
         "max_missing_frames",
         "max_missing_fraction",
+        "show_outline",
+        "outline_colour",
+        "outline_width_px",
+        "outline_opacity",
+        "mask_style",
+        "mask_opacity",
+        "display_filter",
         "display_options",
         "shared_time",
         "event_hour"
@@ -2845,6 +2852,13 @@
         "max_gap_frames": null,
         "max_missing_frames": null,
         "max_missing_fraction": null,
+        "show_outline": true,
+        "outline_colour": "cyan",
+        "outline_width_px": 2,
+        "outline_opacity": 1.0,
+        "mask_style": "outline",
+        "mask_opacity": 0.35,
+        "display_filter": null,
         "display_options": null,
         "shared_time": null,
         "event_hour": null
@@ -2952,6 +2966,48 @@
           "required": false,
           "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
         },
+        "show_outline": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Draw the observed tracked mask on each tile; false hides it."
+        },
+        "outline_colour": {
+          "type": "str",
+          "units": "RGB",
+          "required": false,
+          "description": "Colour for either the outline or translucent mask fill; named colours and RGB values are accepted."
+        },
+        "outline_width_px": {
+          "type": "int",
+          "units": "px",
+          "required": false,
+          "description": "Width of the observed tracked-mask boundary when mask_style is outline."
+        },
+        "outline_opacity": {
+          "type": "float",
+          "units": "0..1",
+          "required": false,
+          "description": "Opacity of the boundary when mask_style is outline."
+        },
+        "mask_style": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Outline for a boundary, or fill for a translucent tint inside the observed mask."
+        },
+        "mask_opacity": {
+          "type": "float",
+          "units": "0..1",
+          "required": false,
+          "description": "Opacity of the mask tint when mask_style is fill; original photons stay visible."
+        },
+        "display_filter": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."
+        },
         "display_options": {
           "type": "mapping",
           "units": "-",
@@ -2971,7 +3027,7 @@
           "description": "Source hour treated as zero when shared_time is event."
         }
       },
-      "method_version": "2026-09-24-cell-grids-v2",
+      "method_version": "2026-09-24-cell-grids-v3",
       "source": []
     },
     {
@@ -2999,12 +3055,15 @@
         "max_gap_frames",
         "max_missing_frames",
         "max_missing_fraction",
-        "display_options",
-        "missing_centre",
         "show_outline",
         "outline_colour",
         "outline_width_px",
-        "outline_opacity"
+        "outline_opacity",
+        "mask_style",
+        "mask_opacity",
+        "display_filter",
+        "display_options",
+        "missing_centre"
       ],
       "defaults": {
         "raw": null,
@@ -3024,12 +3083,15 @@
         "max_gap_frames": null,
         "max_missing_frames": null,
         "max_missing_fraction": null,
-        "display_options": null,
-        "missing_centre": "interpolate",
         "show_outline": true,
         "outline_colour": "cyan",
         "outline_width_px": 2,
-        "outline_opacity": 1.0
+        "outline_opacity": 1.0,
+        "mask_style": "outline",
+        "mask_opacity": 0.35,
+        "display_filter": null,
+        "display_options": null,
+        "missing_centre": "interpolate"
       },
       "parameter_details": {
         "raw": {
@@ -3134,6 +3196,48 @@
           "required": false,
           "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
         },
+        "show_outline": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Draw the observed tracked mask on each tile; false hides it."
+        },
+        "outline_colour": {
+          "type": "str",
+          "units": "RGB",
+          "required": false,
+          "description": "Colour for either the outline or translucent mask fill; named colours and RGB values are accepted."
+        },
+        "outline_width_px": {
+          "type": "int",
+          "units": "px",
+          "required": false,
+          "description": "Width of the observed tracked-mask boundary when mask_style is outline."
+        },
+        "outline_opacity": {
+          "type": "float",
+          "units": "0..1",
+          "required": false,
+          "description": "Opacity of the boundary when mask_style is outline."
+        },
+        "mask_style": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Outline for a boundary, or fill for a translucent tint inside the observed mask."
+        },
+        "mask_opacity": {
+          "type": "float",
+          "units": "0..1",
+          "required": false,
+          "description": "Opacity of the mask tint when mask_style is fill; original photons stay visible."
+        },
+        "display_filter": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."
+        },
         "display_options": {
           "type": "mapping",
           "units": "-",
@@ -3145,33 +3249,9 @@
           "units": "-",
           "required": false,
           "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."
-        },
-        "show_outline": {
-          "type": "bool",
-          "units": "-",
-          "required": false,
-          "description": "Draw the current tracked mask boundary over each photon frame; off leaves photons without an outline."
-        },
-        "outline_colour": {
-          "type": "str",
-          "units": "-",
-          "required": false,
-          "description": "Boundary colour; defaults to the shared renderer's cyan."
-        },
-        "outline_width_px": {
-          "type": "int",
-          "units": "px",
-          "required": false,
-          "description": "Whole-pixel width of the coloured boundary immediately outside each tracked cell."
-        },
-        "outline_opacity": {
-          "type": "float",
-          "units": "fraction",
-          "required": false,
-          "description": "Outline opacity from zero to one."
         }
       },
-      "method_version": "2026-09-24-cell-video-grid-v3",
+      "method_version": "2026-09-24-cell-video-grid-v4",
       "source": []
     },
     {
@@ -33124,6 +33204,13 @@
       "description": "percentile of the mean image mapped to the display floor"
     },
     {
+      "name": "display_filter",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."
+    },
+    {
       "name": "display_gain",
       "type": "float",
       "units": "-",
@@ -34150,6 +34237,13 @@
       "required": false
     },
     {
+      "name": "mask_opacity",
+      "type": "float",
+      "units": "0..1",
+      "required": false,
+      "description": "Opacity of the mask tint when mask_style is fill; original photons stay visible."
+    },
+    {
       "name": "mask_sample_frames",
       "type": "int",
       "units": "frames",
@@ -34162,6 +34256,13 @@
       "units": "px",
       "description": "Gaussian blur before thresholding, pixels.",
       "required": false
+    },
+    {
+      "name": "mask_style",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Outline for a boundary, or fill for a translucent tint inside the observed mask."
     },
     {
       "name": "matrix_block_size",
@@ -34628,9 +34729,9 @@
     {
       "name": "outline_colour",
       "type": "str",
-      "units": "-",
+      "units": "RGB",
       "required": false,
-      "description": "Boundary colour; defaults to the shared renderer's cyan."
+      "description": "Colour for either the outline or translucent mask fill; named colours and RGB values are accepted."
     },
     {
       "name": "outline_colours",
@@ -35505,7 +35606,7 @@
       "type": "bool",
       "units": "-",
       "required": false,
-      "description": "Draw the current tracked mask boundary over each photon frame; off leaves photons without an outline."
+      "description": "Draw the observed tracked mask on each tile; false hides it."
     },
     {
       "name": "show_raw_trace",

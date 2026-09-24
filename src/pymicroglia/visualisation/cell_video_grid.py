@@ -15,6 +15,7 @@ from auto_organotypic.render.outlines import (DEFAULT_COLOUR,
 
 from .cell_tiles import cell_tiles
 from .cell_selection import select_cell_tiles
+from .cell_display import prepare_cell_display
 
 
 def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
@@ -29,6 +30,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     outline_colour: Any = DEFAULT_COLOUR,
                     outline_width_px: int = DEFAULT_WIDTH_PX,
                     outline_opacity: float = DEFAULT_OPACITY,
+                    mask_style: str = "outline",
+                    mask_opacity: float = 0.35,
+                    display_filter: str | Mapping[str, Any] | None = None,
                     significant_period_only: bool = False,
                     period_recipe: Mapping[str, Any] | str | Path | None = None,
                     period_decisions: Mapping[int | str, Mapping[str, Any]] | None = None,
@@ -44,6 +48,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     playback, labels, contrast and encoding options go to the shared renderer.
     The default is a purple photon ramp, top-left names, and cyan outlines
     from the observed mask. Pass ``show_outline=False`` to hide them.
+    ``mask_style='fill'`` tints the observed cell with ``mask_opacity``.
+    ``display_filter={'method': 'a104'}`` filters only rendered full frames;
+    cell traces and period tests still use original photons.
     Optional quality limits and ``significant_period_only`` select cells
     before the largest-cell crop is sized; the default keeps every identity.
     """
@@ -60,6 +67,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     outline_colour = video_options.pop("outline_colour", outline_colour)
     outline_width_px = video_options.pop("outline_width_px", outline_width_px)
     outline_opacity = video_options.pop("outline_opacity", outline_opacity)
+    mask_style = video_options.pop("mask_style", mask_style)
+    mask_opacity = video_options.pop("mask_opacity", mask_opacity)
+    display_filter = video_options.pop("display_filter", display_filter)
     video_options.setdefault("lut", "dluc_purple")
     selected, selection = None, None
     if (significant_period_only or period_recipe is not None or
@@ -76,15 +86,24 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
             max_gap_frames=max_gap_frames,
             max_missing_frames=max_missing_frames,
             max_missing_fraction=max_missing_fraction)
+    display_raw, a104_range, display_report = prepare_cell_display(
+        raw, display_filter)
+    if a104_range is not None:
+        video_options.setdefault("display_range", a104_range)
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,
         frame_interval_h=video_options.get("frame_interval_h"),
+        display_raw=display_raw,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         trace_channel=trace_channel, missing_centre=missing_centre,
         outline=outline, outline_colour=outline_colour,
         outline_width_px=outline_width_px,
-        outline_opacity=outline_opacity, unavailable_label="NO MASK")
+        outline_opacity=outline_opacity, mask_style=mask_style,
+        mask_opacity=mask_opacity, unavailable_label="NO MASK")
+    if display_raw is not None and tiles:
+        video_options.setdefault("frame_interval_h",
+                                 tiles[0].provenance["frame_interval_h"])
     align = video_options.get("align", "start")
     if isinstance(align, str) and align.strip().lower() in (
             "best", "onset", "peak", "trough"):
@@ -129,6 +148,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                            else outline_colour),
         "outline_width_px": int(outline_width_px),
         "outline_opacity": float(outline_opacity),
+        "mask_style": mask_style if outline else "none",
+        "mask_opacity": float(mask_opacity),
+        "display_filter": display_report,
         "selection": selection,
     }
     return report

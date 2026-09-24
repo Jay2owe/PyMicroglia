@@ -1300,6 +1300,27 @@ _CELL_GRID_COMMON: list[dict] = [
     {"name": "max_missing_fraction", "type": "float", "units": "fraction",
      "required": False, "default": None,
      "description": "Exclude cells at or above this missing-frame fraction across the full photon recording."},
+    {"name": "show_outline", "type": "bool", "units": "-",
+     "required": False, "default": True,
+     "description": "Draw the observed tracked mask on each tile; false hides it."},
+    {"name": "outline_colour", "type": "str", "units": "RGB",
+     "required": False, "default": "cyan",
+     "description": "Colour for either the outline or translucent mask fill; named colours and RGB values are accepted."},
+    {"name": "outline_width_px", "type": "int", "units": "px",
+     "required": False, "default": 2,
+     "description": "Width of the observed tracked-mask boundary when mask_style is outline."},
+    {"name": "outline_opacity", "type": "float", "units": "0..1",
+     "required": False, "default": 1.0,
+     "description": "Opacity of the boundary when mask_style is outline."},
+    {"name": "mask_style", "type": "str", "units": "-",
+     "required": False, "default": "outline",
+     "description": "Outline for a boundary, or fill for a translucent tint inside the observed mask."},
+    {"name": "mask_opacity", "type": "float", "units": "0..1",
+     "required": False, "default": 0.35,
+     "description": "Opacity of the mask tint when mask_style is fill; original photons stay visible."},
+    {"name": "display_filter", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."},
     {"name": "display_options", "type": "mapping", "units": "-",
      "required": False, "default": None,
      "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."},
@@ -1318,18 +1339,6 @@ _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
     {"name": "missing_centre", "type": "str", "units": "-",
      "required": False, "default": "interpolate",
      "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."},
-    {"name": "show_outline", "type": "bool", "units": "-",
-     "required": False, "default": True,
-     "description": "Draw the current tracked mask boundary over each photon frame; off leaves photons without an outline."},
-    {"name": "outline_colour", "type": "str", "units": "-",
-     "required": False, "default": "cyan",
-     "description": "Boundary colour; defaults to the shared renderer's cyan."},
-    {"name": "outline_width_px", "type": "int", "units": "px",
-     "required": False, "default": 2,
-     "description": "Width of the live tracked-mask boundary."},
-    {"name": "outline_opacity", "type": "float", "units": "0..1",
-     "required": False, "default": 1.0,
-     "description": "Opacity of the live tracked-mask boundary."},
 ]
 
 _HANDOFF_ACTIONS: list[dict] = [
@@ -1351,12 +1360,12 @@ _HANDOFF_ACTIONS: list[dict] = [
      "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
      "method": "visualisation.cell_image_grid.cell_image_grid",
      "params": _CELL_IMAGE_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-grids-v2"},
+     "method_version": "2026-09-24-cell-grids-v3"},
     {"name": "cell_video_grid",
      "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
      "method": "visualisation.cell_video_grid.cell_video_grid",
      "params": _CELL_VIDEO_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-video-grid-v3"},
+     "method_version": "2026-09-24-cell-video-grid-v4"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [
@@ -1811,10 +1820,14 @@ def build(protocols: Path) -> dict:
                 if known["type"] != shared["type"]:
                     raise ValueError(f"Rename incompatible parameter {entry['name']}.{row['name']}: "
                                      f"{known['type']} versus {shared['type']}")
+                cell_grid_style = {"show_outline", "outline_colour",
+                                   "outline_width_px", "outline_opacity",
+                                   "mask_style", "mask_opacity", "display_filter"}
                 if (entry["name"] != "measure_missing_gaps" and
-                        not (entry["name"] in {"cell_eligibility", "cell_image_grid",
-                                                    "cell_video_grid"} and
-                             row["name"] == "max_gap_frames")):
+                        not (entry["name"] == "cell_eligibility" and
+                             row["name"] == "max_gap_frames") and
+                        not (entry["name"] in {"cell_image_grid", "cell_video_grid"}
+                             and row["name"] in cell_grid_style | {"max_gap_frames"})):
                     for field in ("type", "units", "description"):
                         row[field] = known.get(field, "-")
         actions.append({

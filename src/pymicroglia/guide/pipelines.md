@@ -80,6 +80,23 @@ range, lookup table, labels, timestamp, layout and video encoding. The two
 switches are independent of `tracked_measurement` and of the existing
 whole-field and tracked-outline exports.
 
+Both grids outline each observed cell by default. Set `outline_colour` to a
+named colour or RGB triple, `outline_width_px` to a pixel width, and
+`outline_opacity` between zero and one. For a translucent mask instead, use
+`mask_style="fill"` and `mask_opacity=0.35` (or another fraction). Set
+`show_outline=False` for no overlay. A missing mask is never painted.
+
+For the accepted A104 visual filter, set
+`display_filter={"method": "a104"}`. It processes the complete source frames
+before moving-cell crops and caches a `DISPLAY_ONLY` TIFF beside the source.
+When the photon TIFF contains normalized values rather than camera counts,
+give the conversion in the same mapping. The native-frame handoff used
+`{"method": "a104", "counts_gain": 388, "counts_offset": 2039}`. The
+optional `cache_dir` key places the filtered display TIFF in a chosen folder.
+The renderer uses the A104 display range and purple lookup table unless explicitly
+overridden. Mask tracking, intensity traces, highest-amplitude-cycle selection,
+and period tests still read the original photon TIFF.
+
 For a direct export, call `visualisation.cell_image_grid.cell_image_grid` or
 `visualisation.cell_video_grid.cell_video_grid` with the original photon TIFF
 and the selected labels TIFF. `run_action("cell_image_grid", raw=..., labels=...,

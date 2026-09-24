@@ -108,11 +108,13 @@ def _size_for(reach: tuple[int, int], crop: str) -> tuple[int, int]:
 
 def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                frame_interval_h: float | None = None,
+               display_raw: str | Path | None = None,
                include_identities: Sequence[int] | None = None,
                crop_basis: str = "largest_cell", crop: str = "tight",
                crop_size_px: tuple[int, int] | None = None,
                identity_prefix: str = "Cell", trace_channel: int = 1,
                missing_centre: str = "hold", outline: bool = False,
+               mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
                outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
                outline_opacity: float = _outlines.DEFAULT_OPACITY,
@@ -141,9 +143,15 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("missing_centre must be 'hold' or 'interpolate'")
     if not isinstance(outline, bool):
         raise ValueError("outline must be true or false")
+    if mask_style not in ("outline", "fill"):
+        raise ValueError("mask_style must be 'outline' or 'fill'")
+    if not 0 <= float(mask_opacity) <= 1:
+        raise ValueError("mask_opacity must be between 0 and 1")
     supports_live_overlay = "frame_overlay" in TileSource.__dataclass_fields__
     if outline and (not supports_live_overlay or
-                    not hasattr(_outlines, "paint_mask")):
+                    not hasattr(_outlines, "paint_mask") or
+                    (mask_style == "fill" and
+                     not hasattr(_outlines, "paint_mask_fill"))):
         raise RuntimeError("live cell outlines need the updated Auto-Organotypic "
                            "tile renderer")
     if crop_size_px is not None:
@@ -197,6 +205,14 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                 traces[identity][raw_index] = float(np.mean(photons[yy, xx]))
                 observed[identity][raw_index] = True
 
+    display_path = Path(display_raw) if display_raw is not None else raw_path
+    display_shared = (_SharedRaw(display_path)
+                      if display_raw is not None else shared)
+    if display_raw is not None:
+        with display_shared.acquire() as displayed:
+            if displayed.shape != (total, channels, height, width):
+                raise ValueError("display_raw must match photon frames and channels")
+
     ids = sorted(centres)
     if selected is not None and set(ids) != selected:
         raise ValueError("include_identities names cells absent from the labels")
@@ -205,6 +221,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     common_reach = (max(one[0] for one in reaches.values()),
                     max(one[1] for one in reaches.values()))
     raw_fingerprint = store.fingerprint(raw_path).as_dict()
+    display_fingerprint = (store.fingerprint(display_path).as_dict()
+                           if display_raw is not None else raw_fingerprint)
     label_fingerprint = (store.fingerprint(label_path).as_dict()
                          if label_path is not None else
                          {"in_memory": True, "shape": list(label_values.shape),
@@ -240,7 +258,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         def opener(centres_for_cell=centres[identity], size_for_cell=size):
             @contextmanager
             def opened_view():
-                with shared.acquire() as original:
+                with display_shared.acquire() as original:
                     yield _CellView(original, centres_for_cell, size_for_cell)
             return opened_view()
 
@@ -253,8 +271,11 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             crop_labels = _window(label_values[index],
                                   centres_for_cell[int(frame)], size_for_cell,
                                   fill=0, dtype=label_values.dtype)
-            return _outlines.paint_mask(rgb, crop_labels == cell,
-                                        colour=outline_colour,
+            mask = crop_labels == cell
+            if mask_style == "fill":
+                return _outlines.paint_mask_fill(
+                    rgb, mask, colour=outline_colour, opacity=mask_opacity)
+            return _outlines.paint_mask(rgb, mask, colour=outline_colour,
                                         width_px=outline_width_px,
                                         opacity=outline_opacity)
 
@@ -265,6 +286,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                 interval, _source = cadence(opened, None)
         times = np.arange(total, dtype=float) * float(interval or 1.0)
         provenance = {"identity": identity, "raw": raw_fingerprint,
+                      "display_raw": display_fingerprint,
                       "labels": label_fingerprint, "source_frame_offset": offset,
                       "crop_basis": basis if explicit is None else "pixels",
                       "crop": mode if explicit is None else None,
@@ -272,6 +294,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "frame_interval_h": float(interval or 1.0),
                       "missing_centre": missing_centre,
                       "outline": bool(outline),
+                      "mask_style": mask_style,
+                      "mask_opacity": float(mask_opacity),
                       "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
                                          else outline_colour),
                       "outline_width_px": int(outline_width_px),
@@ -282,7 +306,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                         if supports_live_overlay else {})
         sources.append(TileSource(
             key=str(identity), name=f"{identity_prefix} {identity}",
-            source_path=raw_path, open_series=opener, provenance=provenance,
+            source_path=display_path, open_series=opener, provenance=provenance,
             trace=(times, traces[identity]), unavailable_frames=unavailable,
             **tile_options))
     return sources
