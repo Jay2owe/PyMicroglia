@@ -23,6 +23,8 @@ def main() -> None:
     parser.add_argument("--raw", type=Path, required=True)
     parser.add_argument("--labels", type=Path, required=True)
     parser.add_argument("--interval-h", type=float, required=True)
+    parser.add_argument("--um-per-px", type=float, required=True)
+    parser.add_argument("--no-scale-bar", action="store_true")
     parser.add_argument("--mask-style", required=True)
     parser.add_argument("--mask-opacity", type=float, required=True)
     parser.add_argument("--outline-colour", required=True)
@@ -41,6 +43,8 @@ def main() -> None:
     args = parser.parse_args()
     args.outdir.mkdir(parents=True, exist_ok=True)
     params = {"interval_h": args.interval_h,
+              "um_per_px": args.um_per_px,
+              "scale_bar": not args.no_scale_bar,
               "mask_style": args.mask_style,
               "mask_opacity": args.mask_opacity,
               "outline_colour": args.outline_colour,
@@ -62,6 +66,7 @@ def main() -> None:
     common = dict(
         output_dir=args.outdir, display_filter=display_filter,
         frame_interval_h=args.interval_h, channels=1,
+        um_per_px=args.um_per_px, scale_bar=not args.no_scale_bar,
         mask_style=args.mask_style, mask_opacity=args.mask_opacity,
         outline_colour=args.outline_colour,
         outline_width_px=args.outline_width_px)

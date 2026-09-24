@@ -36,6 +36,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     mask_style: str = "outline",
                     mask_opacity: float = 0.35,
                     display_filter: str | Mapping[str, Any] | None = None,
+                    scale_bar: bool = True,
+                    um_per_px: float | None = None,
+                    scale_bar_um: float | None = None,
                     significant_period_only: bool = False,
                     period_recipe: Mapping[str, Any] | str | Path | None = None,
                     period_decisions: Mapping[int | str, Mapping[str, Any]] | None = None,
@@ -63,6 +66,11 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     before the largest-cell crop is sized; the default keeps every identity.
     """
     video_options = {**dict(display_options or {}), **video_options}
+    video_options.setdefault("scale_bar", scale_bar)
+    if um_per_px is not None:
+        video_options.setdefault("um_per_px", um_per_px)
+    if scale_bar_um is not None:
+        video_options.setdefault("scale_bar_um", scale_bar_um)
     crop_size_px = video_options.pop("crop_size_px", None)
     if crop_rectangle_px is not None:
         if crop_size_px is not None:

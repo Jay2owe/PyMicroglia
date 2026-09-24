@@ -75,6 +75,8 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
             raise ValueError(f"{stem} has no shared period decisions")
         call_options = {**settings, **({"period_decisions": shared["decisions"]}
                                      if shared is not None else {})}
+        if "um_per_px" not in call_options and prepared.get("um_per_px") is not None:
+            call_options["um_per_px"] = prepared["um_per_px"]
         try:
             report = action(
                 prepared["measurement_raw"], labels,

@@ -79,6 +79,7 @@ def write(recordings, masks: Mapping[str, Any], folder, notes=None, *,
                 frame_interval_min=this_interval,
                 dataset=dataset or path.stem)
             prepared[path.stem] = made
+            prepared[path.stem]["um_per_px"] = _Registered(path, row).um_per_px
             entry["measurement_raw"] = _pin(Path(made["measurement_raw"]), hashes)
             for role, pin in made["pins"].items():
                 relative = (pin.get("relative_to_registered_input_dir")

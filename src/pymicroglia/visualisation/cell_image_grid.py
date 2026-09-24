@@ -121,6 +121,9 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     mask_style: str = "outline",
                     mask_opacity: float = 0.35,
                     display_filter: str | Mapping[str, Any] | None = None,
+                    scale_bar: bool = True,
+                    um_per_px: float | None = None,
+                    scale_bar_um: float | None = None,
                     display_options: Mapping[str, Any] | None = None,
                     **grid_options) -> dict[str, Any]:
     """Draw all identities in the supplied images label view as grid rows.
@@ -142,6 +145,11 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     if shared_time == "event" and event_hour is None:
         raise ValueError("shared_time='event' needs event_hour in source hours")
     grid_options = {**dict(display_options or {}), **grid_options}
+    grid_options.setdefault("scale_bar", scale_bar)
+    if um_per_px is not None:
+        grid_options.setdefault("um_per_px", um_per_px)
+    if scale_bar_um is not None:
+        grid_options.setdefault("scale_bar_um", scale_bar_um)
     show_outline = grid_options.pop("show_outline", show_outline)
     show_outline = grid_options.pop("outline", show_outline)
     outline_colour = grid_options.pop("outline_colour", outline_colour)

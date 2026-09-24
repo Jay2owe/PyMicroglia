@@ -825,10 +825,9 @@ EXTRA_PARAMS["dluc_single_cell"] = _PIPELINE_RUN + [
      "description": "Fallback frame spacing when the file carries no plane "
                     "timestamps. A uniform assumption cannot find a pause in "
                     "the recording, only hide it."},
-    {"name": "um_per_px", "type": "float", "units": "um", "required": False,
+    {"name": "um_per_px", "type": "float", "units": "micrometres per pixel", "required": False,
      "default": None,
-     "description": "Pixel size, when the file is not calibrated. Areas stay "
-                    "in pixels without it."},
+     "description": "Pixel size when the file is not calibrated. Measurements stay in pixels and display scale bars are omitted without it."},
     {"name": "skip_control", "type": "bool", "units": "-", "required": False,
      "default": False,
      "description": "Skip the instrumental control. Never do this before a "
@@ -1321,6 +1320,15 @@ _CELL_GRID_COMMON: list[dict] = [
     {"name": "display_filter", "type": "mapping", "units": "-",
      "required": False, "default": None,
      "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."},
+    {"name": "scale_bar", "type": "bool", "units": "-",
+     "required": False, "default": True,
+     "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."},
+    {"name": "um_per_px", "type": "float", "units": "micrometres per source pixel",
+     "required": False, "default": None,
+     "description": "Pixel calibration override when the source TIFF has no calibration metadata. No physical scale is guessed."},
+    {"name": "scale_bar_um", "type": "float", "units": "micrometres",
+     "required": False, "default": None,
+     "description": "Optional fixed physical bar length; the default selects a readable 1/2/5 length for the tile width."},
     {"name": "display_options", "type": "mapping", "units": "-",
      "required": False, "default": None,
      "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."},

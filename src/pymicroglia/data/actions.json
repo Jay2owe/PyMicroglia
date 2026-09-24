@@ -2830,6 +2830,9 @@
         "mask_style",
         "mask_opacity",
         "display_filter",
+        "scale_bar",
+        "um_per_px",
+        "scale_bar_um",
         "display_options",
         "centre_method",
         "shared_time",
@@ -2860,6 +2863,9 @@
         "mask_style": "outline",
         "mask_opacity": 0.35,
         "display_filter": null,
+        "scale_bar": true,
+        "um_per_px": null,
+        "scale_bar_um": null,
         "display_options": null,
         "centre_method": "intensity_weighted",
         "shared_time": null,
@@ -3010,6 +3016,24 @@
           "required": false,
           "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."
         },
+        "scale_bar": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+        },
+        "um_per_px": {
+          "type": "float",
+          "units": "micrometres per pixel",
+          "required": false,
+          "description": "Pixel size when the file is not calibrated. Measurements stay in pixels and display scale bars are omitted without it."
+        },
+        "scale_bar_um": {
+          "type": "float",
+          "units": "micrometres",
+          "required": false,
+          "description": "Optional fixed physical bar length; the default selects a readable 1/2/5 length for the tile width."
+        },
         "display_options": {
           "type": "mapping",
           "units": "-",
@@ -3070,6 +3094,9 @@
         "mask_style",
         "mask_opacity",
         "display_filter",
+        "scale_bar",
+        "um_per_px",
+        "scale_bar_um",
         "display_options",
         "centre_method",
         "centre_smoothing_frames",
@@ -3101,6 +3128,9 @@
         "mask_style": "outline",
         "mask_opacity": 0.35,
         "display_filter": null,
+        "scale_bar": true,
+        "um_per_px": null,
+        "scale_bar_um": null,
         "display_options": null,
         "centre_method": "mask",
         "centre_smoothing_frames": 5,
@@ -3251,6 +3281,24 @@
           "units": "-",
           "required": false,
           "description": "Optional full-frame A104 display filter. Use {'method':'a104'} for count-valued photons; counts_gain and counts_offset convert normalized input to counts. Cell traces still use original photons."
+        },
+        "scale_bar": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+        },
+        "um_per_px": {
+          "type": "float",
+          "units": "micrometres per pixel",
+          "required": false,
+          "description": "Pixel size when the file is not calibrated. Measurements stay in pixels and display scale bars are omitted without it."
+        },
+        "scale_bar_um": {
+          "type": "float",
+          "units": "micrometres",
+          "required": false,
+          "description": "Optional fixed physical bar length; the default selects a readable 1/2/5 length for the tile width."
         },
         "display_options": {
           "type": "mapping",
@@ -35515,6 +35563,20 @@
       "required": false
     },
     {
+      "name": "scale_bar",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+    },
+    {
+      "name": "scale_bar_um",
+      "type": "float",
+      "units": "micrometres",
+      "required": false,
+      "description": "Optional fixed physical bar length; the default selects a readable 1/2/5 length for the tile width."
+    },
+    {
       "name": "scaling",
       "type": "str",
       "units": "-",
@@ -36432,9 +36494,9 @@
     {
       "name": "um_per_px",
       "type": "float",
-      "units": "um",
+      "units": "micrometres per pixel",
       "required": false,
-      "description": "Pixel size, when the file is not calibrated. Areas stay in pixels without it."
+      "description": "Pixel size when the file is not calibrated. Measurements stay in pixels and display scale bars are omitted without it."
     },
     {
       "name": "unmixing_coefficient",

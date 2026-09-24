@@ -94,6 +94,13 @@ amount of smoothing. The observed outline follows the original mask.
 candidate center moves more than 5% of that tile's short side. Beyond that
 boundary the crop follows only the excess movement. Set zero to disable it.
 
+Both grids draw a physical scale bar by default when pixel calibration is
+available. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre
+per pixel metadata, `scale_bar_um=50` for a fixed length, or
+`scale_bar=False` to hide it. The automated chain passes its recording
+calibration through to both grids. No physical bar is guessed for an
+uncalibrated recording.
+
 Both grids outline each observed cell by default. Set `outline_colour` to a
 named colour or RGB triple, `outline_width_px` to a pixel width, and
 `outline_opacity` between zero and one. For a translucent mask instead, use
