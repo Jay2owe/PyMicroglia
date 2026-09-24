@@ -40,6 +40,7 @@ def main() -> None:
     parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
+    parser.add_argument("--a104-cache-dir", type=Path)
     parser.add_argument("--video-crf", type=int, required=True)
     parser.add_argument("--outdir", type=Path, required=True)
     args = parser.parse_args()
@@ -61,11 +62,13 @@ def main() -> None:
               "crop": args.crop,
               "counts_gain": args.counts_gain,
               "counts_offset": args.counts_offset,
+              "a104_cache_dir": (str(args.a104_cache_dir)
+                                 if args.a104_cache_dir is not None else None),
               "video_crf": args.video_crf}
     display_filter = {
         "method": "a104", "counts_gain": args.counts_gain,
         "counts_offset": args.counts_offset,
-        "cache_dir": str(args.outdir / "a104_source")}
+        "cache_dir": str(args.a104_cache_dir or args.outdir / "a104_source")}
     common = dict(
         output_dir=args.outdir, display_filter=display_filter,
         frame_interval_h=args.interval_h, channels=1,
