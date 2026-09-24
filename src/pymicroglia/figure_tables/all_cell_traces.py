@@ -32,7 +32,7 @@ def grid_shape(count: int, rows: int | None, columns: int | None) -> tuple[int, 
         raise ValueError(f'grid_rows * grid_columns must hold all {count} selected cells')
     return (rows, columns)
 
-def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], resolved: dict, view: str, normalization: str, normalization_config: dict, period_testing: bool=True, *, fft_component_test: bool=False, recording: str | None=None, component_surrogates: int=199, component_block_hours: float=4.0, component_seed: int=20260923) -> tuple[pd.DataFrame, pd.DataFrame]:
+def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], resolved: dict, view: str, normalization: str, normalization_config: dict, period_testing: bool=True, *, fft_component_test: bool=False, recording: str | None=None, component_surrogates: int=199, component_block_hours: float=4.0, component_seed: int=20260923, filtering: dict | None=None) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Fit raw values; normalize independently for drawing, preserving gaps."""
     if view not in {'raw', 'detrended'}:
         raise ValueError('trace_view must be raw or detrended')
@@ -58,14 +58,27 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
         for metric in metrics:
             hours = cell.hours.to_numpy(float)
             raw = pd.to_numeric(cell[metric], errors='coerce').to_numpy(float)
-            filtered = median_then_mean(raw) if fft_component_test else raw.copy()
-            if not np.array_equal(np.isfinite(raw), np.isfinite(filtered)):
+            filter_error = ''
+            if filtering is not None:
+                try:
+                    filtered = np.asarray(
+                        workbench.filter_rhythm_trace(hours, raw, filtering)['values'],
+                        float)
+                except (ValueError, RuntimeError, workbench.cw.WorkbenchError) as error:
+                    filtered = np.full(raw.shape, np.nan)
+                    filter_error = str(error)
+            else:
+                filtered = median_then_mean(raw) if fft_component_test else raw.copy()
+            if (filtering is None and
+                    not np.array_equal(np.isfinite(raw), np.isfinite(filtered))):
                 raise ValueError('Three-frame filters changed measured frame availability')
             usable = np.isfinite(hours) & np.isfinite(filtered)
             processed = np.full(len(raw), np.nan)
             display = np.full(len(raw), np.nan)
             reason = ''
             display_note = ''
+            if filter_error:
+                reason = 'filter_failed: ' + filter_error
             if usable.sum() >= 2:
                 if view == 'detrended':
                     prepared = workbench.detrend_trace(hours[usable], filtered[usable], params)
@@ -81,7 +94,7 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
                     scaled = workbench.normalize_trace(hours[usable], processed[usable], normalization, detrended=view == 'detrended', **normalization_config)
                     display[usable] = np.asarray(scaled['values'], float)
             else:
-                reason = 'fewer than two observations'
+                reason = reason or 'fewer than two observations'
                 if usable.sum() == 1:
                     display[usable] = raw[usable] if normalization == 'none' else 0.0
                     display_note = 'single raw observation shown as a dot; detrending and normalization unavailable'

@@ -9,7 +9,7 @@ import tifffile
 
 from auto_organotypic.video import encode
 from pymicroglia.pipelines._auto_microglia_support import (
-    _cell_grids, _validate_cell_grid_options,
+    _cell_grids, _shared_cell_periods, _validate_cell_grid_options,
 )
 
 
@@ -72,14 +72,49 @@ def test_real_grid_outputs_use_separate_eligibility_views(tmp_path):
     assert image["eligibility_labels"] != video["eligibility_labels"]
 
 
+@pytest.mark.skipif(not encode.available(), reason="ffmpeg unavailable")
+def test_automated_grids_reuse_one_full_population_period_verdict(
+        tmp_path, monkeypatch):
+    from pymicroglia.visualisation import cell_selection
+
+    tracking, handoff, eligibility = _inputs(tmp_path)
+    tracking["well_a"]["labels"] = eligibility["well_a"]["views"]["videos"]["labels"]
+    calls = []
+    def period_test(tiles, recipe, recording):
+        calls.append(([tile.key for tile in tiles], recipe, recording))
+        return {1: {"significant_period": True},
+                2: {"significant_period": False}}
+    monkeypatch.setattr(cell_selection, "_period_decisions", period_test)
+    recipe = {"fft_component_test": False, "fit_method": "lomb",
+              "significance_method": "lomb"}
+    shared = _shared_cell_periods(
+        tracking, handoff, tmp_path / "run", recipe=recipe)
+    options = {"significant_period_only": True, "period_recipe": recipe,
+               "channels": 1, "lut": "grays", "display_range": (0, 1200),
+               "soft_range": "hard", "tile_label": "none"}
+    images = _cell_grids(
+        "images", tracking, handoff, eligibility, tmp_path / "run",
+        options={**options, "shared_time": "recording", "moments": 2},
+        period_evidence=shared)
+    videos = _cell_grids(
+        "videos", tracking, handoff, eligibility, tmp_path / "run",
+        options={**options, "fps": 12}, period_evidence=shared)
+    assert [one[0] for one in calls] == [["1", "2"]]
+    assert images["well_a"]["cell_identities"] == ["1"]
+    assert videos["well_a"]["cell_identities"] == ["1"]
+    assert images["well_a"]["period_report"] == videos["well_a"]["period_report"]
+    assert Path(shared["well_a"]["report"]).is_file()
+
+
 def test_visual_options_are_checked_before_the_chain_runs():
     with pytest.raises(ValueError, match="unknown setting"):
         _validate_cell_grid_options({"display_rnage": "auto"}, None)
     with pytest.raises(ValueError, match="pipeline-owned"):
         _validate_cell_grid_options(None, {"source_frame_offset": 2})
     _validate_cell_grid_options(
-        {"crop_basis": "own_cell", "display_options": {"lut": "grays"}},
-        {"fps": 12})
+        {"crop_basis": "own_cell", "display_options": {"lut": "grays"},
+         "significant_period_only": True, "period_recipe": {"min_cycles": 2.0}},
+        {"fps": 12, "max_gap_frames": 2, "max_missing_frames": 5})
 
 
 def test_both_direct_actions_are_discoverable():
@@ -91,4 +126,6 @@ def test_both_direct_actions_are_discoverable():
     assert image["display_only"] is video["display_only"] is True
     assert {row["name"] for row in image["params"]} >= {
         "raw", "labels", "crop_basis", "crop_rectangle_px",
-        "shared_time", "display_options"}
+        "shared_time", "display_options", "significant_period_only",
+        "period_recipe", "max_gap_frames", "max_missing_frames",
+        "max_missing_fraction"}

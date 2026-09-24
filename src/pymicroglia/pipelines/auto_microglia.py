@@ -49,7 +49,7 @@ from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
 from . import motion_handoff as _motion
 from ._auto_microglia_support import (
     _measure_tracked, _eligible_tracks, _tracked_videos, _tracked_images,
-    _cell_grids, _validate_cell_grid_options,
+    _cell_grids, _shared_cell_periods, _validate_cell_grid_options,
     _mask_every, _measure_every, _small, _Registered,
 )
 
@@ -57,7 +57,7 @@ __all__ = ["METHOD_VERSION", "PIPELINE", "STAGES", "AO_STAGES", "NOT_OURS",
            "MASK_STAGE", "differences", "register", "run"]
 
 PIPELINE = "auto_microglia"
-METHOD_VERSION = "2026-09-24-auto-microglia-cell-grids-v4"
+METHOD_VERSION = "2026-09-24-auto-microglia-cell-grids-v5"
 
 #: Auto-Organotypic's stages this pipeline leaves out by default, and why. Each
 #: is a *default*, not a removal: the matching keyword turns it back on.
@@ -110,13 +110,15 @@ AO_STAGES: tuple[str, ...] = ("acquire", "index", "trim_before_crop",
 #: chain any more -- it is a stage *of* the chain, registered into it after
 #: ``split``, so that is where it is listed.
 OURS: tuple[str, ...] = ("cell_masks", "cells", "motion_inputs", "motion",
-                         "eligibility", "tracked_cell_grid",
+                         "eligibility", "tracked_cell_period_selection",
+                         "tracked_cell_grid",
                          "tracked_cell_video_grid", "tracked_measurement", "tracked_video",
                          "tracked_image")
 _AFTER = AO_STAGES.index("split") + 1
 STAGES: tuple[str, ...] = (
     AO_STAGES[:_AFTER] + ("cell_masks",) + AO_STAGES[_AFTER:]
     + ("cells", "motion_inputs", "motion", "eligibility",
+       "tracked_cell_period_selection",
        "tracked_cell_grid", "tracked_cell_video_grid",
        "tracked_measurement", "tracked_video", "tracked_image"))
 
@@ -155,6 +157,11 @@ def differences() -> list[dict[str, Any]]:
          "why": "final Motion identities are audited before downstream use; "
                 "the default excludes gaps over four hours or at least half "
                 "missing data from analysis only, without changing tracking"},
+        {"setting": "tracked_cell_period_selection",
+         "auto_organotypic": None, "here": True,
+         "why": "when a cell grid requests significant periods, the complete "
+                "tracked population is tested once and both grids reuse "
+                "the saved verdicts"},
         {"setting": "tracked_measurement", "auto_organotypic": None,
          "here": True,
          "why": "tracked labels are measured against original unmasked photons "
@@ -304,8 +311,10 @@ def run(folder=None, *,
         cells: bool = True,
         motion: bool = True,
         eligibility: bool = True,
-        eligibility_max_gap_h: float = 4.0,
-        eligibility_max_missing_fraction: float = 0.5,
+        eligibility_max_gap_h: float | None = 4.0,
+        eligibility_max_gap_frames: int | None = None,
+        eligibility_max_missing_frames: int | None = None,
+        eligibility_max_missing_fraction: float | None = 0.5,
         eligibility_exclude_from: str | Sequence[str] = ("analysis",),
         tracked_measurement: bool = True,
         tracked_measure_modules: Sequence[str] = ("intensity",),
@@ -313,6 +322,7 @@ def run(folder=None, *,
         tracked_cell_grid_options: Mapping[str, Any] | None = None,
         tracked_cell_video_grid: bool = True,
         tracked_cell_video_grid_options: Mapping[str, Any] | None = None,
+        tracked_cell_period_recipe: Mapping[str, Any] | str | Path | None = None,
         tracked_video: bool = True,
         tracked_video_options: Mapping[str, Any] | None = None,
         tracked_image: bool = True,
@@ -372,10 +382,12 @@ def run(folder=None, *,
 
     ``eligibility=True`` audits those final identities before downstream use.
     By default, a longest internal gap over four hours or at least 50% missing
-    tracked frames excludes a cell from analysis. ``eligibility_exclude_from``
+    tracked frames excludes a cell from analysis. Frame-count limits may also
+    be set; set an unused hour or fraction limit to None. ``eligibility_exclude_from``
     independently chooses ``analysis``, ``videos`` and ``images``; review
     visuals retain every identity by default so an exclusion cannot hide its
-    own evidence.
+    own evidence. ``tracked_cell_period_recipe`` supplies one exact recipe to
+    both cell grids when their significant-period filter is requested.
 
     Returns the run manifest: Auto-Organotypic's own run record for the stages
     it ran, this pipeline's stages appended in the same shape, and the review.
@@ -401,6 +413,33 @@ def run(folder=None, *,
     _the_stages_we_turn_off_still_exist(_chain)
     _validate_cell_grid_options(tracked_cell_grid_options,
                                 tracked_cell_video_grid_options)
+    from ..visualisation.cell_period_recipe import resolve_cell_period_recipe
+
+    image_grid_options = dict(tracked_cell_grid_options or {})
+    video_grid_options = dict(tracked_cell_video_grid_options or {})
+    supplied_recipes = [one for one in (
+        tracked_cell_period_recipe, image_grid_options.get("period_recipe"),
+        video_grid_options.get("period_recipe")) if one is not None]
+    shared_period_recipe = resolve_cell_period_recipe(
+        supplied_recipes[0] if supplied_recipes else None)
+    if any(resolve_cell_period_recipe(one) != shared_period_recipe
+           for one in supplied_recipes[1:]):
+        raise ValueError("the automated cell grids must share one period recipe")
+    for settings in (image_grid_options, video_grid_options):
+        if settings.get("significant_period_only"):
+            settings["period_recipe"] = shared_period_recipe
+    active_period_grids = [settings for enabled, settings in (
+        (tracked_cell_grid, image_grid_options),
+        (tracked_cell_video_grid, video_grid_options))
+        if enabled and settings.get("significant_period_only")]
+    period_channels = {int(settings.get("trace_channel", 1))
+                       for settings in active_period_grids}
+    if len(period_channels) > 1:
+        raise ValueError("the automated period filter needs one shared "
+                         "trace_channel across cell grids")
+    period_trace_channel = next(iter(period_channels), 1)
+    tracked_cell_grid_options = image_grid_options
+    tracked_cell_video_grid_options = video_grid_options
 
     if chain_review is not None:
         options["review"] = bool(chain_review)
@@ -416,6 +455,8 @@ def run(folder=None, *,
                                   {"outline": outline, "cells": cells,
                                    "cell_masks": cell_masks,
                                    "eligibility_max_gap_h": eligibility_max_gap_h,
+                                   "eligibility_max_gap_frames": eligibility_max_gap_frames,
+                                   "eligibility_max_missing_frames": eligibility_max_missing_frames,
                                    "eligibility_max_missing_fraction":
                                        eligibility_max_missing_fraction,
                                    "eligibility_exclude_from":
@@ -425,6 +466,7 @@ def run(folder=None, *,
                                    "tracked_cell_video_grid": tracked_cell_video_grid,
                                    "tracked_cell_video_grid_options":
                                        tracked_cell_video_grid_options,
+                                   "tracked_cell_period_recipe": shared_period_recipe,
                                    "method": METHOD_VERSION}))
     where = run_folder(root, PIPELINE, label, if_exists)
     if where.reuse:
@@ -480,6 +522,7 @@ def run(folder=None, *,
                                "conventions": (conventions_path.name if conventions_path
                                                else "not resolved"),
                                "skipped": list(skip)}
+    summary["tracked_cell_period_recipe"] = shared_period_recipe
     if conventions_path is not None:
         outputs["conventions"] = str(conventions_path)
 
@@ -535,6 +578,8 @@ def run(folder=None, *,
         eligibility_results = _eligible_tracks(
             outputs["motion"]["tracking"], handoff, where.path,
             enabled=eligibility, max_gap_h=eligibility_max_gap_h,
+            max_gap_frames=eligibility_max_gap_frames,
+            max_missing_frames=eligibility_max_missing_frames,
             max_missing_fraction=eligibility_max_missing_fraction,
             exclude_from=eligibility_exclude_from)
         if eligibility:
@@ -547,12 +592,32 @@ def run(folder=None, *,
                     len(result["excluded_identities"])
                     for result in eligibility_results.values())
             outputs["eligibility"] = eligibility_results
+        period_results: dict[str, Any] = {}
+        if active_period_grids:
+            with log("tracked_cell_period_selection") as entry:
+                period_results = _shared_cell_periods(
+                    outputs["motion"]["tracking"], handoff, where.path,
+                    recipe=shared_period_recipe,
+                    trace_channel=period_trace_channel)
+                entry["recordings"] = len(period_results)
+                entry["significant_supported_cells"] = sum(
+                    sum(bool(decision["significant_period"])
+                        for decision in result["decisions"].values())
+                    for result in period_results.values())
+            outputs["tracked_cell_period_selection"] = {
+                stem: {"report": result["report"],
+                       "significant_supported_identities": [
+                           int(identity) for identity, decision in
+                           result["decisions"].items()
+                           if decision["significant_period"]]}
+                for stem, result in period_results.items()}
         if tracked_cell_grid:
             with log("tracked_cell_grid") as entry:
                 grids = _cell_grids(
                     "images", outputs["motion"]["tracking"], handoff,
                     eligibility_results, where.path,
-                    options=tracked_cell_grid_options)
+                    options=tracked_cell_grid_options,
+                    period_evidence=period_results)
                 entry["recordings"] = len(grids)
             outputs["tracked_cell_grid"] = grids
         if tracked_cell_video_grid:
@@ -560,7 +625,8 @@ def run(folder=None, *,
                 videos_grid = _cell_grids(
                     "videos", outputs["motion"]["tracking"], handoff,
                     eligibility_results, where.path,
-                    options=tracked_cell_video_grid_options)
+                    options=tracked_cell_video_grid_options,
+                    period_evidence=period_results)
                 entry["recordings"] = len(videos_grid)
             outputs["tracked_cell_video_grid"] = videos_grid
         if tracked_measurement:

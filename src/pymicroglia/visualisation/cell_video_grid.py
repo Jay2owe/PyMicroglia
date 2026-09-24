@@ -14,6 +14,7 @@ from auto_organotypic.render.outlines import (DEFAULT_COLOUR,
                                               DEFAULT_WIDTH_PX)
 
 from .cell_tiles import cell_tiles
+from .cell_selection import select_cell_tiles
 
 
 def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
@@ -28,6 +29,12 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     outline_colour: Any = DEFAULT_COLOUR,
                     outline_width_px: int = DEFAULT_WIDTH_PX,
                     outline_opacity: float = DEFAULT_OPACITY,
+                    significant_period_only: bool = False,
+                    period_recipe: Mapping[str, Any] | str | Path | None = None,
+                    period_decisions: Mapping[int | str, Mapping[str, Any]] | None = None,
+                    max_gap_frames: int | None = None,
+                    max_missing_frames: int | None = None,
+                    max_missing_fraction: float | None = None,
                     display_options: Mapping[str, Any] | None = None,
                     **video_options) -> dict[str, Any]:
     """Play every requested source frame with each cell centred in its tile.
@@ -37,6 +44,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     playback, labels, contrast and encoding options go to the shared renderer.
     The default is a purple photon ramp, top-left names, and cyan outlines
     from the observed mask. Pass ``show_outline=False`` to hide them.
+    Optional quality limits and ``significant_period_only`` select cells
+    before the largest-cell crop is sized; the default keeps every identity.
     """
     video_options = {**dict(display_options or {}), **video_options}
     crop_size_px = video_options.pop("crop_size_px", None)
@@ -52,9 +61,25 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     outline_width_px = video_options.pop("outline_width_px", outline_width_px)
     outline_opacity = video_options.pop("outline_opacity", outline_opacity)
     video_options.setdefault("lut", "dluc_purple")
+    selected, selection = None, None
+    if (significant_period_only or period_recipe is not None or
+            period_decisions is not None or
+            max_gap_frames is not None or max_missing_frames is not None or
+            max_missing_fraction is not None):
+        candidates = cell_tiles(
+            raw, labels, source_frame_offset=source_frame_offset,
+            frame_interval_h=video_options.get("frame_interval_h"),
+            crop_basis="own_cell", trace_channel=trace_channel)
+        selected, selection = select_cell_tiles(
+            candidates, raw=raw, significant_period_only=significant_period_only,
+            period_recipe=period_recipe, period_decisions=period_decisions,
+            max_gap_frames=max_gap_frames,
+            max_missing_frames=max_missing_frames,
+            max_missing_fraction=max_missing_fraction)
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,
         frame_interval_h=video_options.get("frame_interval_h"),
+        include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         trace_channel=trace_channel, missing_centre=missing_centre,
         outline=outline, outline_colour=outline_colour,
@@ -104,5 +129,6 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                            else outline_colour),
         "outline_width_px": int(outline_width_px),
         "outline_opacity": float(outline_opacity),
+        "selection": selection,
     }
     return report

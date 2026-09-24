@@ -21,11 +21,12 @@ figure(Figure("clock_face", "Detected cycle position and oscillation amplitude",
 from ._shared_options import circadian_options
 from dataclasses import replace
 from ..panels import all_cell_traces
+from ..cell_period_recipe import DEFAULT_CELL_PERIOD_RECIPE
 figure(Figure('all_cell_trace_grid','All measured cell traces','rhythms',
     views=(View('traces',all_cell_traces.traces,block=True),),
     reads=(Table('cell_frame',module='motility'),),
     prepare='pymicroglia.figure_tables.all_cell_traces:prepare',
-    options=(Option('metrics',['signal_mean']),Option('cells','all'),Option('grid_rows',None),Option('grid_columns',None),Option('trace_view','detrended'),Option('trace_normalization','minmax'),Option('trace_normalization_config',{}),Option('hour_ticks',12.0),Option('period_testing',True),Option('fft_component_test',True),Option('component_surrogates',199),Option('component_block_hours',4.0),Option('component_seed',20260923))+tuple(replace(o,default={'nlls_max_components':5,'nlls_improvement_alpha':0.05}) if o.name=='period_config' else replace(o,default='fft_nlls') if o.name=='fit_method' else replace(o,default='robust_linear') if o.name=='detrend' else replace(o,default='none') if o.name=='multiple_testing' else replace(o,default=2.0) if o.name=='min_cycles' else o for o in circadian_options()),
+    options=(Option('metrics',['signal_mean']),Option('cells','all'),Option('grid_rows',None),Option('grid_columns',None),Option('trace_view','detrended'),Option('trace_normalization','minmax'),Option('trace_normalization_config',{}),Option('hour_ticks',12.0),Option('period_testing',True),Option('fft_component_test',DEFAULT_CELL_PERIOD_RECIPE['fft_component_test']),Option('component_surrogates',DEFAULT_CELL_PERIOD_RECIPE['component_surrogates']),Option('component_block_hours',DEFAULT_CELL_PERIOD_RECIPE['component_block_hours']),Option('component_seed',DEFAULT_CELL_PERIOD_RECIPE['component_seed']))+tuple(replace(o,default=DEFAULT_CELL_PERIOD_RECIPE.get(o.name,o.default)) for o in circadian_options()),
     refits=True,claim='Each measured cell keeps its original clock; the default median3-then-mean3, robust-linear, FFT-NLLS grid uses the uncorrected conditional component test.'))
 
 from ..panels import fit_matrices

@@ -11,6 +11,7 @@ import numpy as np
 from auto_organotypic import grid, timebase
 
 from .cell_tiles import cell_tiles
+from .cell_selection import select_cell_tiles
 
 
 def _runs(indices: np.ndarray) -> list[list[int]]:
@@ -102,6 +103,12 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     event_hour: float | None = None,
                     max_trace_gap_h: float = 4.0,
                     trace_channel: int = 1,
+                    significant_period_only: bool = False,
+                    period_recipe: Mapping[str, Any] | str | Path | None = None,
+                    period_decisions: Mapping[int | str, Mapping[str, Any]] | None = None,
+                    max_gap_frames: int | None = None,
+                    max_missing_frames: int | None = None,
+                    max_missing_fraction: float | None = None,
                     display_options: Mapping[str, Any] | None = None,
                     **grid_options) -> dict[str, Any]:
     """Draw all identities in the supplied images label view as grid rows.
@@ -109,7 +116,9 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     Default columns show each cell's own best scored cycle on circadian time.
     ``shared_time='recording'`` compares source hours; ``'event'`` compares
     hours relative to ``event_hour``. All other visual options pass directly to
-    :func:`auto_organotypic.grid.stack_to_grid`.
+    :func:`auto_organotypic.grid.stack_to_grid`. Optional quality limits and
+    ``significant_period_only`` select rows before the largest-cell crop is
+    sized; the default keeps every identity.
     """
     if shared_time not in (None, "recording", "event"):
         raise ValueError("shared_time must be None, 'recording' or 'event'")
@@ -124,9 +133,25 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     grid_options.setdefault("overwrite", overwrite)
     if not np.isfinite(float(max_trace_gap_h)) or float(max_trace_gap_h) < 0:
         raise ValueError("max_trace_gap_h must be nonnegative")
+    selected, selection = None, None
+    if (significant_period_only or period_recipe is not None or
+            period_decisions is not None or
+            max_gap_frames is not None or max_missing_frames is not None or
+            max_missing_fraction is not None):
+        candidates = cell_tiles(
+            raw, labels, source_frame_offset=source_frame_offset,
+            frame_interval_h=grid_options.get("frame_interval_h"),
+            crop_basis="own_cell", trace_channel=trace_channel)
+        selected, selection = select_cell_tiles(
+            candidates, raw=raw, significant_period_only=significant_period_only,
+            period_recipe=period_recipe, period_decisions=period_decisions,
+            max_gap_frames=max_gap_frames,
+            max_missing_frames=max_missing_frames,
+            max_missing_fraction=max_missing_fraction)
     tiles = cell_tiles(
         raw, labels, source_frame_offset=source_frame_offset,
         frame_interval_h=grid_options.get("frame_interval_h"),
+        include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         trace_channel=trace_channel)
     defaults: dict[str, Any] = {"moments": 6}
@@ -183,5 +208,6 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "cell_identities": [tile.key for tile in tiles],
         "source_frame_offset": int(source_frame_offset),
         "max_trace_gap_h": float(max_trace_gap_h),
+        "selection": selection,
     }
     return report

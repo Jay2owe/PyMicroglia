@@ -268,6 +268,55 @@ def test_user_can_filter_analysis_video_and_image_independently(
             ["eligibility_labels"] == result["views"]["videos"]["labels"])
 
 
+def test_automated_grids_share_one_period_recipe_and_frame_limits(
+        fake_chain, fake_mask, fake_measurement, tmp_path, monkeypatch):
+    # The suite's fake grid has a smaller signature than the real action.
+    monkeypatch.setattr(auto_microglia, "_validate_cell_grid_options",
+                        lambda *_args: None)
+    monkeypatch.setattr(
+        auto_microglia, "_shared_cell_periods",
+        lambda *_args, **_kwargs: {
+            fake_chain["stack"].stem: {
+                "report": "period_decisions.json",
+                "decisions": {1: {"significant_period": True}}}})
+    captured = []
+    def grids(kind, *_args, options=None, **_kwargs):
+        captured.append((kind, options))
+        return {}
+    monkeypatch.setattr(auto_microglia, "_cell_grids", grids)
+    recipe = {"fft_component_test": False, "fit_method": "lomb",
+              "significance_method": "lomb", "min_cycles": 1.0}
+    run = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out",
+        tracked_cell_grid_options={"significant_period_only": True},
+        tracked_cell_video_grid_options={"significant_period_only": True},
+        tracked_cell_period_recipe=recipe,
+        eligibility_max_gap_h=None, eligibility_max_gap_frames=1,
+        eligibility_max_missing_frames=1,
+        eligibility_max_missing_fraction=None,
+        tracked_measurement=False, tracked_video=False, tracked_image=False)
+    assert [kind for kind, _ in captured] == ["images", "videos"]
+    assert captured[0][1]["period_recipe"] == captured[1][1]["period_recipe"]
+    assert captured[0][1]["period_recipe"]["fit_method"] == "lomb"
+    assert run["outputs"]["tracked_cell_period_selection"][
+        fake_chain["stack"].stem]["significant_supported_identities"] == [1]
+    result = next(iter(run["outputs"]["eligibility"].values()))
+    assert result["max_gap_frames"] == result["max_missing_frames"] == 1
+    assert result["max_gap_hours"] is result["max_missing_fraction"] is None
+
+
+def test_automated_grids_refuse_conflicting_period_recipes(tmp_path, monkeypatch):
+    monkeypatch.setattr(auto_microglia, "_validate_cell_grid_options",
+                        lambda *_args: None)
+    with pytest.raises(ValueError, match="share one period recipe"):
+        auto_microglia.run(
+            str(tmp_path),
+            tracked_cell_grid_options={"significant_period_only": True,
+                                       "period_recipe": {"min_cycles": 1.0}},
+            tracked_cell_video_grid_options={"significant_period_only": True,
+                                             "period_recipe": {"min_cycles": 2.0}})
+
+
 def test_cell_grids_do_not_depend_on_tracked_measurement_and_resume(
         fake_chain, fake_mask, fake_measurement, tmp_path, monkeypatch):
     folder = str(tmp_path / "source")

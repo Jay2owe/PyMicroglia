@@ -39,7 +39,36 @@ selection of saved decisions; rendering does not select a method.
 - `tracked_cell_video_grid=True` writes a synchronized movie under
   `visual/videos/<recording>/`. Every cell in the **videos** eligibility view
   follows its centre through every original photon frame by default. A missing
-  mask keeps the current frame at the last known centre and is visibly marked.
+  mask keeps the current photon frame, interpolates the crop centre across an
+  internal gap, and is visibly marked; no mask is invented.
+
+Both grids keep all cells by default. Set `significant_period_only=True` in
+either grid's `*_options` to require a significant test **and** a supported
+estimated period. The default test is shared with `all_cell_trace_grid`:
+three-frame median then mean, robust-linear detrending, FFT-NLLS estimation,
+and an uncorrected conditional component test. `period_recipe` can replace its
+method, test, detrending, period bounds, minimum observations/cycles, alpha,
+correction and component settings. It accepts a settings mapping, a JSON file
+holding that mapping, or a validated method-audit settings profile exported
+for the `signal_mean` measurement. The grid report saves the resolved recipe,
+per-cell verdicts and reasons for exclusion.
+
+In the automated run, `tracked_cell_period_recipe` is the one recipe for both
+grids. When either grid requests significant periods, the chain tests the
+complete tracked population once, saves `tracked_cell_period_selection`, and
+passes those same verdicts to both views. Different image and video eligibility
+views therefore cannot change the statistical test family. If their photon
+`trace_channel` settings differ, the run refuses to call the results shared.
+
+Tracking-quality filters are independent of period selection. Direct grids
+accept `max_gap_frames`, `max_missing_frames` and `max_missing_fraction`;
+unset limits exclude nobody. A gap is a consecutive absence between the first
+and last mask; missing counts and fractions include recording edges. Counts
+exclude above the limit; the fraction excludes at or above it. For the
+automated chain, use `eligibility_max_gap_frames` and
+`eligibility_max_missing_frames` alongside its existing hour and fraction
+limits, then include `"images"` and/or `"videos"` in
+`eligibility_exclude_from`. Set an unused hour or fraction limit to `None`.
 
 Both actions crop at the original pixel scale. `crop_basis="largest_cell"`
 gives every tile one fixed square large enough for the largest observed cell;

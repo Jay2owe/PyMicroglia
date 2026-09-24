@@ -26,6 +26,7 @@ def _validate_cell_grid_options(image_options: Mapping[str, Any] | None,
         if not isinstance(supplied, Mapping):
             raise TypeError(f"{label} must be a settings mapping")
         reserved = {"raw", "labels", "sources", "output_dir",
+                    "period_decisions",
                     "source_frame_offset", "frame_interval_h"}
         forbidden = sorted(reserved.intersection(supplied))
         if forbidden:
@@ -48,7 +49,8 @@ def _validate_cell_grid_options(image_options: Mapping[str, Any] | None,
 
 def _cell_grids(kind: str, tracking: Mapping[str, Any],
                 handoff: Mapping[str, Any], eligibility: Mapping[str, Any],
-                folder: Path, *, options: Mapping[str, Any] | None = None
+                folder: Path, *, options: Mapping[str, Any] | None = None,
+                period_evidence: Mapping[str, Any] | None = None
                 ) -> dict[str, Any]:
     """Render one recording per call with its own eligibility label view."""
     import json
@@ -67,6 +69,12 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
         prepared = document["prepared"][stem]
         labels = eligibility[stem]["views"][kind]["labels"]
         destination = folder / "visual" / kind / stem
+        shared = ((period_evidence or {}).get(stem)
+                  if settings.get("significant_period_only") else None)
+        if settings.get("significant_period_only") and shared is None:
+            raise ValueError(f"{stem} has no shared period decisions")
+        call_options = {**settings, **({"period_decisions": shared["decisions"]}
+                                     if shared is not None else {})}
         try:
             report = action(
                 prepared["measurement_raw"], labels,
@@ -74,11 +82,12 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
                 output_name=name or f"{stem}_cell_{'grid' if kind == 'images' else 'video_grid'}",
                 source_frame_offset=int(result["source_frame_offset"]),
                 frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
-                **settings)
+                **call_options)
         except ValueError as error:
-            if "contains no tracked cells" not in str(error):
+            if ("contains no tracked cells" not in str(error) and
+                    "no cells meet the cell-grid selection" not in str(error)):
                 raise
-            out[stem] = {"status": "no cells in selected eligibility view",
+            out[stem] = {"status": str(error),
                          "eligibility_labels": str(labels),
                          "display_only": True, "output": None}
             continue
@@ -86,6 +95,8 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
             "output": report["output"], "display_only": True,
             "eligibility_labels": str(labels),
             "cell_identities": report["cell_grid"]["cell_identities"],
+            "selection": report["cell_grid"].get("selection"),
+            "period_report": shared["report"] if shared is not None else None,
             "source_frame_offset": int(result["source_frame_offset"]),
             "crop": [one["provenance"]["crop_size_px"]
                      for one in report.get("tile_sources", [])],
@@ -93,6 +104,40 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
                if kind == "images" else {}),
         }
     return out
+
+
+def _shared_cell_periods(tracking: Mapping[str, Any],
+                         handoff: Mapping[str, Any], folder: Path, *,
+                         recipe: Mapping[str, Any], trace_channel: int = 1
+                         ) -> dict[str, Any]:
+    """Save one complete-population period test for both grid destinations."""
+    import json
+    from ..visualisation.cell_selection import period_evidence
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    destination = folder / "tracked_cell_period_selection"
+    destination.mkdir(parents=True, exist_ok=True)
+    results = {}
+    for stem, result in tracking.items():
+        prepared = document["prepared"][stem]
+        try:
+            evidence = period_evidence(
+                prepared["measurement_raw"], result["labels"],
+                source_frame_offset=int(result["source_frame_offset"]),
+                frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+                trace_channel=trace_channel, period_recipe=recipe)
+        except ValueError as error:
+            if "contains no tracked cells" not in str(error):
+                raise
+            evidence = {"period_recipe": dict(recipe), "decisions": {},
+                        "status": "no tracked cells"}
+        path = destination / f"{stem}_period_decisions.json"
+        path.write_text(json.dumps(evidence, indent=2, allow_nan=False) + "\n",
+                        encoding="utf-8")
+        results[stem] = {"report": str(path),
+                         "decisions": evidence["decisions"]}
+    return results
 
 
 def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
@@ -139,8 +184,10 @@ def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
 
 
 def _eligible_tracks(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
-                     folder: Path, *, enabled: bool, max_gap_h: float,
-                     max_missing_fraction: float,
+                     folder: Path, *, enabled: bool, max_gap_h: float | None,
+                     max_gap_frames: int | None,
+                     max_missing_frames: int | None,
+                     max_missing_fraction: float | None,
                      exclude_from: str | Sequence[str]) -> dict[str, Any]:
     """Destination views over final identities; Motion files remain untouched."""
     import json
@@ -156,6 +203,8 @@ def _eligible_tracks(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
                 result["labels"], output_dir=folder / "eligibility" / stem,
                 frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
                 max_gap_hours=max_gap_h,
+                max_gap_frames=max_gap_frames,
+                max_missing_frames=max_missing_frames,
                 max_missing_fraction=max_missing_fraction,
                 exclude_from=exclude_from)
         else:

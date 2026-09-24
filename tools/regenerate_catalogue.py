@@ -1178,10 +1178,16 @@ _ELIGIBILITY_PARAMS: list[dict] = [
      "description": "Hours between tracked label frames, used to express the longest internal absence in experimental time."},
     {"name": "max_gap_hours", "type": "float", "units": "hours",
      "required": False, "default": 4.0,
-     "description": "Exclude an identity when its longest internal absence is greater than this duration. Exactly this duration remains eligible."},
+     "description": "Exclude an identity when its longest internal absence is greater than this duration. None disables this limit."},
+    {"name": "max_gap_frames", "type": "int", "units": "frames",
+     "required": False, "default": None,
+     "description": "Exclude an identity when its longest internal absence exceeds this many frames. None disables this limit."},
+    {"name": "max_missing_frames", "type": "int", "units": "frames",
+     "required": False, "default": None,
+     "description": "Exclude an identity when total absent frames exceed this count, including recording edges. None disables this limit."},
     {"name": "max_missing_fraction", "type": "float", "units": "fraction",
      "required": False, "default": 0.5,
-     "description": "Exclude an identity when this fraction or more of the complete tracked window is missing, including late arrival or early loss."},
+     "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."},
     {"name": "exclude_from", "type": "list", "units": "destinations",
      "required": False, "default": ("analysis",),
      "description": "Independent outputs that receive filtered label views: analysis, videos and/or images. Motion labels are never edited."},
@@ -1276,6 +1282,24 @@ _CELL_GRID_COMMON: list[dict] = [
     {"name": "max_trace_gap_h", "type": "float", "units": "hours",
      "required": False, "default": 4.0,
      "description": "Longest internal missing trace gap bridged for display-only timing."},
+    {"name": "significant_period_only", "type": "bool", "units": "-",
+     "required": False, "default": False,
+     "description": "Show only cells with a significant test and a supported estimated period; all accepted cells remain the default."},
+    {"name": "period_recipe", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Exact period-test settings mapping, JSON path, or exported method-audit profile for signal_mean; defaults to the shared all-cell trace-grid recipe."},
+    {"name": "period_decisions", "type": "mapping", "units": "-",
+     "required": False, "default": None,
+     "description": "Previously computed verdicts for every tracked identity; the automated chain supplies this to reuse one full-population test family."},
+    {"name": "max_gap_frames", "type": "int", "units": "frames",
+     "required": False, "default": None,
+     "description": "Exclude cells whose longest internal tracking gap exceeds this many frames."},
+    {"name": "max_missing_frames", "type": "int", "units": "frames",
+     "required": False, "default": None,
+     "description": "Exclude cells with more than this many absent frames across the full photon recording."},
+    {"name": "max_missing_fraction", "type": "float", "units": "fraction",
+     "required": False, "default": None,
+     "description": "Exclude cells at or above this missing-frame fraction across the full photon recording."},
     {"name": "display_options", "type": "mapping", "units": "-",
      "required": False, "default": None,
      "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."},
@@ -1312,7 +1336,7 @@ _HANDOFF_ACTIONS: list[dict] = [
     {"name": "cell_eligibility",
      "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
      "method": "eligibility.evaluate", "params": _ELIGIBILITY_PARAMS,
-     "method_version": "2026-09-22-cell-eligibility-v1"},
+     "method_version": "2026-09-24-cell-eligibility-v2"},
     {"name": "tracked_cell_video",
      "summary": "Draw configurable per-identity outlines over the original photon movie using the accepted review-video display defaults.",
      "method": "video.tracked_cell_video", "params": _TRACKED_VIDEO_PARAMS,
@@ -1327,12 +1351,12 @@ _HANDOFF_ACTIONS: list[dict] = [
      "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
      "method": "visualisation.cell_image_grid.cell_image_grid",
      "params": _CELL_IMAGE_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-grids-v1"},
+     "method_version": "2026-09-24-cell-grids-v2"},
     {"name": "cell_video_grid",
      "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
      "method": "visualisation.cell_video_grid.cell_video_grid",
      "params": _CELL_VIDEO_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-video-grid-v2"},
+     "method_version": "2026-09-24-cell-video-grid-v3"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [
@@ -1787,7 +1811,10 @@ def build(protocols: Path) -> dict:
                 if known["type"] != shared["type"]:
                     raise ValueError(f"Rename incompatible parameter {entry['name']}.{row['name']}: "
                                      f"{known['type']} versus {shared['type']}")
-                if entry["name"] != "measure_missing_gaps":
+                if (entry["name"] != "measure_missing_gaps" and
+                        not (entry["name"] in {"cell_eligibility", "cell_image_grid",
+                                                    "cell_video_grid"} and
+                             row["name"] == "max_gap_frames")):
                     for field in ("type", "units", "description"):
                         row[field] = known.get(field, "-")
         actions.append({
@@ -1811,6 +1838,13 @@ def build(protocols: Path) -> dict:
                 else "2026-09-21-measure-chassis-v1"),
             "source": [],
         })
+
+    # The tracking-gap limit and the measurement-only gap repair use the same
+    # parameter name but have different action-specific meanings.
+    vocabulary["max_gap_frames"]["units"] = "frames"
+    vocabulary["max_gap_frames"]["description"] = (
+        "Maximum consecutive missing frames for this action; see its "
+        "parameter details for the inclusion or repair rule.")
 
     return {
         "project": "pymicroglia",

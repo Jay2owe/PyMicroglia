@@ -2376,6 +2376,8 @@
         "output_dir",
         "frame_interval_h",
         "max_gap_hours",
+        "max_gap_frames",
+        "max_missing_frames",
         "max_missing_fraction",
         "exclude_from",
         "overwrite",
@@ -2386,6 +2388,8 @@
         "output_dir": null,
         "frame_interval_h": null,
         "max_gap_hours": 4.0,
+        "max_gap_frames": null,
+        "max_missing_frames": null,
         "max_missing_fraction": 0.5,
         "exclude_from": [
           "analysis"
@@ -2416,13 +2420,25 @@
           "type": "float",
           "units": "hours",
           "required": false,
-          "description": "Exclude an identity when its longest internal absence is greater than this duration. Exactly this duration remains eligible."
+          "description": "Exclude an identity when its longest internal absence is greater than this duration. None disables this limit."
+        },
+        "max_gap_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude an identity when its longest internal absence exceeds this many frames. None disables this limit."
+        },
+        "max_missing_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude an identity when total absent frames exceed this count, including recording edges. None disables this limit."
         },
         "max_missing_fraction": {
           "type": "float",
           "units": "fraction",
           "required": false,
-          "description": "Exclude an identity when this fraction or more of the complete tracked window is missing, including late arrival or early loss."
+          "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
         },
         "exclude_from": {
           "type": "list",
@@ -2443,7 +2459,7 @@
           "description": "The one sentence this figure proves, written into the provenance bundle. Left empty, one is generated from what was actually drawn."
         }
       },
-      "method_version": "2026-09-22-cell-eligibility-v1",
+      "method_version": "2026-09-24-cell-eligibility-v2",
       "source": []
     },
     {
@@ -2801,6 +2817,12 @@
         "crop_rectangle_px",
         "trace_channel",
         "max_trace_gap_h",
+        "significant_period_only",
+        "period_recipe",
+        "period_decisions",
+        "max_gap_frames",
+        "max_missing_frames",
+        "max_missing_fraction",
         "display_options",
         "shared_time",
         "event_hour"
@@ -2817,6 +2839,12 @@
         "crop_rectangle_px": null,
         "trace_channel": 1,
         "max_trace_gap_h": 4.0,
+        "significant_period_only": false,
+        "period_recipe": null,
+        "period_decisions": null,
+        "max_gap_frames": null,
+        "max_missing_frames": null,
+        "max_missing_fraction": null,
         "display_options": null,
         "shared_time": null,
         "event_hour": null
@@ -2888,6 +2916,42 @@
           "required": false,
           "description": "Longest internal missing trace gap bridged for display-only timing."
         },
+        "significant_period_only": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Show only cells with a significant test and a supported estimated period; all accepted cells remain the default."
+        },
+        "period_recipe": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Exact period-test settings mapping, JSON path, or exported method-audit profile for signal_mean; defaults to the shared all-cell trace-grid recipe."
+        },
+        "period_decisions": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Previously computed verdicts for every tracked identity; the automated chain supplies this to reuse one full-population test family."
+        },
+        "max_gap_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude cells whose longest internal tracking gap exceeds this many frames."
+        },
+        "max_missing_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude an identity when total absent frames exceed this count, including recording edges. None disables this limit."
+        },
+        "max_missing_fraction": {
+          "type": "float",
+          "units": "fraction",
+          "required": false,
+          "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
+        },
         "display_options": {
           "type": "mapping",
           "units": "-",
@@ -2907,7 +2971,7 @@
           "description": "Source hour treated as zero when shared_time is event."
         }
       },
-      "method_version": "2026-09-24-cell-grids-v1",
+      "method_version": "2026-09-24-cell-grids-v2",
       "source": []
     },
     {
@@ -2929,6 +2993,12 @@
         "crop_rectangle_px",
         "trace_channel",
         "max_trace_gap_h",
+        "significant_period_only",
+        "period_recipe",
+        "period_decisions",
+        "max_gap_frames",
+        "max_missing_frames",
+        "max_missing_fraction",
         "display_options",
         "missing_centre",
         "show_outline",
@@ -2948,6 +3018,12 @@
         "crop_rectangle_px": null,
         "trace_channel": 1,
         "max_trace_gap_h": 4.0,
+        "significant_period_only": false,
+        "period_recipe": null,
+        "period_decisions": null,
+        "max_gap_frames": null,
+        "max_missing_frames": null,
+        "max_missing_fraction": null,
         "display_options": null,
         "missing_centre": "interpolate",
         "show_outline": true,
@@ -3022,6 +3098,42 @@
           "required": false,
           "description": "Longest internal missing trace gap bridged for display-only timing."
         },
+        "significant_period_only": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Show only cells with a significant test and a supported estimated period; all accepted cells remain the default."
+        },
+        "period_recipe": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Exact period-test settings mapping, JSON path, or exported method-audit profile for signal_mean; defaults to the shared all-cell trace-grid recipe."
+        },
+        "period_decisions": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Previously computed verdicts for every tracked identity; the automated chain supplies this to reuse one full-population test family."
+        },
+        "max_gap_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude cells whose longest internal tracking gap exceeds this many frames."
+        },
+        "max_missing_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Exclude an identity when total absent frames exceed this count, including recording edges. None disables this limit."
+        },
+        "max_missing_fraction": {
+          "type": "float",
+          "units": "fraction",
+          "required": false,
+          "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
+        },
         "display_options": {
           "type": "mapping",
           "units": "-",
@@ -3059,7 +3171,7 @@
           "description": "Outline opacity from zero to one."
         }
       },
-      "method_version": "2026-09-24-cell-video-grid-v2",
+      "method_version": "2026-09-24-cell-video-grid-v3",
       "source": []
     },
     {
@@ -34152,16 +34264,16 @@
     {
       "name": "max_gap_frames",
       "type": "int",
-      "units": "missing native frames",
+      "units": "frames",
       "required": false,
-      "description": "Maximum consecutive missing frames to consider, from 1 to 15. Raising it adds eligible longer gaps but never changes tracking, merge exclusions or observed measurements."
+      "description": "Maximum consecutive missing frames for this action; see its parameter details for the inclusion or repair rule."
     },
     {
       "name": "max_gap_hours",
       "type": "float",
       "units": "hours",
       "required": false,
-      "description": "Exclude an identity when its longest internal absence is greater than this duration. Exactly this duration remains eligible."
+      "description": "Exclude an identity when its longest internal absence is greater than this duration. None disables this limit."
     },
     {
       "name": "max_inferred_fraction",
@@ -34182,7 +34294,14 @@
       "type": "float",
       "units": "fraction",
       "required": false,
-      "description": "Exclude an identity when this fraction or more of the complete tracked window is missing, including late arrival or early loss."
+      "description": "Exclude an identity when this fraction or more of the complete tracked window is missing. None disables this limit."
+    },
+    {
+      "name": "max_missing_frames",
+      "type": "int",
+      "units": "frames",
+      "required": false,
+      "description": "Exclude an identity when total absent frames exceed this count, including recording edges. None disables this limit."
     },
     {
       "name": "max_pair_step_px",
@@ -34675,6 +34794,13 @@
       "description": "Workbench settings passed through: detrending, component limits, error controls. Note that RAE is a relative amplitude error and not a significance."
     },
     {
+      "name": "period_decisions",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Previously computed verdicts for every tracked identity; the automated chain supplies this to reuse one full-population test family."
+    },
+    {
       "name": "period_hours",
       "type": "float",
       "units": "-",
@@ -34708,6 +34834,13 @@
       "units": "-",
       "required": false,
       "description": "Shortest candidate period in spectral and instantaneous-phase searches."
+    },
+    {
+      "name": "period_recipe",
+      "type": "mapping",
+      "units": "-",
+      "required": false,
+      "description": "Exact period-test settings mapping, JSON path, or exported method-audit profile for signal_mean; defaults to the shared all-cell trace-grid recipe."
     },
     {
       "name": "period_testing",
@@ -35422,6 +35555,13 @@
       "units": "-",
       "required": false,
       "description": "Which statistical test, when it is separable from the estimator. Left out, a fit-only estimator such as fft_nlls falls back to a Lomb-Scargle test whose p-value is about the trace and not about any one fitted component."
+    },
+    {
+      "name": "significant_period_only",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Show only cells with a significant test and a supported estimated period; all accepted cells remain the default."
     },
     {
       "name": "signing_key_path",

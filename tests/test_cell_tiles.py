@@ -57,6 +57,11 @@ def test_own_cell_and_explicit_rectangle(tmp_path):
     with own[0].open_series() as first, own[1].open_series() as second:
         assert first.shape[-2:] == (19, 19)
         assert second.shape[-2:] == (5, 5)
+    selected = cell_tiles(raw_path, label_path, source_frame_offset=2,
+                          include_identities=[2])
+    assert [tile.key for tile in selected] == ["2"]
+    with selected[0].open_series() as view:
+        assert view.shape[-2:] == (5, 5)
     exact = cell_tiles(raw_path, label_path, source_frame_offset=2,
                        crop_size_px=(23, 9))
     with exact[0].open_series() as view:

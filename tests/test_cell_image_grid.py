@@ -1,6 +1,7 @@
 """Cell rows reuse Auto-Organotypic's best-cycle and shared-time grid."""
 
 import numpy as np
+import pandas as pd
 import tifffile
 
 from pymicroglia.visualisation.cell_image_grid import cell_image_grid
@@ -78,3 +79,53 @@ def test_long_gap_disqualifies_affected_cycle(tmp_path):
     assert set(range(55, 71)).issubset(selection["ineligible_trace_frames"])
     first, last = selection["selected_trace_frames"]
     assert last < 55 or first > 70
+
+
+def test_frame_filters_remove_cells_before_sizing_the_grid(tmp_path):
+    raw, labels = _recording(tmp_path)
+    report = cell_image_grid(
+        raw, labels, output_dir=tmp_path / "out", output_name="quality",
+        shared_time="recording", moments=2, max_gap_frames=0,
+        max_missing_frames=0, channels=1, lut="grays",
+        display_range=(0, 1600), soft_range="hard")
+    assert report["cell_grid"]["cell_identities"] == ["2"]
+    selection = report["cell_grid"]["selection"]
+    assert selection["selected_identities"] == [2]
+    reasons = {row["identity"]: row["selection_reason"]
+               for row in selection["cells"]}
+    assert "internal_gap_frames_over_limit" in reasons[1]
+    assert "missing_frames_over_limit" in reasons[3]
+
+
+def test_period_recipe_reaches_the_shared_test_and_selects_supported_cells(
+        tmp_path, monkeypatch):
+    from pymicroglia.figure_tables import all_cell_traces
+
+    raw, labels = _recording(tmp_path)
+    def evidence(_frame, _metrics, identities, resolved, _view, _normal,
+                 _config, **options):
+        assert resolved["method"] == "lomb"
+        assert resolved["significance_method"] == "lomb"
+        assert resolved["min_cycles"] == 1.0
+        assert options["fft_component_test"] is False
+        return pd.DataFrame(), pd.DataFrame([
+            {"identity": identity, "period_hours": 24.0, "p_value": .01,
+             "q_value": .02, "significance_status": "ok",
+             "rhythm_status": "rhythmic" if identity != 2 else "not rhythmic",
+             "supported_period": identity != 3}
+            for identity in identities])
+    monkeypatch.setattr(all_cell_traces, "trace_data", evidence)
+    recipe = {"fft_component_test": False, "fit_method": "lomb",
+              "significance_method": "lomb", "detrend": "none",
+              "multiple_testing": "bh", "min_cycles": 1.0,
+              "period_config": {}}
+    report = cell_image_grid(
+        raw, labels, output_dir=tmp_path / "out", output_name="period",
+        shared_time="recording", moments=2,
+        significant_period_only=True, period_recipe=recipe,
+        channels=1, lut="grays", display_range=(0, 1600),
+        soft_range="hard")
+    assert report["cell_grid"]["cell_identities"] == ["1"]
+    selected = report["cell_grid"]["selection"]
+    assert selected["period_recipe"]["fit_method"] == "lomb"
+    assert selected["excluded_identities"] == [2, 3]

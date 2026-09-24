@@ -66,6 +66,22 @@ def test_thresholds_and_destination_list_are_tunable(tmp_path: Path):
                  exclude_from=("statistics",))
 
 
+def test_frame_count_limits_can_replace_hour_and_fraction_limits():
+    rows = {row["identity"]: row for row in audit(
+        labels(), frame_interval_h=1.0, max_gap_hours=None,
+        max_gap_frames=4, max_missing_frames=5,
+        max_missing_fraction=None)}
+    assert rows[2]["exclusion_reasons"] == "internal_gap_frames_over_limit"
+    assert rows[3]["eligible"] is True  # exactly five missing is allowed
+    assert rows[4]["eligible"] is True  # exactly four in one gap is allowed
+    stricter = {row["identity"]: row for row in audit(
+        labels(), frame_interval_h=1.0, max_gap_hours=None,
+        max_missing_frames=4, max_missing_fraction=None)}
+    assert "missing_frames_over_limit" in stricter[3]["exclusion_reasons"]
+    with pytest.raises(ValueError, match="max_gap_frames"):
+        audit(labels(), frame_interval_h=1.0, max_gap_frames=2.5)
+
+
 def test_outputs_refuse_implicit_overwrite(tmp_path: Path):
     source = tmp_path / "motion_labels.tif"
     tifffile.imwrite(source, labels())
@@ -83,5 +99,7 @@ def test_action_is_live_and_documents_the_two_default_limits():
     params = {row["name"]: row for row in details["params"]}
     assert params["max_gap_hours"]["default"] == 4.0
     assert params["max_missing_fraction"]["default"] == 0.5
+    assert params["max_gap_frames"]["default"] is None
+    assert params["max_missing_frames"]["default"] is None
     assert tuple(params["exclude_from"]["default"]) == ("analysis",)
     assert details["pending"] is False

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import math
 from pathlib import Path
 from threading import RLock
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 import tifffile
@@ -108,6 +108,7 @@ def _size_for(reach: tuple[int, int], crop: str) -> tuple[int, int]:
 
 def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                frame_interval_h: float | None = None,
+               include_identities: Sequence[int] | None = None,
                crop_basis: str = "largest_cell", crop: str = "tight",
                crop_size_px: tuple[int, int] | None = None,
                identity_prefix: str = "Cell", trace_channel: int = 1,
@@ -151,6 +152,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         explicit = tuple(map(int, crop_size_px))
     else:
         explicit = None
+    selected = (None if include_identities is None else
+                {int(identity) for identity in include_identities})
+    if selected is not None and (not selected or min(selected) < 1):
+        raise ValueError("include_identities must contain positive cell numbers")
 
     shared = _SharedRaw(raw_path)
     with shared.acquire() as opened:
@@ -170,6 +175,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             raw_index = offset + label_index
             frame = np.asarray(label_values[label_index])
             present = [int(one) for one in np.unique(frame) if int(one) > 0]
+            if selected is not None:
+                present = [one for one in present if one in selected]
             if not present:
                 continue
             photons = np.asarray(opened.frame(raw_index, channel))
@@ -191,6 +198,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                 observed[identity][raw_index] = True
 
     ids = sorted(centres)
+    if selected is not None and set(ids) != selected:
+        raise ValueError("include_identities names cells absent from the labels")
     if not ids:
         raise ValueError("the selected label view contains no tracked cells")
     common_reach = (max(one[0] for one in reaches.values()),
@@ -260,6 +269,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop_basis": basis if explicit is None else "pixels",
                       "crop": mode if explicit is None else None,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
+                      "frame_interval_h": float(interval or 1.0),
                       "missing_centre": missing_centre,
                       "outline": bool(outline),
                       "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)

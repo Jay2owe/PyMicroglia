@@ -90,3 +90,24 @@ def test_missing_mask_keeps_new_photon_frames_and_interpolates_crop(tmp_path):
     assert np.any(moving.frame_overlay(canvas, 0))
     assert not np.any(moving.frame_overlay(canvas, 2))
     assert held.frame_overlay is None
+
+
+def test_video_grid_frame_gap_limit_is_optional(tmp_path):
+    raw = np.full((6, 1, 18, 30), 100, np.uint16)
+    labels = np.zeros((6, 18, 30), np.uint16)
+    labels[:, 4:7, 4:7] = 1
+    labels[:, 10:13, 22:25] = 2
+    labels[3, 4:7, 4:7] = 0
+    raw_path, labels_path = tmp_path / "raw.tif", tmp_path / "labels.tif"
+    tifffile.imwrite(raw_path, raw, imagej=True,
+                     metadata={"axes": "TCYX", "finterval": 1800, "tunit": "s"})
+    tifffile.imwrite(labels_path, labels, imagej=True,
+                     metadata={"axes": "TYX"})
+    report = cell_video_grid(
+        raw_path, labels_path, output_dir=tmp_path / "out",
+        output_name="quality.mp4", max_gap_frames=0, fps=12,
+        channels=1, lut="grays", display_range=(0, 200),
+        soft_range="hard", tile_label="none")
+    assert report["frames"] == 6
+    assert report["cell_grid"]["cell_identities"] == ["2"]
+    assert report["cell_grid"]["selection"]["excluded_identities"] == [1]
