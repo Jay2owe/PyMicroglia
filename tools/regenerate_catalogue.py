@@ -1327,6 +1327,9 @@ _CELL_GRID_COMMON: list[dict] = [
 ]
 
 _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "centre_method", "type": "str", "units": "-",
+     "required": False, "default": "intensity_weighted",
+     "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."},
     {"name": "shared_time", "type": "str", "units": "-",
      "required": False, "default": None,
      "description": "None for each cell's best cycle, recording for shared source hours, or event for event-relative hours."},
@@ -1336,6 +1339,12 @@ _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
 ]
 
 _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "centre_method", "type": "str", "units": "-",
+     "required": False, "default": "mask",
+     "description": "Use the geometric observed-mask centroid for video crops; intensity_weighted uses original-photon weights instead."},
+    {"name": "centre_smoothing_frames", "type": "int", "units": "frames",
+     "required": False, "default": 5,
+     "description": "Centered odd-frame median then triangular mean for video crop centers; zero disables smoothing. Original masks and photons are unchanged."},
     {"name": "missing_centre", "type": "str", "units": "-",
      "required": False, "default": "interpolate",
      "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."},
@@ -1360,12 +1369,12 @@ _HANDOFF_ACTIONS: list[dict] = [
      "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
      "method": "visualisation.cell_image_grid.cell_image_grid",
      "params": _CELL_IMAGE_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-grids-v3"},
+     "method_version": "2026-09-24-cell-grids-v4"},
     {"name": "cell_video_grid",
      "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
      "method": "visualisation.cell_video_grid.cell_video_grid",
      "params": _CELL_VIDEO_GRID_PARAMS, "display_only": True,
-     "method_version": "2026-09-24-cell-video-grid-v4"},
+     "method_version": "2026-09-24-cell-video-grid-v5"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [

@@ -26,6 +26,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     trace_channel: int = 1,
                     max_trace_gap_h: float = 4.0,
                     missing_centre: str = "interpolate",
+                    centre_smoothing_frames: int = 5,
+                    centre_method: str = "mask",
                     show_outline: bool = True,
                     outline_colour: Any = DEFAULT_COLOUR,
                     outline_width_px: int = DEFAULT_WIDTH_PX,
@@ -51,6 +53,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     ``mask_style='fill'`` tints the observed cell with ``mask_opacity``.
     ``display_filter={'method': 'a104'}`` filters only rendered full frames;
     cell traces and period tests still use original photons.
+    ``centre_smoothing_frames`` steadies only the crop path. It does not alter
+    the tracked masks, photon values or source-frame timing. Zero disables it.
     Optional quality limits and ``significant_period_only`` select cells
     before the largest-cell crop is sized; the default keeps every identity.
     """
@@ -62,6 +66,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         crop_size_px = crop_rectangle_px
     video_options.setdefault("overwrite", overwrite)
     missing_centre = video_options.pop("missing_centre", missing_centre)
+    centre_smoothing_frames = video_options.pop("centre_smoothing_frames",
+                                                 centre_smoothing_frames)
+    centre_method = video_options.pop("centre_method", centre_method)
     show_outline = video_options.pop("show_outline", show_outline)
     outline = video_options.pop("outline", show_outline)
     outline_colour = video_options.pop("outline_colour", outline_colour)
@@ -97,6 +104,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         trace_channel=trace_channel, missing_centre=missing_centre,
+        centre_smoothing_frames=centre_smoothing_frames,
+        centre_method=centre_method,
         outline=outline, outline_colour=outline_colour,
         outline_width_px=outline_width_px,
         outline_opacity=outline_opacity, mask_style=mask_style,
@@ -143,6 +152,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         "crop_size_px": list(crop_size_px) if crop_size_px is not None else None,
         "clock": "original source frame order" if align == "start" else str(align),
         "missing_centre": missing_centre,
+        "centre_smoothing_frames": centre_smoothing_frames,
+        "centre_method": centre_method,
         "outline": bool(outline),
         "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
                            else outline_colour),

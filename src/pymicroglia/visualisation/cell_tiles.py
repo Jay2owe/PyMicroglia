@@ -106,6 +106,42 @@ def _size_for(reach: tuple[int, int], crop: str) -> tuple[int, int]:
     return scaled, scaled
 
 
+def _smooth_centres(centres: np.ndarray, frames: int) -> np.ndarray:
+    """Suppress single-frame centroid errors without shifting motion in time."""
+    if frames == 0:
+        return centres
+    radius = frames // 2
+    padded = np.pad(centres, ((radius, radius), (0, 0)), mode="edge")
+    median = np.stack([np.median(padded[index:index + frames], axis=0)
+                       for index in range(len(centres))])
+    weights = np.concatenate((np.arange(1, radius + 2),
+                              np.arange(radius, 0, -1))).astype(float)
+    weights /= weights.sum()
+    return np.stack([
+        np.convolve(np.pad(median[:, axis], radius, mode="edge"),
+                    weights, mode="valid")
+        for axis in range(2)], axis=1)
+
+
+def _mask_centre(yy: np.ndarray, xx: np.ndarray, photons: np.ndarray,
+                 method: str) -> tuple[float, float]:
+    """Find an observed mask's centre without changing its measured trace."""
+    geometric = (float(yy.mean()), float(xx.mean()))
+    if method == "mask":
+        return geometric
+    values = np.asarray(photons[yy, xx], dtype=float)
+    finite = np.isfinite(values)
+    if not np.any(finite):
+        return geometric
+    # Removing the within-mask floor makes the bright cell body, rather than
+    # a uniform camera/background offset, determine the display crop centre.
+    weights = np.maximum(values[finite] - np.min(values[finite]), 0.0)
+    if not np.any(weights):
+        return geometric
+    return (float(np.average(yy[finite], weights=weights)),
+            float(np.average(xx[finite], weights=weights)))
+
+
 def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                frame_interval_h: float | None = None,
                display_raw: str | Path | None = None,
@@ -114,6 +150,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                crop_size_px: tuple[int, int] | None = None,
                identity_prefix: str = "Cell", trace_channel: int = 1,
                missing_centre: str = "hold", outline: bool = False,
+               centre_smoothing_frames: int = 0,
+               centre_method: str = "mask",
                mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
                outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
@@ -141,6 +179,13 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError(f"crop must be one of {', '.join(CROP_SCALES)}")
     if missing_centre not in ("hold", "interpolate"):
         raise ValueError("missing_centre must be 'hold' or 'interpolate'")
+    if centre_method not in ("mask", "intensity_weighted"):
+        raise ValueError("centre_method must be 'mask' or 'intensity_weighted'")
+    if (isinstance(centre_smoothing_frames, bool) or
+            not isinstance(centre_smoothing_frames, int) or
+            centre_smoothing_frames < 0 or
+            (centre_smoothing_frames != 0 and centre_smoothing_frames % 2 != 1)):
+        raise ValueError("centre_smoothing_frames must be zero or a positive odd integer")
     if not isinstance(outline, bool):
         raise ValueError("outline must be true or false")
     if mask_style not in ("outline", "fill"):
@@ -177,6 +222,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             raise ValueError(f"trace_channel must be in 1..{channels}")
         centres = {}
         reaches = {}
+        bounds = {}
         traces = {}
         observed = {}
         for label_index in range(len(label_values)):
@@ -192,11 +238,14 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                 if identity not in centres:
                     centres[identity] = np.full((total, 2), np.nan, float)
                     reaches[identity] = [0, 0]
+                    bounds[identity] = np.full((total, 4), np.nan, float)
                     traces[identity] = np.full(total, np.nan, float)
                     observed[identity] = np.zeros(total, bool)
                 yy, xx = np.nonzero(frame == identity)
-                cy, cx = float(yy.mean()), float(xx.mean())
+                cy, cx = _mask_centre(yy, xx, photons, centre_method)
                 centres[identity][raw_index] = (cy, cx)
+                bounds[identity][raw_index] = (yy.min(), yy.max(),
+                                               xx.min(), xx.max())
                 rounded_y, rounded_x = round(cy), round(cx)
                 reaches[identity][0] = max(reaches[identity][0],
                                            int(np.max(np.abs(yy - rounded_y))))
@@ -218,16 +267,6 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("include_identities names cells absent from the labels")
     if not ids:
         raise ValueError("the selected label view contains no tracked cells")
-    common_reach = (max(one[0] for one in reaches.values()),
-                    max(one[1] for one in reaches.values()))
-    raw_fingerprint = store.fingerprint(raw_path).as_dict()
-    display_fingerprint = (store.fingerprint(display_path).as_dict()
-                           if display_raw is not None else raw_fingerprint)
-    label_fingerprint = (store.fingerprint(label_path).as_dict()
-                         if label_path is not None else
-                         {"in_memory": True, "shape": list(label_values.shape),
-                          "dtype": str(label_values.dtype)})
-    sources = []
     for identity in ids:
         known = np.flatnonzero(observed[identity])
         if missing_centre == "interpolate":
@@ -241,6 +280,24 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                     held = centres[identity][index].copy()
                 else:
                     centres[identity][index] = held
+        centres[identity] = _smooth_centres(centres[identity],
+                                           centre_smoothing_frames)
+        rounded = np.rint(centres[identity][known])
+        cell_bounds = bounds[identity][known]
+        reaches[identity] = [
+            int(np.max(np.abs(cell_bounds[:, :2] - rounded[:, :1]))),
+            int(np.max(np.abs(cell_bounds[:, 2:] - rounded[:, 1:]))) ]
+    common_reach = (max(one[0] for one in reaches.values()),
+                    max(one[1] for one in reaches.values()))
+    raw_fingerprint = store.fingerprint(raw_path).as_dict()
+    display_fingerprint = (store.fingerprint(display_path).as_dict()
+                           if display_raw is not None else raw_fingerprint)
+    label_fingerprint = (store.fingerprint(label_path).as_dict()
+                         if label_path is not None else
+                         {"in_memory": True, "shape": list(label_values.shape),
+                          "dtype": str(label_values.dtype)})
+    sources = []
+    for identity in ids:
         required = reaches[identity]
         if explicit is not None:
             width_px, height_px = explicit
@@ -293,6 +350,13 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
                       "frame_interval_h": float(interval or 1.0),
                       "missing_centre": missing_centre,
+                      "centre_smoothing_frames": centre_smoothing_frames,
+                      "centre_smoothing_method": ("median then triangular mean"
+                                                  if centre_smoothing_frames else "none"),
+                      "centre_method": centre_method,
+                      "centre_weighting": ("raw photons above within-mask minimum"
+                                           if centre_method == "intensity_weighted"
+                                           else "equal mask-pixel weights"),
                       "outline": bool(outline),
                       "mask_style": mask_style,
                       "mask_opacity": float(mask_opacity),

@@ -2831,6 +2831,7 @@
         "mask_opacity",
         "display_filter",
         "display_options",
+        "centre_method",
         "shared_time",
         "event_hour"
       ],
@@ -2860,6 +2861,7 @@
         "mask_opacity": 0.35,
         "display_filter": null,
         "display_options": null,
+        "centre_method": "intensity_weighted",
         "shared_time": null,
         "event_hour": null
       },
@@ -3014,6 +3016,12 @@
           "required": false,
           "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
         },
+        "centre_method": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."
+        },
         "shared_time": {
           "type": "str",
           "units": "-",
@@ -3027,7 +3035,7 @@
           "description": "Source hour treated as zero when shared_time is event."
         }
       },
-      "method_version": "2026-09-24-cell-grids-v3",
+      "method_version": "2026-09-24-cell-grids-v4",
       "source": []
     },
     {
@@ -3063,6 +3071,8 @@
         "mask_opacity",
         "display_filter",
         "display_options",
+        "centre_method",
+        "centre_smoothing_frames",
         "missing_centre"
       ],
       "defaults": {
@@ -3091,6 +3101,8 @@
         "mask_opacity": 0.35,
         "display_filter": null,
         "display_options": null,
+        "centre_method": "mask",
+        "centre_smoothing_frames": 5,
         "missing_centre": "interpolate"
       },
       "parameter_details": {
@@ -3244,6 +3256,18 @@
           "required": false,
           "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
         },
+        "centre_method": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."
+        },
+        "centre_smoothing_frames": {
+          "type": "int",
+          "units": "frames",
+          "required": false,
+          "description": "Centered odd-frame median then triangular mean for video crop centers; zero disables smoothing. Original masks and photons are unchanged."
+        },
         "missing_centre": {
           "type": "str",
           "units": "-",
@@ -3251,7 +3275,7 @@
           "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."
         }
       },
-      "method_version": "2026-09-24-cell-video-grid-v4",
+      "method_version": "2026-09-24-cell-video-grid-v5",
       "source": []
     },
     {
@@ -32753,6 +32777,20 @@
       "units": "-",
       "description": "half-width of the stationarity box, px",
       "required": false
+    },
+    {
+      "name": "centre_method",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."
+    },
+    {
+      "name": "centre_smoothing_frames",
+      "type": "int",
+      "units": "frames",
+      "required": false,
+      "description": "Centered odd-frame median then triangular mean for video crop centers; zero disables smoothing. Original masks and photons are unchanged."
     },
     {
       "name": "channel",

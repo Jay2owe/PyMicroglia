@@ -53,6 +53,7 @@ def test_full_recording_keeps_all_cells_and_marks_missing(tmp_path, monkeypatch)
     assert report["cell_grid"]["clock"] == "original source frame order"
     assert report["cell_grid"]["outline"] is True
     assert report["cell_grid"]["missing_centre"] == "interpolate"
+    assert report["cell_grid"]["centre_smoothing_frames"] == 5
     assert report["well_label_position"] == "top-left"
     width = report["image_width"]
     # Cell 2 remains observed; its central photon pixel brightens on every
@@ -90,6 +91,39 @@ def test_missing_mask_keeps_new_photon_frames_and_interpolates_crop(tmp_path):
     assert np.any(moving.frame_overlay(canvas, 0))
     assert not np.any(moving.frame_overlay(canvas, 2))
     assert held.frame_overlay is None
+
+
+def test_smoothing_steadies_crop_but_keeps_observed_mask_and_trace(tmp_path):
+    raw = np.zeros((7, 1, 20, 30), np.uint16)
+    raw[:, 0, 10, 10] = 100
+    labels = np.zeros((7, 20, 30), np.uint16)
+    for frame, x in enumerate((10, 10, 10, 15, 10, 10, 10)):
+        labels[frame, 10, x] = 1
+    raw_path, labels_path = tmp_path / "raw.tif", tmp_path / "labels.tif"
+    tifffile.imwrite(raw_path, raw, imagej=True, metadata={"axes": "TCYX"})
+    tifffile.imwrite(labels_path, labels, imagej=True, metadata={"axes": "TYX"})
+    common = dict(frame_interval_h=1, crop_basis="own_cell",
+                  crop_size_px=(15, 15), outline=True)
+    exact = cell_tiles(raw_path, labels_path, centre_smoothing_frames=0,
+                       **common)[0]
+    steady = cell_tiles(raw_path, labels_path, centre_smoothing_frames=5,
+                        **common)[0]
+    with exact.open_series() as view:
+        assert view.frame(3, 0)[7, 2] == 100
+    with steady.open_series() as view:
+        assert view.frame(3, 0)[7, 7] == 100
+    assert exact.trace[1][3] == steady.trace[1][3] == 0
+    canvas = np.zeros((15, 15, 3), np.uint8)
+    # The outlying observed mask remains at its real source position.
+    assert np.any(steady.frame_overlay(canvas, 3)[:, 11:, :])
+    assert steady.provenance["centre_smoothing_frames"] == 5
+
+
+@pytest.mark.parametrize("window", [-1, 2, True])
+def test_bad_centre_smoothing_window_is_rejected(tmp_path, window):
+    with pytest.raises(ValueError, match="centre_smoothing_frames"):
+        cell_tiles(tmp_path / "raw.tif", np.zeros((1, 2, 2), np.uint8),
+                   centre_smoothing_frames=window)
 
 
 def test_video_grid_frame_gap_limit_is_optional(tmp_path):

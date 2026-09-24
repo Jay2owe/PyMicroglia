@@ -80,6 +80,17 @@ range, lookup table, labels, timestamp, layout and video encoding. The two
 switches are independent of `tracked_measurement` and of the existing
 whole-field and tracked-outline exports.
 
+Still grids center each selected frame on the bright part of its observed
+mask by default (`centre_method="intensity_weighted"`). Pixel weights are
+original photon intensities above the dimmest pixel inside that mask; a
+uniform mask falls back to its geometric center. This changes the crop only,
+not the image values, outline or measured trace. Use `centre_method="mask"`
+for the geometric mask center. Video grids use geometric mask centers by
+default, then steady the moving crop with a centered five-frame median and
+triangular mean (`centre_smoothing_frames=5`). Set this to zero for exact
+frame-by-frame centers, or another positive odd window for a different
+amount of smoothing. The observed outline follows the original mask.
+
 Both grids outline each observed cell by default. Set `outline_colour` to a
 named colour or RGB triple, `outline_width_px` to a pixel width, and
 `outline_opacity` between zero and one. For a translucent mask instead, use

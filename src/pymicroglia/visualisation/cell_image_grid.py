@@ -107,6 +107,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     event_hour: float | None = None,
                     max_trace_gap_h: float = 4.0,
                     trace_channel: int = 1,
+                    centre_method: str = "intensity_weighted",
                     significant_period_only: bool = False,
                     period_recipe: Mapping[str, Any] | str | Path | None = None,
                     period_decisions: Mapping[int | str, Mapping[str, Any]] | None = None,
@@ -133,6 +134,8 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     default. ``mask_style='fill'`` tints its interior with ``mask_opacity``.
     ``display_filter={'method': 'a104'}`` filters only rendered full frames;
     cell traces and cycle selection remain on the original photons.
+    Still crops use each observed mask's intensity-weighted centroid by default.
+    The original source frame remains the picture at each selected time.
     """
     if shared_time not in (None, "recording", "event"):
         raise ValueError("shared_time must be None, 'recording' or 'event'")
@@ -147,6 +150,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     mask_style = grid_options.pop("mask_style", mask_style)
     mask_opacity = grid_options.pop("mask_opacity", mask_opacity)
     display_filter = grid_options.pop("display_filter", display_filter)
+    centre_method = grid_options.pop("centre_method", centre_method)
     crop_size_px = grid_options.pop("crop_size_px", None)
     if crop_rectangle_px is not None:
         if crop_size_px is not None:
@@ -181,7 +185,8 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         display_raw=display_raw,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
-        trace_channel=trace_channel, outline=show_outline,
+        trace_channel=trace_channel, centre_method=centre_method,
+        outline=show_outline,
         outline_colour=outline_colour, outline_width_px=outline_width_px,
         outline_opacity=outline_opacity, mask_style=mask_style,
         mask_opacity=mask_opacity)
@@ -242,6 +247,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "cell_identities": [tile.key for tile in tiles],
         "source_frame_offset": int(source_frame_offset),
         "max_trace_gap_h": float(max_trace_gap_h),
+        "centre_method": centre_method,
         "mask_style": mask_style if show_outline else "none",
         "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
                            else outline_colour),

@@ -5,6 +5,7 @@ import pandas as pd
 import tifffile
 
 from pymicroglia.visualisation.cell_image_grid import cell_image_grid
+from pymicroglia.visualisation.cell_tiles import cell_tiles
 
 
 def _recording(tmp_path):
@@ -37,6 +38,7 @@ def test_own_cycles_keep_every_image_identity_and_placeholder(tmp_path):
                              output_name="cells", channels=1, lut="grays",
                              display_range=(0, 1600), soft_range="hard")
     assert report["rows"] == 3
+    assert report["cell_grid"]["centre_method"] == "intensity_weighted"
     assert report["time_scale"] == "ct"
     assert [one["key"] for one in report["tile_sources"]] == ["1", "2", "3"]
     selections = report["cell_grid"]["cycle_selection"]
@@ -46,6 +48,26 @@ def test_own_cycles_keep_every_image_identity_and_placeholder(tmp_path):
     assert selections[2]["status"] == "cycle unavailable"
     assert any(one.get("unavailable_reason") == "cycle unavailable"
                for one in report["tiles"] if one["source"] == "tile:3")
+
+
+def test_intensity_weighted_centre_places_bright_mask_region_in_middle(tmp_path):
+    raw = np.full((3, 1, 16, 20), 10, np.uint16)
+    raw[:, 0, 6, 9] = 100
+    labels = np.zeros((3, 16, 20), np.uint16)
+    labels[:, 5:8, 5:10] = 1
+    raw_path, labels_path = tmp_path / "raw.tif", tmp_path / "labels.tif"
+    tifffile.imwrite(raw_path, raw, imagej=True, metadata={"axes": "TCYX"})
+    tifffile.imwrite(labels_path, labels, imagej=True, metadata={"axes": "TYX"})
+    common = dict(frame_interval_h=1, crop_size_px=(9, 9))
+    mask = cell_tiles(raw_path, labels_path, centre_method="mask", **common)[0]
+    bright = cell_tiles(raw_path, labels_path,
+                        centre_method="intensity_weighted", **common)[0]
+    with mask.open_series() as view:
+        assert view.frame(1, 0)[4, 6] == 100
+    with bright.open_series() as view:
+        assert view.frame(1, 0)[4, 4] == 100
+    assert bright.trace[1][1] == mask.trace[1][1]
+    assert bright.provenance["centre_weighting"] == "raw photons above within-mask minimum"
 
 
 def test_shared_recording_and_event_time_use_same_source_hours(tmp_path):

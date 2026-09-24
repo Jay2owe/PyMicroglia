@@ -27,6 +27,12 @@ def main() -> None:
     parser.add_argument("--mask-opacity", type=float, required=True)
     parser.add_argument("--outline-colour", required=True)
     parser.add_argument("--outline-width-px", type=int, required=True)
+    parser.add_argument("--image-centre-method", default="mask")
+    parser.add_argument("--image-crop-basis", default="largest_cell")
+    parser.add_argument("--video-centre-method", default="mask")
+    parser.add_argument("--video-centre-smoothing-frames", type=int, default=0)
+    parser.add_argument("--video-crop-basis", default="largest_cell")
+    parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
     parser.add_argument("--video-crf", type=int, required=True)
@@ -38,6 +44,12 @@ def main() -> None:
               "mask_opacity": args.mask_opacity,
               "outline_colour": args.outline_colour,
               "outline_width_px": args.outline_width_px,
+              "image_centre_method": args.image_centre_method,
+              "image_crop_basis": args.image_crop_basis,
+              "video_centre_method": args.video_centre_method,
+              "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
+              "video_crop_basis": args.video_crop_basis,
+              "crop": args.crop,
               "counts_gain": args.counts_gain,
               "counts_offset": args.counts_offset,
               "video_crf": args.video_crf}
@@ -52,10 +64,15 @@ def main() -> None:
         outline_colour=args.outline_colour,
         outline_width_px=args.outline_width_px)
     image = cell_image_grid(args.raw, args.labels,
-                            output_name="image.png", **common)
+                            output_name="image.png",
+                            crop_basis=args.image_crop_basis, crop=args.crop,
+                            centre_method=args.image_centre_method, **common)
     write_json(args.outdir / "image_report.json", image)
     video = cell_video_grid(
         args.raw, args.labels, output_name="video.mp4",
+        crop_basis=args.video_crop_basis, crop=args.crop,
+        centre_method=args.video_centre_method,
+        centre_smoothing_frames=args.video_centre_smoothing_frames,
         profile="fast", crf=args.video_crf,
         encoder_options=["-level", "6.2"], **common)
     write_json(args.outdir / "video_report.json", video)
