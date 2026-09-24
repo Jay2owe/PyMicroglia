@@ -352,7 +352,9 @@ def test_every_bound_action_accepts_exactly_the_parameters_it_declares():
         function = registry.REGISTRY.resolve(name)
         if function is None:
             continue                      # its stage has not landed yet
-        accepted = set(inspect.signature(function).parameters)
+        accepted = {parameter.name for parameter in
+                    inspect.signature(function).parameters.values()
+                    if parameter.kind != inspect.Parameter.VAR_KEYWORD}
         declared = {row["name"] for row in catalogue.action_params(name)}
         assert declared - accepted == set(), \
             f"{name} declares parameters it cannot accept: " \

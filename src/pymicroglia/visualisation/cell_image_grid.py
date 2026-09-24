@@ -94,9 +94,9 @@ def _cycle_trace(tile, *, first_frame: int, frames: int, period_h: float,
 
 
 def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
+                    overwrite: bool = False,
                     source_frame_offset: int = 0,
                     crop_basis: str = "largest_cell", crop: str = "tight",
-                    crop_size_px: tuple[int, int] | None = None,
                     crop_rectangle_px: tuple[int, int] | None = None,
                     shared_time: str | None = None,
                     event_hour: float | None = None,
@@ -115,11 +115,13 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         raise ValueError("shared_time must be None, 'recording' or 'event'")
     if shared_time == "event" and event_hour is None:
         raise ValueError("shared_time='event' needs event_hour in source hours")
+    grid_options = {**dict(display_options or {}), **grid_options}
+    crop_size_px = grid_options.pop("crop_size_px", None)
     if crop_rectangle_px is not None:
         if crop_size_px is not None:
             raise ValueError("give crop_size_px or crop_rectangle_px, not both")
         crop_size_px = crop_rectangle_px
-    grid_options = {**dict(display_options or {}), **grid_options}
+    grid_options.setdefault("overwrite", overwrite)
     if not np.isfinite(float(max_trace_gap_h)) or float(max_trace_gap_h) < 0:
         raise ValueError("max_trace_gap_h must be nonnegative")
     tiles = cell_tiles(

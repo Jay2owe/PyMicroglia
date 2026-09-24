@@ -1290,6 +1290,24 @@ _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
      "description": "Source hour treated as zero when shared_time is event."},
 ]
 
+_CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "missing_centre", "type": "str", "units": "-",
+     "required": False, "default": "interpolate",
+     "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."},
+    {"name": "show_outline", "type": "bool", "units": "-",
+     "required": False, "default": True,
+     "description": "Draw the current tracked mask boundary over each photon frame; off leaves photons without an outline."},
+    {"name": "outline_colour", "type": "str", "units": "-",
+     "required": False, "default": "cyan",
+     "description": "Boundary colour; defaults to the shared renderer's cyan."},
+    {"name": "outline_width_px", "type": "int", "units": "px",
+     "required": False, "default": 2,
+     "description": "Width of the live tracked-mask boundary."},
+    {"name": "outline_opacity", "type": "float", "units": "0..1",
+     "required": False, "default": 1.0,
+     "description": "Opacity of the live tracked-mask boundary."},
+]
+
 _HANDOFF_ACTIONS: list[dict] = [
     {"name": "cell_eligibility",
      "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
@@ -1311,10 +1329,10 @@ _HANDOFF_ACTIONS: list[dict] = [
      "params": _CELL_IMAGE_GRID_PARAMS, "display_only": True,
      "method_version": "2026-09-24-cell-grids-v1"},
     {"name": "cell_video_grid",
-     "summary": "Play every selected tracked cell through the original recording in one moving, centred video grid.",
+     "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
      "method": "visualisation.cell_video_grid.cell_video_grid",
-     "params": _CELL_GRID_COMMON, "display_only": True,
-     "method_version": "2026-09-24-cell-grids-v1"},
+     "params": _CELL_VIDEO_GRID_PARAMS, "display_only": True,
+     "method_version": "2026-09-24-cell-video-grid-v2"},
 ]
 
 _MEASURE_ACTIONS: list[dict] = [

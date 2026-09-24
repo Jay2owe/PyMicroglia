@@ -14,6 +14,7 @@ import tifffile
 
 from auto_organotypic import series, store
 from auto_organotypic.outline.crop import CROP_SCALES
+from auto_organotypic.render import outlines as _outlines
 from auto_organotypic.render.tile_source import TileSource
 
 
@@ -70,15 +71,20 @@ class _CellView:
 
     def frame(self, time: int, channel: int):
         image = self.original.frame(int(time), int(channel))
-        width, height = self.size
-        cy, cx = (int(round(value)) for value in self.centres[int(time)])
-        top, left = cy - height // 2, cx - width // 2
-        out = np.full((height, width), np.nan, np.float32)
-        y0, x0 = max(top, 0), max(left, 0)
-        y1, x1 = min(top + height, image.shape[0]), min(left + width, image.shape[1])
-        if y1 > y0 and x1 > x0:
-            out[y0 - top:y1 - top, x0 - left:x1 - left] = image[y0:y1, x0:x1]
-        return out
+        return _window(image, self.centres[int(time)], self.size,
+                       fill=np.nan, dtype=np.float32)
+
+
+def _window(image, centre, size, *, fill, dtype):
+    width, height = size
+    cy, cx = (int(round(value)) for value in centre)
+    top, left = cy - height // 2, cx - width // 2
+    out = np.full((height, width), fill, dtype)
+    y0, x0 = max(top, 0), max(left, 0)
+    y1, x1 = min(top + height, image.shape[0]), min(left + width, image.shape[1])
+    if y1 > y0 and x1 > x0:
+        out[y0 - top:y1 - top, x0 - left:x1 - left] = image[y0:y1, x0:x1]
+    return out
 
 
 def _labels(value):
@@ -104,14 +110,20 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                frame_interval_h: float | None = None,
                crop_basis: str = "largest_cell", crop: str = "tight",
                crop_size_px: tuple[int, int] | None = None,
-               identity_prefix: str = "Cell", trace_channel: int = 1
+               identity_prefix: str = "Cell", trace_channel: int = 1,
+               missing_centre: str = "hold", outline: bool = False,
+               outline_colour=_outlines.DEFAULT_COLOUR,
+               outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
+               outline_opacity: float = _outlines.DEFAULT_OPACITY,
+               unavailable_label: str = "CELL NOT OBSERVED",
                ) -> list[TileSource]:
     """One moving, native-pixel tile per positive tracked identity.
 
     ``labels`` is the selected images or videos eligibility view. Its frame
     zero maps to photon frame ``source_frame_offset``. Missing identities use
-    the current photon frame at their last known centre and are marked by the
-    shared grid. Before first observation their first centre is held.
+    the current photon frame. Their crop centres are held or interpolated
+    between observed masks; recording-edge centres stay at the nearest known
+    position. An absent mask is never inferred or drawn.
     """
     raw_path = Path(raw)
     label_values, label_path = _labels(labels)
@@ -124,6 +136,15 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     mode = str(crop).strip().lower()
     if mode not in CROP_SCALES:
         raise ValueError(f"crop must be one of {', '.join(CROP_SCALES)}")
+    if missing_centre not in ("hold", "interpolate"):
+        raise ValueError("missing_centre must be 'hold' or 'interpolate'")
+    if not isinstance(outline, bool):
+        raise ValueError("outline must be true or false")
+    supports_live_overlay = "frame_overlay" in TileSource.__dataclass_fields__
+    if outline and (not supports_live_overlay or
+                    not hasattr(_outlines, "paint_mask")):
+        raise RuntimeError("live cell outlines need the updated Auto-Organotypic "
+                           "tile renderer")
     if crop_size_px is not None:
         if len(crop_size_px) != 2 or any(int(one) < 1 for one in crop_size_px):
             raise ValueError("crop_size_px must be (positive width, positive height)")
@@ -182,13 +203,17 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     sources = []
     for identity in ids:
         known = np.flatnonzero(observed[identity])
-        first = centres[identity][known[0]].copy()
-        held = first
-        for index in range(total):
-            if observed[identity][index]:
-                held = centres[identity][index].copy()
-            else:
-                centres[identity][index] = held
+        if missing_centre == "interpolate":
+            for axis in range(2):
+                centres[identity][:, axis] = np.interp(
+                    np.arange(total), known, centres[identity][known, axis])
+        else:
+            held = centres[identity][known[0]].copy()
+            for index in range(total):
+                if observed[identity][index]:
+                    held = centres[identity][index].copy()
+                else:
+                    centres[identity][index] = held
         required = reaches[identity]
         if explicit is not None:
             width_px, height_px = explicit
@@ -210,6 +235,20 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                     yield _CellView(original, centres_for_cell, size_for_cell)
             return opened_view()
 
+        def frame_overlay(rgb, frame, *, cell=identity,
+                          centres_for_cell=centres[identity],
+                          size_for_cell=size):
+            index = int(frame) - offset
+            if not 0 <= index < len(label_values):
+                return rgb
+            crop_labels = _window(label_values[index],
+                                  centres_for_cell[int(frame)], size_for_cell,
+                                  fill=0, dtype=label_values.dtype)
+            return _outlines.paint_mask(rgb, crop_labels == cell,
+                                        colour=outline_colour,
+                                        width_px=outline_width_px,
+                                        opacity=outline_opacity)
+
         interval = frame_interval_h
         if interval is None:
             with shared.acquire() as opened:
@@ -221,9 +260,19 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop_basis": basis if explicit is None else "pixels",
                       "crop": mode if explicit is None else None,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
+                      "missing_centre": missing_centre,
+                      "outline": bool(outline),
+                      "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
+                                         else outline_colour),
+                      "outline_width_px": int(outline_width_px),
+                      "outline_opacity": float(outline_opacity),
                       "trace": "mean original photons inside observed tracked mask; display only"}
+        tile_options = ({"frame_overlay": frame_overlay if outline else None,
+                         "unavailable_label": unavailable_label}
+                        if supports_live_overlay else {})
         sources.append(TileSource(
             key=str(identity), name=f"{identity_prefix} {identity}",
             source_path=raw_path, open_series=opener, provenance=provenance,
-            trace=(times, traces[identity]), unavailable_frames=unavailable))
+            trace=(times, traces[identity]), unavailable_frames=unavailable,
+            **tile_options))
     return sources
