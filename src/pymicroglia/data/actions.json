@@ -2815,6 +2815,7 @@
         "crop_basis",
         "crop",
         "crop_rectangle_px",
+        "clamp_to_frame",
         "trace_channel",
         "max_trace_gap_h",
         "significant_period_only",
@@ -2872,12 +2873,13 @@
         "scale_bar_um": null,
         "display_options": null,
         "fill_tile": true,
-        "frame_crop": null,
+        "frame_crop": false,
         "exclude_unavailable_cycles": false,
         "well_label_position": "top-left",
         "centre_method": "intensity_weighted",
         "shared_time": null,
-        "event_hour": null
+        "event_hour": null,
+        "clamp_to_frame": true
       },
       "parameter_details": {
         "raw": {
@@ -3028,7 +3030,7 @@
           "type": "bool",
           "units": "-",
           "required": false,
-          "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+          "description": "Draw a scale bar in each tile: micrometres when calibrated, otherwise source pixels; false hides it."
         },
         "um_per_px": {
           "type": "float",
@@ -3058,7 +3060,7 @@
           "type": "bool",
           "units": "-",
           "required": false,
-          "description": "Fit each selected still around that frame's observed cell outline before filling the grid slot. Defaults on for own_cell with fill_tile; false keeps one crop size across time. Scale bars use each frame's resized pixel size."
+          "description": "Resize each selected still to that frame's mask. False keeps one crop and scale bar per cell across time."
         },
         "exclude_unavailable_cycles": {
           "type": "bool",
@@ -3089,9 +3091,15 @@
           "units": "source hours",
           "required": false,
           "description": "Source hour treated as zero when shared_time is event."
+        },
+        "clamp_to_frame": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Shift an edge crop inside the source image without resizing it or adding empty padding."
         }
       },
-      "method_version": "2026-09-25-cell-grids-v6",
+      "method_version": "2026-09-25-cell-grids-v7",
       "source": []
     },
     {
@@ -3111,6 +3119,7 @@
         "crop_basis",
         "crop",
         "crop_rectangle_px",
+        "clamp_to_frame",
         "fill_tile",
         "tile_size_px",
         "trace_channel",
@@ -3171,7 +3180,8 @@
         "centre_method": "mask",
         "centre_smoothing_frames": 5,
         "centre_deadband_fraction": 0.05,
-        "missing_centre": "interpolate"
+        "missing_centre": "interpolate",
+        "clamp_to_frame": true
       },
       "parameter_details": {
         "raw": {
@@ -3322,7 +3332,7 @@
           "type": "bool",
           "units": "-",
           "required": false,
-          "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+          "description": "Draw a scale bar in each tile: micrometres when calibrated, otherwise source pixels; false hides it."
         },
         "um_per_px": {
           "type": "float",
@@ -3377,9 +3387,15 @@
           "units": "-",
           "required": false,
           "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."
+        },
+        "clamp_to_frame": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Shift an edge crop inside the source image without resizing it or adding empty padding."
         }
       },
-      "method_version": "2026-09-25-cell-video-grid-v8",
+      "method_version": "2026-09-25-cell-video-grid-v9",
       "source": []
     },
     {
@@ -32925,6 +32941,13 @@
       "description": "The one sentence this figure proves, written into the provenance bundle. Left empty, one is generated from what was actually drawn."
     },
     {
+      "name": "clamp_to_frame",
+      "type": "bool",
+      "units": "-",
+      "required": false,
+      "description": "Shift an edge crop inside the source image without resizing it or adding empty padding."
+    },
+    {
       "name": "cleaned",
       "type": "path",
       "units": "-",
@@ -35622,7 +35645,7 @@
       "type": "bool",
       "units": "-",
       "required": false,
-      "description": "Draw a calibrated scale bar in each image tile when pixel size is known; false hides it."
+      "description": "Draw a scale bar in each tile: micrometres when calibrated, otherwise source pixels; false hides it."
     },
     {
       "name": "scale_bar_um",

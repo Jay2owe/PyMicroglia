@@ -129,3 +129,8 @@ def test_both_direct_actions_are_discoverable():
         "shared_time", "display_options", "significant_period_only",
         "period_recipe", "max_gap_frames", "max_missing_frames",
         "max_missing_fraction"}
+    image_settings = {row["name"]: row["default"] for row in image["params"]}
+    video_settings = {row["name"]: row["default"] for row in video["params"]}
+    assert image_settings["frame_crop"] is False
+    assert image_settings["clamp_to_frame"] is True
+    assert video_settings["clamp_to_frame"] is True

@@ -108,3 +108,30 @@ def test_source_pixel_bar_survives_unlabelled_frames_without_outline(tmp_path):
                           pixel_scale_bar=False)[0]
     assert disabled.frame_overlay is None
     assert disabled.provenance["scale_bar_units"] == "none"
+
+
+def test_fixed_own_cell_crop_keeps_scale_and_clamps_to_source(tmp_path):
+    raw = np.full((3, 1, 20, 20), 25, np.uint16)
+    labels = np.zeros((3, 20, 20), np.uint16)
+    labels[0, :2, :2] = 1
+    labels[1, :6, :6] = 1
+    labels[2, :3, :3] = 1
+    raw_path, labels_path = tmp_path / "raw.tif", tmp_path / "labels.tif"
+    tifffile.imwrite(raw_path, raw, imagej=True, metadata={"axes": "TCYX"})
+    tifffile.imwrite(labels_path, labels, imagej=True,
+                     metadata={"axes": "TYX"})
+    tile = cell_tiles(raw_path, labels_path, frame_interval_h=1,
+                      crop_basis="own_cell", crop="tight", fill_tile=True,
+                      display_size_px=96, frame_crop=False,
+                      clamp_to_frame=True, outline=True,
+                      pixel_scale_bar=True)[0]
+    assert tile.provenance["frame_crop"] is False
+    assert tile.provenance["clamp_to_frame"] is True
+    with tile.open_series() as view:
+        frames = [view.frame(index, 0) for index in range(3)]
+    assert all(frame.shape == (96, 96) and np.isfinite(frame).all()
+               for frame in frames)
+    blank = np.full((96, 96, 3), 30, np.uint8)
+    overlays = [tile.frame_overlay(blank, index) for index in range(3)]
+    lengths = [np.sum(np.all(image[89] == 255, axis=1)) for image in overlays]
+    assert len(set(lengths)) == 1

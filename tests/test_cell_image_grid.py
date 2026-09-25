@@ -62,6 +62,8 @@ def test_cycle_only_display_omits_blank_rows_and_keeps_selection_record(tmp_path
     assert report["cell_grid"]["cell_identities"] == ["1", "2"]
     assert report["cell_grid"]["all_cell_identities"] == ["1", "2", "3"]
     assert report["cell_grid"]["excluded_cycle_identities"] == ["3"]
+    assert report["cell_grid"]["frame_crop"] is False
+    assert report["cell_grid"]["clamp_to_frame"] is True
     assert all(one.get("unavailable_reason") != "cycle unavailable"
                for one in report["tiles"])
 

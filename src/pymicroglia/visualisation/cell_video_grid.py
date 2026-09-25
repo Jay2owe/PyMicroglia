@@ -25,6 +25,7 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     crop_rectangle_px: tuple[int, int] | None = None,
                     fill_tile: bool = True,
                     tile_size_px: int | None = None,
+                    clamp_to_frame: bool = True,
                     trace_channel: int = 1,
                     max_trace_gap_h: float = 4.0,
                     missing_centre: str = "interpolate",
@@ -67,10 +68,13 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     Optional quality limits and ``significant_period_only`` select cells
     before the largest-cell crop is sized; the default keeps every identity.
     Scale bars use micrometres when calibrated, otherwise source pixels.
+    Each cell keeps one crop sized to its largest observed mask extent across
+    the recording. Near image edges the crop moves inward without resizing.
     """
     video_options = {**dict(display_options or {}), **video_options}
     fill_tile = video_options.pop("fill_tile", fill_tile)
     tile_size_px = video_options.pop("tile_size_px", tile_size_px)
+    clamp_to_frame = video_options.pop("clamp_to_frame", clamp_to_frame)
     video_options.setdefault("scale_bar", scale_bar)
     if um_per_px is not None:
         video_options.setdefault("um_per_px", um_per_px)
@@ -124,6 +128,7 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         fill_tile=fill_tile, display_size_px=tile_size_px,
+        clamp_to_frame=clamp_to_frame,
         um_per_px=source_um_per_px,
         pixel_scale_bar=bool(video_options["scale_bar"]),
         trace_channel=trace_channel, missing_centre=missing_centre,
@@ -176,6 +181,7 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         "crop_size_px": list(crop_size_px) if crop_size_px is not None else None,
         "fill_tile": bool(fill_tile),
         "tile_size_px": tile_size_px,
+        "clamp_to_frame": bool(clamp_to_frame),
         "clock": "original source frame order" if align == "start" else str(align),
         "missing_centre": missing_centre,
         "centre_smoothing_frames": centre_smoothing_frames,

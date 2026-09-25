@@ -56,6 +56,10 @@ def test_full_recording_keeps_all_cells_and_marks_missing(tmp_path, monkeypatch)
     assert report["cell_grid"]["missing_centre"] == "interpolate"
     assert report["cell_grid"]["centre_smoothing_frames"] == 5
     assert report["cell_grid"]["centre_deadband_fraction"] == 0.05
+    assert report["cell_grid"]["clamp_to_frame"] is True
+    assert all(not tile["tile_provenance"]["frame_crop"] and
+               tile["tile_provenance"]["clamp_to_frame"]
+               for tile in report["tiles"])
     assert report["well_label_position"] == "top-left"
     width = report["image_width"]
     # Cell 2 remains observed; its central photon pixel brightens on every

@@ -11,6 +11,7 @@ import numpy as np
 
 from auto_organotypic import grid, series
 from auto_organotypic.render.tile_source import TileSource
+from auto_organotypic.render.luts import lut_names
 from pymicroglia.visualisation.cell_display import prepare_cell_display
 from pymicroglia.visualisation.cell_tiles import cell_tiles
 
@@ -84,6 +85,12 @@ def main() -> None:
     parser.add_argument("--no-scale-bar", action="store_true")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
+    parser.add_argument("--lut", choices=lut_names(), default="dluc_purple")
+    parser.add_argument("--frame-crop", action="store_true",
+                        help="Resize each selected frame to its own observed mask")
+    parser.add_argument("--no-clamp-to-frame", dest="clamp_to_frame",
+                        action="store_false",
+                        help="Allow a fixed crop to extend beyond source image edges")
     parser.add_argument("--a104-cache-dir", type=Path, required=True)
     parser.add_argument("--moments", type=int, default=6)
     parser.add_argument("--outdir", type=Path, required=True)
@@ -104,7 +111,8 @@ def main() -> None:
         source_frame_offset=args.source_frame_offset,
         display_raw=display_raw, include_identities=ids,
         crop_basis="own_cell", crop="tight", fill_tile=True,
-        frame_crop=True, centre_method="intensity_weighted",
+        frame_crop=args.frame_crop, clamp_to_frame=args.clamp_to_frame,
+        centre_method="intensity_weighted",
         um_per_px=args.um_per_px, pixel_scale_bar=not args.no_scale_bar,
         outline=True,
         mask_style="outline", outline_colour="yellow", outline_width_px=1)
@@ -114,7 +122,7 @@ def main() -> None:
     report = grid.stack_to_grid(
         selected, output_dir=args.outdir, output_name="image.png",
         when=list(range(1, args.moments + 1)), columns=args.moments,
-        frame_interval_h=1.0, channels=1, lut="dluc_purple",
+        frame_interval_h=1.0, channels=1, lut=args.lut,
         display_range=display_range, tile_label="time",
         timestamp_position="header",
         timestamp_format="Obs {total_hours:.0f}", label_size=8,
@@ -125,6 +133,8 @@ def main() -> None:
         "source_frame_offset": args.source_frame_offset,
         "cycle_report": str(args.cycle_report),
         "cell_identities": [tile.key for tile in selected],
+        "frame_crop": args.frame_crop,
+        "clamp_to_frame": args.clamp_to_frame,
         "selection": "six evenly spaced observed mask frames per cell",
         "times": "actual source recording hours in tile-source provenance",
         "display_filter": display_report}
@@ -137,6 +147,9 @@ def main() -> None:
               "um_per_px": args.um_per_px,
               "scale_bar": not args.no_scale_bar,
               "counts_gain": args.counts_gain, "counts_offset": args.counts_offset,
+              "lut": args.lut,
+              "frame_crop": args.frame_crop,
+              "clamp_to_frame": args.clamp_to_frame,
               "a104_cache_dir": str(args.a104_cache_dir),
               "moments": args.moments}
     (args.outdir / "run.json").write_text(json.dumps({

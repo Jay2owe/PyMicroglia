@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 
 from auto_organotypic import series
+from auto_organotypic.render.luts import lut_names
 from pymicroglia.visualisation.cell_image_grid import cell_image_grid
 from pymicroglia.visualisation.cell_video_grid import cell_video_grid
 
@@ -33,7 +34,11 @@ def main() -> None:
     parser.add_argument("--image-centre-method", default="mask")
     parser.add_argument("--image-crop-basis", default="largest_cell")
     parser.add_argument("--exclude-unavailable-cycles", action="store_true")
+    parser.add_argument("--image-frame-crop", dest="image_frame_crop",
+                        action="store_true", default=False)
     parser.add_argument("--no-image-frame-crop", dest="image_frame_crop",
+                        action="store_false")
+    parser.add_argument("--no-clamp-to-frame", dest="clamp_to_frame",
                         action="store_false", default=True)
     parser.add_argument("--no-image-fill-tile", dest="image_fill_tile",
                         action="store_false", default=True)
@@ -48,6 +53,7 @@ def main() -> None:
     parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
+    parser.add_argument("--lut", choices=lut_names(), default="dluc_purple")
     parser.add_argument("--a104-cache-dir", type=Path)
     media = parser.add_mutually_exclusive_group()
     media.add_argument("--image-only", action="store_true")
@@ -75,6 +81,7 @@ def main() -> None:
               "image_crop_basis": args.image_crop_basis,
               "exclude_unavailable_cycles": args.exclude_unavailable_cycles,
               "image_frame_crop": args.image_frame_crop,
+              "clamp_to_frame": args.clamp_to_frame,
               "image_fill_tile": args.image_fill_tile,
               "video_centre_method": args.video_centre_method,
               "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
@@ -86,6 +93,7 @@ def main() -> None:
               "crop": args.crop,
               "counts_gain": args.counts_gain,
               "counts_offset": args.counts_offset,
+              "lut": args.lut,
               "a104_cache_dir": (str(args.a104_cache_dir)
                                  if args.a104_cache_dir is not None else None),
               "video_crf": args.video_crf,
@@ -99,7 +107,7 @@ def main() -> None:
         "cache_dir": str(args.a104_cache_dir or args.outdir / "a104_source")}
     common = dict(
         output_dir=args.outdir, display_filter=display_filter,
-        frame_interval_h=args.interval_h, channels=1,
+        frame_interval_h=args.interval_h, channels=1, lut=args.lut,
         source_frame_offset=args.source_frame_offset,
         um_per_px=args.um_per_px, scale_bar=scale_bar,
         well_label_position=args.well_label_position,
@@ -114,6 +122,7 @@ def main() -> None:
                                 crop_basis=args.image_crop_basis, crop=args.crop,
                                 fill_tile=args.image_fill_tile,
                                 frame_crop=args.image_frame_crop,
+                                clamp_to_frame=args.clamp_to_frame,
                                 exclude_unavailable_cycles=args.exclude_unavailable_cycles,
                                 centre_method=args.image_centre_method, **common)
         write_json(args.outdir / "image_report.json", image)
@@ -128,6 +137,7 @@ def main() -> None:
             args.raw, args.labels, output_name="video.mp4",
             crop_basis=args.video_crop_basis, crop=args.crop,
             fill_tile=args.video_fill_tile,
+            clamp_to_frame=args.clamp_to_frame,
             tile_size_px=args.video_tile_size_px,
             centre_method=args.video_centre_method,
             centre_smoothing_frames=args.video_centre_smoothing_frames,

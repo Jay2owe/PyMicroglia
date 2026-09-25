@@ -231,6 +231,9 @@ def live_defaults(action: str) -> dict[str, Any]:
 
     merged = dict((catalogue.action(action) or {}).get("defaults") or {})
     merged.update(_signature_defaults(action))
+    if action == "cell_image_grid" and merged.get("frame_crop") is None:
+        # None is an internal sentinel; the grid resolves it to a fixed crop.
+        merged["frame_crop"] = False
     return merged
 
 

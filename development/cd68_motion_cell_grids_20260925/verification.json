@@ -1,6 +1,10 @@
 {
   "status": "verified",
   "dataset": "VID95 CD68-DIO-mCherry Motion tracked microglia",
+  "display_lut": "red",
+  "crop_temporal_basis": "each cell's largest observed mask extent across the recording",
+  "frame_crop": false,
+  "clamp_to_frame": true,
   "scale_bar_units": "source px",
   "recordings": [
     {
@@ -10,11 +14,11 @@
       "observed_supplement_cells": 56,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 5756630,
+      "video_bytes": 5206563,
       "outputs": {
-        "image": "image_pixel_bars/results/95_A1",
-        "observed": "observed_pixel_bars/results/95_A1",
-        "video": "video_pixel_bars/results/95_A1"
+        "image": "rstill/.j/95_A1",
+        "observed": "red_obs/.j/95_A1",
+        "video": "rvideo/.j/95_A1"
       }
     },
     {
@@ -24,11 +28,11 @@
       "observed_supplement_cells": 55,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 10155934,
+      "video_bytes": 8970372,
       "outputs": {
-        "image": "image_pixel_bars/results/95_A2",
-        "observed": "observed_pixel_bars/results/95_A2",
-        "video": "video_pixel_bars/results/95_A2"
+        "image": "rstill/.j/95_A2",
+        "observed": "red_obs/.j/95_A2",
+        "video": "rvideo/.j/95_A2"
       }
     },
     {
@@ -38,11 +42,11 @@
       "observed_supplement_cells": 40,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 8322407,
+      "video_bytes": 7702594,
       "outputs": {
-        "image": "image_pixel_bars/results/95_A3",
-        "observed": "observed_pixel_bars/results/95_A3",
-        "video": "video_pixel_bars/results/95_A3"
+        "image": "rstill/.j/95_A3",
+        "observed": "red_obs/.j/95_A3",
+        "video": "rvideo/.j/95_A3"
       }
     },
     {
@@ -52,11 +56,11 @@
       "observed_supplement_cells": 34,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 5009668,
+      "video_bytes": 4509649,
       "outputs": {
-        "image": "image_pixel_bars/results/95_A4",
-        "observed": "observed_pixel_bars/results/95_A4",
-        "video": "video_pixel_bars/results/95_A4"
+        "image": "rstill/.j/95_A4",
+        "observed": "red_obs/.j/95_A4",
+        "video": "rvideo/.j/95_A4"
       }
     },
     {
@@ -66,11 +70,11 @@
       "observed_supplement_cells": 41,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 5515328,
+      "video_bytes": 4633749,
       "outputs": {
-        "image": "image_pixel_bars/results/95_A5",
-        "observed": "observed_pixel_bars/results/95_A5",
-        "video": "video_pixel_bars/results/95_A5"
+        "image": "rstill/.j/95_A5",
+        "observed": "red_obs/.j/95_A5",
+        "video": "rvideo/.j/95_A5"
       }
     },
     {
@@ -80,11 +84,11 @@
       "observed_supplement_cells": 37,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 3465442,
+      "video_bytes": 3043659,
       "outputs": {
-        "image": "image_pixel_bars/results/95_B1",
-        "observed": "observed_pixel_bars/results/95_B1",
-        "video": "video_pixel_bars/results/95_B1"
+        "image": "rstill/.j/95_B1",
+        "observed": "red_obs/.j/95_B1",
+        "video": "rvideo/.j/95_B1"
       }
     },
     {
@@ -94,11 +98,11 @@
       "observed_supplement_cells": 63,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 7009385,
+      "video_bytes": 6915520,
       "outputs": {
-        "image": "image_pixel_bars/results/95_B2",
-        "observed": "observed_pixel_bars/results/95_B2",
-        "video": "video_pixel_bars/results/95_B2"
+        "image": "rstill/.j/95_B2",
+        "observed": "red_obs/.j/95_B2",
+        "video": "rvideo/.j/95_B2"
       }
     },
     {
@@ -108,11 +112,11 @@
       "observed_supplement_cells": 44,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 5358686,
+      "video_bytes": 4907302,
       "outputs": {
-        "image": "image_pixel_bars/results/95_B3",
-        "observed": "observed_pixel_bars/results/95_B3",
-        "video": "video_pixel_bars/results/95_B3"
+        "image": "rstill/.j/95_B3",
+        "observed": "red_obs/.j/95_B3",
+        "video": "rvideo/.j/95_B3"
       }
     },
     {
@@ -122,11 +126,11 @@
       "observed_supplement_cells": 50,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 7574289,
+      "video_bytes": 6929022,
       "outputs": {
-        "image": "image_pixel_bars/results/95_B4",
-        "observed": "observed_pixel_bars/results/95_B4",
-        "video": "video_pixel_bars/results/95_B4"
+        "image": "rstill/.j/95_B4",
+        "observed": "red_obs/.j/95_B4",
+        "video": "rvideo/.j/95_B4"
       }
     },
     {
@@ -136,11 +140,11 @@
       "observed_supplement_cells": 57,
       "source_frames": 101,
       "video_frames": 101,
-      "video_bytes": 7210351,
+      "video_bytes": 6709092,
       "outputs": {
-        "image": "image_pixel_bars/results/95_B5",
-        "observed": "observed_pixel_bars/results/95_B5",
-        "video": "video_pixel_bars/results/95_B5"
+        "image": "rstill/.j/95_B5",
+        "observed": "red_obs/.j/95_B5",
+        "video": "rvideo/.j/95_B5"
       }
     }
   ],
@@ -150,7 +154,7 @@
     "cycle_cells": 336,
     "observed_supplement_cells": 477,
     "video_frames": 1010,
-    "video_bytes": 65378120
+    "video_bytes": 59527522
   },
-  "provenance": "Each accepted output has a batch receipt with source, label, code, settings, and output hashes; all three batches preview as complete."
+  "provenance": "All 30 jobs pass batch-resume status with receipts pinning input, code, settings, and output hashes. Video frame counts were independently checked with ffprobe; still images decode; accepted identity coverage and fixed-crop provenance were checked per well."
 }

@@ -105,6 +105,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     crop_rectangle_px: tuple[int, int] | None = None,
                     fill_tile: bool = True,
                     frame_crop: bool | None = None,
+                    clamp_to_frame: bool = True,
                     exclude_unavailable_cycles: bool = False,
                     shared_time: str | None = None,
                     event_hour: float | None = None,
@@ -142,6 +143,9 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     ``display_filter={'method': 'a104'}`` filters only rendered full frames;
     cell traces and cycle selection remain on the original photons.
     Still crops use each observed mask's intensity-weighted centroid by default.
+    Each cell keeps one crop sized to its largest observed mask extent across
+    the recording, so its scale bar is constant across selected times.
+    ``frame_crop=True`` restores frame-specific crop sizes.
     The original source frame remains the picture at each selected time.
     Scale bars use micrometres when calibrated, otherwise source pixels.
     """
@@ -155,6 +159,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     grid_options.setdefault("well_label_position", well_label_position)
     fill_tile = grid_options.pop("fill_tile", fill_tile)
     frame_crop = grid_options.pop("frame_crop", frame_crop)
+    clamp_to_frame = grid_options.pop("clamp_to_frame", clamp_to_frame)
     grid_options.setdefault("scale_bar", scale_bar)
     if um_per_px is not None:
         grid_options.setdefault("um_per_px", um_per_px)
@@ -176,8 +181,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
             raise ValueError("give crop_size_px or crop_rectangle_px, not both")
         crop_size_px = crop_rectangle_px
     if frame_crop is None:
-        frame_crop = bool(fill_tile and crop_basis == "own_cell" and
-                          crop_size_px is None)
+        frame_crop = False
     grid_options.setdefault("overwrite", overwrite)
     if not np.isfinite(float(max_trace_gap_h)) or float(max_trace_gap_h) < 0:
         raise ValueError("max_trace_gap_h must be nonnegative")
@@ -208,6 +212,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         fill_tile=fill_tile, frame_crop=frame_crop,
+        clamp_to_frame=clamp_to_frame,
         um_per_px=source_um_per_px,
         pixel_scale_bar=bool(grid_options["scale_bar"]),
         trace_channel=trace_channel, centre_method=centre_method,
@@ -284,6 +289,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "centre_method": centre_method,
         "fill_tile": bool(fill_tile),
         "frame_crop": bool(frame_crop),
+        "clamp_to_frame": bool(frame_crop or clamp_to_frame),
         "mask_style": mask_style if show_outline else "none",
         "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
                            else outline_colour),

@@ -1,6 +1,8 @@
 {
   "schema_version": 1,
   "dataset": "VID95 CD68-DIO-mCherry Motion tracked microglia",
+  "display_lut": "red",
+  "crop_temporal_basis": "fixed for each identity at its largest observed mask extent",
   "selection": "ten explicitly named accepted per-well Motion label runs",
   "pixel_calibration": "unavailable in TIFF metadata and Motion configuration",
   "excluded": [

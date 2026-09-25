@@ -45,13 +45,19 @@ selection of saved decisions; rendering does not select a method.
 Both grids keep all cells by default. Set `significant_period_only=True` in
 either grid's `*_options` to require a significant test **and** a supported
 estimated period. The default test is shared with `all_cell_trace_grid`:
-three-frame median then mean, robust-linear detrending, FFT-NLLS estimation,
+uncorrected whole-cell total light, a centered three-frame arithmetic mean
+within uninterrupted observed runs, robust-linear detrending, FFT-NLLS estimation,
 and an uncorrected conditional component test. `period_recipe` can replace its
 method, test, detrending, period bounds, minimum observations/cycles, alpha,
 correction and component settings. It accepts a settings mapping, a JSON file
 holding that mapping, or a validated method-audit settings profile exported
-for the `signal_mean` measurement. The grid report saves the resolved recipe,
+for the `integrated_density_mean3` measurement. The grid report saves the resolved recipe,
 per-cell verdicts and reasons for exclusion.
+
+New measurement runs save `integrated_density` (the original within-mask pixel
+sum) and `integrated_density_mean3` (its centered three-frame mean). The latter
+is the default reporter metric for measurements and figures. Earlier saved runs
+retain their recorded columns and can be viewed by choosing an available metric.
 
 In the automated run, `tracked_cell_period_recipe` is the one recipe for both
 grids. When either grid requests significant periods, the chain tests the
@@ -95,11 +101,13 @@ candidate center moves more than 5% of that tile's short side. Beyond that
 boundary the crop follows only the excess movement. Set zero to disable it.
 
 For stills with `crop_basis="own_cell"`, `fill_tile=True` enlarges each
-individual tight crop to fill the common grid slot. By default, `frame_crop`
-fits each selected frame to that frame's observed mask; set it to `False` to
-keep one crop size for that cell across the recording. The outline is drawn
-at its requested width after enlargement, and each frame's scale bar reflects
-its own zoom. Video crops keep one size per cell across time; with
+individual tight crop to fill the common grid slot. Each still or video cell
+keeps one crop sized to its largest observed outline across the recording,
+so its scale bar stays fixed across time and visible size changes remain
+visible. `frame_crop=True` opts into fitting each still separately to its
+observed mask. By default, `clamp_to_frame=True` shifts edge crops inside
+the source image without resizing them or adding empty padding. The outline
+is drawn at its requested width after enlargement. With
 `crop_basis="own_cell"`, `fill_tile=True` enlarges that stable crop to its
 grid slot and recalibrates its bar. `tile_size_px=128` sets a compact square
 video tile when one unusually large mask would make the entire grid huge;
@@ -111,11 +119,11 @@ Use `exclude_unavailable_cycles=True` to omit black rows when no qualifying
 high-amplitude cycle can be chosen. The report still lists those identities,
 and the full-length video retains them.
 
-Both grids draw a physical scale bar by default when pixel calibration is
-available. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre
+Both grids draw a scale bar by default: micrometres when pixel calibration
+is available and source pixels otherwise. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre
 per pixel metadata, `scale_bar_um=50` for a fixed length, or
 `scale_bar=False` to hide it. The automated chain passes its recording
-calibration through to both grids. No physical bar is guessed for an
+calibration through to both grids. No physical distance is guessed for an
 uncalibrated recording.
 
 Both grids outline each observed cell by default. Set `outline_colour` to a
