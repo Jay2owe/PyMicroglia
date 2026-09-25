@@ -1346,10 +1346,10 @@ _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
      "description": "Resize each selected still to that frame's mask. False keeps one crop and scale bar per cell across time."},
     {"name": "exclude_unavailable_cycles", "type": "bool", "units": "-",
      "required": False, "default": False,
-     "description": "Hide rows without an eligible high-amplitude cycle; report the omitted identities for an observed-frame supplement."},
+     "description": "Hide rows without an eligible high-amplitude cycle instead of drawing six black CYCLE UNAVAILABLE tiles. All accepted identities remain in the selection report and can be shown in the video grid."},
     {"name": "well_label_position", "type": "str", "units": "-",
      "required": False, "default": "top-left",
-     "description": "Place each cell name over its tile; left restores the outside row-label strip."},
+     "description": "Place each cell name over its tile at a frame corner; left restores the outside row-label strip."},
     {"name": "centre_method", "type": "str", "units": "-",
      "required": False, "default": "intensity_weighted",
      "description": "Center each still on the original-photon intensity-weighted centroid within its observed mask; mask uses the geometric centroid instead."},
@@ -1364,10 +1364,10 @@ _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
 _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
     {"name": "fill_tile", "type": "bool", "units": "-",
      "required": False, "default": True,
-     "description": "Enlarge each fixed own-cell crop to fill its grid slot without changing scale over time."},
+     "description": "Enlarge each fixed own-cell video crop to fill the common grid slot, keeping a one-pixel outline and recalibrating its scale bar. False retains native-pixel padding."},
     {"name": "tile_size_px", "type": "int", "units": "display pixels",
      "required": False, "default": None,
-     "description": "Square output size of each video tile; None uses the largest native crop."},
+     "description": "Square output size for each filled video tile. None uses the largest native crop size; a smaller value keeps large grids compact while preserving the full cell and calibrated bar."},
     {"name": "centre_method", "type": "str", "units": "-",
      "required": False, "default": "mask",
      "description": "Use the geometric observed-mask centroid for video crops; intensity_weighted uses original-photon weights instead."},
@@ -1863,7 +1863,8 @@ def build(protocols: Path) -> dict:
                                      f"{known['type']} versus {shared['type']}")
                 cell_grid_style = {"show_outline", "outline_colour",
                                    "outline_width_px", "outline_opacity",
-                                   "mask_style", "mask_opacity", "display_filter"}
+                                   "mask_style", "mask_opacity", "display_filter",
+                                   "fill_tile", "tile_size_px"}
                 if (entry["name"] != "measure_missing_gaps" and
                         not (entry["name"] == "cell_eligibility" and
                              row["name"] == "max_gap_frames") and
