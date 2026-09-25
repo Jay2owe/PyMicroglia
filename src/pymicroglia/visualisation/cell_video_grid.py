@@ -66,6 +66,7 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     excess; zero disables the deadband.
     Optional quality limits and ``significant_period_only`` select cells
     before the largest-cell crop is sized; the default keeps every identity.
+    Scale bars use micrometres when calibrated, otherwise source pixels.
     """
     video_options = {**dict(display_options or {}), **video_options}
     fill_tile = video_options.pop("fill_tile", fill_tile)
@@ -124,6 +125,7 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         fill_tile=fill_tile, display_size_px=tile_size_px,
         um_per_px=source_um_per_px,
+        pixel_scale_bar=bool(video_options["scale_bar"]),
         trace_channel=trace_channel, missing_centre=missing_centre,
         centre_smoothing_frames=centre_smoothing_frames,
         centre_deadband_fraction=centre_deadband_fraction,
@@ -186,6 +188,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         "outline_opacity": float(outline_opacity),
         "mask_style": mask_style if outline else "none",
         "mask_opacity": float(mask_opacity),
+        "scale_bar_units": (tiles[0].provenance["scale_bar_units"]
+                            if tiles else "none"),
         "display_filter": display_report,
         "selection": selection,
     }

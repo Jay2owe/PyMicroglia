@@ -143,6 +143,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     cell traces and cycle selection remain on the original photons.
     Still crops use each observed mask's intensity-weighted centroid by default.
     The original source frame remains the picture at each selected time.
+    Scale bars use micrometres when calibrated, otherwise source pixels.
     """
     if shared_time not in (None, "recording", "event"):
         raise ValueError("shared_time must be None, 'recording' or 'event'")
@@ -208,6 +209,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
         fill_tile=fill_tile, frame_crop=frame_crop,
         um_per_px=source_um_per_px,
+        pixel_scale_bar=bool(grid_options["scale_bar"]),
         trace_channel=trace_channel, centre_method=centre_method,
         outline=show_outline,
         outline_colour=outline_colour, outline_width_px=outline_width_px,
@@ -288,6 +290,8 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "outline_width_px": int(outline_width_px),
         "outline_opacity": float(outline_opacity),
         "mask_opacity": float(mask_opacity),
+        "scale_bar_units": (tiles[0].provenance["scale_bar_units"]
+                            if tiles else "none"),
         "display_filter": display_report,
         "selection": selection,
     }

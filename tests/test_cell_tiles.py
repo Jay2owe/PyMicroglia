@@ -45,7 +45,7 @@ def test_common_crop_follows_centres_and_keeps_long_cell_whole(tmp_path):
             assert np.array_equal(view[yy - top, xx - left], raw[photon_t, 0, yy, xx])
     assert tiles[0].unavailable_frames[5] == "tracked mask absent"
     assert set((0, 1, 10, 11)).issubset(tiles[0].unavailable_frames)
-    assert tiles[0].trace[1][2] == np.mean(raw[2, 0][labels[0] == 1])
+    assert tiles[0].trace[1][2] == np.sum(raw[2, 0][labels[0] == 1])
     assert sha256(raw_path.read_bytes()).hexdigest() == raw_hash
     assert sha256(label_path.read_bytes()).hexdigest() == label_hash
 
@@ -86,3 +86,25 @@ def test_gap_holds_centre_but_reads_current_photon_frame(tmp_path):
         assert np.array_equal(gap[finite] - prior[finite],
                               np.full(finite.sum(), 1500))
         assert gap[9, 9] == raw[5, 0, 6, 10]
+
+
+def test_source_pixel_bar_survives_unlabelled_frames_without_outline(tmp_path):
+    raw_path, label_path, _raw, _labels = _files(tmp_path)
+    tile = cell_tiles(raw_path, label_path, source_frame_offset=2,
+                      include_identities=[2], crop_basis="own_cell",
+                      fill_tile=True, display_size_px=128,
+                      outline=False, pixel_scale_bar=True)[0]
+    assert tile.provenance["scale_bar_units"] == "source px"
+    assert tile.frame_overlay is not None
+    blank = np.full((128, 128, 3), 40, np.uint8)
+    first = tile.frame_overlay(blank, 0)
+    observed = tile.frame_overlay(blank, 2)
+    for rendered in (first, observed):
+        assert np.any(np.all(rendered == 255, axis=2))
+        assert np.any(np.all(rendered == 0, axis=2))
+        assert np.array_equal(rendered[:100], blank[:100])
+    disabled = cell_tiles(raw_path, label_path, source_frame_offset=2,
+                          include_identities=[2], outline=False,
+                          pixel_scale_bar=False)[0]
+    assert disabled.frame_overlay is None
+    assert disabled.provenance["scale_bar_units"] == "none"

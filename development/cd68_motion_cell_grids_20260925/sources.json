@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "dataset": "VID95 CD68-DIO-mCherry Motion tracked microglia",
+  "selection": "ten explicitly named accepted per-well Motion label runs",
+  "pixel_calibration": "unavailable in TIFF metadata and Motion configuration",
+  "excluded": [
+    {
+      "stem": "95_A6",
+      "reason": "complete pipeline mask without a selected per-well accepted review"
+    },
+    {
+      "stem": "95_C1",
+      "reason": "complete pipeline mask without a selected per-well accepted review"
+    },
+    {
+      "stem": "95_B6",
+      "reason": "no completed accepted label stack"
+    },
+    {
+      "stem": "95_C2",
+      "reason": "no completed accepted label stack"
+    }
+  ],
+  "recordings": [
+    {
+      "stem": "95_A1",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_A1.tif",
+      "registered_mcherry_sha256": "226040316c88a0138f596ed10c9f3d762ac765c613859db2ee28a4d6c2e50885",
+      "labels": "Motion/m22_accepted_history/a1_i004_r01_a008_accepted_95_A1/out/95_A1.tif",
+      "labels_sha256": "4f07418e627e675583728ea27ec96447e0f0d797525f01661ffb6208be583519",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 81,
+      "accepted_run": "a1_i004_r01_a008_accepted_95_A1",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_A2",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_A2.tif",
+      "registered_mcherry_sha256": "1b85b1567fe94b53821437498500ac0220179db70d26daf816496af57cf94913",
+      "labels": "Motion/m22_accepted_history/a2_i004_r01_a001_accepted_95_A2/out/95_A2.tif",
+      "labels_sha256": "79058005e245b5d338d51536946a0de68026e304630d3c4f152cf491c0a398ce",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 108,
+      "accepted_run": "a2_i004_r01_a001_accepted_95_A2",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_A3",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_A3.tif",
+      "registered_mcherry_sha256": "c0ae96855ec26cb8f9d61a808873c15fc60b6f31b9b4ab784cf8ec8563668af1",
+      "labels": "Motion/m22_accepted_history/i089_r09_a022_accepted_v2_95_A3/out/95_A3.tif",
+      "labels_sha256": "53a391e931cbf4d299c3cd527cc2a1a5ee1a79b309521d8aa13fe89916dde64e",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 93,
+      "accepted_run": "i089_r09_a022_accepted_v2_95_A3",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_A4",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_A4.tif",
+      "registered_mcherry_sha256": "296967bf56f63efa0363f16c1466bf873c4be3832be32975878936ad4b31ae06",
+      "labels": "Motion/m22_accepted_history/r04_a017_fixed_95_A4/out/95_A4.tif",
+      "labels_sha256": "abb6efc3f37b400fd03ef11b509f64a73c7b8e5e50304fcac14dbf499bfa65a9",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 55,
+      "accepted_run": "r04_a017_fixed_95_A4",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_A5",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_A5.tif",
+      "registered_mcherry_sha256": "3db30171d2aea7916f7fa63ba57e48c4275533ec3e0d8b8ff3416a89f8d91cfa",
+      "labels": "Motion/m22_accepted_history/a5_i006_r01_a005_accepted_95_A5/out/95_A5.tif",
+      "labels_sha256": "a3c0df17cce5ef5137e31d02e2ee43dcc5ff340e0e1fd9d22a3fb8d4c97c116e",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 71,
+      "accepted_run": "a5_i006_r01_a005_accepted_95_A5",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_B1",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_B1.tif",
+      "registered_mcherry_sha256": "ce01d148dd1cb940495d212377a27719318b17459df37031db1c1ff5346808da",
+      "labels": "Motion/m22_accepted_history/b1_i001_r02_a005_accepted_95_B1/out/95_B1.tif",
+      "labels_sha256": "6a4a645ca48f99fcafac84e15da8e2afbba0caa1ce5dc3bcabfc579c8ea8ef8c",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 57,
+      "accepted_run": "b1_i001_r02_a005_accepted_95_B1",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_B2",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_B2.tif",
+      "registered_mcherry_sha256": "ec2cc4ee2c8b7c189f5933241805427b7ca3e4c1fea707dc7eb3395e56a8ff7c",
+      "labels": "Motion/m22_accepted_history/b2_i028_r01_a001_accepted_95_B2/out/95_B2.tif",
+      "labels_sha256": "343dae1034524b2c8e39ea7f4933e8a585d499a830f2570096f2abe49fcc0481",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 102,
+      "accepted_run": "b2_i028_r01_a001_accepted_95_B2",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_B3",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_B3.tif",
+      "registered_mcherry_sha256": "066eb7919e1f0aab6f75ddc438c369fec1a84494ac0c9d334a0f6ccfe384cba3",
+      "labels": "Motion/m22_accepted_history/b3_i027_r01_a009_accepted_95_B3/out/95_B3.tif",
+      "labels_sha256": "b5acfff4a0ce4a5d67bcc2ac49a0343440fef4cee7b17707d10ae1cc417cb1fb",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 72,
+      "accepted_run": "b3_i027_r01_a009_accepted_95_B3",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_B4",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_B4.tif",
+      "registered_mcherry_sha256": "b10c8a8694e5c5c3e75ffd2a76c535c55137306530eed8e5f137098b85a5fe3c",
+      "labels": "Motion/m22_accepted_history/b4_i005_r02_a003_accepted_95_B4/out/95_B4.tif",
+      "labels_sha256": "59d3ae7b703530a98a1783957369448b3f352b34fddb557866bd0541e92b3084",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 83,
+      "accepted_run": "b4_i005_r02_a003_accepted_95_B4",
+      "frame_interval_h": 0.5
+    },
+    {
+      "stem": "95_B5",
+      "registered_mcherry": "Longitudinal Cell Tracker/registered_inputs/r02_grossfix/out/95_B5.tif",
+      "registered_mcherry_sha256": "0964ce8ee37a324f2d30f9d02e1df19a740f4a5a0096addba9012562355e1cfe",
+      "labels": "Motion/m22_accepted_history/r04_a017_accepted_95_B5/out/95_B5.tif",
+      "labels_sha256": "5357935bc9d9c4026371108b6e832fe5dfe919c9e34ef672a1edc8c0db7794e2",
+      "source_frames": 101,
+      "label_frames": 99,
+      "source_frame_offset": 2,
+      "accepted_identities": 91,
+      "accepted_run": "r04_a017_accepted_95_B5",
+      "frame_interval_h": 0.5
+    }
+  ],
+  "scale_bar_units": "source px"
+}

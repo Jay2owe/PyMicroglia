@@ -79,7 +79,9 @@ def main() -> None:
     parser.add_argument("--labels", type=Path, required=True)
     parser.add_argument("--cycle-report", type=Path, required=True)
     parser.add_argument("--interval-h", type=float, required=True)
-    parser.add_argument("--um-per-px", type=float, required=True)
+    parser.add_argument("--source-frame-offset", type=int, default=0)
+    parser.add_argument("--um-per-px", type=float)
+    parser.add_argument("--no-scale-bar", action="store_true")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
     parser.add_argument("--a104-cache-dir", type=Path, required=True)
@@ -99,10 +101,12 @@ def main() -> None:
                    "cache_dir": str(args.a104_cache_dir)})
     tiles = cell_tiles(
         args.raw, args.labels, frame_interval_h=args.interval_h,
+        source_frame_offset=args.source_frame_offset,
         display_raw=display_raw, include_identities=ids,
         crop_basis="own_cell", crop="tight", fill_tile=True,
         frame_crop=True, centre_method="intensity_weighted",
-        um_per_px=args.um_per_px, outline=True,
+        um_per_px=args.um_per_px, pixel_scale_bar=not args.no_scale_bar,
+        outline=True,
         mask_style="outline", outline_colour="yellow", outline_width_px=1)
     selected = [selected_source(tile, args.interval_h, args.moments)
                 for tile in tiles]
@@ -114,9 +118,11 @@ def main() -> None:
         display_range=display_range, tile_label="time",
         timestamp_position="header",
         timestamp_format="Obs {total_hours:.0f}", label_size=8,
-        well_label_position="top-left", scale_bar=True)
+        well_label_position="top-left",
+        scale_bar=not args.no_scale_bar)
     report["cell_grid_supplement"] = {
         "source": str(args.raw), "labels": str(args.labels),
+        "source_frame_offset": args.source_frame_offset,
         "cycle_report": str(args.cycle_report),
         "cell_identities": [tile.key for tile in selected],
         "selection": "six evenly spaced observed mask frames per cell",
@@ -126,7 +132,10 @@ def main() -> None:
         json.dumps(report, indent=2, default=str) + "\n", encoding="utf-8")
     with series.open_series(args.raw) as source:
         source_frames = source.shape[0]
-    params = {"interval_h": args.interval_h, "um_per_px": args.um_per_px,
+    params = {"interval_h": args.interval_h,
+              "source_frame_offset": args.source_frame_offset,
+              "um_per_px": args.um_per_px,
+              "scale_bar": not args.no_scale_bar,
               "counts_gain": args.counts_gain, "counts_offset": args.counts_offset,
               "a104_cache_dir": str(args.a104_cache_dir),
               "moments": args.moments}

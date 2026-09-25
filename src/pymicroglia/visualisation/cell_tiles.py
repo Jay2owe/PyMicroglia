@@ -11,6 +11,7 @@ from typing import Any, Sequence
 
 import numpy as np
 import tifffile
+from PIL import Image, ImageDraw, ImageFont
 
 from auto_organotypic import series, store
 from auto_organotypic.outline.crop import CROP_SCALES
@@ -143,6 +144,37 @@ def _size_for(reach: tuple[int, int], crop: str) -> tuple[int, int]:
     return scaled, scaled
 
 
+def _draw_source_pixel_bar(rgb: np.ndarray, source_width_px: int) -> np.ndarray:
+    """Label a length in original pixels after the cell crop is resized."""
+    image = Image.fromarray(np.asarray(rgb, dtype=np.uint8)).copy()
+    width, height = image.size
+    if width < 35 or height < 25:
+        return rgb
+    target = max(1.0, 0.3 * source_width_px)
+    exponent = math.floor(math.log10(target))
+    length_source = max(
+        value * 10 ** power
+        for power in range(exponent - 2, exponent + 1)
+        for value in (1, 2, 5)
+        if value * 10 ** power <= target
+    )
+    length = max(1, round(length_source * width / source_width_px))
+    if length > width - 12:
+        return rgb
+    label = f"{length_source:g} px"
+    painter = ImageDraw.Draw(image)
+    font = ImageFont.load_default()
+    box = painter.textbbox((0, 0), label, font=font)
+    x2, y = width - 6, height - 7
+    x1 = x2 - length
+    tx = max(3, x2 - (box[2] - box[0]))
+    painter.rectangle((min(tx, x1) - 3, y - 17, x2 + 3, y + 4),
+                      fill=(0, 0, 0))
+    painter.text((tx, y - 16), label, font=font, fill=(255, 255, 255))
+    painter.line((x1, y, x2, y), fill=(255, 255, 255), width=2)
+    return np.asarray(image)
+
+
 def _smooth_centres(centres: np.ndarray, frames: int) -> np.ndarray:
     """Suppress single-frame centroid errors without shifting motion in time."""
     if frames == 0:
@@ -217,6 +249,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                display_size_px: int | None = None,
                frame_crop: bool = False,
                um_per_px: float | None = None,
+               pixel_scale_bar: bool = False,
                mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
                outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
@@ -274,6 +307,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     if um_per_px is not None and (not np.isfinite(float(um_per_px)) or
                                   float(um_per_px) <= 0):
         raise ValueError("um_per_px must be a positive finite number")
+    if not isinstance(pixel_scale_bar, bool):
+        raise ValueError("pixel_scale_bar must be true or false")
     if mask_style not in ("outline", "fill"):
         raise ValueError("mask_style must be 'outline' or 'fill'")
     if not 0 <= float(mask_opacity) <= 1:
@@ -305,6 +340,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         total, channels, height, width = opened.shape
         physical_um_per_px = (float(um_per_px) if um_per_px is not None else
                               getattr(opened.meta, "um_per_px", None))
+        use_pixel_bar = pixel_scale_bar and physical_um_per_px is None
         if label_values.shape[1:] != (height, width):
             raise ValueError("labels and photon frames have different image dimensions")
         if offset < 0 or offset + len(label_values) > total:
@@ -343,7 +379,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                                            int(np.max(np.abs(yy - rounded_y))))
                 reaches[identity][1] = max(reaches[identity][1],
                                            int(np.max(np.abs(xx - rounded_x))))
-                traces[identity][raw_index] = float(np.mean(photons[yy, xx]))
+                traces[identity][raw_index] = float(np.sum(photons[yy, xx], dtype=np.float64))
                 observed[identity][raw_index] = True
 
     display_path = Path(display_raw) if display_raw is not None else raw_path
@@ -447,26 +483,30 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                           size_for_cell=size,
                           display_size_for_cell=display_size,
                           frame_sizes_for_cell=sizes_for_cell):
-            index = int(frame) - offset
-            if not 0 <= index < len(label_values):
-                return rgb
             frame_size = (tuple(map(int, frame_sizes_for_cell[int(frame)]))
                           if frame_sizes_for_cell is not None else size_for_cell)
-            crop_labels = _window(label_values[index],
-                                  centres_for_cell[int(frame)], frame_size,
-                                  fill=0, dtype=label_values.dtype,
-                                  clamp=frame_crop)
-            mask = crop_labels == cell
-            if display_size_for_cell != frame_size:
-                from PIL import Image
-                mask = np.asarray(Image.fromarray(mask.astype(np.uint8)).resize(
-                    display_size_for_cell, Image.Resampling.NEAREST), bool)
-            if mask_style == "fill":
-                return _outlines.paint_mask_fill(
-                    rgb, mask, colour=outline_colour, opacity=mask_opacity)
-            return _outlines.paint_mask(rgb, mask, colour=outline_colour,
-                                        width_px=outline_width_px,
-                                        opacity=outline_opacity)
+            index = int(frame) - offset
+            if not 0 <= index < len(label_values):
+                return (_draw_source_pixel_bar(rgb, frame_size[0])
+                        if use_pixel_bar else rgb)
+            if outline:
+                crop_labels = _window(label_values[index],
+                                      centres_for_cell[int(frame)], frame_size,
+                                      fill=0, dtype=label_values.dtype,
+                                      clamp=frame_crop)
+                mask = crop_labels == cell
+                if display_size_for_cell != frame_size:
+                    mask = np.asarray(Image.fromarray(mask.astype(np.uint8)).resize(
+                        display_size_for_cell, Image.Resampling.NEAREST), bool)
+                if mask_style == "fill":
+                    rgb = _outlines.paint_mask_fill(
+                        rgb, mask, colour=outline_colour, opacity=mask_opacity)
+                else:
+                    rgb = _outlines.paint_mask(rgb, mask, colour=outline_colour,
+                                               width_px=outline_width_px,
+                                               opacity=outline_opacity)
+            return (_draw_source_pixel_bar(rgb, frame_size[0])
+                    if use_pixel_bar else rgb)
 
         def frame_um_per_px(index, *, sizes_for_cell=sizes_for_cell,
                             display_size_for_cell=display_size):
@@ -494,6 +534,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                                           if frame_crop else None),
                       "source_um_per_px": (float(um_per_px)
                                            if um_per_px is not None else None),
+                      "scale_bar_units": ("source px" if use_pixel_bar else
+                                          "µm" if pixel_scale_bar and
+                                          physical_um_per_px is not None else
+                                          "none"),
                       "um_per_display_px": (float(um_per_px) * size[0] / display_size[0]
                                             if um_per_px is not None else None),
                       "frame_interval_h": float(interval or 1.0),
@@ -515,8 +559,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                                          else outline_colour),
                       "outline_width_px": int(outline_width_px),
                       "outline_opacity": float(outline_opacity),
-                      "trace": "mean original photons inside observed tracked mask; display only"}
-        tile_options = ({"frame_overlay": frame_overlay if outline else None,
+                      "trace": "sum of original photons inside observed tracked mask; display only"}
+        tile_options = ({"frame_overlay": frame_overlay if outline or use_pixel_bar else None,
                          "unavailable_label": unavailable_label}
                         if supports_live_overlay else {})
         if frame_crop:

@@ -23,7 +23,8 @@ def main() -> None:
     parser.add_argument("--raw", type=Path, required=True)
     parser.add_argument("--labels", type=Path, required=True)
     parser.add_argument("--interval-h", type=float, required=True)
-    parser.add_argument("--um-per-px", type=float, required=True)
+    parser.add_argument("--source-frame-offset", type=int, default=0)
+    parser.add_argument("--um-per-px", type=float)
     parser.add_argument("--no-scale-bar", action="store_true")
     parser.add_argument("--mask-style", required=True)
     parser.add_argument("--mask-opacity", type=float, required=True)
@@ -61,9 +62,11 @@ def main() -> None:
     if args.video_threads is not None and args.video_threads < 1:
         parser.error("--video-threads must be positive")
     args.outdir.mkdir(parents=True, exist_ok=True)
+    scale_bar = not args.no_scale_bar
     params = {"interval_h": args.interval_h,
+              "source_frame_offset": args.source_frame_offset,
               "um_per_px": args.um_per_px,
-              "scale_bar": not args.no_scale_bar,
+              "scale_bar": scale_bar,
               "mask_style": args.mask_style,
               "mask_opacity": args.mask_opacity,
               "outline_colour": args.outline_colour,
@@ -97,7 +100,8 @@ def main() -> None:
     common = dict(
         output_dir=args.outdir, display_filter=display_filter,
         frame_interval_h=args.interval_h, channels=1,
-        um_per_px=args.um_per_px, scale_bar=not args.no_scale_bar,
+        source_frame_offset=args.source_frame_offset,
+        um_per_px=args.um_per_px, scale_bar=scale_bar,
         well_label_position=args.well_label_position,
         mask_style=args.mask_style, mask_opacity=args.mask_opacity,
         outline_colour=args.outline_colour,
