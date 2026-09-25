@@ -49,8 +49,14 @@ def main() -> None:
     media.add_argument("--image-only", action="store_true")
     media.add_argument("--video-only", action="store_true")
     parser.add_argument("--video-crf", type=int, required=True)
+    parser.add_argument("--video-threads", type=int)
+    parser.add_argument("--video-preset", choices=("medium", "fast", "faster",
+                                                    "veryfast", "superfast",
+                                                    "ultrafast"))
     parser.add_argument("--outdir", type=Path, required=True)
     args = parser.parse_args()
+    if args.video_threads is not None and args.video_threads < 1:
+        parser.error("--video-threads must be positive")
     args.outdir.mkdir(parents=True, exist_ok=True)
     params = {"interval_h": args.interval_h,
               "um_per_px": args.um_per_px,
@@ -74,7 +80,9 @@ def main() -> None:
               "counts_offset": args.counts_offset,
               "a104_cache_dir": (str(args.a104_cache_dir)
                                  if args.a104_cache_dir is not None else None),
-              "video_crf": args.video_crf}
+              "video_crf": args.video_crf,
+              "video_threads": args.video_threads,
+              "video_preset": args.video_preset}
     params["media"] = ("image" if args.image_only else
                        "video" if args.video_only else "both")
     display_filter = {
@@ -102,6 +110,11 @@ def main() -> None:
         write_json(args.outdir / "image_report.json", image)
         outputs.extend(["image.png", "image_report.json"])
     if not args.image_only:
+        encoder_options = ["-level", "6.2"]
+        if args.video_threads is not None:
+            encoder_options.extend(["-threads", str(args.video_threads)])
+        if args.video_preset is not None:
+            encoder_options.extend(["-preset", args.video_preset])
         video = cell_video_grid(
             args.raw, args.labels, output_name="video.mp4",
             crop_basis=args.video_crop_basis, crop=args.crop,
@@ -109,7 +122,7 @@ def main() -> None:
             centre_smoothing_frames=args.video_centre_smoothing_frames,
             centre_deadband_fraction=args.video_centre_deadband_fraction,
             profile="fast", crf=args.video_crf,
-            encoder_options=["-level", "6.2"], **common)
+            encoder_options=encoder_options, **common)
         write_json(args.outdir / "video_report.json", video)
         outputs.extend(["video.mp4", "video_report.json"])
     with series.open_series(args.raw) as source:
