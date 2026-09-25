@@ -2836,6 +2836,8 @@
         "display_options",
         "fill_tile",
         "frame_crop",
+        "exclude_unavailable_cycles",
+        "well_label_position",
         "centre_method",
         "shared_time",
         "event_hour"
@@ -2871,6 +2873,8 @@
         "display_options": null,
         "fill_tile": true,
         "frame_crop": null,
+        "exclude_unavailable_cycles": false,
+        "well_label_position": "top-left",
         "centre_method": "intensity_weighted",
         "shared_time": null,
         "event_hour": null
@@ -3056,6 +3060,18 @@
           "required": false,
           "description": "Fit each selected still around that frame's observed cell outline before filling the grid slot. Defaults on for own_cell with fill_tile; false keeps one crop size across time. Scale bars use each frame's resized pixel size."
         },
+        "exclude_unavailable_cycles": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Hide rows without an eligible high-amplitude cycle instead of drawing six black CYCLE UNAVAILABLE tiles. All accepted identities remain in the selection report and can be shown in the video grid."
+        },
+        "well_label_position": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Place each cell name over its tile at a frame corner; left restores the outside row-label strip."
+        },
         "centre_method": {
           "type": "str",
           "units": "-",
@@ -3075,7 +3091,7 @@
           "description": "Source hour treated as zero when shared_time is event."
         }
       },
-      "method_version": "2026-09-25-cell-grids-v5",
+      "method_version": "2026-09-25-cell-grids-v6",
       "source": []
     },
     {

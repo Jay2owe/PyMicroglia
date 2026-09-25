@@ -105,6 +105,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     crop_rectangle_px: tuple[int, int] | None = None,
                     fill_tile: bool = True,
                     frame_crop: bool | None = None,
+                    exclude_unavailable_cycles: bool = False,
                     shared_time: str | None = None,
                     event_hour: float | None = None,
                     max_trace_gap_h: float = 4.0,
@@ -127,6 +128,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     um_per_px: float | None = None,
                     scale_bar_um: float | None = None,
                     display_options: Mapping[str, Any] | None = None,
+                    well_label_position: str = "top-left",
                     **grid_options) -> dict[str, Any]:
     """Draw all identities in the supplied images label view as grid rows.
 
@@ -146,7 +148,10 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         raise ValueError("shared_time must be None, 'recording' or 'event'")
     if shared_time == "event" and event_hour is None:
         raise ValueError("shared_time='event' needs event_hour in source hours")
+    if exclude_unavailable_cycles and shared_time is not None:
+        raise ValueError("exclude_unavailable_cycles requires own best-cycle time")
     grid_options = {**dict(display_options or {}), **grid_options}
+    grid_options.setdefault("well_label_position", well_label_position)
     fill_tile = grid_options.pop("fill_tile", fill_tile)
     frame_crop = grid_options.pop("frame_crop", frame_crop)
     grid_options.setdefault("scale_bar", scale_bar)
@@ -241,7 +246,11 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                 max_gap_h=float(max_trace_gap_h))
             alignments[str(tile)] = alignment
             selections.append({"identity": tile.key, **detail})
-            prepared.append(ready)
+            if not exclude_unavailable_cycles or detail["status"] == "selected":
+                prepared.append(ready)
+        if not prepared:
+            raise ValueError("no tracked cell has an eligible cycle")
+        alignments = {str(tile): alignments[str(tile)] for tile in prepared}
         settings.setdefault("align", alignments)
         if all(one["status"] == "cycle unavailable" for one in selections):
             settings.update(time_scale="elapsed", between="window", align="start")
@@ -262,7 +271,12 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "shared_time": shared_time or "own_best_cycle",
         "event_hour": float(event_hour) if event_hour is not None else None,
         "cycle_selection": selections,
-        "cell_identities": [tile.key for tile in tiles],
+        "cell_identities": [tile.key for tile in prepared],
+        "all_cell_identities": [tile.key for tile in tiles],
+        "excluded_cycle_identities": [one["identity"] for one in selections
+                                      if (exclude_unavailable_cycles and
+                                          one["status"] != "selected")],
+        "exclude_unavailable_cycles": bool(exclude_unavailable_cycles),
         "source_frame_offset": int(source_frame_offset),
         "max_trace_gap_h": float(max_trace_gap_h),
         "centre_method": centre_method,

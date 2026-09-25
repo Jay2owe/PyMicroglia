@@ -101,6 +101,11 @@ keep one crop size for that cell across the recording. The outline is drawn
 at its requested width after enlargement, and each frame's scale bar reflects
 its own zoom. Set `fill_tile=False` to preserve unscaled source pixels and
 their padding. Video crops keep their fixed native-pixel size.
+Cell names are drawn over the still tiles at the top left by default, like
+the video grid; `well_label_position="left"` restores an outside row strip.
+Use `exclude_unavailable_cycles=True` to omit black rows when no qualifying
+high-amplitude cycle can be chosen. The report still lists those identities,
+and the full-length video retains them.
 
 Both grids draw a physical scale bar by default when pixel calibration is
 available. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre

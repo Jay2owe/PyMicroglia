@@ -50,6 +50,22 @@ def test_own_cycles_keep_every_image_identity_and_placeholder(tmp_path):
                for one in report["tiles"] if one["source"] == "tile:3")
 
 
+def test_cycle_only_display_omits_blank_rows_and_keeps_selection_record(tmp_path):
+    raw, labels = _recording(tmp_path)
+    report = cell_image_grid(raw, labels, output_dir=tmp_path / "out",
+                             output_name="cycle_cells", channels=1,
+                             lut="grays", display_range=(0, 1600),
+                             exclude_unavailable_cycles=True)
+    assert report["rows"] == 2
+    assert report["well_label_width"] == 0
+    assert report["well_label_position"] == "top-left"
+    assert report["cell_grid"]["cell_identities"] == ["1", "2"]
+    assert report["cell_grid"]["all_cell_identities"] == ["1", "2", "3"]
+    assert report["cell_grid"]["excluded_cycle_identities"] == ["3"]
+    assert all(one.get("unavailable_reason") != "cycle unavailable"
+               for one in report["tiles"])
+
+
 def test_intensity_weighted_centre_places_bright_mask_region_in_middle(tmp_path):
     raw = np.full((3, 1, 16, 20), 10, np.uint16)
     raw[:, 0, 6, 9] = 100

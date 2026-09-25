@@ -31,6 +31,7 @@ def main() -> None:
     parser.add_argument("--outline-width-px", type=int, required=True)
     parser.add_argument("--image-centre-method", default="mask")
     parser.add_argument("--image-crop-basis", default="largest_cell")
+    parser.add_argument("--exclude-unavailable-cycles", action="store_true")
     parser.add_argument("--no-image-frame-crop", dest="image_frame_crop",
                         action="store_false", default=True)
     parser.add_argument("--no-image-fill-tile", dest="image_fill_tile",
@@ -39,6 +40,7 @@ def main() -> None:
     parser.add_argument("--video-centre-smoothing-frames", type=int, default=0)
     parser.add_argument("--video-centre-deadband-fraction", type=float, default=0)
     parser.add_argument("--video-crop-basis", default="largest_cell")
+    parser.add_argument("--well-label-position", default="top-left")
     parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
     parser.add_argument("--counts-offset", type=float, required=True)
@@ -59,12 +61,14 @@ def main() -> None:
               "outline_width_px": args.outline_width_px,
               "image_centre_method": args.image_centre_method,
               "image_crop_basis": args.image_crop_basis,
+              "exclude_unavailable_cycles": args.exclude_unavailable_cycles,
               "image_frame_crop": args.image_frame_crop,
               "image_fill_tile": args.image_fill_tile,
               "video_centre_method": args.video_centre_method,
               "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
               "video_centre_deadband_fraction": args.video_centre_deadband_fraction,
               "video_crop_basis": args.video_crop_basis,
+              "well_label_position": args.well_label_position,
               "crop": args.crop,
               "counts_gain": args.counts_gain,
               "counts_offset": args.counts_offset,
@@ -81,6 +85,7 @@ def main() -> None:
         output_dir=args.outdir, display_filter=display_filter,
         frame_interval_h=args.interval_h, channels=1,
         um_per_px=args.um_per_px, scale_bar=not args.no_scale_bar,
+        well_label_position=args.well_label_position,
         mask_style=args.mask_style, mask_opacity=args.mask_opacity,
         outline_colour=args.outline_colour,
         outline_width_px=args.outline_width_px)
@@ -92,6 +97,7 @@ def main() -> None:
                                 crop_basis=args.image_crop_basis, crop=args.crop,
                                 fill_tile=args.image_fill_tile,
                                 frame_crop=args.image_frame_crop,
+                                exclude_unavailable_cycles=args.exclude_unavailable_cycles,
                                 centre_method=args.image_centre_method, **common)
         write_json(args.outdir / "image_report.json", image)
         outputs.extend(["image.png", "image_report.json"])
