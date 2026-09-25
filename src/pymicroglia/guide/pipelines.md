@@ -95,10 +95,12 @@ candidate center moves more than 5% of that tile's short side. Beyond that
 boundary the crop follows only the excess movement. Set zero to disable it.
 
 For stills with `crop_basis="own_cell"`, `fill_tile=True` enlarges each
-individual tight crop to fill the common grid slot. The cell outline is drawn
-at its requested width after enlargement, and the scale bar reflects that
-cell's zoom. Set `fill_tile=False` to preserve the unscaled source pixels and
-their black padding. Video crops keep their fixed native-pixel size.
+individual tight crop to fill the common grid slot. By default, `frame_crop`
+fits each selected frame to that frame's observed mask; set it to `False` to
+keep one crop size for that cell across the recording. The outline is drawn
+at its requested width after enlargement, and each frame's scale bar reflects
+its own zoom. Set `fill_tile=False` to preserve unscaled source pixels and
+their padding. Video crops keep their fixed native-pixel size.
 
 Both grids draw a physical scale bar by default when pixel calibration is
 available. Use `um_per_px=2.0` if the photon TIFF has lost its 2 micrometre

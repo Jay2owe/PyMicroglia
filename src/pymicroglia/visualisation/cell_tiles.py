@@ -52,6 +52,8 @@ class _CellView:
     size: tuple[int, int]
     display_size: tuple[int, int] | None = None
     source_um_per_px: float | None = None
+    frame_sizes: np.ndarray | None = None
+    clamp_to_frame: bool = False
 
     @property
     def shape(self):
@@ -80,10 +82,13 @@ class _CellView:
 
     def frame(self, time: int, channel: int):
         image = self.original.frame(int(time), int(channel))
-        crop = _window(image, self.centres[int(time)], self.size,
-                       fill=np.nan, dtype=np.float32)
+        size = (tuple(map(int, self.frame_sizes[int(time)]))
+                if self.frame_sizes is not None else self.size)
+        crop = _window(image, self.centres[int(time)], size,
+                       fill=np.nan, dtype=np.float32,
+                       clamp=self.clamp_to_frame)
         return (_resize_photons(crop, self.display_size)
-                if self.display_size and self.display_size != self.size else crop)
+                if self.display_size and self.display_size != size else crop)
 
 
 def _resize_photons(crop: np.ndarray, size: tuple[int, int]) -> np.ndarray:
@@ -104,10 +109,13 @@ def _resize_photons(crop: np.ndarray, size: tuple[int, int]) -> np.ndarray:
     return out
 
 
-def _window(image, centre, size, *, fill, dtype):
+def _window(image, centre, size, *, fill, dtype, clamp=False):
     width, height = size
     cy, cx = (int(round(value)) for value in centre)
     top, left = cy - height // 2, cx - width // 2
+    if clamp:
+        top = min(max(top, 0), max(0, image.shape[0] - height))
+        left = min(max(left, 0), max(0, image.shape[1] - width))
     out = np.full((height, width), fill, dtype)
     y0, x0 = max(top, 0), max(left, 0)
     y1, x1 = min(top + height, image.shape[0]), min(left + width, image.shape[1])
@@ -206,6 +214,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                centre_deadband_fraction: float = 0.0,
                centre_method: str = "mask",
                fill_tile: bool = False,
+               frame_crop: bool = False,
                um_per_px: float | None = None,
                mask_style: str = "outline", mask_opacity: float = 0.35,
                outline_colour=_outlines.DEFAULT_COLOUR,
@@ -253,6 +262,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("outline must be true or false")
     if not isinstance(fill_tile, bool):
         raise ValueError("fill_tile must be true or false")
+    if not isinstance(frame_crop, bool):
+        raise ValueError("frame_crop must be true or false")
     if um_per_px is not None and (not np.isfinite(float(um_per_px)) or
                                   float(um_per_px) <= 0):
         raise ValueError("um_per_px must be a positive finite number")
@@ -261,6 +272,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     if not 0 <= float(mask_opacity) <= 1:
         raise ValueError("mask_opacity must be between 0 and 1")
     supports_live_overlay = "frame_overlay" in TileSource.__dataclass_fields__
+    if frame_crop and "frame_um_per_px" not in TileSource.__dataclass_fields__:
+        raise RuntimeError("frame-specific cell crops need the updated grid renderer")
     if outline and (not supports_live_overlay or
                     not hasattr(_outlines, "paint_mask") or
                     (mask_style == "fill" and
@@ -273,6 +286,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         explicit = tuple(map(int, crop_size_px))
     else:
         explicit = None
+    if frame_crop and (basis != "own_cell" or not fill_tile or explicit is not None):
+        raise ValueError("frame_crop needs own_cell, fill_tile, and no fixed pixel size")
     selected = (None if include_identities is None else
                 {int(identity) for identity in include_identities})
     if selected is not None and (not selected or min(selected) < 1):
@@ -281,6 +296,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     shared = _SharedRaw(raw_path)
     with shared.acquire() as opened:
         total, channels, height, width = opened.shape
+        physical_um_per_px = (float(um_per_px) if um_per_px is not None else
+                              getattr(opened.meta, "um_per_px", None))
         if label_values.shape[1:] != (height, width):
             raise ValueError("labels and photon frames have different image dimensions")
         if offset < 0 or offset + len(label_values) > total:
@@ -369,6 +386,17 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
     common_reach = (max(one[0] for one in reaches.values()),
                     max(one[1] for one in reaches.values()))
     common_size = explicit if explicit is not None else _size_for(common_reach, mode)
+    frame_sizes: dict[int, np.ndarray] = {}
+    if frame_crop:
+        for identity in ids:
+            sizes = np.tile(_size_for(tuple(reaches[identity]), mode), (total, 1))
+            for index in np.flatnonzero(observed[identity]):
+                bound = bounds[identity][index]
+                cy, cx = np.rint(centres[identity][index])
+                reach = (int(np.max(np.abs(bound[:2] - cy))),
+                         int(np.max(np.abs(bound[2:] - cx))))
+                sizes[index] = _size_for(reach, mode)
+            frame_sizes[identity] = sizes
     raw_fingerprint = store.fingerprint(raw_path).as_dict()
     display_fingerprint = (store.fingerprint(display_path).as_dict()
                            if display_raw is not None else raw_fingerprint)
@@ -391,29 +419,36 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             size = _size_for(common_reach if basis == "largest_cell"
                              else tuple(required), mode)
         display_size = common_size if fill_tile else size
+        sizes_for_cell = frame_sizes.get(identity)
         unavailable = {int(index): "tracked mask absent"
                        for index in range(total) if not observed[identity][index]}
         def opener(centres_for_cell=centres[identity], size_for_cell=size,
-                   display_size_for_cell=display_size):
+                   display_size_for_cell=display_size,
+                   frame_sizes_for_cell=sizes_for_cell):
             @contextmanager
             def opened_view():
                 with display_shared.acquire() as original:
                     yield _CellView(original, centres_for_cell, size_for_cell,
-                                    display_size_for_cell, um_per_px)
+                                    display_size_for_cell, um_per_px,
+                                    frame_sizes_for_cell, frame_crop)
             return opened_view()
 
         def frame_overlay(rgb, frame, *, cell=identity,
                           centres_for_cell=centres[identity],
                           size_for_cell=size,
-                          display_size_for_cell=display_size):
+                          display_size_for_cell=display_size,
+                          frame_sizes_for_cell=sizes_for_cell):
             index = int(frame) - offset
             if not 0 <= index < len(label_values):
                 return rgb
+            frame_size = (tuple(map(int, frame_sizes_for_cell[int(frame)]))
+                          if frame_sizes_for_cell is not None else size_for_cell)
             crop_labels = _window(label_values[index],
-                                  centres_for_cell[int(frame)], size_for_cell,
-                                  fill=0, dtype=label_values.dtype)
+                                  centres_for_cell[int(frame)], frame_size,
+                                  fill=0, dtype=label_values.dtype,
+                                  clamp=frame_crop)
             mask = crop_labels == cell
-            if display_size_for_cell != size_for_cell:
+            if display_size_for_cell != frame_size:
                 from PIL import Image
                 mask = np.asarray(Image.fromarray(mask.astype(np.uint8)).resize(
                     display_size_for_cell, Image.Resampling.NEAREST), bool)
@@ -423,6 +458,13 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             return _outlines.paint_mask(rgb, mask, colour=outline_colour,
                                         width_px=outline_width_px,
                                         opacity=outline_opacity)
+
+        def frame_um_per_px(index, *, sizes_for_cell=sizes_for_cell,
+                            display_size_for_cell=display_size):
+            if physical_um_per_px is None:
+                return None
+            return (float(physical_um_per_px) *
+                    float(sizes_for_cell[int(index), 0]) / display_size_for_cell[0])
 
         interval = frame_interval_h
         if interval is None:
@@ -438,6 +480,9 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
                       "display_size_px": list(display_size),
                       "tile_fill": bool(fill_tile),
+                      "frame_crop": bool(frame_crop),
+                      "frame_crop_rule": ("observed mask bounds, tight square"
+                                          if frame_crop else None),
                       "source_um_per_px": (float(um_per_px)
                                            if um_per_px is not None else None),
                       "um_per_display_px": (float(um_per_px) * size[0] / display_size[0]

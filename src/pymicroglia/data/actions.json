@@ -2835,6 +2835,7 @@
         "scale_bar_um",
         "display_options",
         "fill_tile",
+        "frame_crop",
         "centre_method",
         "shared_time",
         "event_hour"
@@ -2869,6 +2870,7 @@
         "scale_bar_um": null,
         "display_options": null,
         "fill_tile": true,
+        "frame_crop": null,
         "centre_method": "intensity_weighted",
         "shared_time": null,
         "event_hour": null
@@ -3048,6 +3050,12 @@
           "required": false,
           "description": "Enlarge each tight own-cell still crop to fill its grid slot without black padding; rescales the physical bar and draws the outline at its requested pixel width. False preserves native-pixel padding."
         },
+        "frame_crop": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Fit each selected still around that frame's observed cell outline before filling the grid slot. Defaults on for own_cell with fill_tile; false keeps one crop size across time. Scale bars use each frame's resized pixel size."
+        },
         "centre_method": {
           "type": "str",
           "units": "-",
@@ -3067,7 +3075,7 @@
           "description": "Source hour treated as zero when shared_time is event."
         }
       },
-      "method_version": "2026-09-24-cell-grids-v4",
+      "method_version": "2026-09-25-cell-grids-v5",
       "source": []
     },
     {

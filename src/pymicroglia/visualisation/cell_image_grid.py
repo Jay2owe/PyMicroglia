@@ -104,6 +104,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
                     crop_basis: str = "largest_cell", crop: str = "tight",
                     crop_rectangle_px: tuple[int, int] | None = None,
                     fill_tile: bool = True,
+                    frame_crop: bool | None = None,
                     shared_time: str | None = None,
                     event_hour: float | None = None,
                     max_trace_gap_h: float = 4.0,
@@ -147,6 +148,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         raise ValueError("shared_time='event' needs event_hour in source hours")
     grid_options = {**dict(display_options or {}), **grid_options}
     fill_tile = grid_options.pop("fill_tile", fill_tile)
+    frame_crop = grid_options.pop("frame_crop", frame_crop)
     grid_options.setdefault("scale_bar", scale_bar)
     if um_per_px is not None:
         grid_options.setdefault("um_per_px", um_per_px)
@@ -167,6 +169,9 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         if crop_size_px is not None:
             raise ValueError("give crop_size_px or crop_rectangle_px, not both")
         crop_size_px = crop_rectangle_px
+    if frame_crop is None:
+        frame_crop = bool(fill_tile and crop_basis == "own_cell" and
+                          crop_size_px is None)
     grid_options.setdefault("overwrite", overwrite)
     if not np.isfinite(float(max_trace_gap_h)) or float(max_trace_gap_h) < 0:
         raise ValueError("max_trace_gap_h must be nonnegative")
@@ -196,7 +201,8 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         display_raw=display_raw,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
-        fill_tile=fill_tile, um_per_px=source_um_per_px,
+        fill_tile=fill_tile, frame_crop=frame_crop,
+        um_per_px=source_um_per_px,
         trace_channel=trace_channel, centre_method=centre_method,
         outline=show_outline,
         outline_colour=outline_colour, outline_width_px=outline_width_px,
@@ -261,6 +267,7 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
         "max_trace_gap_h": float(max_trace_gap_h),
         "centre_method": centre_method,
         "fill_tile": bool(fill_tile),
+        "frame_crop": bool(frame_crop),
         "mask_style": mask_style if show_outline else "none",
         "outline_colour": (list(outline_colour) if not isinstance(outline_colour, str)
                            else outline_colour),
