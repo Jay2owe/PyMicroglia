@@ -1,0 +1,2762 @@
+{
+  "schema_version": 1,
+  "description": "Accepted-track A104 cell grids: cycle-time stills, observed-frame stills for cells without a cycle, and full-length smoothed videos",
+  "settings": {
+    "a104_counts_gain": 388,
+    "a104_counts_offset": 2039,
+    "colour": "purple",
+    "observed_mask_outline": "yellow, 1 display pixel",
+    "still_crop": "own observed frame, tight, intensity-weighted centroid, resized to grid slot",
+    "still_cycle_selection": "highest-amplitude eligible cycle; no eligible cycle omits row only from still image",
+    "video_crop": "own-cell tight crop, fixed size per cell across time, filled 128-pixel grid tile; five-frame centre smoothing and 5% of crop short-side movement threshold",
+    "scale_bars": "calibrated, on",
+    "observed_supplement": "six evenly spaced frames with an observed mask per excluded cell; Obs 0-5 headers, actual source hours in report",
+    "video_absent_mask": "timeline continues at native frame cadence; unavailable mask indicated in its tile"
+  },
+  "recordings": [
+    {
+      "stem": "MCG_04",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/MCG_04_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/MCG_04_native_identity_labels.tif",
+      "source_sha256": "92b1692841b3b4dfb0b31269fb77b4e9e5beeebc44d4c421d57c21f1396b3c90",
+      "labels_sha256": "46c5ad6aecc472553629ac41ea042ff9ec232ea9b3e2952d592649280865912e",
+      "accepted_cells": [
+        "1",
+        "2",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16",
+        "17",
+        "18",
+        "20",
+        "28",
+        "32",
+        "33"
+      ],
+      "cycle_cells": [
+        "2",
+        "5",
+        "7",
+        "8",
+        "9",
+        "11",
+        "12",
+        "13",
+        "16",
+        "17",
+        "18",
+        "28"
+      ],
+      "excluded_cycle_cells": [
+        "1",
+        "4",
+        "6",
+        "10",
+        "14",
+        "20",
+        "32",
+        "33"
+      ],
+      "source_frames": 250,
+      "video_frames": 250,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/MCG_04/image.png",
+        "bytes": 449447,
+        "sha256": "09cff05fb5bb41ba542649dbb6896ad20208be20ed60fdfe69a25d4058470e37",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/MCG_04/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/MCG_04/video.mp4",
+        "bytes": 4634282,
+        "sha256": "6151a4042f33090ce7c0d5199490941906160b030ba338a0df589d6920e0c048",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/MCG_04/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/MCG_04/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/MCG_04/image.png",
+        "bytes": 101924,
+        "sha256": "bb2fa4f3b27fecc1f3ddead9ad0363a22df432a6c02d93e14968bbb0e26d5062",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/MCG_04/batch_receipt.json",
+        "observed_cells": [
+          "1",
+          "4",
+          "6",
+          "10",
+          "14",
+          "20",
+          "32",
+          "33"
+        ],
+        "source_frames_by_cell": {
+          "1": [
+            0,
+            38,
+            76,
+            114,
+            152,
+            190
+          ],
+          "4": [
+            0,
+            20,
+            56,
+            78,
+            108,
+            131
+          ],
+          "6": [
+            123,
+            141,
+            184,
+            200,
+            216,
+            231
+          ],
+          "10": [
+            0,
+            36,
+            118,
+            155,
+            191,
+            249
+          ],
+          "14": [
+            1,
+            37,
+            91,
+            112,
+            137,
+            210
+          ],
+          "20": [
+            183,
+            196,
+            209,
+            221,
+            235,
+            248
+          ],
+          "32": [
+            5,
+            21,
+            79,
+            160,
+            233,
+            249
+          ],
+          "33": [
+            0,
+            43,
+            58,
+            76,
+            91,
+            112
+          ]
+        },
+        "source_hours_by_cell": {
+          "1": [
+            0.0,
+            21.083255,
+            42.16651,
+            63.249765,
+            84.33302,
+            105.416275
+          ],
+          "4": [
+            0.0,
+            11.09645,
+            31.07006,
+            43.276155,
+            59.92083,
+            72.681748
+          ],
+          "6": [
+            68.243168,
+            78.229972,
+            102.08734,
+            110.9645,
+            119.84166,
+            128.163998
+          ],
+          "10": [
+            0.0,
+            19.97361,
+            65.469055,
+            85.997488,
+            105.971098,
+            138.150802
+          ],
+          "14": [
+            0.554822,
+            20.528432,
+            50.488848,
+            62.14012,
+            76.010682,
+            116.512725
+          ],
+          "20": [
+            101.532518,
+            108.74521,
+            115.957902,
+            122.615772,
+            130.383288,
+            137.59598
+          ],
+          "32": [
+            2.774112,
+            11.651272,
+            43.830978,
+            88.7716,
+            129.273642,
+            138.150802
+          ],
+          "33": [
+            0.0,
+            23.857368,
+            32.179705,
+            42.16651,
+            50.488848,
+            62.14012
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_01",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_01_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_01_native_identity_labels.tif",
+      "source_sha256": "9ff966da9b639f9e47979b6b4d39aa844e993293cc5f3fc1d213a02c89276dea",
+      "labels_sha256": "a47924cfac95382fa17fda0cea3a083ccfcc32d70d0e2031827c329bf74ad832",
+      "accepted_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "25",
+        "26",
+        "30",
+        "33",
+        "36",
+        "42",
+        "44",
+        "52"
+      ],
+      "cycle_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "10",
+        "11",
+        "13",
+        "14",
+        "15",
+        "17",
+        "18",
+        "19",
+        "21",
+        "22",
+        "36",
+        "44"
+      ],
+      "excluded_cycle_cells": [
+        "6",
+        "8",
+        "12",
+        "20",
+        "23",
+        "25",
+        "26",
+        "30",
+        "33",
+        "42",
+        "52"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_01/image.png",
+        "bytes": 1301337,
+        "sha256": "9982410e8338d896db2ae5d97eaa987fcafd9d1eca61fc251f32dab8e4ec42d3",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_01/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_01/video.mp4",
+        "bytes": 9298878,
+        "sha256": "4f8baaffa2a8d213689410bfb8094ca0a522f14334c5a307ae5e9bd8d341d5c3",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_01/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_01/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_01/image.png",
+        "bytes": 610124,
+        "sha256": "3d3f2d686e00ac9af487628280ef68f72c41dec194f864bf303410c0cf4cfb55",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_01/batch_receipt.json",
+        "observed_cells": [
+          "6",
+          "8",
+          "12",
+          "20",
+          "23",
+          "25",
+          "26",
+          "30",
+          "33",
+          "42",
+          "52"
+        ],
+        "source_frames_by_cell": {
+          "6": [
+            36,
+            64,
+            80,
+            118,
+            153,
+            174
+          ],
+          "8": [
+            9,
+            30,
+            52,
+            71,
+            88,
+            178
+          ],
+          "12": [
+            60,
+            71,
+            72,
+            140,
+            141,
+            144
+          ],
+          "20": [
+            11,
+            25,
+            39,
+            54,
+            69,
+            85
+          ],
+          "23": [
+            17,
+            60,
+            79,
+            97,
+            117,
+            172
+          ],
+          "25": [
+            81,
+            104,
+            111,
+            118,
+            125,
+            132
+          ],
+          "26": [
+            86,
+            99,
+            138,
+            151,
+            166,
+            179
+          ],
+          "30": [
+            104,
+            126,
+            141,
+            155,
+            167,
+            179
+          ],
+          "33": [
+            101,
+            112,
+            121,
+            129,
+            148,
+            162
+          ],
+          "42": [
+            12,
+            37,
+            61,
+            105,
+            125,
+            178
+          ],
+          "52": [
+            111,
+            113,
+            125,
+            127,
+            130,
+            135
+          ]
+        },
+        "source_hours_by_cell": {
+          "6": [
+            18.98352,
+            33.74848,
+            42.1856,
+            62.22376,
+            80.67996,
+            91.75368
+          ],
+          "8": [
+            4.74588,
+            15.8196,
+            27.42064,
+            37.43972,
+            46.40416,
+            93.86296
+          ],
+          "12": [
+            31.6392,
+            37.43972,
+            37.96704,
+            73.8248,
+            74.35212,
+            75.93408
+          ],
+          "20": [
+            5.80052,
+            13.183,
+            20.56548,
+            28.47528,
+            36.38508,
+            44.8222
+          ],
+          "23": [
+            8.96444,
+            31.6392,
+            41.65828,
+            51.15004,
+            61.69644,
+            90.69904
+          ],
+          "25": [
+            42.71292,
+            54.84128,
+            58.53252,
+            62.22376,
+            65.915,
+            69.60624
+          ],
+          "26": [
+            45.34952,
+            52.20468,
+            72.77016,
+            79.62532,
+            87.53512,
+            94.39028
+          ],
+          "30": [
+            54.84128,
+            66.44232,
+            74.35212,
+            81.7346,
+            88.06244,
+            94.39028
+          ],
+          "33": [
+            53.25932,
+            59.05984,
+            63.80572,
+            68.02428,
+            78.04336,
+            85.42584
+          ],
+          "42": [
+            6.32784,
+            19.51084,
+            32.16652,
+            55.3686,
+            65.915,
+            93.86296
+          ],
+          "52": [
+            58.53252,
+            59.58716,
+            65.915,
+            66.96964,
+            68.5516,
+            71.1882
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_02",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_02_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_02_native_identity_labels.tif",
+      "source_sha256": "f3b658b85bad17438d8abb152b8942f23f0b5da5a866e7b56cdb29dceb01bb3e",
+      "labels_sha256": "f31b25435a05f6b610c0f24fc939a2703e75adc4cf5912eddd5b31baf01bdea2",
+      "accepted_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31",
+        "32",
+        "34",
+        "35",
+        "36",
+        "37",
+        "39",
+        "43",
+        "44",
+        "46",
+        "48",
+        "49",
+        "57",
+        "62",
+        "65",
+        "66",
+        "68",
+        "72",
+        "75",
+        "76",
+        "85",
+        "90",
+        "100",
+        "102",
+        "103",
+        "104",
+        "114"
+      ],
+      "cycle_cells": [
+        "1",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "10",
+        "11",
+        "13",
+        "14",
+        "15",
+        "17",
+        "18",
+        "19",
+        "20",
+        "23",
+        "25",
+        "26",
+        "28",
+        "29",
+        "32",
+        "34",
+        "35",
+        "36",
+        "37",
+        "46"
+      ],
+      "excluded_cycle_cells": [
+        "2",
+        "8",
+        "12",
+        "21",
+        "22",
+        "24",
+        "27",
+        "30",
+        "31",
+        "39",
+        "43",
+        "44",
+        "48",
+        "49",
+        "57",
+        "62",
+        "65",
+        "66",
+        "68",
+        "72",
+        "75",
+        "76",
+        "85",
+        "90",
+        "100",
+        "102",
+        "103",
+        "104",
+        "114"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_02/image.png",
+        "bytes": 2289316,
+        "sha256": "0a6c6514ac581595dc96fd25153d7056b50d901155b69eb65765c22ccd7602f3",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_02/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_02/video.mp4",
+        "bytes": 10214697,
+        "sha256": "f48185d34a5407f687b9ed8556d666ba302cf209962bf29d5eac122c4f60efed",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_02/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_02/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_02/image.png",
+        "bytes": 1333324,
+        "sha256": "0a8ce547c6468e014a384a0e76d551878304ea1a22bea6029ba3215d4dfc7c89",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_02/batch_receipt.json",
+        "observed_cells": [
+          "2",
+          "8",
+          "12",
+          "21",
+          "22",
+          "24",
+          "27",
+          "30",
+          "31",
+          "39",
+          "43",
+          "44",
+          "48",
+          "49",
+          "57",
+          "62",
+          "65",
+          "66",
+          "68",
+          "72",
+          "75",
+          "76",
+          "85",
+          "90",
+          "100",
+          "102",
+          "103",
+          "104",
+          "114"
+        ],
+        "source_frames_by_cell": {
+          "2": [
+            1,
+            20,
+            45,
+            93,
+            160,
+            179
+          ],
+          "8": [
+            20,
+            44,
+            72,
+            95,
+            127,
+            151
+          ],
+          "12": [
+            14,
+            36,
+            137,
+            147,
+            163,
+            179
+          ],
+          "21": [
+            0,
+            18,
+            54,
+            85,
+            125,
+            156
+          ],
+          "22": [
+            0,
+            39,
+            91,
+            120,
+            150,
+            179
+          ],
+          "24": [
+            8,
+            57,
+            91,
+            133,
+            156,
+            179
+          ],
+          "27": [
+            0,
+            27,
+            54,
+            82,
+            109,
+            165
+          ],
+          "30": [
+            0,
+            27,
+            54,
+            81,
+            111,
+            178
+          ],
+          "31": [
+            62,
+            99,
+            114,
+            129,
+            161,
+            179
+          ],
+          "39": [
+            90,
+            105,
+            114,
+            124,
+            133,
+            142
+          ],
+          "43": [
+            92,
+            109,
+            126,
+            144,
+            161,
+            179
+          ],
+          "44": [
+            92,
+            108,
+            117,
+            126,
+            142,
+            179
+          ],
+          "48": [
+            96,
+            128,
+            141,
+            155,
+            169,
+            179
+          ],
+          "49": [
+            0,
+            29,
+            110,
+            122,
+            133,
+            144
+          ],
+          "57": [
+            116,
+            157,
+            163,
+            168,
+            174,
+            179
+          ],
+          "62": [
+            2,
+            22,
+            39,
+            56,
+            70,
+            84
+          ],
+          "65": [
+            44,
+            51,
+            58,
+            165,
+            172,
+            179
+          ],
+          "66": [
+            14,
+            24,
+            35,
+            53,
+            64,
+            79
+          ],
+          "68": [
+            30,
+            42,
+            50,
+            59,
+            67,
+            75
+          ],
+          "72": [
+            15,
+            27,
+            34,
+            45,
+            71,
+            142
+          ],
+          "75": [
+            3,
+            25,
+            37,
+            49,
+            61,
+            103
+          ],
+          "76": [
+            0,
+            6,
+            15,
+            21,
+            39,
+            117
+          ],
+          "85": [
+            4,
+            13,
+            23,
+            32,
+            42,
+            51
+          ],
+          "90": [
+            14,
+            34,
+            65,
+            78,
+            93,
+            136
+          ],
+          "100": [
+            101,
+            111,
+            122,
+            132,
+            147,
+            175
+          ],
+          "102": [
+            0,
+            12,
+            117,
+            135,
+            146,
+            179
+          ],
+          "103": [
+            116,
+            129,
+            141,
+            154,
+            166,
+            179
+          ],
+          "104": [
+            140,
+            148,
+            156,
+            163,
+            171,
+            179
+          ],
+          "114": [
+            0,
+            7,
+            16,
+            29,
+            42,
+            54
+          ]
+        },
+        "source_hours_by_cell": {
+          "2": [
+            0.52732,
+            10.5464,
+            23.7294,
+            49.04076,
+            84.3712,
+            94.39028
+          ],
+          "8": [
+            10.5464,
+            23.20208,
+            37.96704,
+            50.0954,
+            66.96964,
+            79.62532
+          ],
+          "12": [
+            7.38248,
+            18.98352,
+            72.24284,
+            77.51604,
+            85.95316,
+            94.39028
+          ],
+          "21": [
+            0.0,
+            9.49176,
+            28.47528,
+            44.8222,
+            65.915,
+            82.26192
+          ],
+          "22": [
+            0.0,
+            20.56548,
+            47.98612,
+            63.2784,
+            79.098,
+            94.39028
+          ],
+          "24": [
+            4.21856,
+            30.05724,
+            47.98612,
+            70.13356,
+            82.26192,
+            94.39028
+          ],
+          "27": [
+            0.0,
+            14.23764,
+            28.47528,
+            43.24024,
+            57.47788,
+            87.0078
+          ],
+          "30": [
+            0.0,
+            14.23764,
+            28.47528,
+            42.71292,
+            58.53252,
+            93.86296
+          ],
+          "31": [
+            32.69384,
+            52.20468,
+            60.11448,
+            68.02428,
+            84.89852,
+            94.39028
+          ],
+          "39": [
+            47.4588,
+            55.3686,
+            60.11448,
+            65.38768,
+            70.13356,
+            74.87944
+          ],
+          "43": [
+            48.51344,
+            57.47788,
+            66.44232,
+            75.93408,
+            84.89852,
+            94.39028
+          ],
+          "44": [
+            48.51344,
+            56.95056,
+            61.69644,
+            66.44232,
+            74.87944,
+            94.39028
+          ],
+          "48": [
+            50.62272,
+            67.49696,
+            74.35212,
+            81.7346,
+            89.11708,
+            94.39028
+          ],
+          "49": [
+            0.0,
+            15.29228,
+            58.0052,
+            64.33304,
+            70.13356,
+            75.93408
+          ],
+          "57": [
+            61.16912,
+            82.78924,
+            85.95316,
+            88.58976,
+            91.75368,
+            94.39028
+          ],
+          "62": [
+            1.05464,
+            11.60104,
+            20.56548,
+            29.52992,
+            36.9124,
+            44.29488
+          ],
+          "65": [
+            23.20208,
+            26.89332,
+            30.58456,
+            87.0078,
+            90.69904,
+            94.39028
+          ],
+          "66": [
+            7.38248,
+            12.65568,
+            18.4562,
+            27.94796,
+            33.74848,
+            41.65828
+          ],
+          "68": [
+            15.8196,
+            22.14744,
+            26.366,
+            31.11188,
+            35.33044,
+            39.549
+          ],
+          "72": [
+            7.9098,
+            14.23764,
+            17.92888,
+            23.7294,
+            37.43972,
+            74.87944
+          ],
+          "75": [
+            1.58196,
+            13.183,
+            19.51084,
+            25.83868,
+            32.16652,
+            54.31396
+          ],
+          "76": [
+            0.0,
+            3.16392,
+            7.9098,
+            11.07372,
+            20.56548,
+            61.69644
+          ],
+          "85": [
+            2.10928,
+            6.85516,
+            12.12836,
+            16.87424,
+            22.14744,
+            26.89332
+          ],
+          "90": [
+            7.38248,
+            17.92888,
+            34.2758,
+            41.13096,
+            49.04076,
+            71.71552
+          ],
+          "100": [
+            53.25932,
+            58.53252,
+            64.33304,
+            69.60624,
+            77.51604,
+            92.281
+          ],
+          "102": [
+            0.0,
+            6.32784,
+            61.69644,
+            71.1882,
+            76.98872,
+            94.39028
+          ],
+          "103": [
+            61.16912,
+            68.02428,
+            74.35212,
+            81.20728,
+            87.53512,
+            94.39028
+          ],
+          "104": [
+            73.8248,
+            78.04336,
+            82.26192,
+            85.95316,
+            90.17172,
+            94.39028
+          ],
+          "114": [
+            0.0,
+            3.69124,
+            8.43712,
+            15.29228,
+            22.14744,
+            28.47528
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_04",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_04_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_04_native_identity_labels.tif",
+      "source_sha256": "2da9486615c06ea926045b8ca80b76ae7d4f9dbd02ad7c7d7bb4d741b310df54",
+      "labels_sha256": "18001f419989bf5e747490b3a57c9ebd207ea2741690ac6565e522e74e4afb2b",
+      "accepted_cells": [
+        "1",
+        "2",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "33",
+        "40",
+        "42",
+        "58",
+        "60",
+        "61",
+        "63",
+        "66",
+        "74",
+        "91"
+      ],
+      "cycle_cells": [
+        "1",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "16",
+        "17",
+        "19",
+        "20",
+        "22",
+        "23",
+        "24",
+        "25",
+        "27",
+        "42"
+      ],
+      "excluded_cycle_cells": [
+        "2",
+        "14",
+        "15",
+        "18",
+        "21",
+        "26",
+        "28",
+        "29",
+        "33",
+        "40",
+        "58",
+        "60",
+        "61",
+        "63",
+        "66",
+        "74",
+        "91"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_04/image.png",
+        "bytes": 9011823,
+        "sha256": "f1e626ab602b3bd67ca9d5e59c392239a6aaa453398a6ba59232273c1624c2b5",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_04/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_video_04/results/RBM3_MCG_04/video.mp4",
+        "bytes": 7185530,
+        "sha256": "d544274b446d27019c8339f2c4ef03fa048b31d0d2356d3636c7dcf48eae93be",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_video_04/results/RBM3_MCG_04/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_video_04/results/RBM3_MCG_04/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_04/image.png",
+        "bytes": 308135,
+        "sha256": "f45fc05fe5dbe966e4583628177cfd6f00780f32aa4eea8998939dc8eb1d5339",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_04/batch_receipt.json",
+        "observed_cells": [
+          "2",
+          "14",
+          "15",
+          "18",
+          "21",
+          "26",
+          "28",
+          "29",
+          "33",
+          "40",
+          "58",
+          "60",
+          "61",
+          "63",
+          "66",
+          "74",
+          "91"
+        ],
+        "source_frames_by_cell": {
+          "2": [
+            20,
+            35,
+            51,
+            66,
+            83,
+            99
+          ],
+          "14": [
+            0,
+            20,
+            69,
+            89,
+            125,
+            165
+          ],
+          "15": [
+            18,
+            49,
+            79,
+            95,
+            114,
+            157
+          ],
+          "18": [
+            0,
+            28,
+            56,
+            93,
+            126,
+            163
+          ],
+          "21": [
+            20,
+            33,
+            49,
+            65,
+            130,
+            142
+          ],
+          "26": [
+            0,
+            16,
+            32,
+            47,
+            63,
+            79
+          ],
+          "28": [
+            1,
+            15,
+            29,
+            48,
+            62,
+            76
+          ],
+          "29": [
+            0,
+            18,
+            37,
+            55,
+            80,
+            150
+          ],
+          "33": [
+            0,
+            19,
+            80,
+            99,
+            144,
+            177
+          ],
+          "40": [
+            87,
+            146,
+            159,
+            165,
+            172,
+            179
+          ],
+          "58": [
+            0,
+            44,
+            62,
+            141,
+            155,
+            163
+          ],
+          "60": [
+            8,
+            26,
+            39,
+            47,
+            56,
+            64
+          ],
+          "61": [
+            0,
+            21,
+            62,
+            137,
+            162,
+            179
+          ],
+          "63": [
+            0,
+            12,
+            24,
+            37,
+            49,
+            61
+          ],
+          "66": [
+            0,
+            11,
+            25,
+            36,
+            158,
+            172
+          ],
+          "74": [
+            1,
+            19,
+            75,
+            103,
+            125,
+            159
+          ],
+          "91": [
+            0,
+            21,
+            96,
+            108,
+            121,
+            157
+          ]
+        },
+        "source_hours_by_cell": {
+          "2": [
+            10.5464,
+            18.4562,
+            26.89332,
+            34.80312,
+            43.76756,
+            52.20468
+          ],
+          "14": [
+            0.0,
+            10.5464,
+            36.38508,
+            46.93148,
+            65.915,
+            87.0078
+          ],
+          "15": [
+            9.49176,
+            25.83868,
+            41.65828,
+            50.0954,
+            60.11448,
+            82.78924
+          ],
+          "18": [
+            0.0,
+            14.76496,
+            29.52992,
+            49.04076,
+            66.44232,
+            85.95316
+          ],
+          "21": [
+            10.5464,
+            17.40156,
+            25.83868,
+            34.2758,
+            68.5516,
+            74.87944
+          ],
+          "26": [
+            0.0,
+            8.43712,
+            16.87424,
+            24.78404,
+            33.22116,
+            41.65828
+          ],
+          "28": [
+            0.52732,
+            7.9098,
+            15.29228,
+            25.31136,
+            32.69384,
+            40.07632
+          ],
+          "29": [
+            0.0,
+            9.49176,
+            19.51084,
+            29.0026,
+            42.1856,
+            79.098
+          ],
+          "33": [
+            0.0,
+            10.01908,
+            42.1856,
+            52.20468,
+            75.93408,
+            93.33564
+          ],
+          "40": [
+            45.87684,
+            76.98872,
+            83.84388,
+            87.0078,
+            90.69904,
+            94.39028
+          ],
+          "58": [
+            0.0,
+            23.20208,
+            32.69384,
+            74.35212,
+            81.7346,
+            85.95316
+          ],
+          "60": [
+            4.21856,
+            13.71032,
+            20.56548,
+            24.78404,
+            29.52992,
+            33.74848
+          ],
+          "61": [
+            0.0,
+            11.07372,
+            32.69384,
+            72.24284,
+            85.42584,
+            94.39028
+          ],
+          "63": [
+            0.0,
+            6.32784,
+            12.65568,
+            19.51084,
+            25.83868,
+            32.16652
+          ],
+          "66": [
+            0.0,
+            5.80052,
+            13.183,
+            18.98352,
+            83.31656,
+            90.69904
+          ],
+          "74": [
+            0.52732,
+            10.01908,
+            39.549,
+            54.31396,
+            65.915,
+            83.84388
+          ],
+          "91": [
+            0.0,
+            11.07372,
+            50.62272,
+            56.95056,
+            63.80572,
+            82.78924
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_05",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_05_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_05_native_identity_labels.tif",
+      "source_sha256": "63029e6b08f9edef41a6efdc75fee73f93fd423c9266a245be5275450a85cfb8",
+      "labels_sha256": "3faf43f024eaaea50939c9bfd66489174a1b33028e69594e3df7b7bc5407d5c4",
+      "accepted_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "11",
+        "12",
+        "13"
+      ],
+      "cycle_cells": [
+        "3",
+        "11",
+        "12"
+      ],
+      "excluded_cycle_cells": [
+        "1",
+        "2",
+        "4",
+        "5",
+        "13"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_05/image.png",
+        "bytes": 724543,
+        "sha256": "f48ca5ada9c4ab27f92d97cfe19a96abca63bae901685d23652ef8a6a3c197d1",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_05/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_05/video.mp4",
+        "bytes": 1876836,
+        "sha256": "d206c5ca3f2b285549ecce5f9a06d23a5d04d66e985e0a2e5b7630736e505275",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_05/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_05/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_05/image.png",
+        "bytes": 88603,
+        "sha256": "23dc855d9d8db8d486563c2f0753c9120cc47c9da86b4831bcadd8a26ea644ed",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_05/batch_receipt.json",
+        "observed_cells": [
+          "1",
+          "2",
+          "4",
+          "5",
+          "13"
+        ],
+        "source_frames_by_cell": {
+          "1": [
+            57,
+            61,
+            93,
+            98,
+            102,
+            127
+          ],
+          "2": [
+            9,
+            22,
+            38,
+            153,
+            166,
+            179
+          ],
+          "4": [
+            17,
+            36,
+            69,
+            88,
+            140,
+            179
+          ],
+          "5": [
+            0,
+            16,
+            32,
+            91,
+            127,
+            174
+          ],
+          "13": [
+            0,
+            10,
+            20,
+            29,
+            39,
+            49
+          ]
+        },
+        "source_hours_by_cell": {
+          "1": [
+            30.05724,
+            32.16652,
+            49.04076,
+            51.67736,
+            53.78664,
+            66.96964
+          ],
+          "2": [
+            4.74588,
+            11.60104,
+            20.03816,
+            80.67996,
+            87.53512,
+            94.39028
+          ],
+          "4": [
+            8.96444,
+            18.98352,
+            36.38508,
+            46.40416,
+            73.8248,
+            94.39028
+          ],
+          "5": [
+            0.0,
+            8.43712,
+            16.87424,
+            47.98612,
+            66.96964,
+            91.75368
+          ],
+          "13": [
+            0.0,
+            5.2732,
+            10.5464,
+            15.29228,
+            20.56548,
+            25.83868
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_06",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_06_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_06_native_identity_labels.tif",
+      "source_sha256": "7fd5dfaf5d18d290564a4e02498fec6efc328832ae7bf2b189c2979a309d0341",
+      "labels_sha256": "6bb1808c2ec19c3d41f4251505a761088666b0560c0c4757588c9c08df6024c9",
+      "accepted_cells": [
+        "1",
+        "2",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "22",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "41",
+        "42",
+        "65"
+      ],
+      "cycle_cells": [
+        "1",
+        "2",
+        "4",
+        "6",
+        "7",
+        "9",
+        "11",
+        "31",
+        "33",
+        "35",
+        "37"
+      ],
+      "excluded_cycle_cells": [
+        "5",
+        "8",
+        "10",
+        "12",
+        "22",
+        "32",
+        "34",
+        "36",
+        "38",
+        "39",
+        "41",
+        "42",
+        "65"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_06/image.png",
+        "bytes": 363500,
+        "sha256": "01f9ff274ad613c6832a3f3484f0060b2aea6b76fd0762c00aa76b25a2d5c22d",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_06/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_06/video.mp4",
+        "bytes": 5636009,
+        "sha256": "677cb9eab188b0cc352fb31a76dde389bae78e177b4ba87403981ebe92e9d89e",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_06/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_06/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_06/image.png",
+        "bytes": 275164,
+        "sha256": "ab9d8dea30450cbcff5f7caeb7a90f7e5231f25841f0f4c5008f5c58405a9344",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_06/batch_receipt.json",
+        "observed_cells": [
+          "5",
+          "8",
+          "10",
+          "12",
+          "22",
+          "32",
+          "34",
+          "36",
+          "38",
+          "39",
+          "41",
+          "42",
+          "65"
+        ],
+        "source_frames_by_cell": {
+          "5": [
+            8,
+            36,
+            66,
+            97,
+            130,
+            172
+          ],
+          "8": [
+            20,
+            35,
+            74,
+            95,
+            151,
+            179
+          ],
+          "10": [
+            17,
+            43,
+            78,
+            102,
+            141,
+            179
+          ],
+          "12": [
+            14,
+            38,
+            65,
+            88,
+            112,
+            136
+          ],
+          "22": [
+            141,
+            150,
+            157,
+            165,
+            172,
+            179
+          ],
+          "32": [
+            6,
+            32,
+            54,
+            70,
+            85,
+            100
+          ],
+          "34": [
+            17,
+            33,
+            49,
+            64,
+            80,
+            96
+          ],
+          "36": [
+            20,
+            31,
+            39,
+            48,
+            58,
+            67
+          ],
+          "38": [
+            20,
+            31,
+            43,
+            54,
+            74,
+            90
+          ],
+          "39": [
+            21,
+            38,
+            52,
+            74,
+            108,
+            133
+          ],
+          "41": [
+            0,
+            10,
+            23,
+            56,
+            110,
+            160
+          ],
+          "42": [
+            18,
+            29,
+            40,
+            120,
+            164,
+            175
+          ],
+          "65": [
+            104,
+            111,
+            116,
+            122,
+            139,
+            151
+          ]
+        },
+        "source_hours_by_cell": {
+          "5": [
+            4.21856,
+            18.98352,
+            34.80312,
+            51.15004,
+            68.5516,
+            90.69904
+          ],
+          "8": [
+            10.5464,
+            18.4562,
+            39.02168,
+            50.0954,
+            79.62532,
+            94.39028
+          ],
+          "10": [
+            8.96444,
+            22.67476,
+            41.13096,
+            53.78664,
+            74.35212,
+            94.39028
+          ],
+          "12": [
+            7.38248,
+            20.03816,
+            34.2758,
+            46.40416,
+            59.05984,
+            71.71552
+          ],
+          "22": [
+            74.35212,
+            79.098,
+            82.78924,
+            87.0078,
+            90.69904,
+            94.39028
+          ],
+          "32": [
+            3.16392,
+            16.87424,
+            28.47528,
+            36.9124,
+            44.8222,
+            52.732
+          ],
+          "34": [
+            8.96444,
+            17.40156,
+            25.83868,
+            33.74848,
+            42.1856,
+            50.62272
+          ],
+          "36": [
+            10.5464,
+            16.34692,
+            20.56548,
+            25.31136,
+            30.58456,
+            35.33044
+          ],
+          "38": [
+            10.5464,
+            16.34692,
+            22.67476,
+            28.47528,
+            39.02168,
+            47.4588
+          ],
+          "39": [
+            11.07372,
+            20.03816,
+            27.42064,
+            39.02168,
+            56.95056,
+            70.13356
+          ],
+          "41": [
+            0.0,
+            5.2732,
+            12.12836,
+            29.52992,
+            58.0052,
+            84.3712
+          ],
+          "42": [
+            9.49176,
+            15.29228,
+            21.0928,
+            63.2784,
+            86.48048,
+            92.281
+          ],
+          "65": [
+            54.84128,
+            58.53252,
+            61.16912,
+            64.33304,
+            73.29748,
+            79.62532
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_07",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_07_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_07_native_identity_labels.tif",
+      "source_sha256": "d19b1a50b170c57be1ded7490748f1bad65387e1cf6f750b56879b94cdbc8613",
+      "labels_sha256": "3f4b932c0ce972f2b624aac5fbf941837cdcc03f1057f96d92605ffcc71ce75e",
+      "accepted_cells": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "29",
+        "30",
+        "35",
+        "44",
+        "45",
+        "48",
+        "50",
+        "51",
+        "55",
+        "56",
+        "57",
+        "60",
+        "66",
+        "86",
+        "87"
+      ],
+      "cycle_cells": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "27",
+        "48",
+        "51",
+        "56",
+        "87"
+      ],
+      "excluded_cycle_cells": [
+        "9",
+        "10",
+        "25",
+        "26",
+        "29",
+        "30",
+        "35",
+        "44",
+        "45",
+        "50",
+        "55",
+        "57",
+        "60",
+        "66",
+        "86"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_07/image.png",
+        "bytes": 1358528,
+        "sha256": "7378d7dc572894276adadb214a4d3c3b0ebc0d61baaa2e1e6874ba65b64267ae",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_07/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_07/video.mp4",
+        "bytes": 6806512,
+        "sha256": "94e394afd35889f7d808e7006525511f2ea43afff9b8f07b7303a88e1f9b119e",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_07/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_07/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_07/image.png",
+        "bytes": 311705,
+        "sha256": "46e7c05594bf7eaca5c1b7e8bba930ec84e5b8283f6a74e8c912a3c910a81e62",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_07/batch_receipt.json",
+        "observed_cells": [
+          "9",
+          "10",
+          "25",
+          "26",
+          "29",
+          "30",
+          "35",
+          "44",
+          "45",
+          "50",
+          "55",
+          "57",
+          "60",
+          "66",
+          "86"
+        ],
+        "source_frames_by_cell": {
+          "9": [
+            0,
+            30,
+            62,
+            92,
+            134,
+            172
+          ],
+          "10": [
+            17,
+            39,
+            63,
+            85,
+            113,
+            157
+          ],
+          "25": [
+            20,
+            69,
+            76,
+            84,
+            91,
+            99
+          ],
+          "26": [
+            0,
+            29,
+            58,
+            88,
+            117,
+            151
+          ],
+          "29": [
+            107,
+            117,
+            145,
+            159,
+            169,
+            179
+          ],
+          "30": [
+            107,
+            122,
+            135,
+            149,
+            165,
+            179
+          ],
+          "35": [
+            131,
+            140,
+            149,
+            157,
+            167,
+            175
+          ],
+          "44": [
+            0,
+            10,
+            20,
+            29,
+            39,
+            96
+          ],
+          "45": [
+            4,
+            11,
+            18,
+            25,
+            32,
+            94
+          ],
+          "50": [
+            0,
+            22,
+            69,
+            114,
+            150,
+            172
+          ],
+          "55": [
+            23,
+            36,
+            47,
+            59,
+            70,
+            82
+          ],
+          "57": [
+            5,
+            16,
+            26,
+            37,
+            60,
+            78
+          ],
+          "60": [
+            0,
+            14,
+            28,
+            42,
+            56,
+            169
+          ],
+          "66": [
+            2,
+            10,
+            18,
+            25,
+            48,
+            57
+          ],
+          "86": [
+            3,
+            51,
+            71,
+            105,
+            156,
+            179
+          ]
+        },
+        "source_hours_by_cell": {
+          "9": [
+            0.0,
+            15.8196,
+            32.69384,
+            48.51344,
+            70.66088,
+            90.69904
+          ],
+          "10": [
+            8.96444,
+            20.56548,
+            33.22116,
+            44.8222,
+            59.58716,
+            82.78924
+          ],
+          "25": [
+            10.5464,
+            36.38508,
+            40.07632,
+            44.29488,
+            47.98612,
+            52.20468
+          ],
+          "26": [
+            0.0,
+            15.29228,
+            30.58456,
+            46.40416,
+            61.69644,
+            79.62532
+          ],
+          "29": [
+            56.42324,
+            61.69644,
+            76.4614,
+            83.84388,
+            89.11708,
+            94.39028
+          ],
+          "30": [
+            56.42324,
+            64.33304,
+            71.1882,
+            78.57068,
+            87.0078,
+            94.39028
+          ],
+          "35": [
+            69.07892,
+            73.8248,
+            78.57068,
+            82.78924,
+            88.06244,
+            92.281
+          ],
+          "44": [
+            0.0,
+            5.2732,
+            10.5464,
+            15.29228,
+            20.56548,
+            50.62272
+          ],
+          "45": [
+            2.10928,
+            5.80052,
+            9.49176,
+            13.183,
+            16.87424,
+            49.56808
+          ],
+          "50": [
+            0.0,
+            11.60104,
+            36.38508,
+            60.11448,
+            79.098,
+            90.69904
+          ],
+          "55": [
+            12.12836,
+            18.98352,
+            24.78404,
+            31.11188,
+            36.9124,
+            43.24024
+          ],
+          "57": [
+            2.6366,
+            8.43712,
+            13.71032,
+            19.51084,
+            31.6392,
+            41.13096
+          ],
+          "60": [
+            0.0,
+            7.38248,
+            14.76496,
+            22.14744,
+            29.52992,
+            89.11708
+          ],
+          "66": [
+            1.05464,
+            5.2732,
+            9.49176,
+            13.183,
+            25.31136,
+            30.05724
+          ],
+          "86": [
+            1.58196,
+            26.89332,
+            37.43972,
+            55.3686,
+            82.26192,
+            94.39028
+          ]
+        }
+      }
+    },
+    {
+      "stem": "RBM3_MCG_09",
+      "source": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/inputs/RBM3_MCG_09_photons_native.ome.tif",
+      "labels": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/native_shape_motion/RBM3_MCG_09_native_identity_labels.tif",
+      "source_sha256": "f680020a29b83a55a22ed26eda6f771f12f3c4619949e60475344a74bef56c22",
+      "labels_sha256": "3be49095699a0986b5c828eefe7b9f2e5c07b9a30da8ab849bbd0bf9c9a168e3",
+      "accepted_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "29",
+        "30",
+        "34",
+        "35",
+        "38",
+        "45",
+        "48",
+        "56",
+        "57",
+        "58",
+        "59",
+        "60",
+        "63",
+        "65"
+      ],
+      "cycle_cells": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "17",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "29",
+        "34",
+        "38",
+        "58"
+      ],
+      "excluded_cycle_cells": [
+        "6",
+        "16",
+        "18",
+        "30",
+        "35",
+        "45",
+        "48",
+        "56",
+        "57",
+        "59",
+        "60",
+        "63",
+        "65"
+      ],
+      "source_frames": 180,
+      "video_frames": 180,
+      "image": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_09/image.png",
+        "bytes": 819129,
+        "sha256": "47c554ac164fbf13aeb6367c3f81187585dc5e966722076e0d38fc914087deb0",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_tight_cycle_stills/results/RBM3_MCG_09/batch_receipt.json"
+      },
+      "video": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_09/video.mp4",
+        "bytes": 8360047,
+        "sha256": "46233d341bbcf9cbc248a8f5a5b01c71b68a32c39a4227a24155a99c96cc2244",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_09/batch_receipt.json",
+        "report": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_owncell_filled_videos_small/results/RBM3_MCG_09/video_report.json",
+        "crop_basis": "own_cell",
+        "tile_size_px": 128
+      },
+      "observed_supplement": {
+        "path": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_09/image.png",
+        "bytes": 150309,
+        "sha256": "bf50c7008ae75093f96772170b67a88cb89a648de64897042e1793dc42a7cd70",
+        "receipt": "development/single_frame_mask_unet/mask_to_motion_handoff/full_frame_20260921/cell_centred_grids/a104_observed_supplement/results/RBM3_MCG_09/batch_receipt.json",
+        "observed_cells": [
+          "6",
+          "16",
+          "18",
+          "30",
+          "35",
+          "45",
+          "48",
+          "56",
+          "57",
+          "59",
+          "60",
+          "63",
+          "65"
+        ],
+        "source_frames_by_cell": {
+          "6": [
+            14,
+            60,
+            75,
+            89,
+            104,
+            118
+          ],
+          "16": [
+            3,
+            21,
+            38,
+            56,
+            73,
+            102
+          ],
+          "18": [
+            3,
+            32,
+            56,
+            79,
+            111,
+            139
+          ],
+          "30": [
+            81,
+            94,
+            116,
+            129,
+            139,
+            166
+          ],
+          "35": [
+            83,
+            98,
+            107,
+            123,
+            147,
+            169
+          ],
+          "45": [
+            111,
+            132,
+            144,
+            156,
+            167,
+            179
+          ],
+          "48": [
+            134,
+            143,
+            152,
+            161,
+            170,
+            179
+          ],
+          "56": [
+            14,
+            23,
+            48,
+            58,
+            67,
+            76
+          ],
+          "57": [
+            6,
+            18,
+            27,
+            37,
+            51,
+            76
+          ],
+          "59": [
+            0,
+            26,
+            53,
+            108,
+            139,
+            165
+          ],
+          "60": [
+            5,
+            20,
+            33,
+            45,
+            61,
+            73
+          ],
+          "63": [
+            4,
+            11,
+            18,
+            26,
+            33,
+            67
+          ],
+          "65": [
+            32,
+            49,
+            117,
+            132,
+            151,
+            172
+          ]
+        },
+        "source_hours_by_cell": {
+          "6": [
+            7.38248,
+            31.6392,
+            39.549,
+            46.93148,
+            54.84128,
+            62.22376
+          ],
+          "16": [
+            1.58196,
+            11.07372,
+            20.03816,
+            29.52992,
+            38.49436,
+            53.78664
+          ],
+          "18": [
+            1.58196,
+            16.87424,
+            29.52992,
+            41.65828,
+            58.53252,
+            73.29748
+          ],
+          "30": [
+            42.71292,
+            49.56808,
+            61.16912,
+            68.02428,
+            73.29748,
+            87.53512
+          ],
+          "35": [
+            43.76756,
+            51.67736,
+            56.42324,
+            64.86036,
+            77.51604,
+            89.11708
+          ],
+          "45": [
+            58.53252,
+            69.60624,
+            75.93408,
+            82.26192,
+            88.06244,
+            94.39028
+          ],
+          "48": [
+            70.66088,
+            75.40676,
+            80.15264,
+            84.89852,
+            89.6444,
+            94.39028
+          ],
+          "56": [
+            7.38248,
+            12.12836,
+            25.31136,
+            30.58456,
+            35.33044,
+            40.07632
+          ],
+          "57": [
+            3.16392,
+            9.49176,
+            14.23764,
+            19.51084,
+            26.89332,
+            40.07632
+          ],
+          "59": [
+            0.0,
+            13.71032,
+            27.94796,
+            56.95056,
+            73.29748,
+            87.0078
+          ],
+          "60": [
+            2.6366,
+            10.5464,
+            17.40156,
+            23.7294,
+            32.16652,
+            38.49436
+          ],
+          "63": [
+            2.10928,
+            5.80052,
+            9.49176,
+            13.71032,
+            17.40156,
+            35.33044
+          ],
+          "65": [
+            16.87424,
+            25.83868,
+            61.69644,
+            69.60624,
+            79.62532,
+            90.69904
+          ]
+        }
+      }
+    }
+  ],
+  "verification": {
+    "status": "complete",
+    "recordings": 8,
+    "cycle_stills": 8,
+    "observed_supplements": 8,
+    "full_length_videos": 8,
+    "accepted_cells": 255,
+    "cycle_cells": 144,
+    "observed_only_cells": 111,
+    "checks": "output receipt hashes, ffprobe source frame parity, six observed-mask frames per supplementary cell, calibrated bars"
+  }
+}
