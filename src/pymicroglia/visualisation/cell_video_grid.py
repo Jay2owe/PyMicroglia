@@ -23,6 +23,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     source_frame_offset: int = 0,
                     crop_basis: str = "largest_cell", crop: str = "tight",
                     crop_rectangle_px: tuple[int, int] | None = None,
+                    fill_tile: bool = True,
+                    tile_size_px: int | None = None,
                     trace_channel: int = 1,
                     max_trace_gap_h: float = 4.0,
                     missing_centre: str = "interpolate",
@@ -66,11 +68,14 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     before the largest-cell crop is sized; the default keeps every identity.
     """
     video_options = {**dict(display_options or {}), **video_options}
+    fill_tile = video_options.pop("fill_tile", fill_tile)
+    tile_size_px = video_options.pop("tile_size_px", tile_size_px)
     video_options.setdefault("scale_bar", scale_bar)
     if um_per_px is not None:
         video_options.setdefault("um_per_px", um_per_px)
     if scale_bar_um is not None:
         video_options.setdefault("scale_bar_um", scale_bar_um)
+    source_um_per_px = video_options.pop("um_per_px", None) if fill_tile else None
     crop_size_px = video_options.pop("crop_size_px", None)
     if crop_rectangle_px is not None:
         if crop_size_px is not None:
@@ -117,6 +122,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         display_raw=display_raw,
         include_identities=selected,
         crop_basis=crop_basis, crop=crop, crop_size_px=crop_size_px,
+        fill_tile=fill_tile, display_size_px=tile_size_px,
+        um_per_px=source_um_per_px,
         trace_channel=trace_channel, missing_centre=missing_centre,
         centre_smoothing_frames=centre_smoothing_frames,
         centre_deadband_fraction=centre_deadband_fraction,
@@ -165,6 +172,8 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         "crop_basis": crop_basis if crop_size_px is None else "pixels",
         "crop": crop if crop_size_px is None else None,
         "crop_size_px": list(crop_size_px) if crop_size_px is not None else None,
+        "fill_tile": bool(fill_tile),
+        "tile_size_px": tile_size_px,
         "clock": "original source frame order" if align == "start" else str(align),
         "missing_centre": missing_centre,
         "centre_smoothing_frames": centre_smoothing_frames,

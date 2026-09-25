@@ -214,6 +214,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                centre_deadband_fraction: float = 0.0,
                centre_method: str = "mask",
                fill_tile: bool = False,
+               display_size_px: int | None = None,
                frame_crop: bool = False,
                um_per_px: float | None = None,
                mask_style: str = "outline", mask_opacity: float = 0.35,
@@ -262,6 +263,12 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("outline must be true or false")
     if not isinstance(fill_tile, bool):
         raise ValueError("fill_tile must be true or false")
+    if display_size_px is not None:
+        if (isinstance(display_size_px, bool) or
+                not isinstance(display_size_px, int) or display_size_px < 1):
+            raise ValueError("display_size_px must be a positive integer")
+        if not fill_tile:
+            raise ValueError("display_size_px needs fill_tile=True")
     if not isinstance(frame_crop, bool):
         raise ValueError("frame_crop must be true or false")
     if um_per_px is not None and (not np.isfinite(float(um_per_px)) or
@@ -418,7 +425,9 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         else:
             size = _size_for(common_reach if basis == "largest_cell"
                              else tuple(required), mode)
-        display_size = common_size if fill_tile else size
+        display_size = ((display_size_px, display_size_px)
+                        if display_size_px is not None else
+                        common_size if fill_tile else size)
         sizes_for_cell = frame_sizes.get(identity)
         unavailable = {int(index): "tracked mask absent"
                        for index in range(total) if not observed[identity][index]}
@@ -510,6 +519,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         tile_options = ({"frame_overlay": frame_overlay if outline else None,
                          "unavailable_label": unavailable_label}
                         if supports_live_overlay else {})
+        if frame_crop:
+            tile_options["frame_um_per_px"] = frame_um_per_px
         sources.append(TileSource(
             key=str(identity), name=f"{identity_prefix} {identity}",
             source_path=display_path, open_series=opener, provenance=provenance,

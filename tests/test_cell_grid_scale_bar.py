@@ -85,3 +85,14 @@ def test_own_cell_crops_fill_equal_grid_slots_without_thickening_outline(tmp_pat
         tile_label="none", lut="grays", display_range=(0, 200))
     assert report["cell_grid"]["fill_tile"] is True
     assert report["scale_bars"][0]["um_per_px"] < report["scale_bars"][1]["um_per_px"]
+    if encode.available():
+        movie = cell_video_grid(
+            raw, labels, output_dir=tmp_path / "videos",
+            crop_basis="own_cell", tile_size_px=128, frame_interval_h=1,
+            um_per_px=2.0, fps=4, channels=1, tile_label="none",
+            lut="grays", display_range=(0, 200))
+        assert movie["cell_grid"]["fill_tile"] is True
+        assert movie["cell_grid"]["tile_size_px"] == 128
+        assert all(one["provenance"]["display_size_px"] == [128, 128]
+                   for one in movie["tile_sources"])
+        assert movie["scale_bars"][0]["um_per_px"] < movie["scale_bars"][1]["um_per_px"]

@@ -3111,6 +3111,8 @@
         "crop_basis",
         "crop",
         "crop_rectangle_px",
+        "fill_tile",
+        "tile_size_px",
         "trace_channel",
         "max_trace_gap_h",
         "significant_period_only",
@@ -3145,6 +3147,8 @@
         "crop_basis": "largest_cell",
         "crop": "tight",
         "crop_rectangle_px": null,
+        "fill_tile": true,
+        "tile_size_px": null,
         "trace_channel": 1,
         "max_trace_gap_h": 4.0,
         "significant_period_only": false,
@@ -3338,6 +3342,18 @@
           "required": false,
           "description": "Settings forwarded to Auto-Organotypic's existing image or video grid."
         },
+        "fill_tile": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Enlarge each fixed own-cell video crop to fill the common grid slot, keeping a one-pixel outline and recalibrating its scale bar. False retains native-pixel padding."
+        },
+        "tile_size_px": {
+          "type": "int",
+          "units": "display pixels",
+          "required": false,
+          "description": "Square output size for each filled video tile. None uses the largest native crop size; a smaller value keeps large grids compact while preserving the full cell and calibrated bar."
+        },
         "centre_method": {
           "type": "str",
           "units": "-",
@@ -3363,7 +3379,7 @@
           "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."
         }
       },
-      "method_version": "2026-09-24-cell-video-grid-v6",
+      "method_version": "2026-09-25-cell-video-grid-v8",
       "source": []
     },
     {

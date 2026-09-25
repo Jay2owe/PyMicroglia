@@ -40,6 +40,9 @@ def main() -> None:
     parser.add_argument("--video-centre-smoothing-frames", type=int, default=0)
     parser.add_argument("--video-centre-deadband-fraction", type=float, default=0)
     parser.add_argument("--video-crop-basis", default="largest_cell")
+    parser.add_argument("--no-video-fill-tile", dest="video_fill_tile",
+                        action="store_false", default=True)
+    parser.add_argument("--video-tile-size-px", type=int)
     parser.add_argument("--well-label-position", default="top-left")
     parser.add_argument("--crop", default="tight")
     parser.add_argument("--counts-gain", type=float, required=True)
@@ -74,6 +77,8 @@ def main() -> None:
               "video_centre_smoothing_frames": args.video_centre_smoothing_frames,
               "video_centre_deadband_fraction": args.video_centre_deadband_fraction,
               "video_crop_basis": args.video_crop_basis,
+              "video_fill_tile": args.video_fill_tile,
+              "video_tile_size_px": args.video_tile_size_px,
               "well_label_position": args.well_label_position,
               "crop": args.crop,
               "counts_gain": args.counts_gain,
@@ -118,6 +123,8 @@ def main() -> None:
         video = cell_video_grid(
             args.raw, args.labels, output_name="video.mp4",
             crop_basis=args.video_crop_basis, crop=args.crop,
+            fill_tile=args.video_fill_tile,
+            tile_size_px=args.video_tile_size_px,
             centre_method=args.video_centre_method,
             centre_smoothing_frames=args.video_centre_smoothing_frames,
             centre_deadband_fraction=args.video_centre_deadband_fraction,

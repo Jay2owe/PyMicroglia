@@ -99,8 +99,12 @@ individual tight crop to fill the common grid slot. By default, `frame_crop`
 fits each selected frame to that frame's observed mask; set it to `False` to
 keep one crop size for that cell across the recording. The outline is drawn
 at its requested width after enlargement, and each frame's scale bar reflects
-its own zoom. Set `fill_tile=False` to preserve unscaled source pixels and
-their padding. Video crops keep their fixed native-pixel size.
+its own zoom. Video crops keep one size per cell across time; with
+`crop_basis="own_cell"`, `fill_tile=True` enlarges that stable crop to its
+grid slot and recalibrates its bar. `tile_size_px=128` sets a compact square
+video tile when one unusually large mask would make the entire grid huge;
+it still shows each cell's full crop. Set `fill_tile=False` to retain unscaled
+source pixels and their padding in either grid.
 Cell names are drawn over the still tiles at the top left by default, like
 the video grid; `well_label_position="left"` restores an outside row strip.
 Use `exclude_unavailable_cycles=True` to omit black rows when no qualifying
