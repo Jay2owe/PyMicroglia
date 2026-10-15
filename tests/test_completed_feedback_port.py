@@ -13,6 +13,11 @@ from pymicroglia.tracking import completed_feedback as corrections
 from pymicroglia.tracking import engine
 
 
+def test_public_release_rejects_unverified_disk_backed_route(tmp_path):
+    with pytest.raises(ValueError,match='experimental and unavailable'):
+        engine.run(tmp_path/'unused.json',tmp_path,bounded_memory=True)
+
+
 def test_complete_recipe_and_all_sources_are_packaged():
     archive = Path(corrections.__file__).parent/'data/completed_feedback_engine.zip'
     with zipfile.ZipFile(archive) as z:

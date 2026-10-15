@@ -146,6 +146,10 @@ def run(inputs, folder, *, stem: str | None = None,
     before retry; Motion's accepted-history checkpoints are carried forward.
     Inputs, settings, software and producer code must match the saved run.
     """
+    if bounded_memory:
+        raise ValueError(
+            'Disk-backed tracking is experimental and unavailable in this release. '
+            'Use bounded_memory=False for the verified accepted correction pipeline.')
     if resume and not bounded_memory:
         raise ValueError('Motion checkpoint resume requires bounded_memory=True')
     payload = json.loads(Path(inputs).read_text(encoding="utf-8"))

@@ -22,7 +22,7 @@ Prepared recording and its acquisition settings
     -> PyMicroglia measurements and review
 ```
 
-Both normal and bounded-memory tracking routes use this sequence. The final
+The standard tracking route uses this sequence. The public 0.4.0 release disables the experimental disk-backed option because its dependency helper is unpublished and its native evidence comparison is unresolved. The final
 tracking contract points to `m23_completed_feedback`, while the native output
 remains an immutable parent under `m22_accepted_history`. The package never
 falls back to native-only labels when the correction sequence fails.
@@ -60,8 +60,7 @@ Validation has three distinct scopes:
   tracker from raw acquisition data.
 
 Unchanged accepted review images need no duplicate TIFF. Failed comparisons
-remain diagnostics and do not replace accepted study outputs. No public package
-release or upload is part of this local integration.
+remain diagnostics and do not replace accepted study outputs. The 0.4.0 public release carries this accepted integration.
 
 ## Completed verification (12 October 2026)
 

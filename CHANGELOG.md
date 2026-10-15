@@ -4,7 +4,7 @@
 
 - Integrate the complete accepted Motion correction sequence and exact memory reductions.
 - Ordinary full-run peak RAM was 3.10 GiB versus 3.45 GiB; 791 scientific files and 114 correction checkpoints matched.
-- Disk-backed native execution retains an unresolved exact evidence comparison; it is not the verified memory result.
+- Disable the experimental disk-backed option in this public release: its dependency helper is unpublished and its exact native evidence comparison remains unresolved.
 
 
 ## 0.3.0 - 2026-09-23
