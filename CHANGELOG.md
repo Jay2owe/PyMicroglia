@@ -2,6 +2,8 @@
 
 ## 0.4.0 - 2026-10-15
 
+- Require the published Circadian Workbench 0.15 API used by the existing rhythm adapter.
+
 - Integrate the complete accepted Motion correction sequence and exact memory reductions.
 - Ordinary full-run peak RAM was 3.10 GiB versus 3.45 GiB; 791 scientific files and 114 correction checkpoints matched.
 - Disable the experimental disk-backed option in this public release: its dependency helper is unpublished and its exact native evidence comparison remains unresolved.
