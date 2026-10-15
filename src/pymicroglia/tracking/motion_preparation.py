@@ -194,7 +194,8 @@ def connected_neutral_tracks(raw: np.ndarray, ratio: np.ndarray,
 
 
 def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
-                   window: int = 10) -> tuple[np.ndarray, np.ndarray, set[int]]:
+                   window: int = 10, *, output_arrays=None
+                   ) -> tuple[np.ndarray, np.ndarray, set[int]]:
     """Rolling connected breadcrumb paths; current pixels are newest, old ones fade."""
     if component_tracks.ndim != 3:
         raise ValueError("component_tracks must have shape (T,Y,X)")
@@ -202,8 +203,20 @@ def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
     moving = set(table.loc[table["motion_qualified"], "track"].astype(int))
     eligible = {int(track) for track, length in lengths.items()
                 if int(length) >= 2 and int(track) in moving}
-    labels = np.zeros_like(component_tracks, np.uint16)
-    ages = np.zeros(component_tracks.shape, np.uint8)
+    if output_arrays is None:
+        labels = np.zeros_like(component_tracks, np.uint16)
+        ages = np.zeros(component_tracks.shape, np.uint8)
+    else:
+        labels, ages = output_arrays
+        if labels.shape != component_tracks.shape or ages.shape != component_tracks.shape \
+                or labels.dtype != np.uint16 or ages.dtype != np.uint8:
+            raise ValueError("trail output arrays must match the input shape and uint16/uint8 dtypes")
+        for t in range(len(labels)):
+            labels[t] = 0
+            ages[t] = 0
+            if (t+1)%16==0:
+                for buffer in (labels,ages):
+                    if hasattr(buffer,'flush'):buffer.flush()
     records = {int(track): group.sort_values("t")
                for track, group in table[table["track"].isin(eligible)].groupby("track")}
 
@@ -232,6 +245,9 @@ def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
                 labels[t, yy[replace], xx[replace]] = int(track)
                 ages[t, yy[replace], xx[replace]] = int(age)
                 best_age[yy[replace], xx[replace]] = int(age)
+        if output_arrays is not None and (t+1)%16==0:
+            for buffer in (labels,ages):
+                if hasattr(buffer,'flush'):buffer.flush()
     return labels, ages, eligible
 
 

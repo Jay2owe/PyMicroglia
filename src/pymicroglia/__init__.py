@@ -19,7 +19,7 @@ from __future__ import annotations
 #: 0.2.0 is the release in which the longitudinal machinery left. Anything
 #: below it carries its own registration, cosmic-ray rule and artefact
 #: store, so the two cannot be mixed in one environment.
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 #: The project this package's artefacts belong to, claimed before anything can
 #: reach the store. The store moved to Auto-Organotypic on 2026-08-24 along with the

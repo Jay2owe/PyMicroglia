@@ -3,8 +3,8 @@
 ## Scope and baseline
 
 The package is `PyMicroglia`; its version is read dynamically from the package.
-The release version is `0.3.0` and the source identity is the commit targeted by
-the annotated `v0.3.0` tag on `main`.
+The release version is `0.4.0` and the source identity is the commit targeted by
+the annotated `v0.4.0` tag on the isolated tracking release branch.
 
 ## Artifacts and destinations
 
@@ -23,3 +23,7 @@ The existing audit calls GitHub the intended release target, but the live
 workflow clearly publishes PyPI. Both channels are therefore required.
 
 No EXE or Zenodo route is documented. Do not create one implicitly.
+
+<!-- deploy-required-channels: ["github", "pypi"] -->
+
+Release 0.4.0 publishes the accepted tracking integration, its memory improvements, and supporting tests/documentation from an isolated release branch. Unrelated working-tree changes are excluded. The measured exact full-run claim covers ordinary execution. Disk-backed execution has unresolved native floating-point evidence differences and is not certified byte-identical. Publication requires a clean source commit, wheel/sdist checks, focused tracking tests, installed-wheel core/CLI/documentation smoke checks, and dependency resolution for supported extras.

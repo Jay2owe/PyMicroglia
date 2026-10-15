@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - 2026-10-15
+
+- Integrate the complete accepted Motion correction sequence and exact memory reductions.
+- Ordinary full-run peak RAM was 3.10 GiB versus 3.45 GiB; 791 scientific files and 114 correction checkpoints matched.
+- Disk-backed native execution retains an unresolved exact evidence comparison; it is not the verified memory result.
+
+
 ## 0.3.0 - 2026-09-23
 
 - Add a post-Motion eligibility stage to `auto_microglia`. It defaults to

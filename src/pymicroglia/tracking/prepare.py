@@ -16,6 +16,7 @@ TARGET_MEDIAN = 2334.0
 
 
 def sha256(path: Path) -> str:
+    path = Path(path)
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1 << 20), b""):

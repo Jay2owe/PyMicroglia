@@ -35,8 +35,8 @@ ROLES: tuple[str, ...] = ("labels", "raw", "unclaimed", "provenance", "evidence"
 REQUIRED: tuple[str, ...] = ("labels", "raw")
 
 #: Where the Motion tracker writes each file, relative to its accepted run
-#: folder (``m21_stationary_reconciliation/<run>/`` or
-#: ``m22_accepted_history/<run>/``). ``raw`` is absent on purpose: the
+#: folder (including ``m22_accepted_history/<run>/`` and the complete
+#: ``m23_completed_feedback/<run>/``). ``raw`` is absent on purpose: the
 #: registered stack is the tracker's *input*, pinned in ``motion_inputs.json``
 #: and never copied, so it lives where the handoff says it does.
 MOTION_OUTPUTS: dict[str, str] = {
@@ -291,8 +291,8 @@ class TrackingResult:
         """A finished Motion run folder, mapped onto the contract.
 
         ``folder`` is the accepted run
-        (``m21_stationary_reconciliation/<run>/`` or
-        ``m22_accepted_history/<run>/``): the labels, the unclaimed ledger and
+        (including ``m22_accepted_history/<run>/`` and
+        ``m23_completed_feedback/<run>/``): the labels, the unclaimed ledger and
         the provenance sidecar are read from its ``out/``, the motion evidence
         from its ``qc/`` when the run holds one, and the decision tables from
         ``mid/accepted_history``. The registered stack is the tracker's input
