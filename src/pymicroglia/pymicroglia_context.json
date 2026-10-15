@@ -2,7 +2,7 @@
   "schema_version": 1,
   "package": "pymicroglia",
   "distribution": "PyMicroglia",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "reader": {
     "purpose": "Read-only package usage orientation",
     "python": "from pymicroglia import context; context.read(format='json')",
