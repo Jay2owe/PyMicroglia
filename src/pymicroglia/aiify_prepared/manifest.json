@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "kind": "aiify.prepared",
-  "aiify_version": "0.4.2",
+  "aiify_version": "0.5.0",
   "app": "PyMicroglia",
   "target": "PyMicroglia",
   "source_root": ".",
-  "source_hash": "775d003cb8cf26a9fbd592f9a300e9576129fa948deeeaeb18207c1bca70412b",
+  "source_hash": "ba8797788f8d3161f987150f54771af059323c504a16b0302858595a697da977",
   "analysis": "Existing native registries and the shared bridge perform tasks. This reviewed read-only shortcut reduces workspace discovery calls while retaining live job managers, pinned context and specialist action boundaries.",
   "actions": [
     {
@@ -26,7 +26,7 @@
   "provider": "developer-reviewed",
   "model": null,
   "effort": null,
-  "built": "2026-10-06T21:08:17.270632+00:00",
+  "built": "2026-10-21T20:14:46Z",
   "artifacts": {
     "actions.py": "c7094f2e8a48ca491e0829e4bdffec82ac39b38ebeaa1333b28bb0f35cb4aba8",
     "test_actions.py": "c758ca0c31ab2d130fd09609b88c8bf7e2b7b25a45f1996ca9fccdacb38392b0",

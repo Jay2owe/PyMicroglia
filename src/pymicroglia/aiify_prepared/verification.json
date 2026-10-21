@@ -16,19 +16,25 @@
     "guide.md": "da8822ac3eddb40db685e51f328b25809e465287151a8af4416c173ad4d2921b",
     "TEST.md": "4d437cf1f6fb936adb0304b0c33d171140a34e6478c02bddabf885addf497ebd"
   },
-  "manifest_hash": "294f70ceeb56937da4b3d87696f9b6b1786d09c1cb3d8ec39a651c366dbe7f2c",
+  "manifest_hash": "22469b6d201dad6eb777de77723de3be0ea838593f3abcc163cfe75a95495b82",
   "command": [
-    "python",
+    "C:\\Users\\Owner\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
     "-m",
     "pytest",
-    "test_actions.py",
+    "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\src\\pymicroglia\\aiify_prepared\\test_actions.py",
     "-q",
+    "--confcutdir",
+    "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\src\\pymicroglia\\aiify_prepared",
     "--junitxml",
-    "<temporary-report>"
+    "C:\\Users\\Owner\\AppData\\Local\\Temp\\aiify-verify-m9yrzy7i\\tests.xml",
+    "-o",
+    "addopts=",
+    "-o",
+    "junit_family=xunit2"
   ],
   "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
   "returncode": 0,
-  "elapsed_s": 103.281,
-  "verified": "2026-10-06T21:11:49Z",
-  "output": "..                                                                       [100%]\n2 passed in 93.94s (0:01:33)\n"
+  "elapsed_s": 31.453,
+  "verified": "2026-10-21T20:15:20Z",
+  "output": "..                                                                       [100%]\n2 passed in 23.76s\n"
 }
