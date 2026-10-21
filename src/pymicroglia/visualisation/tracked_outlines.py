@@ -36,10 +36,13 @@ def _palette(values: Sequence[Sequence[int]] | str) -> tuple[tuple[int, int, int
 
 def overlay(labels, *, width_px: int = 1, opacity: float = 1.0,
             colours: Sequence[Sequence[int]] | str = "accepted",
-            frame_index: int | None = None) -> OutlineOverlay:
+            frame_index: int | None = None, cell_filter=None,
+            filter_grey_colour="#aaaaaa") -> OutlineOverlay:
     """Resolve tracked labels into Auto-Organotypic's shared outline painter."""
     path = Path(labels)
     values = np.asarray(tifffile.imread(path))
+    from ..cell_display import resolve
+    label_colours, receipt = resolve(cell_filter, np.unique(values), grey_colour=filter_grey_colour)
     if frame_index is not None:
         if values.ndim != 3 or not 0 <= int(frame_index) < values.shape[0]:
             raise ValueError("frame_index is outside the tracked label stack")
@@ -48,6 +51,12 @@ def overlay(labels, *, width_px: int = 1, opacity: float = 1.0,
     if not 0 <= alpha <= 1:
         raise ValueError("outline_opacity must be between 0 and 1")
     palette = _palette(colours)
+    extras = {}
+    if receipt is not None:
+        from inspect import signature
+        if "label_colours" not in signature(OutlineOverlay).parameters:
+            raise RuntimeError("Grey cell filters require an Auto-Organotypic renderer with per-identity colour overrides")
+        extras = {"label_colours": label_colours, "label_colour_evidence": receipt}
     return OutlineOverlay(
         labels=values,
         boundary=outer_boundaries(values, width_px=width_px),
@@ -59,4 +68,5 @@ def overlay(labels, *, width_px: int = 1, opacity: float = 1.0,
         opacity=alpha,
         colour_by_label=True,
         palette=palette,
+        **extras,
     )

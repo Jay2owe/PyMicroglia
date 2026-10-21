@@ -33,10 +33,14 @@ def build() -> Path:
     config = json.loads(entries["config.json"])
     config.update(dataset="Tracked recording", stems=[],
                   registered_input_dir=".", motion_input_dir=".",
-                  pinned_files={})
+                  pinned_files={}, source_frame_offset=0)
+    # Acquisition timing is supplied by preparation, never copied from VID95.
+    config.pop("frame_interval_min", None)
     entries["config.json"] = (json.dumps(config, indent=2) + "\n").encode()
     provenance = {
         "source": "Motion accepted run_base engine snapshot",
+        "accepted_engine": "2026-10-12-native-speed59-recording-audit192",
+        "scope": "Native run_base with accepted execution contexts; completed-feedback study replay is not the native engine",
         "files_sha256": {name: hashlib.sha256(data).hexdigest()
                          for name, data in entries.items()},
     }

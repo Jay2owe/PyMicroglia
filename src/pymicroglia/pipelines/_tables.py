@@ -56,9 +56,33 @@ def read(path):
             rows=csv.reader(stream);header=next(rows)
             if header!=contract['columns']:raise ValueError('Saved pipeline table columns changed')
             decoded=[]
+            decode = _cell_decoder()
             for row in rows:
                 if len(row)!=len(header):raise ValueError('Saved pipeline table row width changed')
-                decoded.append([json.loads(cell) for cell in row])
+                decoded.append([decode(cell) for cell in row])
         frame=pd.DataFrame(decoded,columns=header);types=contract['dtypes']
     for column,dtype in types.items():frame[column]=frame[column].astype(dtype)
     return frame
+
+
+def _cell_decoder():
+    """Reuse repeated scalar cells within one read, with bounded retained memory.
+
+    Nested values always decode independently: callers may mutate those values.
+    No decoded data survives the read, so edits to a saved table remain visible.
+    """
+    scalars = {}
+    missing = object()
+    loads = json.loads
+
+    def decode(cell):
+        if len(cell) > 128:
+            return loads(cell)
+        value = scalars.get(cell, missing)
+        if value is missing:
+            value = loads(cell)
+            if len(scalars) < 4096 and not isinstance(value, (list, dict)):
+                scalars[cell] = value
+        return value
+
+    return decode

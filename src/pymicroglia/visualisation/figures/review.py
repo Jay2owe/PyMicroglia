@@ -6,12 +6,22 @@ from ..panels import cell_review
 from ..panels import null_channels
 from ._shared_options import circadian_options
 from ..panels import method_audit
+from ..panels import comparison
+from ...figure_tables.comparison import VIEWS
+from ...figure_tables.method_audit import DEFAULT_DETRENDS
+
+figure(Figure('cell_group_comparison', 'Cell and group comparison', 'review',
+    views=tuple(View(key, comparison.draw, title=label, block=True) for key, label in VIEWS.items()),
+    reads=(Table('cell_frame'), Table('statistics', optional=True, scope='run')),
+    prepare='pymicroglia.figure_tables.comparison:prepare',
+    options=(Option('comparison_settings', {}), Option('comparison_conditions', []), Option('comparison_recordings', [])),
+    grammar='distribution', claim='Full saved cell summaries and explicitly assigned recording/sample groups'))
 
 figure(Figure('period_method_audit','Period-method audit','review',
     views=(View('method_grid',method_audit.grid,block=True),),reads=(Table('cell_frame'),),
     prepare='pymicroglia.figure_tables.method_audit:prepare',purpose='review',refits=True,
-    options=(Option('identity',None),Option('cells','1'),Option('metrics',['corrected_mean']),Option('hour_ticks',None),
-             Option('median_window_points',3),Option('detrend_methods',['linear','robust_linear','first_difference','poly3','poly6','baseline','amp_baseline']),
+    options=(Option('identity',None),Option('cells','1'),Option('metrics',['integrated_density_mean3']),Option('hour_ticks',None),
+             Option('median_window_points',None),Option('input_filters',None),Option('detrend_methods',list(DEFAULT_DETRENDS)),
              Option('period_methods',['lomb','ejtk','fft_nlls','mesa']),*circadian_options())))
 
 figure(Figure('null_channel_phase_test','Tracker uncertainty channels through the selected rhythm analysis','review',
@@ -50,4 +60,4 @@ figure(Figure('cells_on_screen','Cells on screen, persistence and lifespan','rev
 from ..panels import report_card
 from ._declare import Input
 from ._shared_options import circadian_options
-figure(Figure('cell_report_card','Cell image and measurement report card','review',views=(View('tiles',report_card.tiles,block=True,needs=('labels','raw')),View('traces',report_card.traces,block=True)),reads=(Table('cell_frame'),Table('rhythms'),Input('labels'),Input('raw')),prepare='pymicroglia.figure_tables.report_card:prepare',options=(Option('identity',44),Option('metrics',['corrected_mean', 'area_px', 'turnover_index']),Option('images',10),Option('image_hours',[]),Option('cell_lut','dluc_purple'),Option('image_filter','auto-organotypic'),Option('display_black_percentile',50.0),Option('display_white_percentile',99.8),Option('display_range_scope','stack'),Option('display_gamma',0.7),Option('display_gain',6.0),Option('display_spatial_sigma',1.0),Option('display_pool_px',4.0),Option('display_sharpness',3.0),Option('display_noise_multiple',1.0),Option('display_pad_frames',64),Option('trace_luts',[]),Option('trace_layout','stack'),Option('trace_view','raw'),Option('outline','outline'),Option('fit',''),Option('descriptive_cosinor',False,'Draw an explicitly requested descriptive cosine at the selected estimated period; it supplies no rhythm verdict.'),Option('hour_ticks',None),)+circadian_options(),refits=True,layout='column',purpose='review'))
+figure(Figure('cell_report_card','Cell image and measurement report card','review',views=(View('tiles',report_card.tiles,block=True,needs=('labels','raw')),View('traces',report_card.traces,block=True)),reads=(Table('cell_frame'),Table('rhythms'),Input('labels'),Input('raw')),prepare='pymicroglia.figure_tables.report_card:prepare',options=(Option('identity',44),Option('metrics',['integrated_density_mean3', 'area_px', 'turnover_index']),Option('images',10),Option('image_hours',[]),Option('cell_lut','dluc_purple'),Option('image_filter','auto-organotypic'),Option('display_black_percentile',50.0),Option('display_white_percentile',99.8),Option('display_range_scope','stack'),Option('display_gamma',0.7),Option('display_gain',6.0),Option('display_spatial_sigma',1.0),Option('display_pool_px',4.0),Option('display_sharpness',3.0),Option('display_noise_multiple',1.0),Option('display_pad_frames',64),Option('trace_luts',[]),Option('trace_layout','stack'),Option('trace_view','raw'),Option('outline','outline'),Option('fit',''),Option('descriptive_cosinor',False,'Draw an explicitly requested descriptive cosine at the selected estimated period; it supplies no rhythm verdict.'),Option('hour_ticks',None),)+circadian_options(),refits=True,layout='column',purpose='review'))

@@ -43,6 +43,27 @@ def _live_params(name: str) -> list[dict[str, Any]]:
     live = live_defaults(name)
     choices = live_choices(name)
     rows = catalogue.action_params(name)
+    if name in {'cell_analysis_grid', 'cell_grid'}:
+        from . import workbench
+        from .figure_tables.cell_grid import catalogue as grid_catalogue, PRIMARY_OPTIONS
+        from .figure_tables.cell_grid_inputs import preprocessing_contract
+        from .figure_tables.grid_presentation import contract as presentation_contract
+        entries = grid_catalogue() if name == 'cell_grid' else workbench.cell_analysis_catalogue()
+        for row in rows:
+            row['grid_primary_order'] = PRIMARY_OPTIONS.index(row['name']) if row['name'] in PRIMARY_OPTIONS else None
+            if row['name'] == 'analysis':
+                row['choices'] = list(entries)
+                row['choice_labels'] = {key: entry['title'] + (' (numeric)' if entry['action'] == 'wavelet_spectrum' else '')
+                                        for key, entry in entries.items()}
+                row['analysis_entries'] = entries
+            if row['name'] == 'preprocessing':
+                row['properties'] = preprocessing_contract()
+            if row['name'] == 'grid_presentation':
+                row['properties'] = presentation_contract()
+            if row['name'] == 'analysis_views':
+                row['item_choices'] = [key for key, entry in entries.items() if entry['action'] != 'trace']
+                row['choice_labels'] = {key: entry['title'] for key, entry in entries.items()}
+        rows.sort(key=lambda row: row['grid_primary_order'] if row['grid_primary_order'] is not None else len(PRIMARY_OPTIONS))
     if name == "measure":
         from .measure import _rhythm_option_contract
         for row in rows:
@@ -115,7 +136,14 @@ def describe(action: str | None = None) -> dict[str, Any]:
 
     header = {"ok": True, "project": "pymicroglia", "version": __version__}
     if action is None:
-        return {**header, "actions": [_entry(name) for name in REGISTRY.names()]}
+        # Several descriptions query the same Workbench method catalogue. Share
+        # its existing request-scoped provenance capture instead of hashing the
+        # installed scientific environment separately for every menu. The outer
+        # session still verifies that environment on completion; nothing persists
+        # into the next request and no live choices/defaults are cached.
+        from .workbench import analysis_session
+        with analysis_session():
+            return {**header, "actions": [_entry(name) for name in REGISTRY.names()]}
     return {**header, **_entry(action)}
 
 

@@ -1,38 +1,18 @@
-"""Auto-Organotypic's chain, pointed at microglia instead of at an SCN.
+"""Auto-Organotypic's chain with microglia segmentation and single-cell traces.
 
-One command from the instrument to identified cells. It reimplements none of
-that chain: it calls :func:`auto_organotypic.pipeline.run_pipeline` and passes
-every keyword through, so a stage that package gains, a parameter it adds and a
-default it fixes all arrive here with no edit in this file. :func:`differences`
-is the complete list of what this pipeline decides differently, and the tests
-assert that list is complete.
+Every upstream keyword is passed through. ``differences`` lists the defaults
+this package changes; the tests check that list against the live chain.
 
-Three things are not the same as an SCN slice, and they are the whole of it.
+SCN outlining and its dependent regional analysis are off by default because
+microglia recordings need not contain an SCN. ``outline=True`` restores them.
 
-**There may be no SCN to outline.** The chain finds a two-lobe outline, orients
-it, crops a square around it and traces the regions of that outline. These
-recordings often contain no such structure, so ``outline`` and the two stages
-that read what it wrote are skipped by default. ``outline=True`` brings the
-whole SCN half back unchanged, because it was never removed.
+The base mask supplies Motion's inputs. Motion fixes the identity history;
+an optional independent refiner then changes downstream mask shapes. Original
+unmasked photons supply the measurements. Eligibility selects analysis and
+visual populations separately and never feeds back into tracking.
 
-**The regions are cells, and the mask is what finds them.** Skipping the outline
-does not lose the trace: ``region_trace.run`` takes ``labels=``, so the same
-maintained engine -- cosmic rays, the instrumental control, every detrend, the
-rhythm verdict -- runs here on cell labels instead of outline lobes. This is the
-one place the order differs from :mod:`.dluc_single_cell`: there the mask is a
-branch off a finished measurement, because the accepted seedless detector had
-already found the cells, while here it *is* the cell finder, and so a step
-before the measurement rather than a branch after it. That detector is not used
-here -- it needs a 14 hour window and keeps only cells that hold still, which
-excludes exactly the microglia this project is about -- and is untouched where
-it can be used.
-
-**Identity tracking follows the mask.** The mask says which pixels are cell in
-one exposure and links nothing across frames. This pipeline prepares Motion's
-six inputs, runs its frozen tracking engine automatically, then measures the
-accepted labels against original unmasked photons. A separate eligibility
-stage decides which unchanged identities reach analysis, videos and still
-images; it never feeds back into tracking.
+Still grids, movies and linked interactive reviews are display branches.
+They do not assign identities or smooth the measurement pixels.
 """
 
 from __future__ import annotations
@@ -47,17 +27,21 @@ from ..review import Review
 from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
                read_manifest, run_folder, slug, write_manifest)
 from . import motion_handoff as _motion
+from ._auto_microglia_contracts import (
+    _registry, _the_stages_we_turn_off_still_exist, _the_mask_feeds_the_measurement,
+)
 from ._auto_microglia_support import (
     _measure_tracked, _eligible_tracks, _tracked_videos, _tracked_images,
     _cell_grids, _shared_cell_periods, _validate_cell_grid_options,
     _mask_every, _measure_every, _small, _Registered,
+    _refine_tracking, _measure_gaps,
 )
 
 __all__ = ["METHOD_VERSION", "PIPELINE", "STAGES", "AO_STAGES", "NOT_OURS",
            "MASK_STAGE", "differences", "register", "run"]
 
 PIPELINE = "auto_microglia"
-METHOD_VERSION = "2026-09-24-auto-microglia-cell-grids-v5"
+METHOD_VERSION = "2026-10-12-auto-microglia-R218-complete-motion-v5"
 
 #: Auto-Organotypic's stages this pipeline leaves out by default, and why. Each
 #: is a *default*, not a removal: the matching keyword turns it back on.
@@ -110,17 +94,21 @@ AO_STAGES: tuple[str, ...] = ("acquire", "index", "trim_before_crop",
 #: chain any more -- it is a stage *of* the chain, registered into it after
 #: ``split``, so that is where it is listed.
 OURS: tuple[str, ...] = ("cell_masks", "cells", "motion_inputs", "motion",
-                         "eligibility", "tracked_cell_period_selection",
+                         "eligibility", "tracked_outline_refinement",
+                         "tracked_cell_period_selection",
                          "tracked_cell_grid",
-                         "tracked_cell_video_grid", "tracked_measurement", "tracked_video",
+                         "tracked_cell_video_grid", "tracked_measurement",
+                         "tracked_gap_measurement", "tracked_video",
                          "tracked_image")
 _AFTER = AO_STAGES.index("split") + 1
 STAGES: tuple[str, ...] = (
     AO_STAGES[:_AFTER] + ("cell_masks",) + AO_STAGES[_AFTER:]
     + ("cells", "motion_inputs", "motion", "eligibility",
+       "tracked_outline_refinement",
        "tracked_cell_period_selection",
        "tracked_cell_grid", "tracked_cell_video_grid",
-       "tracked_measurement", "tracked_video", "tracked_image"))
+       "tracked_measurement", "tracked_gap_measurement",
+       "tracked_video", "tracked_image"))
 
 
 def differences() -> list[dict[str, Any]]:
@@ -157,6 +145,14 @@ def differences() -> list[dict[str, Any]]:
          "why": "final Motion identities are audited before downstream use; "
                 "the default excludes gaps over four hours or at least half "
                 "missing data from analysis only, without changing tracking"},
+        {"setting": "tracked_outline_refinement",
+         "auto_organotypic": None, "here": True,
+         "why": "the single-frame gate refines measured outlines after seven-frame "
+                "Motion identities are frozen"},
+        {"setting": "tracked_gap_measurement",
+         "auto_organotypic": None, "here": True,
+         "why": "stable internal gaps of at most three native frames receive "
+                "separately marked photon measurements without new identities"},
         {"setting": "tracked_cell_period_selection",
          "auto_organotypic": None, "here": True,
          "why": "when a cell grid requests significant periods, the complete "
@@ -316,6 +312,13 @@ def run(folder=None, *,
         eligibility_max_missing_frames: int | None = None,
         eligibility_max_missing_fraction: float | None = 0.5,
         eligibility_exclude_from: str | Sequence[str] = ("analysis",),
+        tracked_outline_refinement: bool = True,
+        tracked_refinement_method: str = "single_frame",
+        tracked_refinement_weights: str | Path | None = None,
+        tracked_refinement_options: Mapping[str, Any] | None = None,
+        tracked_refinement_gated_masks: Mapping[str, str] | None = None,
+        tracked_gap_measurement: bool = True,
+        tracked_gap_max_frames: int = 3,
         tracked_measurement: bool = True,
         tracked_measure_modules: Sequence[str] = ("intensity",),
         tracked_cell_grid: bool = True,
@@ -329,6 +332,8 @@ def run(folder=None, *,
         tracked_image_options: Mapping[str, Any] | None = None,
         # --- the mask, when it runs
         mask_weights=None, mask_cut: float | None = None,
+        mask_method: str = "unet",
+        mask_method_options: Mapping[str, Any] | None = None,
         mask_window_h: float | None = None, mask_threads: int = 0,
         # --- the cell measurement, when it runs
         cell_options: Mapping[str, Any] | None = None,
@@ -389,6 +394,24 @@ def run(folder=None, *,
     own evidence. ``tracked_cell_period_recipe`` supplies one exact recipe to
     both cell grids when their significant-period filter is requested.
 
+    ``tracked_outline_refinement=True`` (the default) keeps Motion's seven-frame
+    inputs and identities fixed. It applies the gated single-frame mask only to
+    downstream label views and measurement. ``tracked_gap_measurement=True``
+    writes separate, marked photon measurements for stable internal gaps of at
+    most ``tracked_gap_max_frames`` native frames (three by default).
+
+    ``mask_method`` and ``mask_weights`` select the base detector. The separate
+    ``tracked_refinement_method``, ``tracked_refinement_weights`` and
+    ``tracked_refinement_options`` select the outline refiner; none inherit
+    base-model settings. Use ``tracked_refinement_method="off"`` (or
+    ``tracked_outline_refinement=False``) to measure the original tracked
+    masks. Custom methods are importable ``package.module:function`` names.
+    Set ``tracked_refinement_options={"policy": "intersection"}`` to erase
+    original Motion pixels outside the refiner's foreground, allowing absent
+    observations without assigning identities. This is not the default. Gap
+    measurement then uses the original Motion history and cannot fill these
+    deliberately suppressed observations.
+
     Returns the run manifest: Auto-Organotypic's own run record for the stages
     it ran, this pipeline's stages appended in the same shape, and the review.
     """
@@ -397,6 +420,27 @@ def run(folder=None, *,
     started = time.time()
     if folder is None:
         raise ValueError("auto_microglia needs a folder of recordings")
+    from .. import mask_methods
+    from ..tracking import refinement_methods
+    from ._auto_microglia_support import _base_mask_configuration
+
+    refine_enabled = tracked_outline_refinement and tracked_refinement_method != "off"
+    base_settings = {"threads": mask_threads}
+    if mask_method != "unet" or mask_method_options:
+        base_settings.update(method=mask_method, method_options=mask_method_options)
+    for key, value in (("weights", mask_weights), ("cut", mask_cut),
+                       ("window_hours", mask_window_h)):
+        if value is not None:
+            base_settings[key] = value
+    base_settings.update(options.get(f"{MASK_STAGE}_options") or {})
+    mask_configuration = {
+        "base": _base_mask_configuration(base_settings),
+        "refinement": ({**refinement_methods.describe(
+            tracked_refinement_method, tracked_refinement_options),
+            **mask_methods.model_reference(tracked_refinement_weights,
+                default=tracked_refinement_method == "single_frame")}
+                       if refine_enabled else {"method": "off"}),
+    }
 
     # The outline is one switch with two riders. Both read what it wrote, so
     # asking for a rider without it is a run that would fail somewhere further
@@ -410,7 +454,10 @@ def run(folder=None, *,
             "so neither can run without it. Pass outline=True as well, or leave "
             "them out and let the cell mask find the regions instead.")
 
-    _the_stages_we_turn_off_still_exist(_chain)
+    _the_stages_we_turn_off_still_exist(_chain, NOT_OURS)
+    if isinstance(tracked_gap_max_frames, bool) or not isinstance(
+            tracked_gap_max_frames, int) or not 1 <= tracked_gap_max_frames <= 15:
+        raise ValueError("tracked_gap_max_frames must be a whole number from 1 to 15")
     _validate_cell_grid_options(tracked_cell_grid_options,
                                 tracked_cell_video_grid_options)
     from ..visualisation.cell_period_recipe import resolve_cell_period_recipe
@@ -453,6 +500,7 @@ def run(folder=None, *,
     root = Path(options.get("output_root") or output_dir or folder)
     label = str(run_label or slug(Path(folder).name,
                                   {"outline": outline, "cells": cells,
+                                   "mask_configuration": mask_configuration,
                                    "cell_masks": cell_masks,
                                    "eligibility_max_gap_h": eligibility_max_gap_h,
                                    "eligibility_max_gap_frames": eligibility_max_gap_frames,
@@ -461,6 +509,11 @@ def run(folder=None, *,
                                        eligibility_max_missing_fraction,
                                    "eligibility_exclude_from":
                                        eligibility_exclude_from,
+                                   "tracked_outline_refinement": tracked_outline_refinement,
+                                   "tracked_refinement_gated_masks":
+                                       tracked_refinement_gated_masks,
+                                   "tracked_gap_measurement": tracked_gap_measurement,
+                                   "tracked_gap_max_frames": tracked_gap_max_frames,
                                    "tracked_cell_grid": tracked_cell_grid,
                                    "tracked_cell_grid_options": tracked_cell_grid_options,
                                    "tracked_cell_video_grid": tracked_cell_video_grid,
@@ -472,6 +525,9 @@ def run(folder=None, *,
     if where.reuse:
         stored = read_manifest(where)
         if stored is not None:
+            if stored.get("summary", {}).get("mask_configuration") != mask_configuration:
+                raise ValueError("saved run uses different mask settings; "
+                                 "use if_exists='version' for the new selection")
             stored["reused"] = True
             return stored
 
@@ -488,12 +544,7 @@ def run(folder=None, *,
     # ``cell_masks=False`` therefore adds nothing to the call rather than
     # adding a skip: what reaches the chain is then its own default run.
     if cell_masks:
-        settings: dict[str, Any] = {"notes": notes, "threads": mask_threads}
-        for key, value in (("weights", mask_weights), ("cut", mask_cut),
-                           ("window_hours", mask_window_h)):
-            if value is not None:
-                settings[key] = value
-        options.setdefault(f"{MASK_STAGE}_options", settings)
+        options[f"{MASK_STAGE}_options"] = {"notes": notes, **base_settings}
         options.setdefault("mask_output_dir", str(where.path / MASK_STAGE))
 
     # Auto-Organotypic's half, called and not reimplemented. ``spatial`` is one
@@ -523,6 +574,7 @@ def run(folder=None, *,
                                                else "not resolved"),
                                "skipped": list(skip)}
     summary["tracked_cell_period_recipe"] = shared_period_recipe
+    summary["mask_configuration"] = mask_configuration
     if conventions_path is not None:
         outputs["conventions"] = str(conventions_path)
 
@@ -575,8 +627,9 @@ def run(folder=None, *,
                                               entry)
         summary["motion"] = {k: v for k, v in handoff.items()
                              if k != "outputs"}
+        motion_tracking = outputs["motion"]["tracking"]
         eligibility_results = _eligible_tracks(
-            outputs["motion"]["tracking"], handoff, where.path,
+            motion_tracking, handoff, where.path,
             enabled=eligibility, max_gap_h=eligibility_max_gap_h,
             max_gap_frames=eligibility_max_gap_frames,
             max_missing_frames=eligibility_max_missing_frames,
@@ -592,11 +645,26 @@ def run(folder=None, *,
                     len(result["excluded_identities"])
                     for result in eligibility_results.values())
             outputs["eligibility"] = eligibility_results
+        downstream_tracking = motion_tracking
+        downstream_eligibility = eligibility_results
+        if refine_enabled:
+            with log("tracked_outline_refinement") as entry:
+                downstream_tracking, downstream_eligibility, refined = _refine_tracking(
+                    motion_tracking, handoff, masks, eligibility_results,
+                    where.path, gated_masks=tracked_refinement_gated_masks,
+                    weights=tracked_refinement_weights, threads=mask_threads or 4,
+                    method=tracked_refinement_method,
+                    options=tracked_refinement_options)
+                entry["recordings"] = len(refined)
+                entry["changed_pixels"] = sum(
+                    int(one["settings"]["changed_pixels"])
+                    for one in refined.values())
+            outputs["tracked_outline_refinement"] = refined
         period_results: dict[str, Any] = {}
         if active_period_grids:
             with log("tracked_cell_period_selection") as entry:
                 period_results = _shared_cell_periods(
-                    outputs["motion"]["tracking"], handoff, where.path,
+                    downstream_tracking, handoff, where.path,
                     recipe=shared_period_recipe,
                     trace_channel=period_trace_channel)
                 entry["recordings"] = len(period_results)
@@ -614,8 +682,8 @@ def run(folder=None, *,
         if tracked_cell_grid:
             with log("tracked_cell_grid") as entry:
                 grids = _cell_grids(
-                    "images", outputs["motion"]["tracking"], handoff,
-                    eligibility_results, where.path,
+                    "images", downstream_tracking, handoff,
+                    downstream_eligibility, where.path,
                     options=tracked_cell_grid_options,
                     period_evidence=period_results)
                 entry["recordings"] = len(grids)
@@ -623,8 +691,8 @@ def run(folder=None, *,
         if tracked_cell_video_grid:
             with log("tracked_cell_video_grid") as entry:
                 videos_grid = _cell_grids(
-                    "videos", outputs["motion"]["tracking"], handoff,
-                    eligibility_results, where.path,
+                    "videos", downstream_tracking, handoff,
+                    downstream_eligibility, where.path,
                     options=tracked_cell_video_grid_options,
                     period_evidence=period_results)
                 entry["recordings"] = len(videos_grid)
@@ -632,24 +700,42 @@ def run(folder=None, *,
         if tracked_measurement:
             with log("tracked_measurement") as entry:
                 measured_tracks = _measure_tracked(
-                    outputs["motion"]["tracking"], handoff,
+                    downstream_tracking, handoff,
                     where.path, modules=tracked_measure_modules,
-                    eligibility=eligibility_results)
+                    eligibility=downstream_eligibility)
                 entry["recordings"] = len(measured_tracks)
             outputs["tracked_measurement"] = measured_tracks
+        if tracked_gap_measurement:
+            with log("tracked_gap_measurement") as entry:
+                gap_results = _measure_gaps(
+                    downstream_tracking, handoff, masks, where.path,
+                    max_gap_frames=tracked_gap_max_frames,
+                    measured=(outputs.get("tracked_measurement")
+                              if "intensity" in tracked_measure_modules else None))
+                entry["recordings"] = len(gap_results)
+                entry["measurement_only_frames"] = sum(
+                    int(one["measurement_only_frames"])
+                    for one in gap_results.values())
+            outputs["tracked_gap_measurement"] = gap_results
+            if "tracked_measurement" in outputs:
+                for stem, result in gap_results.items():
+                    accepted_trace = result.get("accepted_signal_trace")
+                    if accepted_trace is not None:
+                        outputs["tracked_measurement"][stem][
+                            "accepted_signal_trace"] = accepted_trace
         if tracked_video:
             with log("tracked_video") as entry:
                 videos = _tracked_videos(
-                    outputs["motion"]["tracking"], handoff,
-                    eligibility_results, where.path,
+                    downstream_tracking, handoff,
+                    downstream_eligibility, where.path,
                     options=tracked_video_options)
                 entry["recordings"] = len(videos)
             outputs["tracked_video"] = videos
         if tracked_image:
             with log("tracked_image") as entry:
                 images = _tracked_images(
-                    outputs["motion"]["tracking"], handoff,
-                    eligibility_results, where.path,
+                    downstream_tracking, handoff,
+                    downstream_eligibility, where.path,
                     options=tracked_image_options)
                 entry["recordings"] = len(images)
             outputs["tracked_image"] = images
@@ -672,73 +758,6 @@ def run(folder=None, *,
         "recordings": len(recordings),
         "seconds": manifest["seconds"], "claim": claim})
     return manifest
-
-
-def _registry(folder, options: Mapping[str, Any]):
-    """The conventions the chain resolved for this folder, or ``None``.
-
-    Read back from the chain's own output root when it had one; otherwise
-    resolved again from the same manifest under the same options, which is
-    the same answer. A folder the chain could not index has none, and this
-    run says so rather than failing after the chain has finished.
-    """
-    root = options.get("output_root")
-    found = _conventions.load(root) if root else None
-    if found is not None:
-        return found
-    try:
-        from auto_organotypic.sources import read_manifest
-        recordings = read_manifest(folder, instrument=options.get("manifest_kind"))
-        return _conventions.resolve(recordings, options=options)
-    except Exception:
-        return None
-
-
-def _the_stages_we_turn_off_still_exist(chain: Any) -> None:
-    """Refuse a run whose ``skip`` names a stage the chain no longer has.
-
-    ``skip`` is filtered against the stage list and an unknown name in it is
-    simply ignored — sensible there, and the one place this pipeline is exposed
-    to an upstream rename. If ``outline`` were ever called something else, the
-    three names below would quietly stop skipping anything and every recording
-    would be outlined, oriented and cropped around a two-lobe structure these
-    recordings do not contain. It would not raise; it would produce a full run
-    of confident, wrong results.
-
-    Everything else about the chain updates itself here, because nothing else
-    about it is named in this file. This is the exception, so it is checked
-    rather than trusted.
-    """
-    known = set(chain.stage_names())
-    missing = sorted(set(NOT_OURS) - known)
-    if missing:
-        raise ValueError(
-            f"auto_microglia turns off {', '.join(missing)}, which "
-            f"auto_organotypic {getattr(chain, '__version__', '')} no longer "
-            f"has. Until NOT_OURS is brought back into step, a run would "
-            f"silently perform the stages this pipeline exists to leave out. "
-            f"The chain's stages are now: {', '.join(chain.stage_names())}.")
-
-
-def _the_mask_feeds_the_measurement(names: Sequence[str]) -> None:
-    """Here the mask is a step, so it comes *before* the cells, not after.
-
-    The opposite of what ``check_stage_order`` enforces on
-    :mod:`.dluc_single_cell`, and not a contradiction of it: there the mask is a
-    branch off a finished measurement, here it is what finds the cells that get
-    measured. Both are checked, because either one backwards measures something
-    other than what the run claims.
-    """
-    from . import StageOrderError
-
-    order = list(names)
-    if "cells" in order and "cell_masks" in order:
-        if order.index("cell_masks") > order.index("cells"):
-            raise StageOrderError(
-                "the learned cell mask ran after the cell measurement. In this "
-                "pipeline the mask is what finds the cells, so a measurement "
-                "made before it is a measurement of the previous run's labels "
-                "or of nothing at all.")
 
 
 # ------------------------------------------------------------- the stages

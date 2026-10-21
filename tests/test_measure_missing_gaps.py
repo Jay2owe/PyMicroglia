@@ -113,7 +113,7 @@ def test_action_is_live_opt_in_and_describes_the_limit():
     assert registry.REGISTRY.resolve("measure_missing_gaps") is measure_missing_gaps
     details = knowledge.describe("measure_missing_gaps")
     cap = next(row for row in details["params"] if row["name"] == "max_gap_frames")
-    assert cap["default"] == 5
+    assert cap["default"] == 3
     assert "1 to 15" in cap["description"]
     assert details["pending"] is False
     live = {row["name"]: row for row in

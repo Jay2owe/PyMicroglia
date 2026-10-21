@@ -1,0 +1,733 @@
+{
+  "summary": "PyMicroglia now has one Cell grid interface for traces and installed Circadian Workbench single-trace analyses. Registry-driven analysis controls share cell selection, preprocessing, layout and export helpers. Existing CD68, RBM3 and CRY1 experimental grids remain linked. The grid also supports compatible overlays, independent stacked lanes, separate panels and raw/mean/processed/completed-fit layers.",
+  "explanation": "Cell selection and recording-clock binding live in PyMicroglia. Circadian Workbench owns scientific calls, native figure definitions and vector drawing. Missing observations remain missing, unsupported cells retain visible reasons, and exports retain plotted values, native results, run records and replay scripts. Cohort, spatial and experimental-design workflows remain separate because they cannot be interpreted as an independent analysis of one cell trace. The canonical grid defaults to raw total light, a strict centered three-frame mean and robust linear detrending. Trace grids and native grids share layout and input helpers; compatible numeric wavelet views share one spectrum per cell. Legacy calls preserve their defaults. Live controls submit only the selected analysis settings and jobs report computation, drawing and saving progress. Presentation uses completed data, retains original evidence and exports exact displayed layer and series keys. Native maps stack with independent colour scales. Typed preferences persist across reloads, and paired views expose the reference measurement. Verification passed 48 PyMicroglia and 30 Circadian Workbench tests, browser control/plot checks and strict documentation build. This does not establish independent algorithm validation or that app-wide performance budgets are met. Fitted curves evaluate completed FFT-NLLS components, or use the existing fixed-period descriptive cosinor during preparation. Rendering does not fit or repeat period tests.",
+  "analysis_refs": [
+    {
+      "file_state": "present",
+      "modified_ns": 1791236545807480400,
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_analysis_grid.py",
+      "role": "cell selection, native-clock inputs and evidence",
+      "sha256": "97a5c9245d5e5b8964fa3bed6d031099100a292ff03563a30e6d0b672392fcd0",
+      "size_bytes": 10126
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791234718748185600,
+      "path": "PyMicroglia/src/pymicroglia/visualisation/panels/cell_analysis_grid.py",
+      "role": "completed figure drawing",
+      "sha256": "c583230e0966e00d6e4556d96151c8c6586e1fbd51643adde29c0fb565ba2e08",
+      "size_bytes": 538
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236545811006900,
+      "path": "PyMicroglia/src/pymicroglia/guide/figures.md",
+      "role": "usage and parameter guide",
+      "sha256": "1cf987d08209ce8ad22d116e706c9e5c32c6677c6d62ba2446674f43bc4ed664",
+      "size_bytes": 7503
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791200589747371000,
+      "path": "PyMicroglia/tests/test_cell_analysis_grid.py",
+      "role": "cell binding, public export and UI schema verification",
+      "sha256": "05143bdcf2feda9c3a62a7ac5724629aa7915a3111be07ec66f45bbbce3d5046",
+      "size_bytes": 6823
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236931504120800,
+      "path": "PyMicroglia/tools/verify_cell_analysis_grid_ui.py",
+      "role": "real browser verification",
+      "sha256": "70a97bf1392bd2ed720de66b8d4c1fbe2eb0bd3f04873e0f3d98505394ee24f2",
+      "size_bytes": 11208
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236028326658000,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid.py",
+      "role": "public native-analysis grid API",
+      "sha256": "2552f1151305223b5b70b4d0b3b19661bd5812e61f0e8ad332a8ac870369046c",
+      "size_bytes": 11374
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791234690345497400,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_render.py",
+      "role": "native SVG vector adapter",
+      "sha256": "79a6c4a229e08c7024509ae5102b955b331dc0fdedc68fc613153f317dbb87e5",
+      "size_bytes": 6669
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236672622877600,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/guide/analysis-grid.md",
+      "role": "shared API and drawing performance evidence",
+      "sha256": "5be4db1f17da2f2d281208e0d56fa1a8fb2530e0562c138db5fefff217cab010",
+      "size_bytes": 4156
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791199826026923100,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_analysis_grid.py",
+      "role": "native-value equality, missing masks, vector geometry and replay verification",
+      "sha256": "d20b5dd84a87872d19c2b2e607125f66b104d1060d8788b78b13a17afc4ffb0c",
+      "size_bytes": 5890
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791199919628688400,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/scripts/benchmark_analysis_grid.py",
+      "role": "drawing comparison against a supplied baseline",
+      "sha256": "d310087e8362324c707694ffccb72f4e4a5b2bdcc504f54629c96f7f734f195c",
+      "size_bytes": 3643
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217408674794300,
+      "path": "Analyses/CellGrids_20261005/index.html",
+      "role": "browser for all 15 requested experimental grids",
+      "sha256": "58f5badd6bcdaeb7a1d88e9cb734a125b975c81db6fb896f91f08affb6d39842",
+      "size_bytes": 3987
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211329177801800,
+      "path": "Analyses/CellGrids_20261005/direct_component_parity.json",
+      "role": "real-data equality receipt",
+      "sha256": "44db520846c1fb9dcb5b1147caefbad05f6d925ea563dc28b0550a728f76a91f",
+      "size_bytes": 105
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211007394536800,
+      "path": "Analyses/CellGrids_20261005/direct_components_before.json",
+      "role": "frozen native baseline",
+      "sha256": "9285664a91123a03f4beac55519db72a1ed228079312700fb4fee743080b91e8",
+      "size_bytes": 213205
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211288934207100,
+      "path": "Analyses/CellGrids_20261005/check_direct_components.py",
+      "role": "independent replay of baseline comparison",
+      "sha256": "75e3f2ca33425e4da9aaeb3d0aaef3eda12348b0806871fe52269ac4a436f1f6",
+      "size_bytes": 1889
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791207651290438300,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_svg.py",
+      "role": "streamed native vector composition",
+      "sha256": "c4ca70a9358fcbdf0a4ed9f2d08ef58e04bf692ebda0701c152c04f49fb09705",
+      "size_bytes": 3576
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235721663665600,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis.py",
+      "role": "native fractional-clock analysis",
+      "sha256": "df19b5cf552f5f7c5da9f7ae1f1b5b8249858ec15fb6bbe0accf6751f718a40a",
+      "size_bytes": 273799
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208882879283700,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/arguments.py",
+      "role": "public fractional interval contract",
+      "sha256": "2f4267dfbe4e441e327a58b71c13b3692b38514aa8f961fe27326fa997d5820f",
+      "size_bytes": 135669
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235876869523800,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/contracts.py",
+      "role": "fractional interval data contract",
+      "sha256": "a5fded03a0b024f5392a4864818200c5e74816cf5832058e52990780502f7726",
+      "size_bytes": 63422
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235232362482000,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/actions.py",
+      "role": "direct native spectral calls",
+      "sha256": "e2b02889ab8b9e5b3d4801f291af71d4b0e15f3a26e4cb4e5227f93917f69608",
+      "size_bytes": 183410
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791207819549828200,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_analysis_grid_svg.py",
+      "role": "focused regression checks",
+      "sha256": "dcdefcd8016d92f134e2ca7287774990624d2a13a6452a9a8bbc6cccee77de02",
+      "size_bytes": 2892
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791209966002882500,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_fractional_analysis_bins.py",
+      "role": "focused regression checks",
+      "sha256": "f162c2e1c888e16debe2c6f519fe25bd27b8bb2cab8cf840638f0af63d1d361c",
+      "size_bytes": 1554
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211015501079500,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_direct_spectral_components.py",
+      "role": "focused regression checks",
+      "sha256": "c09aaf916564a03ab92af15f91f407e3b7a6a0e227fb5f3d8e3ecd861f195e58",
+      "size_bytes": 1451
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791215887307020300,
+      "path": "Analyses/CellGrids_20261005/CD68/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts",
+      "sha256": "4a43c937f66bebf4a5ab49a24281e09a399d8e3faa8d8074540946e68f1dd16f",
+      "size_bytes": 1613
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216280461492300,
+      "path": "Analyses/CellGrids_20261005/RBM3/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts",
+      "sha256": "518f7221b9c9a6cd7e1510fa7320c0bc5f276a0a8f13a51e39e076d4bf65291c",
+      "size_bytes": 1673
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217109836422700,
+      "path": "Analyses/CellGrids_20261005/CRY1/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts",
+      "sha256": "d26720949f66f866c0684b9255b3ecc3ea2141ebfe217d907e87b8dd17b83d61",
+      "size_bytes": 1657
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791215938311411500,
+      "path": "Analyses/CellGrids_20261005/CD68/README.md",
+      "role": "figure bundle explanation",
+      "sha256": "8b96cb2419e20cc6cb45b0e73b9c0789116100c535779cc7d75a3f01eba1e5af",
+      "size_bytes": 2214
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791213089098829800,
+      "path": "Analyses/CellGrids_20261005/CD68/plot.py",
+      "role": "figure producer",
+      "sha256": "35621972f3bf1e8101baf5a32be9771fbc78c49461c819561e15f020d5f35cf9",
+      "size_bytes": 12753
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791215897726800600,
+      "path": "Analyses/CellGrids_20261005/CD68/sources.csv",
+      "role": "figure source index",
+      "sha256": "157617358ff9a6e6ec02cdfbdbf7d2be48e83e60ba411b97cf2de74735b25207",
+      "size_bytes": 3489
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1790638924247802200,
+      "path": "PyMicroglia/development/single_frame_mask_unet/accepted_post_tracking/95_A3/observed_measurement/measure_95_A3_unet_refined_v3/.auto-organotypic/manifest.json",
+      "role": "figure support source",
+      "sha256": "a8920b66b776b8e8020aa225eef19b6385e5ee5b3d603ca2953a953aa3826271",
+      "size_bytes": 14097
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208388986248900,
+      "path": "Analyses/CellGrids_20261005/CD68/src_SKILL.md",
+      "role": "figure support source",
+      "sha256": "24f16271d4c9e70edf9aff0dc605cfa0f4d7320bc928534ebd387d065b1d9e1e",
+      "size_bytes": 21862
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1790284754029547100,
+      "path": "PyMicroglia/src/pymicroglia/measure/signal.py",
+      "role": "figure support source",
+      "sha256": "e023a1bc9261bdb5afbb96dcd91c565a9824d6d878c0542e21efefe707bb0421",
+      "size_bytes": 1371
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208388975988000,
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis_grid_svg.py",
+      "role": "figure support source",
+      "sha256": "c4ca70a9358fcbdf0a4ed9f2d08ef58e04bf692ebda0701c152c04f49fb09705",
+      "size_bytes": 3576
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208389368338000,
+      "path": "Analyses/CellGrids_20261005/CD68/config.json",
+      "role": "figure support source",
+      "sha256": "93c0247388d31702e64ebc397547f889c1bd7d316c263865599fee88f6faad6d",
+      "size_bytes": 290
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212856729104400,
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis.py",
+      "role": "figure support source",
+      "sha256": "c0f734293dc360e9614c9c1701d6667ba3746f650b914e841a1184c25b2fc035",
+      "size_bytes": 272861
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212856771095100,
+      "path": "Analyses/CellGrids_20261005/CD68/src_arguments.py",
+      "role": "figure support source",
+      "sha256": "2f4267dfbe4e441e327a58b71c13b3692b38514aa8f961fe27326fa997d5820f",
+      "size_bytes": 135669
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212856797099900,
+      "path": "Analyses/CellGrids_20261005/CD68/src_contracts.py",
+      "role": "figure support source",
+      "sha256": "50b60dcb4f3edf3f33004a1a81c1af379fc2022ee96932448d868733715a2e8a",
+      "size_bytes": 63225
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212856886542600,
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis_grid.py",
+      "role": "figure support source",
+      "sha256": "58ef1aa7762b813d181aff6ec631cc10ca313033f7ff35682b9c70513ffeb8b3",
+      "size_bytes": 9564
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212856911080100,
+      "path": "Analyses/CellGrids_20261005/CD68/src_actions.py",
+      "role": "figure support source",
+      "sha256": "866393274b9c28c5dc044bad988a378295e621ff1a3eb2d4a4f5cd24d81952b8",
+      "size_bytes": 183309
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211945909130000,
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_periodograms.csv",
+      "role": "figure statistics",
+      "sha256": "c3c14ac95e855e099da78aa95ee1b14bd22920197503bdfe0095754c741f7b8b",
+      "size_bytes": 5429716
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211942532819800,
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_amplitude.csv",
+      "role": "figure statistics",
+      "sha256": "a4abbcd375bca5eeb890807d5f3e782a63ca36f2f2aa646bfe4ef206abd3861a",
+      "size_bytes": 7742537
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211942488529000,
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_phase.csv",
+      "role": "figure statistics",
+      "sha256": "a4abbcd375bca5eeb890807d5f3e782a63ca36f2f2aa646bfe4ef206abd3861a",
+      "size_bytes": 7742537
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211942426705000,
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_power.csv",
+      "role": "figure statistics",
+      "sha256": "a4abbcd375bca5eeb890807d5f3e782a63ca36f2f2aa646bfe4ef206abd3861a",
+      "size_bytes": 7742537
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791215938456228800,
+      "path": "Analyses/CellGrids_20261005/RBM3/README.md",
+      "role": "figure bundle explanation",
+      "sha256": "e585ddc9007ce628f11efea0cb4e8b9cceb05f13850f565620fd07323c3ca07d",
+      "size_bytes": 2255
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791213089098829800,
+      "path": "Analyses/CellGrids_20261005/RBM3/plot.py",
+      "role": "figure producer",
+      "sha256": "35621972f3bf1e8101baf5a32be9771fbc78c49461c819561e15f020d5f35cf9",
+      "size_bytes": 12753
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308261424800,
+      "path": "Analyses/CellGrids_20261005/RBM3/sources.csv",
+      "role": "figure source index",
+      "sha256": "f4520bf7c7dbd6d60f8080abef03ee88c81873c6eefddb0ab0342723ebca8d31",
+      "size_bytes": 3477
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1790278731814697500,
+      "path": "PyMicroglia/development/single_frame_mask_unet/accepted_post_tracking/RBM3_MCG_02/observed_measurement/measure_694232/.auto-organotypic/manifest.json",
+      "role": "figure support source",
+      "sha256": "0bf567015809af56369585df9022e70a1a8e8b9e26a804ec862caf686a18c004",
+      "size_bytes": 13506
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208390496471300,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_SKILL.md",
+      "role": "figure support source",
+      "sha256": "24f16271d4c9e70edf9aff0dc605cfa0f4d7320bc928534ebd387d065b1d9e1e",
+      "size_bytes": 21862
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208390473944600,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis_grid_svg.py",
+      "role": "figure support source",
+      "sha256": "c4ca70a9358fcbdf0a4ed9f2d08ef58e04bf692ebda0701c152c04f49fb09705",
+      "size_bytes": 3576
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208391218924600,
+      "path": "Analyses/CellGrids_20261005/RBM3/config.json",
+      "role": "figure support source",
+      "sha256": "7013c32e58ac936e32e16bdf150adb2af3004d3ff8607075542bac4c7b87d23d",
+      "size_bytes": 311
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308202044300,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis.py",
+      "role": "figure support source",
+      "sha256": "c0f734293dc360e9614c9c1701d6667ba3746f650b914e841a1184c25b2fc035",
+      "size_bytes": 272861
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308233802600,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_arguments.py",
+      "role": "figure support source",
+      "sha256": "2f4267dfbe4e441e327a58b71c13b3692b38514aa8f961fe27326fa997d5820f",
+      "size_bytes": 135669
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308239817500,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_contracts.py",
+      "role": "figure support source",
+      "sha256": "50b60dcb4f3edf3f33004a1a81c1af379fc2022ee96932448d868733715a2e8a",
+      "size_bytes": 63225
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308244817900,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis_grid.py",
+      "role": "figure support source",
+      "sha256": "58ef1aa7762b813d181aff6ec631cc10ca313033f7ff35682b9c70513ffeb8b3",
+      "size_bytes": 9564
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791216308249192900,
+      "path": "Analyses/CellGrids_20261005/RBM3/src_actions.py",
+      "role": "figure support source",
+      "sha256": "866393274b9c28c5dc044bad988a378295e621ff1a3eb2d4a4f5cd24d81952b8",
+      "size_bytes": 183309
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212530678972500,
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_periodograms.csv",
+      "role": "figure statistics",
+      "sha256": "ac42e52bce8668df57cfe6d244594b83567a18208b5673899fe9b82896579430",
+      "size_bytes": 6366100
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212527606387000,
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_amplitude.csv",
+      "role": "figure statistics",
+      "sha256": "bef72b7a6d35865ec3f1587f4d4f0f8ef5e45c491ab5bd2e23b0229f9d3fc9c8",
+      "size_bytes": 17149096
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212527509655600,
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_phase.csv",
+      "role": "figure statistics",
+      "sha256": "bef72b7a6d35865ec3f1587f4d4f0f8ef5e45c491ab5bd2e23b0229f9d3fc9c8",
+      "size_bytes": 17149096
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791212527366930700,
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_power.csv",
+      "role": "figure statistics",
+      "sha256": "bef72b7a6d35865ec3f1587f4d4f0f8ef5e45c491ab5bd2e23b0229f9d3fc9c8",
+      "size_bytes": 17149096
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791215938458227800,
+      "path": "Analyses/CellGrids_20261005/CRY1/README.md",
+      "role": "figure bundle explanation",
+      "sha256": "ad92f4ac82df084671b768adc3ac307fa590916862a75b24438e2caadb094e45",
+      "size_bytes": 2226
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791213089098829800,
+      "path": "Analyses/CellGrids_20261005/CRY1/plot.py",
+      "role": "figure producer",
+      "sha256": "35621972f3bf1e8101baf5a32be9771fbc78c49461c819561e15f020d5f35cf9",
+      "size_bytes": 12753
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149735408000,
+      "path": "Analyses/CellGrids_20261005/CRY1/sources.csv",
+      "role": "figure source index",
+      "sha256": "d914f16207099c15ba2f85a88f2372701e728cc500ba007ce569f133ece8504e",
+      "size_bytes": 3518
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1790293781905245900,
+      "path": "PyMicroglia/development/mask_to_motion_handoff/full_frame_20260921/v2/analysis_batch_retry_MCG_04/results/MCG_04/measurements/measure_3664f3/.auto-organotypic/manifest.json",
+      "role": "figure support source",
+      "sha256": "42db15bd93958434d67cffe0209a49ef0cf888db91bb74ba2e0a814a18725fb5",
+      "size_bytes": 44118
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208393803908400,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_SKILL.md",
+      "role": "figure support source",
+      "sha256": "24f16271d4c9e70edf9aff0dc605cfa0f4d7320bc928534ebd387d065b1d9e1e",
+      "size_bytes": 21862
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208393767881500,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis_grid_svg.py",
+      "role": "figure support source",
+      "sha256": "c4ca70a9358fcbdf0a4ed9f2d08ef58e04bf692ebda0701c152c04f49fb09705",
+      "size_bytes": 3576
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791208394330884700,
+      "path": "Analyses/CellGrids_20261005/CRY1/config.json",
+      "role": "figure support source",
+      "sha256": "f54c1b78640cd60e16e0c34a4c8a84a393e8a9f4ce5916ae488c7ed4c6a2233a",
+      "size_bytes": 296
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149696747900,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis.py",
+      "role": "figure support source",
+      "sha256": "c0f734293dc360e9614c9c1701d6667ba3746f650b914e841a1184c25b2fc035",
+      "size_bytes": 272861
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149701751500,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_arguments.py",
+      "role": "figure support source",
+      "sha256": "2f4267dfbe4e441e327a58b71c13b3692b38514aa8f961fe27326fa997d5820f",
+      "size_bytes": 135669
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149706251400,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_contracts.py",
+      "role": "figure support source",
+      "sha256": "50b60dcb4f3edf3f33004a1a81c1af379fc2022ee96932448d868733715a2e8a",
+      "size_bytes": 63225
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149708265900,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis_grid.py",
+      "role": "figure support source",
+      "sha256": "58ef1aa7762b813d181aff6ec631cc10ca313033f7ff35682b9c70513ffeb8b3",
+      "size_bytes": 9564
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217149733411700,
+      "path": "Analyses/CellGrids_20261005/CRY1/src_actions.py",
+      "role": "figure support source",
+      "sha256": "866393274b9c28c5dc044bad988a378295e621ff1a3eb2d4a4f5cd24d81952b8",
+      "size_bytes": 183309
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211931692956700,
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_periodograms.csv",
+      "role": "figure statistics",
+      "sha256": "3f3c83af948bfa57749f64c95b5f56dc71afc74b2bd65e394ab2ae6d1162df34",
+      "size_bytes": 4102507
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211927760019100,
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_amplitude.csv",
+      "role": "figure statistics",
+      "sha256": "d22581a6e869d56819cde77f1f177431da61476527601d726aa185a1e5a9319a",
+      "size_bytes": 15841983
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211927655709900,
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_phase.csv",
+      "role": "figure statistics",
+      "sha256": "d22581a6e869d56819cde77f1f177431da61476527601d726aa185a1e5a9319a",
+      "size_bytes": 15841983
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791211927525630200,
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_power.csv",
+      "role": "figure statistics",
+      "sha256": "d22581a6e869d56819cde77f1f177431da61476527601d726aa185a1e5a9319a",
+      "size_bytes": 15841983
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791219266675076900,
+      "path": "Analyses/CellGrids_20261005/register_fast.py",
+      "role": "equivalent audit-scan preconditions and deterministic compression cache",
+      "sha256": "a3b9024d60180ab6e99b16d42ff3ee6087cba87fde5fab4f31f333f82b1ab365",
+      "size_bytes": 4520
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791218808946549600,
+      "path": "Analyses/CellGrids_20261005/audit_scanner_equivalence.json",
+      "role": "audit scanner equivalence checks",
+      "sha256": "b734e9e14cfa2e76457f59a17bb56f7a28aabd2b39c21d78284bda00ab42d793",
+      "size_bytes": 265
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217776445089900,
+      "path": "Analyses/CellGrids_20261005/visual_checks.json",
+      "role": "visual inspection receipt",
+      "sha256": "15d3f47f6f08a314756de84546a60627fb6846dd380310bc995cd6eb7197fee4",
+      "size_bytes": 428
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791217922997126400,
+      "path": "Analyses/CellGrids_20261005/browser_check.json",
+      "role": "all 15 browser choices verified",
+      "sha256": "92f43d0ab945fa73e2bc48fe7e1bc8c76e5852784b4bc686f3417ea4c95895cc",
+      "size_bytes": 2418
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235985557879700,
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_grid.py",
+      "role": "canonical registry-backed cell grid",
+      "sha256": "c93f90b7782cb17d4f29934278069b5be8ea53fc9275856354d32465c1cfb8c2",
+      "size_bytes": 5310
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236379917319600,
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_grid_inputs.py",
+      "role": "shared cell selection, native clocks and preprocessing",
+      "sha256": "361850705c468d7acd85e70bc1e20cb7f614ef82705a472f3540396362c10ae8",
+      "size_bytes": 4534
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235171472291300,
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/all_cell_traces.py",
+      "role": "compatible trace preparation using shared inputs",
+      "sha256": "c455a7c9ec1407f58fcf4090fe358702e1b018552cd33485aac9173d1f897615",
+      "size_bytes": 26101
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236639462657100,
+      "path": "PyMicroglia/tests/test_shared_cell_grid.py",
+      "role": "shared layout, recipe parity, spectrum reuse and job progress checks",
+      "sha256": "61e8115a65e28bcaa55dd4662b0219b01ac9b74ec501d8eea0ffddb07dac3ae6",
+      "size_bytes": 9434
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791237233093622200,
+      "path": "PyMicroglia/docs/shared-cell-grid/verification.json",
+      "role": "focused integration verification and completed-plot timings",
+      "sha256": "6d67b8b8ddee0d8fbb5168ce9632ffffa7ee299958014a9dc956f7cd001a3f90",
+      "size_bytes": 4232
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791236796959676400,
+      "path": "PyMicroglia/docs/shared-cell-grid/ui-checks/checks.json",
+      "role": "live browser checks, typed submissions and theme checks",
+      "sha256": "81a31cd42862515705a1f258490f5855fa386f971f7d156954fd54bf3d686eb1",
+      "size_bytes": 809
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791234624536648900,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_layout.py",
+      "role": "one grid layout for trace and native analysis panels",
+      "sha256": "78c75359e1d1a6c4bc7c42eeaf64dc77c23d5bcafb516efd770537ddeb31a257",
+      "size_bytes": 1953
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791235876869523800,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/contracts.py",
+      "role": "native clock conversion preserving fractional-minute sample bins",
+      "sha256": "a5fded03a0b024f5392a4864818200c5e74816cf5832058e52990780502f7726",
+      "size_bytes": 63422
+    },
+    {
+      "file_state": "present",
+      "modified_ns": 1791237234693534100,
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/Auto-Organotypic/docs/consolidation/cell-grid-integration.md",
+      "role": "accepted cross-package integration decision and verification",
+      "sha256": "058f2db235137bef9fad49e1e171aa6358766ea2bb8b226b383aaa511402bf64",
+      "size_bytes": 4681
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/grid_presentation.py",
+      "role": "shared presentation contract and exact composed values"
+    },
+    {
+      "path": "PyMicroglia/tests/test_cell_grid_composition.py",
+      "role": "trace and native presentation parity checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/overlay-verification.json",
+      "role": "78 focused passing tests and measured browser checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/overlay-checks-final/checks.json",
+      "role": "typed controls, persistence, paired views and independent lanes"
+    },
+    {
+      "path": "../CircadianWorkbench/src/circadian_workbench/analysis_grid_composition.py",
+      "role": "native compatible-curve overlays"
+    },
+    {
+      "path": "../CircadianWorkbench/src/circadian_workbench/analysis_grid_layout.py",
+      "role": "shared lane placement"
+    },
+    {
+      "path": "../CircadianWorkbench/tests/test_grid_composition.py",
+      "role": "native composition checks"
+    }
+  ],
+  "next_step": "Open PyMicroglia extras > All methods > Cell grid > Grid arrangement and overlays. Choose compatible overlays or stacked lanes and trace layers. Existing five-view experimental grids remain in Analyses/CellGrids_20261005/index.html.",
+  "update_note": "Added authorized overlay/stack controls to the existing cell-grid method; retained original 15 experimental grid artifacts, status and scientific limitations.",
+  "original_input": "can we also add a way to the grid plot to add overlays if there isnt already and a way to stack them with different traces as well as anythin else possible in the ui"
+}

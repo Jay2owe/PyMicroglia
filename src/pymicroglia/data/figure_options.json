@@ -1,4 +1,20 @@
 {
+  "comparison_settings": {
+    "description": "Native comparison settings: metric, group_by, sample unit, cell summary, time window, trace processing and distribution options.",
+    "type": "dict"
+  },
+  "comparison_conditions": {
+    "description": "Declared condition identifiers, display labels and colours, in plot order.",
+    "type": "list"
+  },
+  "comparison_recordings": {
+    "description": "Saved recordings and their condition, subject and pairing assignments; optional identities lists retain exact plot exclusions.",
+    "type": "list"
+  },
+  "reporter_metric": {
+    "description": "Reporter measurement used for tissue period maps; choose corrected_mean for an older saved run without the three-frame total column.",
+    "type": "str"
+  },
   "matrix_population": {
     "description": "saved population: all, any-significant or significant:<measurement>",
     "type": "str"
@@ -68,11 +84,11 @@
     "type": "list"
   },
   "grid_columns": {
-    "description": "columns per cell trace grid",
+    "description": "columns per cell grid",
     "type": "int"
   },
   "grid_rows": {
-    "description": "rows in an all-cell trace grid; unset computes a compact grid",
+    "description": "rows in a cell grid; unset computes a compact grid",
     "type": "int"
   },
   "trace_normalization": {
@@ -299,6 +315,14 @@
     "description": "which cell to draw",
     "type": "int"
   },
+  "time_guides_hours": {
+    "description": "Vertical dashed lines every chosen positive interval in recording hours; blank disables guides.",
+    "type": "float"
+  },
+  "time_guides_offset_hours": {
+    "description": "Recording-hour origin for optional vertical dashed time guides.",
+    "type": "float"
+  },
   "hour_ticks": {
     "description": "hours between ticks on a time axis; a factor or multiple of 24",
     "type": "str"
@@ -448,7 +472,7 @@
     "type": "mapping"
   },
   "fft_component_test": {
-    "description": "Use the median3 then mean3, robust-linear and FFT-NLLS component test for cell-grid rhythm calls; false restores the selected periodogram test.",
+    "description": "Use centered three-frame mean of uncorrected whole-cell total light, robust-linear detrending and the FFT-NLLS component test for cell-grid rhythm calls; false restores the selected periodogram test.",
     "type": "bool"
   },
   "component_surrogates": {
@@ -487,8 +511,12 @@
     "description": "fewest observed cycles required to treat a detected period as well constrained",
     "type": "float"
   },
+  "input_filters": {
+    "description": "optional audit filters as JSON objects with method and odd window_points; unfiltered input is always retained",
+    "type": "json"
+  },
   "median_window_points": {
-    "description": "odd median-window width in sampling intervals; missing rows and long gaps split the filter",
+    "description": "optional legacy median check; unset by default; prefer input_filters for several filters or lengths",
     "type": "int"
   },
   "panels": {
@@ -767,5 +795,67 @@
   "transition_normalisation": {
     "description": "matrix normalisation: row, column or none",
     "type": "str"
+  },
+  "source_frame_index": {
+    "type": "int",
+    "units": "zero-based native frame",
+    "description": "Native source frame displayed; null selects an observed example without changing saved masks."
+  },
+  "coordinates": {
+    "type": "str",
+    "units": "-",
+    "description": "cell removes whole-pixel translation; recording preserves original image coordinates."
+  },
+  "elevation": {
+    "type": "float",
+    "units": "degrees",
+    "description": "Vertical camera viewing angle of the time sculpture; affects display only."
+  },
+  "azimuth": {
+    "type": "float",
+    "units": "degrees",
+    "description": "Horizontal camera viewing angle of the time sculpture; affects display only."
+  },
+  "barcode_scale": {
+    "type": "str",
+    "units": "-",
+    "description": "cell scales colours within each saved identity; recording uses one range for all identities. Missing values remain blank."
+  },
+  "analysis": {
+    "type": "str", "units": "-",
+    "description": "Circadian Workbench analysis and plot to draw separately for each selected cell and measurement. Choices come from its live UI and scientific plot catalogue."
+  },
+  "preprocessing": {
+    "type": "mapping", "units": "-",
+    "description": "Explicit per-cell input recipe: mean_frames (odd consecutive native frames), detrend (Workbench method), and optional detrend_options. Choose a raw measurement to apply a frame mean."
+  },
+  "analysis_views": {
+    "type": "list", "units": "-",
+    "description": "Optional declared action/view keys to compare for each cell; wavelet power, phase and amplitude reuse one spectrum per cell. None draws the selected analysis only."
+  },
+  "analysis_settings": {
+    "type": "mapping", "units": "-",
+    "description": "Partial Circadian Workbench recording settings, using its exact public names; for example period_min_hours, period_max_hours or period_detrend. Numeric wavelets use analysis_parameters instead."
+  },
+  "analysis_parameters": {
+    "type": "mapping", "units": "-",
+    "description": "Selected Workbench action parameters; for numeric wavelets use {\"wavelet_options\":{\"period_min_hours\":2,\"period_max_hours\":48}}. Extra experiment-specific inputs such as pulse_start and pulse_hours belong here."
+  },
+  "analysis_display": {
+    "type": "mapping", "units": "-",
+    "description": "Workbench plot appearance settings such as theme, text_scale, colours or show_grid; changes drawing only."
+  },
+  "reference_metric": {
+    "type": "str", "units": "-",
+    "description": "Second measured column from the same cell, required for channel comparison, coupling and wavelet coherence."
+  },
+  "grid_presentation": {
+    "type": "mapping", "units": "-",
+    "description": "Compose completed traces and analyses using compatible overlays, labelled stacked lanes or separate panels; select trace layers and appearance without changing scientific inputs."
+  },
+  "trace_filter": {
+    "type": "mapping",
+    "units": "-",
+    "description": "Optional input filtering: null retains the measurement default; {\"method\":\"none\"} uses raw samples; {\"method\":\"median\",\"window_points\":3} applies a gap-aware median with an odd sample window."
   }
 }

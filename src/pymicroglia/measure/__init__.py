@@ -30,13 +30,33 @@ from .spec import (ChannelSpec, ContrastSpec, MeasureConfig, MovieSpec,
                    ObjectSetSpec, SideTableSpec, WindowSpec, load_config)
 
 __all__ = [
-    "measure", "parameter_choices", "check_parameters",
+    "measure", "measure_fixed_apertures", "measure_expanded_outlines", "parameter_choices", "check_parameters",
     "Scale", "ChannelStack", "ObjectStack", "MeasurementContext",
     "Column", "Output", "measurement", "derived",
     "declared_columns", "declared_tables",
     "MovieSpec", "ChannelSpec", "ObjectSetSpec", "SideTableSpec",
     "WindowSpec", "ContrastSpec", "MeasureConfig", "load_config",
 ]
+
+
+def measure_expanded_outlines(raw, labels, *, output_dir, identities=(), source_frame_offset=0,
+                              frame_interval_h=.5, expansion_px=3., background_inner_px=4.,
+                              background_outer_px=12., min_background_px=25, background_statistic="mean", blocked=None, claim=""):
+    """Save exclusive expanded-outline totals alongside the original measurement."""
+    from .expanded_outlines import measure as expanded
+    return expanded(raw, labels, output_dir=output_dir, identities=identities,
+                    source_frame_offset=source_frame_offset, frame_interval_h=frame_interval_h,
+                    margin_px=expansion_px, background_inner_px=background_inner_px,
+                    background_outer_px=background_outer_px, min_background_px=min_background_px,
+                    background_statistic=background_statistic, blocked=blocked, claim=claim)
+
+
+def measure_fixed_apertures(movies, *, output_dir, shapes=('circle',),
+                            area_fraction=1., raw_scale=1., claim=''):
+    """Measure fixed circle/square footprints along supplied native centroids."""
+    from .fixed_apertures import measure as measure_apertures
+    return measure_apertures(movies, output_dir=output_dir, shapes=shapes,
+        area_fraction=area_fraction, raw_scale=raw_scale, claim=claim)
 
 
 def measure(movies: Sequence[Any] | None = None, *, output_dir,
@@ -100,8 +120,15 @@ def measure(movies: Sequence[Any] | None = None, *, output_dir,
             enabled_modules=enabled_modules, module_params=module_options,
             verify_hashes=verify_hashes, conditions=conditions, windows=windows,
             contrasts=contrasts, metric_groups=metric_groups)
-    return run(config, output_dir, run_label=run_label, if_exists=if_exists,
-               claim=claim)
+    from contextlib import nullcontext
+
+    scope = nullcontext()
+    if "rhythms" in config.enabled_modules:
+        from ..workbench import analysis_session
+        scope = analysis_session()
+    with scope:
+        return run(config, output_dir, run_label=run_label, if_exists=if_exists,
+                   claim=claim)
 
 
 def parameter_choices() -> dict[str, list[str]]:

@@ -24,12 +24,16 @@ def prepare(source,options):
     cells = [identity for identity in _selected_identities(complete, options.get('cells')) if identity in measured]
     thresholds = quantified.set_index('identity')['recurrence_threshold_distance']
     walls = {}
-    for identity in cells:
-        group = complete[complete['identity'] == identity][['frame_index', 'hours', *metrics]].sort_values('frame_index')
-        hours = group['hours'].to_numpy(float)
-        values = state_matrix(hours, group[metrics].to_numpy(float), detrend=str(settings['detrend']), window_hours=float(settings['detrend_window_hours']))
-        finite_state = np.isfinite(values).all(axis=1)
-        walls[int(identity)] = (cdist(values[finite_state], values[finite_state]), hours[finite_state], float(thresholds[identity]))
+    # Rebuilding distances detrends each measured channel. Share software
+    # identity capture across those calls, checking the engine again on exit.
+    from ..workbench import analysis_session
+    with analysis_session():
+        for identity in cells:
+            group = complete[complete['identity'] == identity][['frame_index', 'hours', *metrics]].sort_values('frame_index')
+            hours = group['hours'].to_numpy(float)
+            values = state_matrix(hours, group[metrics].to_numpy(float), detrend=str(settings['detrend']), window_hours=float(settings['detrend_window_hours']))
+            finite_state = np.isfinite(values).all(axis=1)
+            walls[int(identity)] = (cdist(values[finite_state], values[finite_state]), hours[finite_state], float(thresholds[identity]))
     drawn = rates['identity'].isin(cells)
     figure_data = rates.loc[drawn, ['identity', 'lag_frames', 'lag_hours', 'recurrence_rate', 'recurrence_surrogate_mean', 'recurrence_surrogate_lo', 'recurrence_surrogate_hi', 'recurrence_pairs']].copy().rename(columns={'lag_frames': 'time_separation_frames', 'lag_hours': 'time_separation_hours', 'recurrence_rate': 'same_state_pair_fraction', 'recurrence_surrogate_mean': 'matched_noise_mean', 'recurrence_surrogate_lo': 'matched_noise_lower_95', 'recurrence_surrogate_hi': 'matched_noise_upper_95', 'recurrence_pairs': 'observation_pairs_compared'})
     quantification = quantified[quantified['identity'].isin(cells)].drop(columns=[c for c in ('stem', 'condition', 'subject') if c in quantified.columns]).rename(columns={'recurrence_threshold_distance': 'same_state_distance_cutoff', 'determinism': 'repeated_sequence_fraction', 'laminarity': 'stationary_run_fraction', 'determinism_surrogate': 'matched_noise_repeated_sequence_fraction', 'laminarity_surrogate': 'matched_noise_stationary_run_fraction', 'recurrence_observations': 'observations', 'recurrence_metrics_used': 'measurements_used'})

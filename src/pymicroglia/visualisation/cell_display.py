@@ -13,10 +13,10 @@ import tifffile
 from auto_organotypic import display, series, store
 
 
-def prepare_cell_display(raw, setting: str | Mapping[str, Any] | None
+def prepare_cell_display(raw, setting: str | Mapping[str, Any] | None = None
                          ) -> tuple[Path | None, tuple[float, float] | None,
                                     dict[str, Any] | None]:
-    """Filter complete source frames; return pixels used only for rendering."""
+    """Leave source pixels unchanged unless filtering is explicitly requested."""
     if setting is None or setting == "none":
         return None, None, None
     options = ({"method": setting} if isinstance(setting, str)

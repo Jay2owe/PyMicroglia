@@ -13,14 +13,18 @@ recording clock, option inheritance, and result table contract.
 from __future__ import annotations
 
 from copy import deepcopy
+from contextlib import contextmanager
+from contextvars import ContextVar
 import json
 from typing import Any, Sequence
 
 import numpy as np
 import pandas as pd
 
+from .baseline_defaults import DEFAULT_DETREND_METHOD, FFT_COMPONENT_DETRENDS
+
 import circadian_workbench as cw
-from circadian_workbench.component_significance import test_components as _test_components
+_test_components = cw.component_significance.test_components
 
 WORKBENCH_VERSION = cw.__version__
 
@@ -29,9 +33,140 @@ WORKBENCH_VERSION = cw.__version__
 trace = cw.trace
 describe = cw.describe
 
+
+def test_simulation_recording(hours, values, responses, outline_areas, candidates, **options):
+    """Recording-wide optical rhythm test through Workbench's public module."""
+    engine=getattr(cw,'optical_rhythm',None)
+    if engine is None:
+        raise RuntimeError('Update Circadian Workbench to a build with optical_rhythm support')
+    return engine.test_recording(hours,values,responses,outline_areas,candidates,**options)
+
+
+def cell_analysis_catalogue():
+    """Workbench UI and core plots that accept a single measured cell."""
+    grid = getattr(cw, 'analysis_grid', None)
+    return {} if grid is None else grid.catalogue()
+
+
+def fft_component_values(hours, estimate):
+    function = getattr(cw.display_values, 'fft_nlls_component_values', None)
+    if function is None:
+        raise RuntimeError('Update Circadian Workbench to enable native component displays')
+    return function(hours, estimate)
+
+
+def fft_component_test_significant(test, alpha):
+    return cw.display_values.fft_component_test_significant(test, alpha)
+
+
+def fft_component_test_label(test, period):
+    return cw.display_values.fft_component_test_label(test, period)
+
+
+def test_fft_component_view(definition, **settings):
+    return _cell_grid_api().test_fft_component_view(definition, **settings)
+
+
+def style_fft_component_view(definition, tests, **settings):
+    return _cell_grid_api().style_fft_component_view(definition, tests, **settings)
+
+
+def fft_component_lanes(definition):
+    return _cell_grid_api().fft_component_lanes(definition)
+
+
+def _cell_grid_api():
+    grid = getattr(cw, 'analysis_grid', None)
+    if grid is None:
+        raise RuntimeError('Update Circadian Workbench to a build with analysis_grid support to use Cell analysis grid')
+    return grid
+
+
+def validate_cell_analysis(analysis, **options):
+    return _cell_grid_api().validate(analysis, **options)
+
+
+def analyze_cell_view(hours, values, **options):
+    return _cell_grid_api().analyze(hours, values, **options)
+
+
+def analyze_cell_views(hours, values, **options):
+    return _shared_cell_grid_api().analyze_many(hours, values, **options)
+
+
+def cell_grid_shape(count, rows=None, columns=None):
+    return _shared_cell_grid_api().grid_shape(count, rows, columns)
+
+
+def create_cell_grid(canvas, **options):
+    return _shared_cell_grid_api().create_layout(canvas, **options)
+
+
+def create_cell_grid_lanes(canvas, **options):
+    function = getattr(_cell_grid_api(), 'create_lane_layout', None)
+    if not callable(function):
+        raise RuntimeError('Update Circadian Workbench to enable stacked cell-grid lanes')
+    return function(canvas, **options)
+
+
+def overlay_cell_views(panels, **options):
+    function = getattr(_cell_grid_api(), 'overlay', None)
+    if not callable(function):
+        raise RuntimeError('Update Circadian Workbench to enable native cell-grid overlays')
+    return function(panels, **options)
+
+
+def _shared_cell_grid_api():
+    grid = _cell_grid_api()
+    if not all(callable(getattr(grid, key, None)) for key in ('analyze_many', 'grid_shape', 'create_layout')):
+        raise RuntimeError('Update Circadian Workbench to a build with shared cell-grid support')
+    return grid
+
+
+def cell_view_data(definition):
+    return _cell_grid_api().figure_data(definition)
+
+
+def empty_cell_view(title, reason):
+    return _cell_grid_api().empty(title, reason)
+
+
+def draw_cell_views(panels, **options):
+    return _cell_grid_api().draw(panels, **options)
+
 def rhythm_environment() -> dict:
     """Public catalogue provenance, including same-version editable engine identity."""
     return deepcopy(cw.call("period_methods").run_record["environment"])
+
+
+_ANALYSIS_CAPTURE = ContextVar("pymicroglia_analysis_capture", default=None)
+
+
+def verify_rhythm_environment(expected):
+    """Verify a sweep's captured software identity before retaining its results."""
+    cw.run_records.verify_environment(expected)
+
+
+@contextmanager
+def analysis_session():
+    """Share the existing provenance capture across a batch of trace calls.
+
+    Workbench's nested calls inherit one software identity. Check that identity
+    again at the boundary so source edits during a run cannot be attached as
+    if they were produced by one unchanged environment.
+    """
+    existing = _ANALYSIS_CAPTURE.get()
+    if existing is not None:
+        # The owning outer sweep performs the fresh environment verification.
+        yield existing
+        return
+    with cw.run_records.capture_inputs() as capture:
+        token = _ANALYSIS_CAPTURE.set(capture)
+        try:
+            yield capture
+        finally:
+            _ANALYSIS_CAPTURE.reset(token)
+    verify_rhythm_environment(capture.environment)
 
 def argument_group(action: str = "compare_periods") -> dict[str, dict[str, Any]]:
     """Detached, authoritative scientific settings accepted by an action."""
@@ -65,10 +200,12 @@ DETREND_METHODS: tuple[str, ...] = tuple(
     + sorted(set(_DETREND_ALLOWED) - set(_PREFERRED_DETREND_ORDER))
 )
 
+# Default for fresh microglial rhythm analyses and measured-cell displays.
+# Explicit saved recipes continue to supply their own detrending choice.
 # Explicit compatibility values for existing measurement workflows, not a
 # second default registry for the uniform trace entrance above.
 DETREND_DEFAULTS: dict[str, Any] = {
-    "detrend": "robust_linear",
+    "detrend": DEFAULT_DETREND_METHOD,
     "detrend_window_hours": 24.0,
     "detrend_polynomial_degree": 3,
     "detrend_min_valid_fraction": 0.5,
@@ -166,12 +303,81 @@ def generate_benchmark_cases(design, profiles, *, partition, seed):
     result["workbench_run_record"] = deepcopy(completed.run_record)
     return result
 
+def filter_methods():
+    """Input-filter controls are declared by the scientific engine."""
+    return deepcopy(cw.filter_methods())
+
+
+def validate_trace_filter(filtering):
+    """Canonical recipe shared by audit variants and main analysis rows."""
+    if (not isinstance(filtering, dict) or not isinstance(filtering.get('method'), str)
+            or filtering['method'] not in filter_methods()):
+        raise ValueError('Choose an available input filter.')
+    method = filtering['method']
+    allowed = {'method'} if method == 'none' else {'method', 'window_points'}
+    if set(filtering) - allowed:
+        raise ValueError('Unknown input-filter settings.')
+    if method == 'none':
+        return {'method': 'none'}
+    points = filtering.get('window_points')
+    if isinstance(points, bool) or not isinstance(points, int) or not 3 <= points <= 101 or points % 2 == 0:
+        raise ValueError('Filter window must be an odd sample count from 3 to 101.')
+    return {'method': method, 'window_points': points}
+
+
+def audit_input_filters(filtering=None, *, median_window_points=None):
+    """Always retain unfiltered input; add only explicitly requested checks."""
+    if median_window_points is not None:
+        validate_trace_filter({'method': 'median', 'window_points': median_window_points})
+    if filtering is None:
+        filtering = [{'method': 'none'}]
+        if median_window_points is not None:
+            filtering.append({'method': 'median', 'window_points': median_window_points})
+    if not isinstance(filtering, list):
+        raise ValueError('Audit input filters must be a list of filter settings.')
+    output = [{'method': 'none'}]
+    for recipe in filtering:
+        recipe = validate_trace_filter(recipe)
+        if recipe not in output:
+            output.append(recipe)
+    return output
+
+
+def audit_filter_key(recipe):
+    return 'raw' if recipe['method'] == 'none' else f"{recipe['method']}_{recipe['window_points']}"
+
+
+def audit_filter_label(recipe):
+    if recipe['method'] == 'none':
+        return 'None (unfiltered)'
+    return f"{filter_methods()[recipe['method']]['label']} ({recipe['window_points']} samples)"
+
+
 def filter_rhythm_trace(hours, values, filtering):
     """Filter through Workbench while retaining original positions and its run record."""
+    filtering = dict(filtering)
+    points = filtering.pop('window_points', None)
+    if points is not None:
+        if isinstance(points, bool) or not isinstance(points, int) or points < 3 or points % 2 == 0:
+            raise ValueError('window_points must be an odd sample count of at least 3')
+        interval = sample_interval_minutes(hours) / 60.0
+        filtering.update(window_hours=points * interval, max_gap_hours=1.5 * interval,
+                         min_observations=1)
     settings = {key: value for key, value in dict(filtering).items()
                 if key in {"method", "window_hours", "max_gap_hours", "min_observations"}}
     completed = cw.filter_trace(hours, values, filtering=settings)
     return {**deepcopy(completed.data), "workbench_run_record": deepcopy(completed.run_record)}
+
+
+def restore_rhythm_fit(hours, values, fitted, params):
+    """Restore the native analysis baseline through Workbench's display API."""
+    options = detrend_settings(params)
+    settings = {key.removeprefix('detrend_'): value for key, value in options.items()}
+    settings['method'] = settings.pop('detrend')
+    restore = getattr(cw.display_values, 'restore_baseline', None)
+    if restore is None:
+        raise ValueError('Update Circadian Workbench to enable saved model baseline restoration')
+    return restore(hours, values, fitted, **settings)
 
 
 def test_fft_components(hours, detrended_values, periods_hours, **settings):
@@ -255,6 +461,7 @@ from ._workbench.estimates import (
 )
 
 phases, channels = cw.phases, cw.channels
+cosine_fit_batch = cw.batch_periods.cosine_fit_batch
 
 
 def surrogate(values, model, generator):

@@ -44,6 +44,16 @@ The measurement branch may produce:
 These derived results are permanent Tier A artefacts with sidecars that record
 their source, parameters, method version, and upstream dependencies.
 
+Fresh rhythm analyses use Circadian Workbench's asymmetric least-squares
+baseline subtraction. The baseline follows the lower part of the signal, with
+a second-difference smoothness penalty of 1,000,000, an above-baseline weight
+of 0.01, and ten reweighting passes. The measured-cell grid applies its centered
+three-frame arithmetic mean before detrending. It preserves the original
+recording clock and missing observations. Explicit saved settings override
+these defaults; robust linear detrending remains available for replay and
+comparison. Baseline removal is an analysis operation, and its settings are
+recorded independently of display normalization.
+
 ## Display Branch
 
 Display filters may smooth in time, adjust contrast, remove a static background,

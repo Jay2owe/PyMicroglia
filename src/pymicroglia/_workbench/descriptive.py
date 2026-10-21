@@ -114,6 +114,9 @@ def fft_nlls_fitted_values(hours: Sequence[float], estimate: dict) -> np.ndarray
     origin = (pd.Timestamp(diagnostics['phase_zero_timestamp']) - pd.Timestamp('2000-01-01')).total_seconds() / 3600
     local = np.asarray(hours, float) - origin
     fitted = np.full(local.shape, float(diagnostics['mesor']))
+    if all(component.get('native_parameters') for component in components):
+        from .. import workbench
+        return fitted + np.sum(workbench.fft_component_values(hours, estimate), axis=0)
     for component in components:
         fitted += float(component['amplitude']) * np.cos(2 * np.pi * (local - float(component['phase_hours'])) / float(component['period_hours']))
     return fitted

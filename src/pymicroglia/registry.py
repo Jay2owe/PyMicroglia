@@ -50,6 +50,7 @@ MODULE_NAMES: tuple[str, ...] = (
     "tracing",
     "controls",
     "rhythm",
+    "simulation_rhythm",
     # The trace panel binds here, not under ``visualisation``: the drawing half
     # takes a finished table, and the half that builds one has to be allowed to
     # compute.
@@ -58,6 +59,8 @@ MODULE_NAMES: tuple[str, ...] = (
     "visualisation.overlays",
     "visualisation.cell_image_grid",
     "visualisation.cell_video_grid",
+    "visualisation.cell_review",
+    "video.cell_cards",
     "publication",
     "video",
     "pipelines.dluc_single_cell",
@@ -286,6 +289,15 @@ def check_parameters(action: str, params: Mapping[str, Any]) -> list[str]:
     ``module_options`` is refused naming the module rather than discovered
     after the arguments have been assembled.
     """
+    if action == 'cell_grid':
+        from . import workbench
+        from .figure_tables.cell_grid import validate_options
+        from .visualisation.figures import load
+        options = {option.name: option.default for option in load()[action].options}
+        try:
+            validate_options({**options, **params})
+        except (ValueError, TypeError, KeyError, workbench.cw.WorkbenchError) as error:
+            return [str(error)]
     module = _bound_module(action)
     probe = getattr(module, "check_parameters", None) if module is not None else None
     if not callable(probe):
@@ -460,6 +472,14 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "cell_eligibility": "audited which tracked identities from {source} may enter each downstream output",
     "tracked_cell_video": "drew tracked-cell outlines over the original photons from {source}",
     "tracked_cell_image": "drew tracked-cell outlines over one original-photon frame from {source}",
+    "cell_review": "exported linked interactive views of the saved cell masks from {source}",
+    "mask_change_map": "mapped measured changes in the saved cell masks from {source}",
+    "cell_time_sculpture": "plotted observed cell outlines through time from {source}",
+    "cell_trace_card": "plotted an original cell image and its measured traces from {source}",
+    "recording_barcode": "plotted saved cell measurements across native frames from {source}",
+    "cell_card_video": "rendered synchronized original cell images and measured traces from {source}",
+    "cell_image_grid": "drew a cell-centred image grid from {source}",
+    "cell_video_grid": "drew a cell-centred movie grid from {source}",
     "pool": "pooled every movie's tables in {source}",
     "window": "re-rolled the summaries of {source} inside its declared windows",
 }
@@ -484,8 +504,11 @@ CLAIM_TEMPLATES["follow"] = "reviewed accepted cell identities from {source}"
 NEEDS_A_CLAIM: frozenset[str] = frozenset({'rhythm_discovery', 'method_audit', 'measurement_relationships', 'behaviour_states', 'spatial_coordination', 'intervention_response',
     "states", "cluster",
     "segment",
+    "measure_expanded_outlines",
+    "measure_fixed_apertures",
     "run_controls",
     "test_rhythm",
+    "test_simulation_rhythm",
     # Which pixels are which cell, across time: the same kind of conclusion
     # as ``segment``, made over the whole recording.
     "track",

@@ -6,14 +6,15 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from .. import workbench
+from ..measure.signal import DEFAULT_REPORTER_METRIC
+from ..baseline_defaults import DEFAULT_DETREND_METHOD
 
 
 # The all-cell trace grid and the tracked-cell image/video selectors use this
 # same recipe. A caller can save an override as JSON and pass its path to each.
 DEFAULT_CELL_PERIOD_RECIPE: dict[str, Any] = {
     "fit_method": "fft_nlls",
-    "detrend": "robust_linear",
+    "detrend": DEFAULT_DETREND_METHOD,
     "multiple_testing": "none",
     "min_cycles": 2.0,
     "period_config": {"nlls_max_components": 5,
@@ -28,16 +29,16 @@ DEFAULT_CELL_PERIOD_RECIPE: dict[str, Any] = {
 def resolve_cell_period_recipe(value: Mapping[str, Any] | str | Path | None
                                ) -> dict[str, Any]:
     """Resolve and validate the complete recipe used for a grid selection."""
+    from .. import workbench
     provenance = None
     if isinstance(value, (str, Path)):
         path = Path(value)
         with path.open(encoding="utf-8") as stream:
             loaded = json.load(stream)
         if isinstance(loaded, Mapping) and loaded.get("kind") == "motion-rhythm-settings":
-            from ..pipelines.audit.profiles import load_profile
+            from ..figure_tables.cell_grid_selection import motion_profile_recipe
 
-            profile = load_profile(path, ["signal_mean"])
-            candidate = profile["measurement_recipes"]["signal_mean"]
+            profile, candidate = motion_profile_recipe(path, DEFAULT_REPORTER_METRIC)
             value = {**candidate["analysis_options"],
                      "rhythm_params": candidate["rhythm_params"],
                      "filtering": candidate["filtering"],

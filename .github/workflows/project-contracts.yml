@@ -1,0 +1,26 @@
+name: Project architecture and interface contracts
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install application and developer checks
+        run: python -m pip install -e ".[test,ui]" -r scripts/contracts-requirements.txt
+      - name: Verify catalogues, linked selection, missing data and saved state
+        run: python scripts/verify.py --group release --json

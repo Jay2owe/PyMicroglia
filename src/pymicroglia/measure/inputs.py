@@ -713,6 +713,23 @@ def load_movie(config: MeasureConfig, movie: MovieSpec) -> tuple[MeasurementCont
         }
     params["history"] = history
 
+    frame_times_hours = None
+    if movie.frame_times is not None:
+        clock = pd.read_csv(movie.frame_times)
+        if not {"source_frame", "hours"}.issubset(clock.columns):
+            raise ValueError("frame_times must contain source_frame and hours")
+        indices = pd.to_numeric(clock.source_frame, errors="raise").to_numpy(dtype=float)
+        hours = pd.to_numeric(clock.hours, errors="raise").to_numpy(dtype=float)
+        if not np.array_equal(indices, np.arange(len(clock))) or not np.isfinite(hours).all() \
+                or np.any(np.diff(hours) <= 0):
+            raise ValueError("frame_times must have consecutive zero-based source_frame indices and finite increasing hours")
+        frame_times_hours = _align_to_labels(hours, n_frames, movie.source_frame_offset,
+                                            "acquisition clock")
+        provenance["inputs"]["frame_times"] = _checked(
+            {"path": str(movie.frame_times)}, sha256_of(movie.frame_times),
+            movie.expected_sha256.get("frame_times"), config.verify_hashes,
+            "acquisition clock", movie.stem)
+
     context = MeasurementContext(
         stem=movie.stem,
         labels=labels,
@@ -731,10 +748,12 @@ def load_movie(config: MeasureConfig, movie: MovieSpec) -> tuple[MeasurementCont
         valid=valid,
         params=params,
         decisions=tracked.decisions,
+        frame_times_hours=frame_times_hours,
     )
 
     provenance["scale"] = scale.describe()
     provenance["field"] = {"frames": n_frames, "height": height, "width": width}
     provenance["identity_count"] = len(identities)
-    provenance["hours_covered"] = scale.hours(n_frames - 1)
+    provenance["hours_covered"] = (scale.hours(n_frames - 1) if frame_times_hours is None
+                                    else float(frame_times_hours[-1] - frame_times_hours[0]))
     return context, provenance

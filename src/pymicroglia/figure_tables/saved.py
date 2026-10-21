@@ -14,17 +14,44 @@ class Tables:
             self.stem = movies[0]["stem"]
         self.sources = [document(self.run / "manifest.json")]
 
-    def table(self, name, *, optional=False, scope='movie'):
+    def _path(self, name, scope='movie'):
         filename = name if name.endswith(".csv") else name + ".csv"
         paths = []
         if self.stem is not None and scope != 'run':
+            record=self.movie.get('tables',{}).get(name.removesuffix('.csv'),{})
+            if isinstance(record,str):record={'path':record}
+            if record.get('path'):
+                folder='tracker' if record.get('origin')=='tracker' else 'measure'
+                stored=record['path']
+                declared=[self.run/stored,self.run/folder/self.stem/stored,
+                          self.run/folder/str(record.get('folder',self.stem))/stored]
+                for path in declared:
+                    path=path.resolve()
+                    if not path.is_relative_to(self.run):
+                        raise ValueError('A saved table points outside the selected run')
+                    paths.append(path)
             for kind in ("measure", "tracker", "windows"):
                 paths.append(self.run / kind / self.stem / filename)
             for kind in ("tables", "derived", "tracker", "windows"):
                 paths.append(self.run / self.stem / kind / filename)
         paths.extend([self.run / "pooled" / filename, self.run / "pooled" / "tables" / filename,
                       self.run / filename])
-        found = next((p for p in paths if p.is_file()), None)
+        return next((p for p in paths if p.is_file()), None)
+
+    def table(self, name, *, optional=False, scope='movie'):
+        filename = name if name.endswith(".csv") else name + ".csv"
+        found = self._path(name, scope)
+        if name.removesuffix('.csv') in {'lifecycle_events', 'lifecycle_cells'} and self.stem is not None and scope != 'run':
+            from ..measure.lifecycle_records import review_table
+            movie = self.movie
+            labels = movie.get('spec', {}).get('labels') or movie.get('provenance', {}).get('inputs', {}).get('labels', {}).get('path')
+            labels = Path(labels) if labels else None
+            if labels and not labels.is_absolute():
+                labels = self.run / labels
+            reviewed = review_table(self.run, movie, name.removesuffix('.csv'),
+                                    measurement_path=self._path('cell_frame'), labels_path=labels)
+            if reviewed is not None:
+                found = reviewed
         if found is None:
             if optional:
                 return None

@@ -1,0 +1,412 @@
+{
+  "title": "Live PyMicroglia exploration with complementary configurable views",
+  "end_goal": "The real PyMicroglia extras workspace matches the approved linked-view demo: one scrollable page, nine configurable plot families and a shared recording, cell and time selection. Available saved measurements fill the plots automatically; settings remain local to their plot and longer analyses run only when requested. The existing Auto-Organotypic and Motion tracks tabs retain their current appearance and operations.",
+  "why": "The current scientific pages repeat traces and distributions under different topics. The accepted demo keeps distinct views together, so a user can inspect a cell, its changing outline, measurements and recording context without learning another copy of the same plot.",
+  "architecture": "Saved measurement manifest and tables -> read-only exploration API -> one shared selection plus independent plot settings -> nine canonical views. Declared source image and label stacks supply lazily loaded frame and outline data. Existing action dialogs, job manager and pipeline APIs remain the execution path. Package-specific work stays in PyMicroglia; analyses continue to belong to their existing packages.",
+  "house_rules": "Preserve the approved demo in docs/workbench-layout/demo. Freeze the existing Auto-Organotypic and Motion markup, handlers, server proxy and shared stylesheet before editing. Scope new visual styles to PyMicroglia extras. Do not relabel, refine, filter, fit or write source data during exploration. Offer only metrics and saved analyses actually present. Keep raw image pixels sharp and motion trails off initially. Honour file size and local-space budgets. Use existing analysis and figure APIs; the browser is a display layer. The user's explicit instruction authorises writing and executing every stage without an intermediate approval stop.",
+  "stages": [
+    {
+      "number": "01",
+      "title": "Freeze workspaces and map capabilities",
+      "size": "one focused stage",
+      "depends_on": [],
+      "why": "Preserve the two accepted workspaces and establish one home for every existing analysis before replacing navigation.",
+      "read_first": [
+        "00_overview.md",
+        "docs/workbench-layout/plot-types.md",
+        "docs/workbench-layout/tab-research.md",
+        "src/pymicroglia/ui/capability_map.json",
+        "src/pymicroglia/ui/static/app.js",
+        "src/pymicroglia/ui/static/index.html",
+        "src/pymicroglia/ui/catalog.py"
+      ],
+      "scope": [
+        "Record immutable hashes of the current Auto-Organotypic and Motion sections, handlers, proxy, desktop launcher and shared stylesheet.",
+        "Map every figure view to one canonical visual family, export configuration or composite report; preserve all action, measurement and pipeline entries.",
+        "Define the nine canonical view groups and local-control metadata without changing the scientific registry."
+      ],
+      "out_of_scope": [
+        "Rendering is stage 04; runtime wiring is stage 05.",
+        "Do not modify Motion or Auto-Organotypic."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/exploration_catalog.py",
+          "change": "NEW",
+          "reason": "Canonical view and capability routing"
+        },
+        {
+          "path": "tests/test_ui_exploration_catalog.py",
+          "change": "NEW",
+          "reason": "Coverage and unique-home checks"
+        },
+        {
+          "path": "docs/workbench-layout/capability-to-view.csv",
+          "change": "NEW",
+          "reason": "Saved full capability mapping"
+        },
+        {
+          "path": "docs/workbench-layout/preserved-workspaces.json",
+          "change": "NEW",
+          "reason": "Hashes protecting accepted workspaces"
+        }
+      ],
+      "implementation_sketch": "Expose exploration_catalog() with groups, views and capability entries. Every inventory entry receives exactly one route; composite saved reports remain exports rather than fake single-grammar interactive views. Save baseline hashes for the HTML blocks #motion-sidebar, #auto-workspace and #motion-workspace; JavaScript openAuto and the Motion/refinement handler range; the Motion HTTP proxy; desktop.py and styles.css. Compare these snapshots at the final gate.",
+      "exit_gate": [
+        "python -m pytest tests/test_ui_exploration_catalog.py tests/test_ui_catalog.py -q passes.",
+        "All inventory rows have one supported route and the nine canonical families appear once.",
+        "The baseline records every protected section before any UI edits."
+      ],
+      "known_risks": "The live registry can grow. Validate mappings against actual inventory and fail on an unclassified visual style instead of silently dropping an action or forcing a composite report into an unsuitable plot."
+    },
+    {
+      "number": "02",
+      "title": "Read saved measurement data",
+      "size": "one focused stage",
+      "depends_on": [
+        "01"
+      ],
+      "why": "Automatic traces, barcode and comparisons need complete, correctly aligned saved observations instead of the old page-specific preview subset.",
+      "read_first": [
+        "00_overview.md",
+        "src/pymicroglia/ui/quicklook.py",
+        "src/pymicroglia/ui/server.py",
+        "src/pymicroglia/measure/run.py",
+        "src/pymicroglia/measure/context.py",
+        "src/pymicroglia/measure/spec.py",
+        "tests/test_ui_quicklook.py"
+      ],
+      "scope": [
+        "Read manifests at supported public and workings locations and resolve declared table paths.",
+        "Return recording choices, stable saved identities, exact frame/time indices, numeric metric metadata, condition and subject context.",
+        "Return bounded recording-wide data with disclosed paging/decimation, and exact selected-cell data when required.",
+        "Separate total versus per-pixel mean light and temporal smoothing; preserve missing observations."
+      ],
+      "out_of_scope": [
+        "Image and mask loading belongs to stage 03.",
+        "Saved derived analyses are stage 06; no new statistical calculations or pipeline runs."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/exploration_data.py",
+          "change": "NEW",
+          "reason": "Read-only bounded saved observation adapter"
+        },
+        {
+          "path": "src/pymicroglia/ui/server.py",
+          "change": "MODIFY",
+          "reason": "Expose read-only exploration endpoints"
+        },
+        {
+          "path": "tests/test_ui_exploration_data.py",
+          "change": "NEW",
+          "reason": "Alignment, missingness and budget behavior"
+        }
+      ],
+      "implementation_sketch": "GET /api/exploration?run=...&stem=... returns a versioned payload with recordings, selected recording, metrics, cells, frames and preview metadata. Frames retain frame_index, source frame and hours; no new cell numbering is assigned. Read declared tables and numeric column units from the measurement registry. Source fingerprints and byte/point limits govern in-memory reuse. A selected-cell endpoint supplies exact saved values when a recording preview was bounded.",
+      "exit_gate": [
+        "python -m pytest tests/test_ui_exploration_data.py tests/test_ui_quicklook.py -q passes.",
+        "Two recordings with the same identity number remain distinct.",
+        "Offset frames, non-finite values, absent observations and over-budget tables are handled explicitly.",
+        "Loading a preview creates no file in its input run."
+      ],
+      "known_risks": "Real run metadata lives in workings folders and stored CSV names may differ from display names. Follow recorded paths, support established legacy layouts, and do not silently invent a time axis when alignment information disagrees."
+    },
+    {
+      "number": "03",
+      "title": "Load sharp source images and saved outlines",
+      "size": "one focused stage",
+      "depends_on": [
+        "02"
+      ],
+      "why": "The image and rotating outline history must describe the same saved identity and time as the measurements, without changing the tracking result.",
+      "read_first": [
+        "00_overview.md",
+        "src/pymicroglia/measure/mask_geometry.py",
+        "src/pymicroglia/figure_tables/cell_review_data.py",
+        "src/pymicroglia/measure/inputs.py",
+        "src/pymicroglia/ui/server.py",
+        "tests/test_cell_review_data.py"
+      ],
+      "scope": [
+        "Resolve only image and label sources declared by the selected recording.",
+        "Read requested TIFF planes lazily, honour source offsets and channel indexing, and use a fixed recording contrast.",
+        "Provide exact existing contours, mask runs, centres and missing states; provide bounded selected-cell outline history.",
+        "Keep trails a display-only option and compare available base/refined masks only when their provenance identifies both sources."
+      ],
+      "out_of_scope": [
+        "No segmentation, denoising, mask refinement, identity reassociation or full-stack export.",
+        "Browser rendering is stage 04."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/exploration_images.py",
+          "change": "NEW",
+          "reason": "Lazy frame and lossless mask geometry adapter"
+        },
+        {
+          "path": "src/pymicroglia/ui/server.py",
+          "change": "MODIFY",
+          "reason": "Frame and history endpoints"
+        },
+        {
+          "path": "tests/test_ui_exploration_images.py",
+          "change": "NEW",
+          "reason": "Native pixels, offset and identity preservation"
+        }
+      ],
+      "implementation_sketch": "GET /api/exploration/frame?run=...&stem=...&frame=... returns a PNG data URL, native dimensions and observation geometry for that saved frame. GET /api/exploration/history adds one selected identity's observed contours with exact frame indices. Reuse measure.mask_geometry.observation; keep holes and disconnected components. Decode a requested TIFF page, with bounded fallback only when the format cannot supply a lazy plane. Do not allocate or download an entire large compressed stack for a slider movement.",
+      "exit_gate": [
+        "python -m pytest tests/test_ui_exploration_images.py tests/test_cell_review_data.py -q passes.",
+        "Native contrast mapping is exact and no blur is applied.",
+        "A missing frame returns no invented selected-cell geometry.",
+        "Raw and label input bytes are unchanged after frame and history reads."
+      ],
+      "known_risks": "A raw stack may contain extra axes or unavailable source files. Use explicit declared channel/frame alignment, report unavailable views, and preserve usable trace exploration. Bound geometry and frame caches by source signatures."
+    },
+    {
+      "number": "04",
+      "title": "Build the canonical linked views",
+      "size": "one focused stage",
+      "depends_on": [
+        "01",
+        "02",
+        "03"
+      ],
+      "why": "The accepted visual model needs a real reusable controller with one shared selection and separate settings for each plot.",
+      "read_first": [
+        "00_overview.md",
+        "docs/workbench-layout/demo/index.html",
+        "docs/workbench-layout/demo/demo.js",
+        "docs/workbench-layout/demo/style.css",
+        "src/pymicroglia/visualisation/review_assets/review.js",
+        "src/pymicroglia/ui/static/app.js"
+      ],
+      "scope": [
+        "Port the approved three complementary groups into a reusable extras-only template and scoped styles.",
+        "Implement image, rotatable outline history, time series, matrix, events, phase clock, tissue map, relationship view and distribution as unique instances.",
+        "Link recording, cell and time selection, cursor highlights, click selection, playback and keyboard controls.",
+        "Give metrics, light aggregation, temporal means, lanes, map layers and display controls local state; preserve gaps and explicit empty states."
+      ],
+      "out_of_scope": [
+        "Do not copy synthetic formulas into production renderers.",
+        "Application navigation and action dialogs are stage 05; saved result adapters are stage 06."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/static/exploration.html",
+          "change": "NEW",
+          "reason": "Unique canonical view template"
+        },
+        {
+          "path": "src/pymicroglia/ui/static/exploration-core.js",
+          "change": "NEW",
+          "reason": "Shared selection and unit-aware data operations"
+        },
+        {
+          "path": "src/pymicroglia/ui/static/exploration.js",
+          "change": "NEW",
+          "reason": "Real-data coordinated renderer"
+        },
+        {
+          "path": "src/pymicroglia/ui/static/exploration.css",
+          "change": "NEW",
+          "reason": "Extras-scoped demo appearance"
+        },
+        {
+          "path": "tests/test_ui_exploration_core.py",
+          "change": "NEW",
+          "reason": "Browser-independent state and gap invariants"
+        }
+      ],
+      "implementation_sketch": "Expose window.PyMicrogliaExploration.mount(container, {data, api, catalogue, onAction, onSelection}). Keep one mounted exploration root; navigation jumps to its existing groups. Share {run, stem, identity, frame} while each plot owns its metric and display configuration. Smooth only along consecutive saved frames and keep absent values blank. Image requests use selection tokens so slow responses cannot paint a stale cell or frame. Pause playback on workspace departure without rebuilding plots.",
+      "exit_gate": [
+        "node --check succeeds for exploration-core.js and exploration.js.",
+        "python -m pytest tests/test_ui_exploration_core.py -q passes.",
+        "The template contains exactly nine unique canonical families.",
+        "A metric change leaves other plot settings and source values untouched."
+      ],
+      "known_risks": "Asynchronous images can arrive after a new selection. Guard every request with a render token and cap caches. Different recordings can have different metrics, units and frame counts; never carry incompatible selectors into a new recording."
+    },
+    {
+      "number": "05",
+      "title": "Integrate extras navigation and actions",
+      "size": "one focused stage",
+      "depends_on": [
+        "04"
+      ],
+      "why": "The live app should open the coordinated page while retaining all existing pipeline, method and export operations and the two protected workspaces.",
+      "read_first": [
+        "00_overview.md",
+        "src/pymicroglia/ui/static/app.js",
+        "src/pymicroglia/ui/static/index.html",
+        "src/pymicroglia/ui/catalog.py",
+        "src/pymicroglia/ui/server.py",
+        "tests/test_ui_server.py",
+        "tests/test_ui_end_to_end.py"
+      ],
+      "scope": [
+        "Replace extras scientific-page links with jumps to the three groups and explicit Pipeline, Results and Method actions.",
+        "Load the new exploration payload automatically when a run is selected or a measurement job completes.",
+        "Mount the real renderer once and preserve its selection/settings when opening and closing on-demand pages.",
+        "Route figure configurations through existing action dialogs, keep all capabilities reachable and preserve Motion/Auto blocks and handlers exactly."
+      ],
+      "out_of_scope": [
+        "No redesign of Auto-Organotypic, Motion or refinement dialogs.",
+        "No new analysis algorithms or external deployment."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/static/app.js",
+          "change": "MODIFY",
+          "reason": "Extras-only navigation and live data wiring"
+        },
+        {
+          "path": "src/pymicroglia/ui/static/index.html",
+          "change": "MODIFY",
+          "reason": "Load exploration assets and extras-only host"
+        },
+        {
+          "path": "src/pymicroglia/ui/server.py",
+          "change": "MODIFY",
+          "reason": "Serve exploration routing metadata"
+        },
+        {
+          "path": "tests/test_ui_exploration_integration.py",
+          "change": "NEW",
+          "reason": "Workspace preservation and endpoint integration"
+        }
+      ],
+      "implementation_sketch": "Retain existing showAction, JobManager, results and pipeline APIs. Keep protected Motion and Auto markup and handlers byte-equivalent to the baseline. renderNav maps group buttons to scrolling the mounted root; renderPage leaves the explorer mounted while an on-demand panel is shown. selectRun reads /api/exploration and saved artifacts independently and ignores obsolete loads. Preserve the current top-tab order and Auto full-window iframe integration.",
+      "exit_gate": [
+        "python -m pytest tests/test_ui_exploration_integration.py tests/test_ui_server.py tests/test_ui_end_to_end.py -q passes.",
+        "Every protected workspace hash still matches stage 01.",
+        "Opening or configuring a quick view causes no job submission.",
+        "Completed measurement jobs automatically show their new run."
+      ],
+      "known_risks": "Legacy localStorage values name scientific pages. Migrate them to the exploration page while preserving existing product-tab selection. CSS must remain scoped so Motion and embedded Auto retain their layout."
+    },
+    {
+      "number": "06",
+      "title": "Connect saved analyses and context views",
+      "size": "one focused stage",
+      "depends_on": [
+        "02",
+        "05"
+      ],
+      "why": "Events, clocks, spatial context and relationships must use actual saved results and remain useful when only some analyses have been run.",
+      "read_first": [
+        "00_overview.md",
+        "src/pymicroglia/ui/capability_map.json",
+        "src/pymicroglia/ui/quicklook.py",
+        "src/pymicroglia/measure/modules/rhythms.py",
+        "src/pymicroglia/measure/modules/contacts.py",
+        "src/pymicroglia/measure/run.py",
+        "src/pymicroglia/ui/results.py"
+      ],
+      "scope": [
+        "Read bounded saved rhythm phases/periods, state and lifecycle events, contacts/pairs and declared windows.",
+        "Populate phase, tissue, relationship and event controls only from supported saved fields; show precise empty reasons otherwise.",
+        "Expose existing figure configurations and missing-analysis actions from each canonical view.",
+        "Keep group comparisons explicit about cells, recording subjects and saved inference; never invent significance or neighbour associations."
+      ],
+      "out_of_scope": [
+        "Do not refit rhythms, classify states or infer contacts during display.",
+        "Publication-quality exports continue through the registered figure actions."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/ui/exploration_results.py",
+          "change": "NEW",
+          "reason": "Read-only saved-analysis adapters"
+        },
+        {
+          "path": "src/pymicroglia/ui/exploration_data.py",
+          "change": "NEW",
+          "reason": "Attach optional result availability; extends file created earlier in this plan"
+        },
+        {
+          "path": "src/pymicroglia/ui/static/exploration.js",
+          "change": "NEW",
+          "reason": "Saved context renderers and figure controls; extends file created earlier in this plan"
+        },
+        {
+          "path": "tests/test_ui_exploration_results.py",
+          "change": "NEW",
+          "reason": "Actual phase/event/pair contracts and empty states"
+        }
+      ],
+      "implementation_sketch": "Use declared tables such as rhythms, contacts_frame, contacts, lifecycle and existing state ledgers. Return named result collections with source paths, fields and availability messages. A phase clock uses a saved phase column and a stated cycle period, not a phase estimated by JavaScript. Relations use saved identity_a/identity_b links and their recorded meaning. Figure selectors open the owning registered action with run/stem/view presets; composite reports remain available as exports.",
+      "exit_gate": [
+        "python -m pytest tests/test_ui_exploration_results.py tests/test_ui_exploration_data.py -q passes.",
+        "Clock, events and relations reflect exact saved rows and units.",
+        "Unsupported or absent analyses render an honest empty view with a route to the existing analysis.",
+        "All existing capabilities remain covered by the routing inventory."
+      ],
+      "known_risks": "Saved analyses use multiple established column aliases and some are composite reports. Support verified aliases, disclose result provenance and avoid treating a fitted phase fraction as hours without its period."
+    },
+    {
+      "number": "07",
+      "title": "Verify and open the live workbench",
+      "size": "one focused stage",
+      "depends_on": [
+        "06"
+      ],
+      "why": "The final result must demonstrate the approved interactions against the real server and show that the accepted upstream workspaces remain intact.",
+      "read_first": [
+        "00_overview.md",
+        "docs/workbench-layout/demo/verify_demo.py",
+        "src/pymicroglia/ui/desktop.py",
+        "tests/test_ui_end_to_end.py",
+        "tests/test_ui_server.py",
+        "README.md"
+      ],
+      "scope": [
+        "Create a small reproducible real measurement fixture from synthetic source pixels and fixed identities, with gaps and representative saved results.",
+        "Exercise actual server endpoints and browser interactions, local controls, async selection, pipeline boundaries, persistence and resizing.",
+        "Run focused likely-regression tests and verify protected workspace fingerprints.",
+        "Document use and limits, update the existing Research Gallery record, mark all successful stages completed, finalise the plan and open the actual app."
+      ],
+      "out_of_scope": [
+        "No large biological reanalysis batch or deployment.",
+        "Do not refresh Graphify or run unrelated broad audits."
+      ],
+      "files_touched": [
+        {
+          "path": "tools/create_exploration_fixture.py",
+          "change": "NEW",
+          "reason": "Reproducible source-to-measurement browser fixture"
+        },
+        {
+          "path": "tools/verify_exploration_ui.py",
+          "change": "NEW",
+          "reason": "Real HTTP/browser acceptance runner"
+        },
+        {
+          "path": "tests/test_ui_exploration_browser.py",
+          "change": "NEW",
+          "reason": "Reusable focused browser gate"
+        },
+        {
+          "path": "docs/workbench-layout/live-exploration.md",
+          "change": "NEW",
+          "reason": "Usage, verified scope and source contract"
+        },
+        {
+          "path": "README.md",
+          "change": "MODIFY",
+          "reason": "Live exploration entry point and controls"
+        }
+      ],
+      "implementation_sketch": "Use the dedicated browser-use profile for real UI checks. Assert nine canonical plot instances, at least two selection sources, local metric independence, preserved input fingerprints and missing observations, correct recording switch and no implicit POST job requests. Check Auto and Motion baseline code and existing integration tests. Save the receipt and UI screenshots beside the small fixture. Finish with plan_records.py finalize after every stage's concrete gates pass.",
+      "exit_gate": [
+        "All focused exploration tests and existing UI/server, catalogue, saved-review and handoff tests pass.",
+        "tools/verify_exploration_ui.py records a passing real-browser receipt with no JavaScript errors.",
+        "Protected Auto-Organotypic and Motion sections match the frozen baseline.",
+        "The real updated workbench opens with a saved measurement run.",
+        "The seven stages are marked completed and the split-plan folder is finalised."
+      ],
+      "known_risks": "Some biological runs lack raw files or optional saved results. The UI must retain available trace exploration with an explicit per-view explanation. A synthetic fixture proves the interaction/data contract, not biological validity of an unrun analysis."
+    }
+  ]
+}

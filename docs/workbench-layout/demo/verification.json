@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "checks": [
+    "Nine unique plot families; initial views autofill; trails off",
+    "Matrix configuration changes in place without changing the trace",
+    "Barcode selects cell and time; gaps remain missing in every view",
+    "Trace clicks move the same shared time selection",
+    "Outline rotation, reset and local map/network/comparison controls work",
+    "Tissue map selection updates image, trace, matrix and shape history",
+    "All metric selectors work; display settings preserve original observations",
+    "Full workspace tabs, their sidebars, keyboard navigation and explicit pipeline boundary",
+    "Playback advances shared time and pauses",
+    "No horizontal page overflow at desktop, small desktop or narrow width"
+  ],
+  "javascript_errors": [],
+  "dataset": {
+    "kind": "synthetic",
+    "cells": 24,
+    "frames": 240,
+    "frame_interval_hours": 0.5
+  },
+  "backend": "none; standalone UI prototype"
+}

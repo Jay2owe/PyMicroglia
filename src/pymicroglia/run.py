@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from contextlib import nullcontext
 import inspect
 
 from .recording import capture
@@ -19,6 +20,26 @@ class ActionPending(NotImplementedError):
 
 class ActionInvalid(ValueError):
     """The action name or its arguments are wrong."""
+
+
+def _analysis_scope(action, params):
+    """Verify the circadian engine once around a complete batch of calls.
+
+    Every child retains its own scientific record. The existing session checks
+    the engine again on completion and refuses a result if its source changed.
+    Simple image operations do not import or initialize that engine here.
+    """
+    batch = action in {
+        'rhythm_discovery', 'method_audit', 'measurement_relationships',
+        'behaviour_states', 'spatial_coordination', 'intervention_response',
+    } or (action == 'states' and params.get('rhythms', True))
+    if not batch and 'figure_tables.actions.' in str(REGISTRY.binds_to(action)):
+        from .visualisation.figures import load
+        batch = load()[action].refits
+    if not batch:
+        return nullcontext()
+    from .workbench import analysis_session
+    return analysis_session()
 
 
 def run_action(action: str, *, claim: str = "", output_roots=(),
@@ -71,7 +92,8 @@ def run_recorded(action: str, *, claim: str = "", output_roots=(),
         call_params = dict(params)
         if "claim" in inspect.signature(function).parameters:
             call_params["claim"] = claim
-        run.result = function(**call_params)
+        with _analysis_scope(action, call_params):
+            run.result = function(**call_params)
     return {"result": run.result, "record": dict(run.record),
             "recorded": bool(run.recorded),
             "notebook": getattr(run, "notebook", None)}

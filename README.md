@@ -9,6 +9,11 @@ re-analysis cheap.
 
 **[Read the documentation](https://pymicroglia.readthedocs.io/)**
 
+Fresh microglial rhythm analyses and cell grids use asymmetric least-squares
+detrending through Circadian Workbench, with a smoothness penalty of 1,000,000
+and an above-baseline weight of 0.01. Explicit saved recipes and caller overrides
+retain their selected method, including robust linear detrending.
+
 The store is the idea the package is built around. Registration is the expensive
 step, and its whole output is a 298 KB table of per-frame shifts against a
 10.8 GB input — 0.003%. So the expensive steps save what they *derived* —
@@ -16,13 +21,21 @@ transforms, masks, labels, traces — rather than a compressed copy of the pixel
 and a changed parameter misses the cache on its own. Keep the recipe, not the
 cooked dish.
 
+## Developer checks
+
+Run `python scripts/verify.py` for live catalogues and linked selection checks;
+`python scripts/verify.py discover` lists validated helpers.
+See [project contract checks](docs/project-contracts.md) for setup and saved-state
+release checks.
+
 ## Install
 
 ```powershell
 pip install PyMicroglia
 ```
 
-Optional extras: `kit` (run records and house style), `figure`, `seg`, `register`
+Optional extras: `kit` (run records and house style), `figure`, `ui` (local browser
+workbench), `desktop` (native workbench window), `seg`, `register`
 (image registration), `video`,
 `rhythm`, `scn` (the automatic SCN outline, which lives in
 [Auto-Organotypic](https://pypi.org/project/Auto-Organotypic/)), `mask` (the
@@ -53,8 +66,44 @@ skipping a periodogram would be worse than failing.
 
 ## What works today
 
+The desktop workbench's **PyMicroglia extras** page has ten complementary,
+configurable views sharing one saved recording, cell and time selection.
+Measurements fill automatically; pipelines run when requested. The existing
+Auto-Organotypic and Motion tracks tabs retain their full workspaces.
+The sidebar's **Rhythm audit** page compares detrending and period methods for
+one cell and measurement. **Audit this trace** opens that page with the current
+selection. Press **Run audit** to compute; editing settings retains the last
+completed grid. Inspect a result for native evidence, or use **Use this setup**
+to add a configured main analysis row without starting a population analysis.
+  New audits use **None (unfiltered)** alone. Under **Comparison settings →
+  Additional input filters**, use **+ Add filter** to compare median or moving-mean
+  filters at several window lengths. Each selected input overlays the same grid
+  plots and has a separate period-result row. Inputs transfer with their exact filtering; normalisation changes
+display values only. Completed audits, evidence tables and a Python replay
+script are saved under the measurement run's `AI_Exports/rhythm_audits/` folder.
+See [linked exploration](docs/workbench-layout/live-exploration.md) for controls,
+saved-data requirements and verified limits.
+
+**Compare cells & groups** uses full saved measurements across recordings and
+runs. In **Set conditions → Load recordings together**, enter saved measurement
+folders, one per line, and click **Add recordings** to combine them in one window.
+Every loaded source also appears in the top **Recording** dropdown. Switching
+sources keeps the combined comparison; reloading restores the selected source.
+Then select cells by ID or ranges (for example `1, 5, 10-20`),
+select recordings with checkboxes, or preview recording-name regular-expression
+matches. Choose or type a condition and click **Set condition**. Individual cell
+labels override their recording; setting a whole recording replaces its cell labels.
+Additional factors, sample identifiers and completed rhythm selections are in
+Advanced. **Add plot** creates independent cards with shared measurement,
+appearance, exclusion and export controls. Recording summaries are the default;
+cell points, paired samples, distributions and condition time courses are
+available. **Run comparison** explicitly saves a statistical test; effect plots
+use completed results, and changed settings mark previous results. Assignments,
+plot settings and results persist under `AI_Exports/comparisons/`; exports include
+native figures, plotted values and a Python replay script.
+
 PyMicroglia includes tracked-cell measurements, state models and clustering,
-cell-following videos, 84 figure actions with selectable views, and six workflows
+cell-following videos, 88 figure actions with selectable views, and 11 workflows
 for rhythms, method audits, relationships, states, coordination and interventions.
 The U-Net mask, six-file Motion input preparation, frozen Motion tracker,
 post-tracking cell eligibility, tracked-cell intensity measurement and
@@ -72,6 +121,47 @@ pymicroglia describe rhythm_discovery
 Every action's live description lists its accepted parameters, defaults and
 availability. Search the installed guide with
 `from pymicroglia import context; context.search("tracked recording")`.
+
+## Desktop workbench
+
+The workbench has three full-window tabs: the installed Auto-Organotypic
+workflow, Motion track review, and PyMicroglia analyses. Signal and rhythms and
+Tissue and territory lead the PyMicroglia sidebar. Every registered action is
+also available in **All methods**. Selecting a saved measurement run fills each
+scientific page with measured time plots and between-cell distributions; the
+Signal and rhythms page also shows any saved period estimates. These quick
+views read bounded samples from saved tables and never refit a rhythm. Their
+Settings buttons change the displayed measurement, three- or seven-frame
+display mean, number of cells, line view, or histogram bins. Further figure
+methods are available below the plots. Complete workflows have their own
+**Pipelines** sidebar page and run only when selected. Finishing a measurement
+job selects its new run and opens the quick plots automatically.
+
+```powershell
+cd "C:\Users\Owner\UK Dementia Research Institute Dropbox\Brancaccio Lab\Jamie\Experiments\Microglia Project\PyMicroglia"
+python -m pip install -e ".[desktop,figure,kit]"
+pymicroglia ui --motion-root "..\Motion"
+```
+
+Use `pymicroglia ui --browser --motion-root "..\Motion"` for the same local
+interface in a browser. `--project FOLDER` opens a saved Auto-Organotypic
+experiment in the first tab. The Motion service uses that checkout's existing
+manual editor; it writes a new session for each identity correction. **Prepare
+measurement inputs** in Motion's Outline handoff page exports aligned labels
+and signal from the selected session to a separate folder, then offers the
+accepted single-frame outline refiner, a CD68 refiner, a saved or custom
+provider, or no refinement. The selected labels open in the PyMicroglia
+measurement form with the intensity module filled in. The source session and
+automatic tracking stay unchanged. Choose the trained model weights file when
+using a learned refiner, unless its path is already configured in the environment.
+
+The browser host is bound to this computer. Recent runs, saved figures,
+measurements, and output files are available in Results and export. TIFFs are
+offered as downloads; PNG, SVG, and video files preview in the page. The
+workbench reads one selected results folder shallowly, avoiding a recursive
+scan of Dropbox data.
+Automatic trace previews stop if the selected tables exceed 256 MB; saved
+figures remain available in Results and export.
 
 The catalogue behind `describe` ships as a data file, generated once from the
 protocol scripts and then owned by this package:
@@ -485,6 +575,12 @@ auto_microglia.run(r"C:\Recordings\MCG_04", experiment="MCG_04",
                    instrument="lumicycle")
 ```
 
+Independent cell dynamics outputs are available through `run_action`:
+`mask_change_map`, `cell_time_sculpture`, `cell_trace_card`, `cell_card_video`
+and `recording_barcode`. Their numerical methods live in the measurement and
+figure-preparation modules, and each output runs separately from a saved
+measurement run. See [cell dynamics analyses](docs/wiki/cell-dynamics.md).
+
 It reimplements none of that chain. It calls
 `auto_organotypic.pipeline.run_pipeline` and passes every keyword through, so a
 stage that package gains, a parameter it adds and a default it fixes all arrive
@@ -831,3 +927,37 @@ included in every source and wheel distribution.
 
 Until an archived release is available, cite the repository URL and the
 PyMicroglia version reported by `pymicroglia doctor`.
+
+
+## Assistant controls (ai-ify 0.5)
+
+The assistant uses the app's existing actions, its on-screen controls and the chosen local agent's installed skills and file access. Like a toolbox, the app ships guidance and verified shortcuts; the assistant chooses which to use. It is not limited to UI clicks. Scientific defaults, confirmations, original inputs and captured task contexts still apply.
+
+Install `PyMicroglia[ui,ai]` in the Python environment that launches the app. Install and sign in to Claude Code or Codex to use that subscription; the helper setup itself needs no agent account or API key. The window adds its assistant when the optional dependency is installed; set `PYMICROGLIA_AI=0` to omit it.
+
+| Helper | Shipped setup | Default | User control |
+|---|---|---|---|
+| Local guidance search | Existing app guide/actions | On | Controls > Local guidance |
+| App map | Packaged `aiify_map.md` | On | Controls > App map |
+| Verified shortcuts | Packaged, backend-tested `aiify_prepared` bundle | On | Controls > Verified shortcuts |
+| Web-route actions | Host-permitted web paths | Off | Controls > Web-route actions |
+
+The assistant does not start the MCP servers from your own Claude or Codex settings, or Claude's claude.ai connectors such as Gmail; each would add a process to every conversation.
+
+Start **New chat** after changing helper switches; they do not rewrite a running task. Provider, model, reasoning effort and permission mode remain in the shared panel when offered by the chosen agent/profile. The app supplies the map and bundle; users do not generate or verify them during chats. Invalid or modified bundles fail verification rather than executing.
+
+Startup defaults are configurable through `PYMICROGLIA_AIIFY_OPTIONS`, a JSON object with boolean `how`, `app_map`, `prepared` and `routes` keys. Omitted fields retain the defaults above. Route opt-in never widens the host's allowed paths. The app-owned `ai_assistant.install(..., options=...)` accepts the same overrides.
+
+```mermaid
+flowchart LR
+  A["App ships guide, map and verified shortcut"] --> B["Shared assistant panel"]
+  C["User signs in; chooses agent and optional helpers"] --> B
+  B --> D["Native actions and recorded jobs"]
+  B --> E["Shared browser bridge and on-screen controls"]
+  B --> F["Local agent: installed skills and file access"]
+  G["Web-route actions: explicit opt-in"] --> D
+```
+
+Analysis actions submit to the existing JobManager, preserve validation and scientific claim requirements, and appear in the window's job list. Optional route discovery covers `/api/*` and retains native validation.
+
+The filesystem-capable assistant is available only from this computer; ordinary app APIs keep their existing access rules.

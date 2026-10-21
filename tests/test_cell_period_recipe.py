@@ -36,9 +36,9 @@ def test_exported_method_profile_preserves_its_complete_recipe(tmp_path, monkeyp
                  "filtering": filtering, "candidate_id": "candidate-id"}
     def validated_profile(file, measurements):
         assert file == path
-        assert measurements == ["signal_mean"]
+        assert measurements == ["integrated_density_mean3"]
         return {"profile_id": "profile-id",
-                "measurement_recipes": {"signal_mean": candidate}}
+                "measurement_recipes": {"integrated_density_mean3": candidate}}
     monkeypatch.setattr(profiles, "load_profile", validated_profile)
     recipe = resolve_cell_period_recipe(path)
     assert recipe["fit_method"] == "lomb"

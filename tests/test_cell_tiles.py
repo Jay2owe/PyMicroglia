@@ -8,6 +8,22 @@ import tifffile
 from pymicroglia.visualisation.cell_tiles import cell_tiles
 
 
+def test_enlarged_cells_keep_original_pixel_values_and_missing_edges(tmp_path):
+    raw_path, label_path, raw, _labels = _files(tmp_path)
+    tiles = cell_tiles(raw_path, label_path, source_frame_offset=2,
+                       crop_basis="own_cell", fill_tile=True,
+                       display_size_px=128)
+    assert tiles[0].provenance["display_resampling"] == "nearest"
+    for tile in tiles:
+        with tile.open_series() as view:
+            enlarged = view.frame(2, 0)
+        assert enlarged.shape == (128, 128)
+        # Enlargement selects real source samples: no invented intensities.
+        assert np.isin(enlarged[np.isfinite(enlarged)], raw[2, 0]).all()
+    with tiles[0].open_series() as view:
+        assert np.isnan(view.frame(2, 0)[:, 0]).all()
+
+
 def _files(tmp_path):
     raw = np.stack([np.arange(30 * 40, dtype=np.uint16).reshape(30, 40)
                     + t * 1500 for t in range(12)])[:, None]

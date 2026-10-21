@@ -76,7 +76,7 @@ STAGES: tuple[str, ...] = ("register", "cosmic_rays", "measure", "display",
                            "cell_masks")
 
 DEFAULT_BASELINES: tuple[float, ...] = (24.0, 48.0)
-DEFAULT_DETRENDS: tuple[str, ...] = ("cubic", "poly6")
+DEFAULT_DETRENDS: tuple[str, ...] = _tracing.DEFAULT_DETRENDS
 #: ``dluc_pipeline.py``'s ``--seed``. Decoy placement is random and the seed is
 #: what makes a p-value reproducible.
 DEFAULT_SEED = 163

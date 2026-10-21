@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PyMicroglia Workbench</title>
+  <script>try{document.documentElement.dataset.pmWorkspace=localStorage.getItem("pm-workspace")||"micro";const choice=localStorage.getItem("pm-extras-theme")||"auto";document.documentElement.dataset.pmTheme=choice==="auto"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):choice;}catch{document.documentElement.dataset.pmWorkspace="micro";document.documentElement.dataset.pmTheme="dark";}</script>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/exploration.css?v=20261006-1">
+  <link rel="stylesheet" href="/assets/events.css?v=20261002-3">
+  <link rel="stylesheet" href="/assets/rhythm-audit.css?v=20261003-4">
+  <link rel="stylesheet" href="/assets/cell-grid.css">
+  <script src="/assets/quicklook.js" defer></script>
+  <script src="/assets/exploration-core.js?v=20261002-3" defer></script>
+  <script src="/assets/exploration-filters.js?v=20261006-outline-filter-1" defer></script>
+  <script src="/assets/measurement-picker.js?v=20261003-1" defer></script>
+  <script src="/assets/comparison-plots.js?v=20261005-3" defer></script>
+  <script src="/assets/group-comparison.js?v=20261006-2" defer></script>
+  <script src="/assets/rhythm-rows.js?v=20261006-outline-filter-1" defer></script>
+  <script src="/assets/exploration.js?v=20261011-progressive-1" defer></script>
+  <script src="/assets/events.js?v=20261003-1" defer></script>
+  <script src="/assets/rhythm-audit.js?v=20261003-4" defer></script>
+  <script src="/assets/app.js?v=20261006-outline-filter-1" defer></script>
+<script src="/assets/assistant-controls.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark">&#10035;</span><span>PyMicroglia <small>WORKBENCH</small></span></div>
+      <nav class="top-tabs" aria-label="Workspaces">
+        <button data-workspace="auto">Auto-Organotypic</button>
+        <button data-workspace="motion">Motion tracks</button>
+        <button data-workspace="micro" class="active">PyMicroglia extras</button>
+      </nav>
+      <span class="live-badge">LIVE ANALYSIS</span>
+    </header>
+    <aside id="micro-sidebar" class="sidebar">
+      <div class="sidebar-head"><span class="eyebrow">MICROGLIAL ANALYSIS</span><h2>Explore together</h2><p>One cell and time across complementary views.</p></div>
+      <nav id="micro-nav" class="nav-list" aria-label="PyMicroglia sections"></nav>
+      <label class="xp-theme-choice">Appearance <select id="micro-theme" aria-label="PyMicroglia appearance"><option value="auto">Use system setting</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <div id="exploration-readout" class="xp-readout" aria-live="polite">Choose saved measurements to begin.</div>
+      <div class="sidebar-foot"><span class="status-dot"></span> Uses saved data and live methods</div>
+    </aside>
+    <aside id="motion-sidebar" class="sidebar" hidden>
+      <div class="sidebar-head"><span class="eyebrow">MOTION TRACKS</span><h2>Identity review</h2><p>Inspect saved tracks and corrections.</p></div>
+      <nav class="nav-list" aria-label="Motion sections">
+        <button data-motion-page="frames" class="active">Review frames</button>
+        <button data-motion-page="continuity">Continuity and gaps</button>
+        <button data-motion-page="correct">Correct identities</button>
+        <button data-motion-page="handoff">Outline handoff</button>
+        <button data-motion-page="history">History and export</button>
+      </nav>
+      <div class="sidebar-foot" id="motion-status">Choose a Motion source</div>
+    </aside>
+    <main id="main" class="main">
+      <section id="auto-workspace" class="workspace auto-workspace" hidden>
+        <div id="auto-unavailable" class="empty-message" hidden>The installed Auto-Organotypic interface is unavailable.</div>
+        <iframe id="auto-frame" title="Auto-Organotypic workflow"></iframe>
+      </section>
+      <section id="motion-workspace" class="workspace" hidden>
+        <div class="page-head"><span class="eyebrow">MOTION / TRACK REVIEW</span><h1 id="motion-heading">Review frames</h1><p id="motion-subtitle">Choose a saved editing bundle or session.</p></div>
+        <div class="toolbar"><label>Source <select id="motion-source"><option value="">Choose source</option></select></label><button id="motion-refresh" class="button secondary">Refresh sources</button><span id="motion-source-status" class="muted"></span></div>
+        <div id="motion-content" class="content"></div>
+      </section>
+      <section id="micro-workspace" class="workspace">
+        <div id="micro-page-head" class="page-head"><span class="eyebrow">PYMICROGLIA / LINKED EXPLORATION</span><h1 id="page-title">A cell in context.</h1><p id="page-question"></p></div>
+        <div id="micro-toolbar" class="toolbar">
+          <label>Saved measurement run <input id="run-path" type="text" placeholder="Choose a saved run folder for figures"></label>
+          <button id="browse-results" class="button secondary" hidden>Browse folders</button>
+          <button id="open-results" class="button secondary">Review saved files</button>
+          <span id="run-context" class="muted">No run selected</span>
+        </div>
+        <div id="exploration-host"></div>
+        <div id="micro-content" class="content"></div>
+      <section id="events-workspace" class="events-page" hidden>
+        <div class="ev-heading"><h1>Events</h1><span id="ev-grid-progress" role="status" aria-live="polite">Choose a saved recording.</span></div>
+        <nav id="ev-tabs" class="ev-tabs" role="tablist" aria-label="Event types"></nav>
+        <div class="ev-review"><div class="ev-main">
+          <section id="ev-gallery" aria-label="Event cell grid"><div id="ev-list" role="tabpanel" aria-label="Recorded event cells"></div><p id="ev-empty" role="status">Choose a saved measurement run.</p></section>
+          <section id="ev-detail" hidden aria-label="Selected event frames and video">
+        <div class="ev-heading"><h1 id="ev-heading">Events</h1><span id="ev-status-label"></span></div>
+        <div class="ev-controls"><button id="ev-back" type="button">Back to grid</button><button id="ev-preview-mode" type="button" title="Scrub the original frames and exact saved outlines">Preview</button><button id="ev-video-mode" type="button" disabled title="Play a saved event film">Saved video</button><select id="ev-clip" aria-label="Saved event video" hidden title="Choose a saved video version"></select><button id="ev-generate" type="button" disabled title="Save a new event video using the native cell-film renderer">Save event video</button><a id="ev-download" hidden title="Download the selected video">Download</a><a id="ev-script" download="reproduce.py" hidden title="Download the Python script that reproduces this clip">Reproduce</a></div>
+        <div id="ev-message" role="status">Choose a saved measurement run.</div>
+        <div class="ev-media"><div class="ev-stage"><img id="ev-image" hidden alt="Original event frame with saved cell outlines"><video id="ev-video" hidden controls preload="metadata" playsinline></video></div><div id="ev-transport" class="ev-transport" hidden><button id="ev-previous" type="button" title="Previous original frame" aria-label="Previous frame">&lsaquo;</button><button id="ev-play" type="button" title="Play the event preview">Play</button><button id="ev-next" type="button" title="Next original frame" aria-label="Next frame">&rsaquo;</button><input id="ev-slider" type="range" min="0" max="0" value="0" aria-label="Event frame" title="Inspect any original frame around the event"></div><div id="ev-frame-note" aria-live="polite"></div></div>
+          </section></div>
+          <aside id="ev-options" class="ev-options" aria-label="Event options">
+    <div id="events-sidebar" class="ev-browser-sidebar" hidden>
+      <div class="ev-source"><label>Saved measurement run<input id="ev-run" type="text" title="Use a saved measurement run with event tables or tracking history"></label><div><select id="ev-stem" aria-label="Event recording" title="Choose the recording whose events to review"></select><button id="ev-refresh" type="button" title="Reload recorded events and saved clips">Refresh</button></div></div>
+      <div class="ev-filters"><select id="ev-filter" aria-label="Event type" hidden><option value="all">All event types</option></select><select id="ev-status" aria-label="Event status" title="Keep the recorded confidence status visible"><option value="all">All statuses</option><option value="not-censored">Exclude recording boundaries</option><option value="candidate">Candidate</option><option value="unproven">Unproven</option><option value="observed">Observed</option><option value="tracking assessment">Tracking assessment</option><option value="unexplained">Unexplained</option><option value="censored">Censored at boundary</option></select><input id="ev-search" type="search" placeholder="Cell or event" aria-label="Find a cell or event" title="Search cell identities, event descriptions and related cells"><small id="ev-count" aria-live="polite">0 events</small></div>
+      <div class="ev-sidebar-foot"><p id="ev-source-note"></p><label hidden>Appearance<select id="ev-theme" title="Change the Events and PyMicroglia extras interface theme"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>
+    </div>
+          <section id="ev-facts" class="ev-facts" hidden><h2>Recorded event</h2><p id="ev-event-time"></p><p id="ev-event-source"></p><p id="ev-event-cells"></p><p id="ev-colour-note">Teal: selected identity. Gold: recorded related identities.</p><button id="ev-open" type="button" disabled>Open selected event</button><button id="ev-inspect" type="button" title="Inspect this cell and frame in the existing linked plots">Inspect in PyMicroglia extras</button><details open><summary>Display and video settings</summary><label>Hours each side<input id="ev-event_hours" type="number" min="0" max="168" step="0.5" value="6" title="Context around the whole recorded event or gap"></label><label>Playback, fps<input id="ev-fps" type="number" min="0.5" max="60" step="0.5" value="6" title="Playback frames per second; source timing stays fixed"></label><label>Crop, pixels<input id="ev-crop_px" type="number" min="16" max="1024" step="1" value="96" title="Minimum square crop width, without smoothing or interpolation"></label><label>Colour<select id="ev-cell_lut" title="Colour map applied to display pixels only"><option value="red">Red</option><option value="grays">Grayscale</option><option value="dluc_purple">Dluc purple</option><option value="green">Green</option><option value="cyan">Cyan</option><option value="magenta">Magenta</option></select></label><p>Original signal; noise filtering off.</p></details><details><summary>Recorded evidence</summary><pre id="ev-evidence"></pre></details></section>
+          </aside>
+        </div><div id="ev-job-status" role="status"></div>
+      </section>
+      </section>
+    </main>
+    <aside id="job-tray" class="job-tray" hidden><div class="tray-heading"><strong>Analysis jobs</strong><button id="close-jobs" aria-label="Close jobs">Ã—</button></div><div id="job-list"></div></aside>
+    <button id="job-toggle" class="job-toggle">Jobs <span id="job-count">0</span></button>
+    <dialog id="action-dialog"><form method="dialog" id="action-form"><div class="dialog-head"><div><span class="eyebrow">LIVE PYTHON ACTION</span><h2 id="action-title"></h2><p id="action-summary"></p></div><button type="button" id="close-action" aria-label="Close">Ã—</button></div><div id="action-fields"></div><div id="action-message" role="status"></div><div class="dialog-actions"><button type="button" id="validate-action" class="button secondary">Check settings</button><button type="submit" class="button primary">Run analysis</button></div></form></dialog>
+    <dialog id="motion-dialog"><form method="dialog" id="motion-form"><div class="dialog-head"><div><span class="eyebrow">MOTION SESSION ACTION</span><h2 id="motion-action-title"></h2><p id="motion-action-summary"></p></div><button type="button" id="close-motion-action" aria-label="Close">Ã—</button></div><div id="motion-fields" class="field-list"></div><div id="motion-action-message" role="status"></div><div class="dialog-actions"><button type="submit" class="button primary">Apply to new session</button></div></form></dialog>
+    <dialog id="refinement-dialog"><form method="dialog" id="refinement-form"><div class="dialog-head"><div><span class="eyebrow">AFTER MOTION / BEFORE MEASUREMENT</span><h2>Choose outline refinement</h2><p>Motion's saved cell identities stay fixed. The chosen method changes only the mask pixels used for measurement.</p></div><button type="button" id="close-refinement" aria-label="Close">Ã—</button></div><div class="field-list"><label class="field">Method<select id="refinement-method"><option value="single_frame">Single-frame gated U-Net (accepted default)</option><option value="cd68">CD68 foreground U-Net</option><option value="saved">Saved mask or outline</option><option value="custom">Custom Python provider</option><option value="off">Off: use Motion outlines</option></select></label><label class="field" id="refinement-custom-field" hidden>Custom method<input id="refinement-custom" type="text" placeholder="package.module:function"></label><label class="field">Model weights, if needed<input id="refinement-weights" type="text" placeholder="Choose model.pt or use configured default"></label><button id="browse-weights" type="button" class="button secondary" hidden>Browse model</button><label class="field wide">Method options as JSON<textarea id="refinement-options">{}</textarea><small>Saved masks use {"path":"...","kind":"labels"}. Custom providers use their declared options.</small></label><label class="field checkbox wide"><input id="refinement-remove" type="checkbox"><span>Allow a missing cell to be removed for that frame by intersecting with the proposal</span></label></div><div id="refinement-message" role="status"></div><div class="dialog-actions"><button type="submit" class="button primary">Prepare refined masks</button></div></form></dialog>
+  </div>
+</body>
+</html>

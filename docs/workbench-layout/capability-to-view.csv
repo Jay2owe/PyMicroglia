@@ -1,0 +1,314 @@
+kind,name,view,title,home,style,summary,requires_saved_pipeline,route
+action,register,,Register,auto/source and channels,operation,"Register a time-lapse by translation-only phase correlation on a stable channel, applied to every channel at full resolution.",False,methods
+action,register_three_channel,,Register Three Channel,auto/source and channels,operation,Register three-channel phase/green/red organotypic time-lapses on the red neuronal channel.,False,methods
+action,export_registered_stack,,Export Registered Stack,auto/source and channels,operation,"Export cropped registered raw two-channel stacks with no unmixing, normalisation or rescaling.",False,methods
+action,remove_cosmic_rays,,Remove Cosmic Rays,auto/source and channels,operation,"Replace cosmic-ray damage using one outlier rule asked of a pixel, of a line and of the bleed off a saturated pixel, after registration.",False,methods
+action,remove_static_background,,Remove Static Background,auto/source and channels,operation,"Remove the static background and shot noise for display only, preserving pulse amplitude at circadian periods.",False,methods
+action,display_filter,,Display Filter,auto/source and channels,operation,Minimally filtered bioluminescence display that keeps the background visible so the channel merges without looking clipped; display only.,False,methods
+action,background,,Background,auto/source and channels,operation,"Estimate the off-tissue background from the structural channel, never from the image corners, and check the tissue mask actually contains the bioluminescence.",False,methods
+action,segment,,Segment,auto/source and channels,operation,"Detect still cells by soma prominence and watershed, then sweep for further candidates. No minimum cell area, by rule.",False,methods
+action,automatic_scn_outline,,Automatic Scn Outline,auto/source and channels,operation,"Draw the accepted A007 two-lobe SCN outline from a registered red-channel time mean or selected hyperstack channel using a mean, maximum projection or chosen frame and valid-field mask, either retain that selected plane or stream one transform across every stack plane, apply the accepted A006 top-up orientation by default, and write a mask-relative square crop.",False,methods
+action,export_roi,,Export Roi,auto/source and channels,operation,"Write a RoiSet.zip Fiji can open: one region per segmented object, plus the SCN region and its two lobes.",False,methods
+action,extract_traces,,Extract Traces,auto/source and channels,operation,"One trace per segmented object, with its local ring subtracted, and dF/F against each trace's window mean rather than an instantaneous rolling baseline.",False,methods
+action,run_controls,,Run Controls,auto/source and channels,operation,"Area-matched decoys placed on tissue and read in absolute counts, plus the instrumental control that tests whether a rhythm is also off tissue, in another channel, or in image sharpness.",False,methods
+action,test_rhythm,,Test Rhythm,auto/source and channels,operation,"Period and cosinor for every trace, from circadian-workbench, and refused outright for a source with no instrumental control.",False,methods
+action,unmix,,Unmix,auto/source and channels,operation,"Linearly unmix a signal channel from a scaled autofluorescence channel, per frame, with one constant coefficient for the whole recording.",False,methods
+action,red_only_video,,Red Only Video,auto/videos and figures,operation,"Linearly unmix microglial mCherry from autofluorescence on every raw frame, apply the saved registration transform, and export registered two-channel stacks plus timestamped red-only videos.",False,methods
+action,composite_video,,Composite Video,auto/videos and figures,operation,"Render timestamped red/green microglia composite videos from registered two-channel stacks, correcting autofluorescence drift with a display-only endpoint gain curve.",False,methods
+action,phase_green_red_video,,Phase Green Red Video,auto/videos and figures,operation,"Render timestamped green/red videos from a registered three-channel organotypic time-lapse and audit which channel is which, leaving the scientific data unnormalised.",False,methods
+action,stack_to_mp4,,Stack To Mp4,auto/videos and figures,operation,"Render a TIFF time-lapse stack as an MP4 at a stated number of experimental hours per second, through a named colour map.",False,methods
+action,trace_panel,,Trace Panel,auto/videos and figures,operation,"Draw a stack of time-trace panels from one or more trace CSVs, choosing which trace goes in which panel, merging several onto one panel, with independent control of colours, detrend, grey underlay, edge shading, time window, x ticks and vertical lines.",False,methods
+action,dluc_single_cell,,Dluc Single Cell,auto/complete workflows,operation,"Segment and trace single-cell dLuc bioluminescence from a registered time-lapse, with detrending, rhythmicity tests, instrumental controls, quality-control figures and publication videos.",False,methods
+action,cry1_dluc_photon,,Cry1 Dluc Photon,auto/complete workflows,operation,"Register four-channel Cry1-dLuc time-lapses on the bright-field channel and render photon-aware bioluminescence videos and quality-control figures, leaving the saved TIFF as raw transformed counts.",False,methods
+action,registration_figure,,Registration Figure,auto/videos and figures,operation,"Draw the per-frame translation registration applied and the residual it left, from the stored shift table rather than from pixels.",False,methods
+action,cosmic_ray_preview,,Cosmic Ray Preview,auto/videos and figures,operation,"Draw one frame before and after cosmic-ray removal beside the replacement mask, choosing the frame that lost the most pixels.",False,methods
+action,channel_figure,,Channel Figure,auto/videos and figures,operation,"Draw each channel's frame and intensity histogram side by side, so a swapped or bleeding channel is visible before anything is measured.",False,methods
+action,frames_figure,,Frames Figure,auto/videos and figures,operation,"Draw the first, middle and last frame of every channel with its timestamp, which catches a wrongly ordered hyperstack in three plane reads.",False,methods
+action,cell_overlay,,Cell Overlay,auto/videos and figures,operation,"Draw the segmented objects as outlines over the tissue and the bioluminescence they were found in, with each object's local background ring.",False,methods
+action,roi_overlay,,Roi Overlay,auto/videos and figures,operation,"Draw stored regions over the frame they were drawn on, so a region decision can be checked once instead of re-made every run.",False,methods
+action,publication_workbook,,Publication Workbook,micro/results and export,operation,Combine ReproFig figure data and every declared statistical test into one verified journal Excel workbook.,False,methods
+action,track,,Track,motion/review tracks,operation,"Give every cell an identity that outlives a frame: link the masked regions of one recording through movement, merges, splits and temporary invisibility, and write the label stack, the unclaimed ledger, the provenance sidecar, the motion evidence and the decision tables the measure step reads. Runs the frozen Motion engine shipped with the wheel.",False,methods
+action,measure,,Measure,micro/results and export,operation,"Turn tracked labels into tables: one row per cell per frame, rolled up per cell and per frame, one folder per kind of table with one ledger each, and a manifest that fingerprints what went in and what came out. Every registered measurement module runs unless told which.",False,methods
+action,pool,,Pool,micro/results and export,operation,"Concatenate an existing run's per-movie tables into <run>/pooled/, recording which movies contributed to each table, how many rows each gave and which columns one movie had that another did not.",False,methods
+action,window,,Window,micro/results and export,operation,"Re-roll an existing run's summaries inside declared windows, per cell and per frame, with each window's values against its baseline window. Re-measures nothing.",False,methods
+action,contrasts,,Contrasts,micro/results and export,operation,"Test every declared contrast over an existing run's pooled tables, one row per contrast per metric, corrected within each declared family. Pending until the Circadian Workbench importer of the rhythm stage lands.",False,methods
+action,measure_missing_gaps,,Measure Missing Gaps,motion/continuity and evidence,operation,"Optionally measure original photons in stable missing-cell gaps after tracking, using the nearest accepted outline; write separate proposal rows only.",False,methods
+action,cell_review,,Cell Review,micro/cell_explorer,operation,"Export an offline linked shape-change map, rotatable outline history, animated cell cards and clickable recording barcode from saved identities and sharp original images.",False,methods
+action,cell_eligibility,,Cell Eligibility,motion/continuity and evidence,operation,"Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",False,methods
+action,tracked_cell_video,,Tracked Cell Video,motion/review tracks,operation,Draw configurable per-identity outlines over the original photon movie using the accepted review-video display defaults.,False,methods
+action,tracked_cell_image,,Tracked Cell Image,motion/review tracks,operation,Draw configurable per-identity outlines over one original-photon frame for a still quality-control image.,False,methods
+action,cell_image_grid,,Cell Image Grid,micro/cell_explorer,operation,Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.,False,methods
+action,cell_video_grid,,Cell Video Grid,micro/cell_explorer,operation,Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.,False,methods
+action,states,,States,micro/states,operation,Learn shared cell-frame states and describe their dynamics and separately tested rhythms.,False,methods
+action,cluster,,Cluster,micro/states,operation,Learn whole-cell fingerprints and describe cohort clusters with held-out reconstruction checks.,False,methods
+action,follow,,Follow,motion/review tracks,operation,"Review accepted cell identities over the recording, lifespan or recorded event windows; display only.",False,methods
+action,cell_card_video,,Cell Card Video,micro/cell_explorer,operation,"Animate sharp original cell crops alongside their raw intensity, three-frame mean and mask-area traces with a synchronized native-time cursor.",False,methods
+action,rhythm_discovery,,Rhythm Discovery,micro/rhythms,operation,Run the rhythm discovery workflow on saved measurement tables.,False,methods
+action,method_audit,,Method Audit,micro/methods,operation,Run the method audit workflow on saved measurement tables.,False,methods
+action,measurement_relationships,,Measurement Relationships,micro/relationships,operation,Run the measurement relationships workflow on saved measurement tables.,False,methods
+action,behaviour_states,,Behaviour States,micro/states,operation,Run the behaviour states workflow on saved measurement tables.,False,methods
+action,spatial_coordination,,Spatial Coordination,micro/relationships,operation,Run the spatial coordination workflow on saved measurement tables.,False,methods
+action,intervention_response,,Intervention Response,micro/interventions,operation,Run the intervention response workflow on saved measurement tables.,False,methods
+figure view,own_clock_composite,wall_clock,Recording-time and peak-aligned population traces,micro/rhythms,Clocks and phase,Recording-time and peak-aligned population traces,False,time-series
+figure view,own_clock_composite,realigned,Recording-time and peak-aligned population traces,micro/rhythms,Clocks and phase,Recording-time and peak-aligned population traces,False,time-series
+figure view,own_clock_composite,carried,Recording-time and peak-aligned population traces,micro/rhythms,Clocks and phase,Recording-time and peak-aligned population traces,False,time-series
+figure view,clock_face,dial,Detected cycle position and oscillation amplitude,micro/rhythms,Clocks and phase,Detected cycle position and oscillation amplitude,False,phase-clock
+figure view,clock_face,rose,Detected cycle position and oscillation amplitude,micro/rhythms,Clocks and phase,Detected cycle position and oscillation amplitude,False,phase-clock
+figure view,clock_face,histogram,Detected cycle position and oscillation amplitude,micro/rhythms,Clocks and phase,Detected cycle position and oscillation amplitude,False,distribution
+figure view,all_cell_trace_grid,traces,All measured cell traces,micro/rhythms,Traces and time profiles,All measured cell traces,False,time-series
+figure view,metric_rhythm_matrix,matrix,Rhythms across selected measurements,micro/rhythms,Matrices and distributions,Rhythms across selected measurements,False,matrix
+figure view,radial_occupancy_rhythms,matrix,Rhythms of relative radial occupancy,micro/rhythms,Matrices and distributions,Rhythms of relative radial occupancy,False,matrix
+figure view,second_verse,profiles,Within-cell repeatability of a detected cycle,micro/rhythms,Traces and time profiles,Within-cell repeatability of a detected cycle,False,reports
+figure view,second_verse,peak_agreement,Within-cell repeatability of a detected cycle,micro/rhythms,Traces and time profiles,Within-cell repeatability of a detected cycle,False,reports
+figure view,second_verse,peak_shift,Within-cell repeatability of a detected cycle,micro/rhythms,Traces and time profiles,Within-cell repeatability of a detected cycle,False,reports
+figure view,cd68_reporter_rhythm,raster,Reporter rhythms of individual cells,micro/rhythms,Matrices and distributions,Reporter rhythms of individual cells,False,event-timeline
+figure view,cd68_reporter_rhythm,period_peak_matrix,Reporter rhythms of individual cells,micro/rhythms,Matrices and distributions,Reporter rhythms of individual cells,False,matrix
+figure view,cd68_reporter_rhythm,period_histogram,Reporter rhythms of individual cells,micro/rhythms,Matrices and distributions,Reporter rhythms of individual cells,False,distribution
+figure view,rhythm_strength,strength,Explicit daily-profile amplitude and stability,micro/rhythms,Traces and time profiles,Explicit daily-profile amplitude and stability,False,distribution
+figure view,rhythm_strength,stability,Explicit daily-profile amplitude and stability,micro/rhythms,Traces and time profiles,Explicit daily-profile amplitude and stability,False,distribution
+figure view,rhythm_strength,ranking,Explicit daily-profile amplitude and stability,micro/rhythms,Traces and time profiles,Explicit daily-profile amplitude and stability,False,distribution
+figure view,active_span,spans,Daily active windows with comparable supported periods,micro/rhythms,Traces and time profiles,Daily active windows with comparable supported periods,False,reports
+figure view,active_span,agreement,Daily active windows with comparable supported periods,micro/rhythms,Traces and time profiles,Daily active windows with comparable supported periods,False,reports
+figure view,active_span,rest_to_peak,Daily active windows with comparable supported periods,micro/rhythms,Traces and time profiles,Daily active windows with comparable supported periods,False,reports
+figure view,measurement_relationship_overview,within_cells,Measurement relationship overview,micro/relationships,Pair and sample comparisons,Measurement relationship overview,True,reports
+figure view,measurement_relationship_overview,between_cells,Measurement relationship overview,micro/relationships,Pair and sample comparisons,Measurement relationship overview,True,reports
+figure view,measurement_relationship_overview,delays,Measurement relationship overview,micro/relationships,Pair and sample comparisons,Measurement relationship overview,True,reports
+figure view,measurement_relationship_reports,coefficients,Measurement relationship reports,micro/relationships,Traces and lag profiles,Measurement relationship reports,True,time-series
+figure view,measurement_relationship_reports,traces,Measurement relationship reports,micro/relationships,Traces and lag profiles,Measurement relationship reports,True,time-series
+figure view,measurement_relationship_reports,scatter,Measurement relationship reports,micro/relationships,Traces and lag profiles,Measurement relationship reports,True,distribution
+figure view,measurement_relationship_reports,lags,Measurement relationship reports,micro/relationships,Traces and lag profiles,Measurement relationship reports,True,time-series
+figure view,measurement_lag_profiles,coefficients,Measurement lag profiles,micro/relationships,Traces and lag profiles,Measurement lag profiles,True,reports
+figure view,measurement_lag_profiles,support,Measurement lag profiles,micro/relationships,Traces and lag profiles,Measurement lag profiles,True,reports
+figure view,measurement_relationship_populations,cells,Measurement relationship populations,micro/relationships,Pair and sample comparisons,Measurement relationship populations,True,distribution
+figure view,measurement_relationship_populations,samples,Measurement relationship populations,micro/relationships,Pair and sample comparisons,Measurement relationship populations,True,distribution
+figure view,state_support_summary,criteria,Support for a shared state vocabulary,micro/states,Comparisons and trees,Support for a shared state vocabulary,True,reports
+figure view,state_support_summary,outcomes,Support for a shared state vocabulary,micro/states,Comparisons and trees,Support for a shared state vocabulary,True,reports
+figure view,state_profiles,values,Observed profiles of accepted states,micro/states,Cards and profiles,Observed profiles of accepted states,True,reports
+figure view,state_profiles,membership,Observed profiles of accepted states,micro/states,Cards and profiles,Observed profiles of accepted states,True,reports
+figure view,cell_state_timelines,intervals,Cell states in original recording time,micro/states,Timelines and transitions,Cell states in original recording time,True,event-timeline
+figure view,cell_state_timelines,observations,Cell states in original recording time,micro/states,Timelines and transitions,Cell states in original recording time,True,event-timeline
+figure view,cell_state_timelines,membership,Cell states in original recording time,micro/states,Timelines and transitions,Cell states in original recording time,True,matrix
+figure view,cell_state_time_summaries,occupancy,Saved cell state time summaries,micro/states,Timelines and transitions,Saved cell state time summaries,True,reports
+figure view,cell_state_time_summaries,switches,Saved cell state time summaries,micro/states,Timelines and transitions,Saved cell state time summaries,True,reports
+figure view,cell_state_time_summaries,transitions,Saved cell state time summaries,micro/states,Timelines and transitions,Saved cell state time summaries,True,reports
+figure view,cell_state_time_summaries,bouts,Saved cell state time summaries,micro/states,Timelines and transitions,Saved cell state time summaries,True,reports
+figure view,state_sample_comparisons,samples,Saved sample state comparisons,micro/states,Comparisons and trees,Saved sample state comparisons,True,distribution
+figure view,state_sample_comparisons,contrasts,Saved sample state comparisons,micro/states,Comparisons and trees,Saved sample state comparisons,True,distribution
+figure view,accepted_state_card,profiles,Observed accepted-state card,micro/states,Cards and profiles,Observed accepted-state card,True,reports
+figure view,accepted_state_card,population,Observed accepted-state card,micro/states,Cards and profiles,Observed accepted-state card,True,reports
+figure view,accepted_state_card,traces,Observed accepted-state card,micro/states,Cards and profiles,Observed accepted-state card,True,reports
+figure view,accepted_state_card,images,Observed accepted-state card,micro/states,Cards and profiles,Observed accepted-state card,True,reports
+figure view,spatial_coordination_overview,coverage,Spatial evidence overview,micro/relationships,Pair and sample comparisons,Spatial evidence overview,True,reports
+figure view,spatial_coordination_overview,geometry,Spatial evidence overview,micro/relationships,Pair and sample comparisons,Spatial evidence overview,True,reports
+figure view,spatial_coordination_overview,timing,Spatial evidence overview,micro/relationships,Pair and sample comparisons,Spatial evidence overview,True,reports
+figure view,spatial_coordination_overview,recordings,Spatial evidence overview,micro/relationships,Pair and sample comparisons,Spatial evidence overview,True,reports
+figure view,spatial_coordination_samples,samples,Spatial sample comparisons,micro/relationships,Pair and sample comparisons,Spatial sample comparisons,True,reports
+figure view,spatial_coordination_samples,contrasts,Spatial sample comparisons,micro/relationships,Pair and sample comparisons,Spatial sample comparisons,True,reports
+figure view,spatial_coordination_samples,timing,Spatial sample comparisons,micro/relationships,Pair and sample comparisons,Spatial sample comparisons,True,reports
+figure view,spatial_coordination_connections,map,Supported spatial connections,micro/relationships,Networks and spatial maps,Supported spatial connections,True,reports
+figure view,spatial_coordination_connections,evidence,Supported spatial connections,micro/relationships,Networks and spatial maps,Supported spatial connections,True,reports
+figure view,spatial_coordination_pair_card,traces,Selected cell-pair report,micro/relationships,Traces and lag profiles,Selected cell-pair report,True,reports
+figure view,spatial_coordination_pair_card,relationships,Selected cell-pair report,micro/relationships,Traces and lag profiles,Selected cell-pair report,True,reports
+figure view,spatial_coordination_pair_card,rhythms,Selected cell-pair report,micro/relationships,Traces and lag profiles,Selected cell-pair report,True,reports
+figure view,spatial_coordination_pair_card,states,Selected cell-pair report,micro/relationships,Traces and lag profiles,Selected cell-pair report,True,reports
+figure view,intervention_response_overview,coverage,Intervention response overview,micro/interventions,Group and control comparisons,Intervention response overview,True,reports
+figure view,intervention_response_overview,before_after,Intervention response overview,micro/interventions,Group and control comparisons,Intervention response overview,True,reports
+figure view,intervention_response_overview,changes,Intervention response overview,micro/interventions,Group and control comparisons,Intervention response overview,True,reports
+figure view,intervention_response_overview,controls,Intervention response overview,micro/interventions,Group and control comparisons,Intervention response overview,True,reports
+figure view,intervention_cell_report,original,Intervention cell report,micro/interventions,Cell reports,Intervention cell report,True,reports
+figure view,intervention_cell_report,anchored,Intervention cell report,micro/interventions,Cell reports,Intervention cell report,True,reports
+figure view,intervention_cell_report,evidence,Intervention cell report,micro/interventions,Cell reports,Intervention cell report,True,reports
+figure view,intervention_response_traces,original,Intervention response traces,micro/interventions,Traces and timing,Intervention response traces,True,time-series
+figure view,intervention_response_traces,anchored,Intervention response traces,micro/interventions,Traces and timing,Intervention response traces,True,time-series
+figure view,intervention_response_timing,response,Intervention response timing,micro/interventions,Traces and timing,Intervention response timing,True,reports
+figure view,intervention_response_timing,recovery,Intervention response timing,micro/interventions,Traces and timing,Intervention response timing,True,reports
+figure view,intervention_response_timing,coverage,Intervention response timing,micro/interventions,Traces and timing,Intervention response timing,True,reports
+figure view,intervention_rhythm_changes,period,Intervention rhythm changes,micro/interventions,Traces and timing,Intervention rhythm changes,True,distribution
+figure view,intervention_rhythm_changes,amplitude,Intervention rhythm changes,micro/interventions,Traces and timing,Intervention rhythm changes,True,distribution
+figure view,intervention_rhythm_changes,contrasts,Intervention rhythm changes,micro/interventions,Traces and timing,Intervention rhythm changes,True,distribution
+figure view,intervention_sample_effects,changes,Intervention sample effects,micro/interventions,Group and control comparisons,Intervention sample effects,True,distribution
+figure view,intervention_sample_effects,controls,Intervention sample effects,micro/interventions,Group and control comparisons,Intervention sample effects,True,distribution
+figure view,intervention_sample_effects,coverage,Intervention sample effects,micro/interventions,Group and control comparisons,Intervention sample effects,True,time-series
+figure view,intervention_response_patterns,cells,Intervention response patterns,micro/interventions,Group and control comparisons,Intervention response patterns,True,reports
+figure view,intervention_response_patterns,outcomes,Intervention response patterns,micro/interventions,Group and control comparisons,Intervention response patterns,True,reports
+figure view,intervention_response_patterns,samples,Intervention response patterns,micro/interventions,Group and control comparisons,Intervention response patterns,True,reports
+figure view,intervention_response_patterns,recurrence,Intervention response patterns,micro/interventions,Group and control comparisons,Intervention response patterns,True,reports
+figure view,rhythm_screen,periods,Complete cell rhythm screen,micro/rhythms,Matrices and distributions,Complete cell rhythm screen,True,reports
+figure view,rhythm_screen,status,Complete cell rhythm screen,micro/rhythms,Matrices and distributions,Complete cell rhythm screen,True,reports
+figure view,rhythm_screen_summary,fraction,Detection and period support,micro/rhythms,Matrices and distributions,Detection and period support,True,reports
+figure view,rhythm_screen_summary,periods,Detection and period support,micro/rhythms,Matrices and distributions,Detection and period support,True,reports
+figure view,rhythm_cell_report,raw,Selected cell rhythm evidence,micro/rhythms,Traces and time profiles,Selected cell rhythm evidence,True,reports
+figure view,rhythm_cell_report,detrended,Selected cell rhythm evidence,micro/rhythms,Traces and time profiles,Selected cell rhythm evidence,True,reports
+figure view,rhythm_cell_report,native,Selected cell rhythm evidence,micro/rhythms,Traces and time profiles,Selected cell rhythm evidence,True,reports
+figure view,rhythm_cell_report,images,Selected cell rhythm evidence,micro/rhythms,Traces and time profiles,Selected cell rhythm evidence,True,reports
+figure view,rhythm_trace_grid,raw,Selected cells on recording time,micro/rhythms,Traces and time profiles,Selected cells on recording time,True,time-series
+figure view,rhythm_trace_grid,detrended,Selected cells on recording time,micro/rhythms,Traces and time profiles,Selected cells on recording time,True,time-series
+figure view,rhythm_trace_grid,native,Selected cells on recording time,micro/rhythms,Traces and time profiles,Selected cells on recording time,True,time-series
+figure view,rhythm_time_matrix,matrix,Saved measurements over time,micro/rhythms,Matrices and distributions,Saved measurements over time,True,reports
+figure view,rhythm_time_matrix,status,Saved measurements over time,micro/rhythms,Matrices and distributions,Saved measurements over time,True,reports
+figure view,rhythm_group_comparison,cells,Rhythm-defined measurement groups,micro/rhythms,Matrices and distributions,Rhythm-defined measurement groups,True,distribution
+figure view,rhythm_group_comparison,samples,Rhythm-defined measurement groups,micro/rhythms,Matrices and distributions,Rhythm-defined measurement groups,True,distribution
+figure view,rhythm_group_comparison,duration,Rhythm-defined measurement groups,micro/rhythms,Matrices and distributions,Rhythm-defined measurement groups,True,distribution
+figure view,rhythm_group_comparison,missingness,Rhythm-defined measurement groups,micro/rhythms,Matrices and distributions,Rhythm-defined measurement groups,True,distribution
+figure view,rhythm_agreement,matrix,Agreement between detected rhythms,micro/rhythms,Matrices and distributions,Agreement between detected rhythms,True,reports
+figure view,rhythm_agreement,counts,Agreement between detected rhythms,micro/rhythms,Matrices and distributions,Agreement between detected rhythms,True,reports
+figure view,rhythm_agreement,unit_agreement,Agreement between detected rhythms,micro/rhythms,Matrices and distributions,Agreement between detected rhythms,True,reports
+figure view,rhythm_agreement,fractions,Agreement between detected rhythms,micro/rhythms,Matrices and distributions,Agreement between detected rhythms,True,reports
+figure view,rhythm_timing_matrices,offset,Timing and separate consistency,micro/rhythms,Clocks and phase,Timing and separate consistency,True,matrix
+figure view,rhythm_timing_matrices,within-cell,Timing and separate consistency,micro/rhythms,Clocks and phase,Timing and separate consistency,True,matrix
+figure view,rhythm_timing_matrices,within-sample,Timing and separate consistency,micro/rhythms,Clocks and phase,Timing and separate consistency,True,matrix
+figure view,rhythm_timing_matrices,across-samples,Timing and separate consistency,micro/rhythms,Clocks and phase,Timing and separate consistency,True,matrix
+figure view,rhythm_pair_report,detection,Saved compatible timing evidence,micro/rhythms,Clocks and phase,Saved compatible timing evidence,True,reports
+figure view,rhythm_pair_report,offsets,Saved compatible timing evidence,micro/rhythms,Clocks and phase,Saved compatible timing evidence,True,reports
+figure view,rhythm_pair_report,traces,Saved compatible timing evidence,micro/rhythms,Clocks and phase,Saved compatible timing evidence,True,reports
+figure view,rhythm_pair_report,timing,Saved compatible timing evidence,micro/rhythms,Clocks and phase,Saved compatible timing evidence,True,reports
+figure view,audit_performance,recovery,Saved method audit performance,micro/methods,Performance and agreement,Saved method audit performance,True,reports
+figure view,audit_performance,false_alarms,Saved method audit performance,micro/methods,Performance and agreement,Saved method audit performance,True,reports
+figure view,audit_periods,recovery,Saved method audit periods,micro/methods,Performance and agreement,Saved method audit periods,True,reports
+figure view,audit_periods,errors,Saved method audit periods,micro/methods,Performance and agreement,Saved method audit periods,True,reports
+figure view,audit_decisions,decision,Saved method audit decisions,micro/methods,Performance and agreement,Saved method audit decisions,True,reports
+figure view,audit_decisions,evidence,Saved method audit decisions,micro/methods,Performance and agreement,Saved method audit decisions,True,reports
+figure view,audit_disagreement,periods,Saved method audit disagreement,micro/methods,Performance and agreement,Saved method audit disagreement,True,reports
+figure view,audit_disagreement,tests,Saved method audit disagreement,micro/methods,Performance and agreement,Saved method audit disagreement,True,reports
+figure view,audit_focused,input,Focused saved method evidence,micro/methods,Diagnostic images,Focused saved method evidence,True,image
+figure view,audit_focused,processed,Focused saved method evidence,micro/methods,Diagnostic images,Focused saved method evidence,True,time-series
+figure view,audit_focused,native,Focused saved method evidence,micro/methods,Diagnostic images,Focused saved method evidence,True,time-series
+figure view,audit_focused,diagnostics,Focused saved method evidence,micro/methods,Diagnostic images,Focused saved method evidence,True,image
+figure view,period_method_audit,method_grid,Period-method audit,micro/methods,Performance and agreement,Period-method audit,False,matrix
+figure view,null_channel_phase_test,channels,Tracker uncertainty channels through the selected rhythm analysis,micro/methods,Performance and agreement,Tracker uncertainty channels through the selected rhythm analysis,False,reports
+figure view,null_channel_phase_test,against_floor,Tracker uncertainty channels through the selected rhythm analysis,micro/methods,Performance and agreement,Tracker uncertainty channels through the selected rhythm analysis,False,reports
+figure view,null_channel_phase_test,amplitudes,Tracker uncertainty channels through the selected rhythm analysis,micro/methods,Performance and agreement,Tracker uncertainty channels through the selected rhythm analysis,False,reports
+figure view,surveillance_not_translocation,density,Per-cell measurement density,micro/methods,Performance and agreement,Per-cell measurement density,False,reports
+figure view,territory_anchoring,anchoring,Cell-centre spatial range relative to cell size,micro/methods,Performance and agreement,Cell-centre spatial range relative to cell size,False,reports
+figure view,contrast_forest,effects,Declared comparisons,micro/interventions,Group and control comparisons,Declared comparisons,False,reports
+figure view,contrast_forest,correction,Declared comparisons,micro/interventions,Group and control comparisons,Declared comparisons,False,reports
+figure view,contrast_forest,design,Declared comparisons,micro/interventions,Group and control comparisons,Declared comparisons,False,reports
+figure view,state_histories,history,"Shared states, different cell histories",micro/states,Timelines and transitions,"Shared states, different cell histories",False,reports
+figure view,state_histories,period,"Shared states, different cell histories",micro/states,Timelines and transitions,"Shared states, different cell histories",False,reports
+figure view,state_histories,switching,"Shared states, different cell histories",micro/states,Timelines and transitions,"Shared states, different cell histories",False,reports
+figure view,state_histories,persistence,"Shared states, different cell histories",micro/states,Timelines and transitions,"Shared states, different cell histories",False,reports
+figure view,cells_on_screen,counts,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cells_on_screen,foreground,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cells_on_screen,persistence,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cells_on_screen,lifespan,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cells_on_screen,arrivals,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cells_on_screen,coverage,"Cells on screen, persistence and lifespan",micro/movement,Traces and distributions,"Cells on screen, persistence and lifespan",False,reports
+figure view,cell_report_card,tiles,Cell image and measurement report card,micro/cell_explorer,Images and films,Cell image and measurement report card,False,reports
+figure view,cell_report_card,traces,Cell image and measurement report card,micro/cell_explorer,Images and films,Cell image and measurement report card,False,reports
+figure view,step_size_distribution,distribution,Frame-to-frame step size distribution,micro/movement,Traces and distributions,Frame-to-frame step size distribution,False,distribution
+figure view,displacement_curves,curves,How centroid displacement grows with elapsed time,micro/movement,Traces and distributions,How centroid displacement grows with elapsed time,False,time-series
+figure view,displacement_curves,alpha,How centroid displacement grows with elapsed time,micro/movement,Traces and distributions,How centroid displacement grows with elapsed time,False,distribution
+figure view,identity_trajectories,map,Centroid paths with independent measured encodings,micro/movement,Spatial maps,Centroid paths with independent measured encodings,False,tissue-map
+figure view,tissue_expansion_sequence,field,Within-cell changes across the tissue,micro/tissue,Spatial maps and image sequences,Within-cell changes across the tissue,False,tissue-map
+figure view,spatial_rhythm_maps,period,Rhythm periods and peak timing across the tissue,micro/tissue,Spatial maps and image sequences,Rhythm periods and peak timing across the tissue,False,distribution
+figure view,spatial_rhythm_maps,phase,Rhythm periods and peak timing across the tissue,micro/tissue,Spatial maps and image sequences,Rhythm periods and peak timing across the tissue,False,tissue-map
+figure view,spatial_rhythm_progression,positions,Rhythm progression across space,micro/tissue,Spatial maps and image sequences,Rhythm progression across space,False,tissue-map
+figure view,spatial_rhythm_progression,matrix,Rhythm progression across space,micro/tissue,Spatial maps and image sequences,Rhythm progression across space,False,matrix
+figure view,reporter_shape_timing,timing,Reporter-to-shape timing across the tissue,micro/tissue,Spatial maps and image sequences,Reporter-to-shape timing across the tissue,False,reports
+figure view,neighbour_coordination,connections,Neighbour coordination across the tissue,micro/relationships,Networks and spatial maps,Neighbour coordination across the tissue,False,reports
+figure view,neighbour_coordination,null,Neighbour coordination across the tissue,micro/relationships,Networks and spatial maps,Neighbour coordination across the tissue,False,reports
+figure view,tissue_coverage_gaps,field,Gaps in tissue coverage over time,micro/tissue,Spatial maps and image sequences,Gaps in tissue coverage over time,False,tissue-map
+figure view,tissue_coverage_gaps,coverage,Gaps in tissue coverage over time,micro/tissue,Spatial maps and image sequences,Gaps in tissue coverage over time,False,time-series
+figure view,change_ledger,ledger,Per-cell changes between declared windows,micro/shape,Traces and timelines,Per-cell changes between declared windows,False,reports
+figure view,change_ledger,paired,Per-cell changes between declared windows,micro/shape,Traces and timelines,Per-cell changes between declared windows,False,reports
+figure view,change_ledger,spread,Per-cell changes between declared windows,micro/shape,Traces and timelines,Per-cell changes between declared windows,False,reports
+figure view,rhythmicity_above_noise,floor,Rhythm calls against a drift-matched noise floor,micro/rhythms,Traces and time profiles,Rhythm calls against a drift-matched noise floor,False,reports
+figure view,conservation_ledger,ledger,Gross footprint exchange against net size change,micro/shape,Traces and timelines,Gross footprint exchange against net size change,False,reports
+figure view,conservation_ledger,cancelled,Gross footprint exchange against net size change,micro/shape,Traces and timelines,Gross footprint exchange against net size change,False,reports
+figure view,conservation_ledger,against_size,Gross footprint exchange against net size change,micro/shape,Traces and timelines,Gross footprint exchange against net size change,False,reports
+figure view,breath_trace,breath,"Cell-footprint area gained, lost and retained between frames",micro/shape,Traces and timelines,"Cell-footprint area gained, lost and retained between frames",False,time-series
+figure view,breath_trace,small_multiples,"Cell-footprint area gained, lost and retained between frames",micro/shape,Traces and timelines,"Cell-footprint area gained, lost and retained between frames",False,time-series
+figure view,breakout_triggered_average,triggered,Responses around ranked measured frames,micro/shape,Traces and timelines,Responses around ranked measured frames,False,reports
+figure view,breakout_triggered_average,alignment,Responses around ranked measured frames,micro/shape,Traces and timelines,Responses around ranked measured frames,False,reports
+figure view,breakout_triggered_average,comparison,Responses around ranked measured frames,micro/shape,Traces and timelines,Responses around ranked measured frames,False,reports
+figure view,upheaval_events,raster,Large cell-footprint changes through time,micro/shape,Traces and timelines,Large cell-footprint changes through time,False,event-timeline
+figure view,upheaval_events,rates,Large cell-footprint changes through time,micro/shape,Traces and timelines,Large cell-footprint changes through time,False,time-series
+figure view,upheaval_events,tiles,Large cell-footprint changes through time,micro/shape,Traces and timelines,Large cell-footprint changes through time,False,image
+figure view,regime_programmes,similarity,Similarity of saved cell state sequences,micro/states,Comparisons and trees,Similarity of saved cell state sequences,False,reports
+figure view,regime_programmes,tree,Similarity of saved cell state sequences,micro/states,Comparisons and trees,Similarity of saved cell state sequences,False,reports
+figure view,regime_programmes,groups,Similarity of saved cell state sequences,micro/states,Comparisons and trees,Similarity of saved cell state sequences,False,reports
+figure view,regime_ribbon,ribbon,Size-and-movement subgroup assigned to every cell-frame,micro/states,Timelines and transitions,Size-and-movement subgroup assigned to every cell-frame,False,reports
+figure view,regime_ribbon,occupancy,Size-and-movement subgroup assigned to every cell-frame,micro/states,Timelines and transitions,Size-and-movement subgroup assigned to every cell-frame,False,reports
+figure view,regime_ribbon,profiles,Size-and-movement subgroup assigned to every cell-frame,micro/states,Timelines and transitions,Size-and-movement subgroup assigned to every cell-frame,False,reports
+figure view,regime_transitions,matrix,Observed behavioural regime transitions against shuffled time,micro/states,Timelines and transitions,Observed behavioural regime transitions against shuffled time,False,reports
+figure view,regime_transitions,null,Observed behavioural regime transitions against shuffled time,micro/states,Timelines and transitions,Observed behavioural regime transitions against shuffled time,False,reports
+figure view,regime_transitions,dwell,Observed behavioural regime transitions against shuffled time,micro/states,Timelines and transitions,Observed behavioural regime transitions against shuffled time,False,reports
+figure view,regime_reporter_bridge,paired,Reporter signal inside and outside one shape regime,micro/states,Timelines and transitions,Reporter signal inside and outside one shape regime,False,reports
+figure view,regime_reporter_bridge,triggered,Reporter signal inside and outside one shape regime,micro/states,Timelines and transitions,Reporter signal inside and outside one shape regime,False,reports
+figure view,regime_reporter_bridge,plane,Reporter signal inside and outside one shape regime,micro/states,Timelines and transitions,Reporter signal inside and outside one shape regime,False,reports
+figure view,predictability_clock,error,Next-state mismatch over an explicitly declared cycle,micro/states,Timelines and transitions,Next-state mismatch over an explicitly declared cycle,False,reports
+figure view,predictability_clock,by_regime,Next-state mismatch over an explicitly declared cycle,micro/states,Timelines and transitions,Next-state mismatch over an explicitly declared cycle,False,reports
+figure view,predictability_clock,dial,Next-state mismatch over an explicitly declared cycle,micro/states,Timelines and transitions,Next-state mismatch over an explicitly declared cycle,False,reports
+figure view,cell_lifecycle_events,timelines,"How cell tracks began, ended and divided",micro/movement,Traces and distributions,"How cell tracks began, ended and divided",False,reports
+figure view,cell_lifecycle_events,ledger,"How cell tracks began, ended and divided",micro/movement,Traces and distributions,"How cell tracks began, ended and divided",False,reports
+figure view,cell_lifecycle_events,timing,"How cell tracks began, ended and divided",micro/movement,Traces and distributions,"How cell tracks began, ended and divided",False,reports
+figure view,cell_lifecycle_summary,fates,Track events across the recording,micro/movement,Traces and distributions,Track events across the recording,False,reports
+figure view,cell_lifecycle_summary,accumulation,Track events across the recording,micro/movement,Traces and distributions,Track events across the recording,False,reports
+figure view,cell_lifecycle_summary,families,Track events across the recording,micro/movement,Traces and distributions,Track events across the recording,False,reports
+figure view,independence_map,distance,Phase difference against distance between cells,micro/relationships,Networks and spatial maps,Phase difference against distance between cells,False,reports
+figure view,independence_map,field,Phase difference against distance between cells,micro/relationships,Networks and spatial maps,Phase difference against distance between cells,False,reports
+figure view,independence_map,measures,Phase difference against distance between cells,micro/relationships,Networks and spatial maps,Phase difference against distance between cells,False,reports
+figure view,contact_ledger,pairs,Contact-pair measurement similarity,micro/relationships,Pair and sample comparisons,Contact-pair measurement similarity,False,reports
+figure view,contact_ledger,overall,Contact-pair measurement similarity,micro/relationships,Pair and sample comparisons,Contact-pair measurement similarity,False,reports
+figure view,contact_ledger,duration,Contact-pair measurement similarity,micro/relationships,Pair and sample comparisons,Contact-pair measurement similarity,False,reports
+figure view,phase_compass,profile,Within-cell metric coupling across time lags,micro/relationships,Traces and lag profiles,Within-cell metric coupling across time lags,False,reports
+figure view,phase_compass,per_cell,Within-cell metric coupling across time lags,micro/relationships,Traces and lag profiles,Within-cell metric coupling across time lags,False,reports
+figure view,phase_compass,pairs,Within-cell metric coupling across time lags,micro/relationships,Traces and lag profiles,Within-cell metric coupling across time lags,False,reports
+figure view,recurrence_wall,wall,Returns to previous measured states,micro/states,Timelines and transitions,Returns to previous measured states,False,reports
+figure view,recurrence_wall,rate,Returns to previous measured states,micro/states,Timelines and transitions,Returns to previous measured states,False,reports
+figure view,recurrence_wall,quantified,Returns to previous measured states,micro/states,Timelines and transitions,Returns to previous measured states,False,reports
+figure view,sholl_kymograph,kymograph,Radial occupancy from soma over time,micro/shape,Maps and matrices,Radial occupancy from soma over time,False,matrix
+figure view,stable_traits_versus_states,ranking,Within-cell versus between-cell variability,micro/states,Comparisons and trees,Within-cell versus between-cell variability,False,distribution
+figure view,negative_space,coverage,Field coverage by occupancy source,micro/tissue,Spatial maps and image sequences,Field coverage by occupancy source,False,reports
+figure view,negative_space,composition,Field coverage by occupancy source,micro/tissue,Spatial maps and image sequences,Field coverage by occupancy source,False,reports
+figure view,patch_ledger,revisit,Per-cell territory coverage and pixel revisits,micro/tissue,Coverage and pixel flow,Per-cell territory coverage and pixel revisits,False,reports
+figure view,patch_ledger,coverage,Per-cell territory coverage and pixel revisits,micro/tissue,Coverage and pixel flow,Per-cell territory coverage and pixel revisits,False,reports
+figure view,patch_ledger,core,Per-cell territory coverage and pixel revisits,micro/tissue,Coverage and pixel flow,Per-cell territory coverage and pixel revisits,False,reports
+figure view,pixel_fate_flow,flow,Pixel fate across selected windows,micro/tissue,Coverage and pixel flow,Pixel fate across selected windows,False,reports
+figure view,pixel_fate_flow,shares,Pixel fate across selected windows,micro/tissue,Coverage and pixel flow,Pixel fate across selected windows,False,reports
+figure view,pixel_fate_flow,sensitivity,Pixel fate across selected windows,micro/tissue,Coverage and pixel flow,Pixel fate across selected windows,False,reports
+figure view,tissue_tectonics,first_coverage,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,tissue_tectonics,cumulative_occupancy,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,tissue_tectonics,unique_cells,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,tissue_tectonics,speed,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,tissue_tectonics,significant_period,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,tissue_tectonics,splitting_events,Cell coverage and motion across the tissue field,micro/tissue,Spatial maps and image sequences,Cell coverage and motion across the tissue field,False,tissue-map
+figure view,mask_change_map,map,Changes in one saved cell mask,micro/cell_explorer,Images and films,Changes in one saved cell mask,False,tissue-map
+figure view,cell_time_sculpture,outlines,Observed cell outlines through time,micro/cell_explorer,Images and films,Observed cell outlines through time,False,outline-history
+figure view,cell_trace_card,card,Original cell image and its measured traces,micro/cell_explorer,Images and films,Original cell image and its measured traces,False,reports
+figure view,recording_barcode,barcode,Saved cell measurements across native frames,micro/cell_explorer,Matrices,Saved cell measurements across native frames,False,matrix
+pipeline,auto_microglia,,Auto Microglia,auto/complete workflows,workflow,,False,pipelines
+pipeline,dluc_single_cell,,Dluc Single Cell,auto/complete workflows,workflow,,False,pipelines
+pipeline,cry1_dluc_photon,,Cry1 Dluc Photon,auto/complete workflows,workflow,,False,pipelines
+pipeline,bioluminescence,,Bioluminescence,auto/complete workflows,workflow,,False,pipelines
+pipeline,phase_green_red,,Phase Green Red,auto/complete workflows,workflow,,False,pipelines
+pipeline,rhythm_discovery,,Rhythm Discovery,micro/rhythms,workflow,,False,pipelines
+pipeline,method_audit,,Method Audit,micro/methods,workflow,,False,pipelines
+pipeline,measurement_relationships,,Measurement Relationships,micro/relationships,workflow,,False,pipelines
+pipeline,behaviour_states,,Behaviour States,micro/states,workflow,,False,pipelines
+pipeline,spatial_coordination,,Spatial Coordination,micro/relationships,workflow,,False,pipelines
+pipeline,intervention_response,,Intervention Response,micro/interventions,workflow,,False,pipelines
+measurement module,morphology,,Morphology,micro/shape,table,,False,measure
+measurement module,intensity,,Intensity,micro/cell_explorer,table,,False,measure
+measurement module,channels,,Channels,micro/cell_explorer,table,,False,measure
+measurement module,objects,,Objects,micro/tissue,table,,False,measure
+measurement module,object_geometry,,Object Geometry,micro/tissue,table,,False,measure
+measurement module,motility,,Motility,micro/movement,table,,False,measure
+measurement module,surveillance,,Surveillance,micro/shape,table,,False,measure
+measurement module,motion_evidence,,Motion Evidence,motion/continuity and evidence,table,,False,measure
+measurement module,presence,,Presence,motion/continuity and evidence,table,,False,measure
+measurement module,lifecycle,,Lifecycle,motion/continuity and evidence,table,,False,measure
+measurement module,territory,,Territory,micro/shape,table,,False,measure
+measurement module,sholl,,Sholl,micro/shape,table,,False,measure
+measurement module,contacts,,Contacts,micro/relationships,table,,False,measure
+measurement module,neighbours,,Neighbours,micro/relationships,table,,False,measure
+measurement module,provenance,,Provenance,motion/continuity and evidence,table,,False,measure
+measurement module,regimes,,Regimes,micro/states,table,,False,measure
+measurement module,recurrence,,Recurrence,micro/states,table,,False,measure
+measurement module,sequence_distance,,Sequence Distance,micro/states,table,,False,measure
+measurement module,coupling,,Coupling,micro/relationships,table,,False,measure
+measurement module,rhythms,,Rhythms,micro/rhythms,table,,False,measure
+measurement module,trend,,Trend,micro/rhythms,table,,False,measure
+measurement module,territory_shape,,Territory Shape,micro/shape,table,,False,measure
+measurement module,walk,,Walk,micro/movement,table,,False,measure
+measurement module,history,,History,motion/continuity and evidence,table,,False,measure

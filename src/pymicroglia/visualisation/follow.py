@@ -5,15 +5,19 @@ from . import panels
 
 
 def render_frames(frames, *, field_view, window_px, options):
-    from matplotlib import pyplot as plt
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
     from matplotlib.patches import Rectangle
     from matplotlib.colors import to_rgba
-    from auto_organotypic.render.luts import colormap
+    from auto_organotypic.render.luts import colormap, paint, LUT_ANCHORS
     panels._applied('pyflash')
     side = int(options['frame_px'])
-    figure = plt.figure(figsize=(side/150,side/150),dpi=150)
+    figure = Figure(figsize=(side/150,side/150),dpi=150)
+    FigureCanvasAgg(figure)
     ax = figure.add_axes([.04,.13,.92,.75])
-    picture = ax.imshow(np.zeros((window_px,window_px)),cmap=colormap(options['cell_lut']),
+    anchored = options['cell_lut'] in LUT_ANCHORS
+    pixels = np.zeros((window_px,window_px)) if anchored else np.zeros((window_px,window_px,3),np.uint8)
+    picture = ax.imshow(pixels,cmap=colormap(options['cell_lut']) if anchored else None,
                         vmin=0,vmax=1,interpolation='nearest')
     blank = np.zeros((window_px,window_px,4))
     other = ax.imshow(blank.copy(),interpolation='nearest')
@@ -32,7 +36,7 @@ def render_frames(frames, *, field_view, window_px, options):
         inset.set_yticks([])
     try:
         for frame in frames:
-            picture.set_data(frame['picture'])
+            picture.set_data(frame['picture'] if anchored else paint(frame['picture'],options['cell_lut']))
             pixels = blank.copy()
             pixels[frame['other']] = to_rgba(panels.colour('muted'),.55)
             other.set_data(pixels)
@@ -48,14 +52,16 @@ def render_frames(frames, *, field_view, window_px, options):
             figure.canvas.draw()
             yield np.asarray(figure.canvas.buffer_rgba())[...,:3].copy()
     finally:
-        plt.close(figure)
+        figure.clear()
 
 
 def follow(run, *, stem=None, identities=(), events=(), cell_count=6, span='recording',
            event_hours=6.0, fps=6, crop_px=None, locator=True, cell_lut=None,
-           display_options=None, output_dir=None, dry_run=False, keep_frames=False):
+           display_options=None, output_dir=None, dry_run=False, keep_frames=False,
+           event_frames=(), frame_range=None):
     """Render saved identities over a recording, lifespan or event window."""
     from ..figure_tables.film_action import follow as action
     return action(run,stem=stem,identities=identities,events=events,cell_count=cell_count,span=span,
                   event_hours=event_hours,fps=fps,crop_px=crop_px,locator=locator,cell_lut=cell_lut,
-                  display_options=display_options,output_dir=output_dir,dry_run=dry_run,keep_frames=keep_frames)
+                  display_options=display_options,output_dir=output_dir,dry_run=dry_run,keep_frames=keep_frames,
+                  event_frames=event_frames,frame_range=frame_range)

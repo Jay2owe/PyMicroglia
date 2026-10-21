@@ -1,0 +1,82 @@
+{
+  "updated_at": "2026-09-28T00:34:43.874127+00:00",
+  "status": "completed",
+  "stages": {
+    "01": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_data.py tests/test_cell_review_browser.py tests/test_visualisation_limits.py tests/test_cell_grid_pipeline.py tests/test_cell_period_recipe.py tests/test_cell_video_grid.py tests/test_cell_motion_trails.py",
+      "result": "52 passed, 1 optional skip",
+      "behavior_verified": "Frozen IDs, source offsets, raw sums, exact mask rows, missing masks, safe portable export"
+    },
+    "01a": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_data.py tests/test_cell_review_browser.py tests/test_visualisation_limits.py tests/test_cell_grid_pipeline.py tests/test_cell_period_recipe.py tests/test_cell_video_grid.py tests/test_cell_motion_trails.py",
+      "result": "52 passed, 1 optional skip",
+      "behavior_verified": "Architecture gates and existing crop, period dispatch and motion-trail regression behavior"
+    },
+    "02": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_data.py tests/test_cell_review_browser.py tests/test_visualisation_limits.py tests/test_cell_grid_pipeline.py tests/test_cell_period_recipe.py tests/test_cell_video_grid.py tests/test_cell_motion_trails.py",
+      "result": "52 passed, 1 optional skip",
+      "behavior_verified": "Exact native gain/loss, translation-only centred comparison and no bridging missing observations",
+      "final_browser_regression": "7 passed, including a later-appearing lowest identity"
+    },
+    "03": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_data.py tests/test_cell_review_browser.py tests/test_visualisation_limits.py tests/test_cell_grid_pipeline.py tests/test_cell_period_recipe.py tests/test_cell_video_grid.py tests/test_cell_motion_trails.py",
+      "result": "52 passed, 1 optional skip",
+      "behavior_verified": "Observed time slices, missing gaps, drag rotation and reset preserving native selection"
+    },
+    "04": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_data.py tests/test_cell_review_browser.py tests/test_visualisation_limits.py tests/test_cell_grid_pipeline.py tests/test_cell_period_recipe.py tests/test_cell_video_grid.py tests/test_cell_motion_trails.py",
+      "result": "52 passed, 1 optional skip",
+      "behavior_verified": "Trace clicks, pinned cards, shared cursors and sharp absent-mask display",
+      "final_browser_regression": "7 passed; initial cards prefer observations present at the opening frame"
+    },
+    "05": {
+      "status": "completed",
+      "command": "python -m pytest -q tests/test_cell_review_action.py tests/test_registry.py tests/test_equivalent_script.py tests/test_record_completeness.py",
+      "result": "94 passed",
+      "catalogue_check": "passed",
+      "references": "updated",
+      "browser_barcode_checks": "included in 52-pass display gate"
+    },
+    "06": {
+      "status": "completed",
+      "export_command": "python development/cd68_v5/export_reviews.py",
+      "verification_command": "python development/cd68_v5/verify_reviews.py",
+      "recordings": 10,
+      "cells": 813,
+      "source_frames_per_recording": 101,
+      "measurement_rows": 82113,
+      "exact_observed_masks_verified": 49275,
+      "source_hashes_unchanged": true,
+      "mask_pixels_exact": true,
+      "signal_and_area_exact": true,
+      "all_display_frames_unfiltered": true,
+      "browser_recordings_verified": 10,
+      "browser_page_errors": 0,
+      "browser_network_requests": 0,
+      "browser_load_seconds_max": 0.903,
+      "current_review_start": "an existing cell with consecutive observed masks; no identity assignment",
+      "first_attempt_preserved": "development/cd68_v5/attempts/initial_view",
+      "measurement_tables_unchanged_by_opening_selection": true,
+      "package_assets": "all seven assets shipped and byte-identical to current source",
+      "installed_wheel_export": "passed without protocol checkout, including gray reporter display",
+      "additional_focused_checks": "21 passed (source independence, review data and registered action); 7 browser checks passed",
+      "opened_for_user": {
+        "index": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\cd68_v5\\index.html",
+        "example": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\cd68_v5\\95_A1.html",
+        "normal_windows_default_browser": true,
+        "foreground_confirmed": true
+      },
+      "research_gallery": {
+        "record": "ANA-20260921-001",
+        "update": "12 artifacts appended; existing title and summary preserved"
+      },
+      "free_disk_gib": 206.7
+    }
+  },
+  "completed_at": "2026-09-28T01:10:26.304021+00:00"
+}

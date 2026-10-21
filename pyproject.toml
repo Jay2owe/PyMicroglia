@@ -43,7 +43,7 @@ dependencies = [
     # Imported inside functions where a module is read by ``describe``, so
     # the package root still imports without them.
     "pandas>=2.0",
-    "circadian-workbench>=0.9.8,<0.10",
+    "circadian-workbench>=0.15,<0.16",
     "scikit-image>=0.21",
     # The automatic Motion stage executes the isolated frozen engine bundled
     # in this wheel; these are its runtime dependencies.
@@ -54,6 +54,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ai = ["ai-ify[web]>=0.5.0,<0.6"]
 states = ["scikit-learn>=1.3", "hmmlearn", "hdbscan", "threadpoolctl", "diptest", "tslearn>=0.9,<1"]
 kit     = ["analysis-kit>=0.1.0"]
 # The kit is listed here as well as under `kit`, and for a different reason.
@@ -72,6 +73,8 @@ register = ["Auto-Organotypic[register]>=0.7.2,<0.8"]
 # difference is that the same answer takes 1.6x longer. Add it yourself if that
 # matters -- it is a large wheel to make anybody take for a speed-up.
 mask    = ["torch>=2.0", "scikit-image>=0.21"]
+# Full-camera native-channel workflow, including its separate guarded process.
+native  = ["Auto-Organotypic[register,resources]>=0.7.2,<0.8", "torch>=2.0", "imageio-ffmpeg", "matplotlib==3.9.2", "analysis-kit>=0.1.0"]
 video   = ["imageio-ffmpeg"]
 # Floored, not pinned to one release: the workbench is being developed
 # alongside this package. The moved adapter uses Circadian Workbench's public
@@ -79,7 +82,7 @@ video   = ["imageio-ffmpeg"]
 # fork the implementation into this package.
 # Keep the historical extra name, but use the already-required Workbench 0.9
 # range. Auto-Organotypic's independent rhythm extra targets Workbench 0.8.
-rhythm  = ["circadian-workbench>=0.9.8,<0.10"]
+rhythm  = ["circadian-workbench>=0.15,<0.16"]
 # The accepted automatic SCN outline. Floored, not pinned, for the same reason
 # as the workbench above: it is developed alongside this package and
 # scn_outline.py uses only its public surface. If one of those names moves, fix
@@ -92,6 +95,8 @@ rhythm  = ["circadian-workbench>=0.9.8,<0.10"]
 # stops existing turns all three into a warning nobody reads.
 scn     = ["Auto-Organotypic>=0.7.2,<0.8"]
 test    = ["pytest>=8.0"]
+ui      = ["fastapi>=0.115", "uvicorn>=0.30"]
+desktop = ["fastapi>=0.115", "uvicorn>=0.30", "pywebview>=5.0"]
 
 [project.scripts]
 pymicroglia = "pymicroglia.cli:main"
@@ -106,8 +111,10 @@ package-dir = { "" = "src" }
 include-package-data = true
 
 [tool.setuptools.package-data]
-pymicroglia = ["data/*.json", "guide/*.md", "pymicroglia_context.json",
-               "tracking/data/*.zip"]
+pymicroglia = ["aiify_map.md", "aiify_prepared/*", "data/*.json", "guide/*.md", "pymicroglia_context.json",
+               "tracking/data/*.zip", "visualisation/review_assets/*.html",
+               "visualisation/review_assets/*.css", "visualisation/review_assets/*.js",
+               "ui/*.json", "ui/static/*.html", "ui/static/*.css", "ui/static/*.js"]
 
 [tool.setuptools.dynamic]
 version = { attr = "pymicroglia.__version__" }

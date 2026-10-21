@@ -27,7 +27,7 @@ def test_declared_cycle_retains_original_table_and_rules():
 
 
 def test_tissue_maps_retain_every_original_pixel():
-    data=prepare('tissue_tectonics');hashes=expected()['figures']['tissue-tectonics']['plotted_sha256']
+    data=prepare('tissue_tectonics',reporter_metric='corrected_mean');hashes=expected()['figures']['tissue-tectonics']['plotted_sha256']
     for name,table in data.auxiliary.items():
         if name in {'rhythm_map_fits.csv','statistics.csv'}:
             import gzip
@@ -46,16 +46,19 @@ def test_tissue_maps_retain_every_original_pixel():
 
 @pytest.mark.parametrize('key',['own_clock_composite','independence_map'])
 def test_unestablished_periods_are_not_compared(key):
-    with pytest.raises(ValueError,match='supported'):prepare(key)
+    with pytest.raises(ValueError,match='supported'):
+        prepare(key,**({'metrics':['corrected_mean']} if key=='independence_map' else {}))
 
 
 def test_missing_original_report_identity_is_clear():
-    with pytest.raises(ValueError,match='identity 44'):prepare('cell_report_card')
+    with pytest.raises(ValueError,match='identity 44'):
+        prepare('cell_report_card',metrics=['corrected_mean'])
 
 
 @pytest.mark.parametrize('layout',['stack','overlay'])
 def test_report_card_keeps_raw_values_and_requests_no_implicit_fit(layout):
-    data=prepare('cell_report_card',identity=1,images=0,trace_layout=layout)
+    data=prepare('cell_report_card',identity=1,images=0,trace_layout=layout,
+                 metrics=['corrected_mean','area_px','turnover_index'])
     original=Tables(FROZEN_RUN,'parity_A1').table('cell_frame').query('identity==1').sort_values('frame_index')
     table=data['traces']['table']
     assert table.fitted_value.isna().all()

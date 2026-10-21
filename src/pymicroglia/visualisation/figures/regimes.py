@@ -21,7 +21,7 @@ from ..panels import regime_reporter
 figure(Figure('regime_reporter_bridge','Reporter signal inside and outside one shape regime','behaviour',
  views=(View('paired',regime_reporter.paired),View('triggered',regime_reporter.triggered),View('plane',regime_reporter.plane,block=True)),
  reads=(Table('cell_frame'),Table('regime_profiles')),prepare='pymicroglia.figure_tables.regime_reporter:prepare',
- options=(Option('metrics',['punctateness','corrected_mean']),Option('regime',None),Option('window',6),Option('bins',24)),layout='column'))
+ options=(Option('metrics',['punctateness','integrated_density_mean3']),Option('regime',None),Option('window',6),Option('bins',24)),layout='column'))
 
 from ..panels import predictability
 figure(Figure('predictability_clock','Next-state mismatch over an explicitly declared cycle','behaviour',

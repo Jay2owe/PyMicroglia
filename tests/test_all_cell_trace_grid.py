@@ -20,7 +20,7 @@ def _functions():
     return {**vars(preparation), 'all_cell_traces': all_cell_traces}
 
 def _frame():
-    return pd.DataFrame([{'identity': identity, 'frame_index': i, 'hours': float(i), 'corrected_mean': float(value), 'area_px': float(10 + value)} for identity, multiplier in ((2, 1), (5, 8), (9, 1)) for i in range(8) for value in [multiplier * (1 + np.sin(2 * np.pi * i / 4))]])
+    return pd.DataFrame([{'identity': identity, 'frame_index': i, 'hours': float(i), 'corrected_mean': float(value), 'area_px': float(10 + value), 'integrated_density': float(value * (10 + value))} for identity, multiplier in ((2, 1), (5, 8), (9, 1)) for i in range(8) for value in [multiplier * (1 + np.sin(2 * np.pi * i / 4))]])
 
 def _resolved(**overrides):
     params = {**DEFAULTS, 'min_observations': 6, **overrides}
@@ -120,18 +120,45 @@ def test_grid_exposes_shared_science_options_without_changing_saved_selected_gri
     names = {option.name for option in grid.options}
     assert set(circadian.CIRCADIAN_ANALYSIS_OPTIONS) <= names
     assert {'metrics', 'cells', 'grid_rows', 'grid_columns', 'trace_view', 'trace_normalization', 'trace_normalization_config', 'hour_ticks', 'period_testing'} <= names
-    assert next((o.default for o in grid.options if o.name == 'metrics')) == ['signal_mean']
+    assert next((o.default for o in grid.options if o.name == 'metrics')) == ['integrated_density_mean3']
     assert next((o.default for o in grid.options if o.name == 'multiple_testing')) == 'none'
     assert next((o.default for o in grid.options if o.name == 'hour_ticks')) == 12.0
     assert next((o.default for o in grid.options if o.name == 'period_testing')) is True
     assert next((o.default for o in specs['rhythm-trace-grid'].options if o.name == 'grid_columns')) == 3
+
+
+def test_default_total_mean_uses_only_three_consecutive_native_frames():
+    frame = pd.DataFrame({
+        'identity': [1] * 6, 'frame_index': [0, 1, 2, 4, 5, 6],
+        'hours': [0., 1., 2., 4., 5., 6.],
+        'integrated_density': [10., 20., 30., 40., 50., 60.],
+    })
+    resolved = _resolved()
+    resolved['method'] = 'fft_nlls'
+    points, evidence = preparation.trace_data(
+        frame, ['integrated_density'], [1], resolved, 'raw', 'none', {},
+        period_testing=False, fft_component_test=True,
+    )
+    np.testing.assert_allclose(
+        points.filtered_value.to_numpy(float),
+        [np.nan, 20., np.nan, np.nan, 50., np.nan], equal_nan=True,
+    )
+    assert evidence.observations.iloc[0] == 2
+    other_test, _ = preparation.trace_data(
+        frame, ['integrated_density'], [1], _resolved(), 'raw', 'none', {},
+        period_testing=False, fft_component_test=False,
+    )
+    np.testing.assert_allclose(
+        other_test.filtered_value.to_numpy(float),
+        points.filtered_value.to_numpy(float), equal_nan=True,
+    )
 
 def test_registered_builder_fits_original_values_and_keeps_display_separate(monkeypatch):
     from types import SimpleNamespace
     spec = load_all()['all-cell-trace-grid']
     options = {option.name: option.default for option in spec.options}
     options['min_observations'] = 6
-    options['metrics'] = ['corrected_mean']
+    options['metrics'] = ['integrated_density']
     options['cells'] = '2,5'
     options['grid_columns'] = 2
     original = _frame()
@@ -154,8 +181,14 @@ def test_registered_builder_fits_original_values_and_keeps_display_separate(monk
         assert set(result.auxiliary['statistics.csv'].rhythm_status) == {'rhythmic'}
         assert [method for method, _, _ in received] == ['fft_nlls', 'fft_nlls']
         assert all((detrend == 'robust_linear' for _, _, detrend in received))
-        np.testing.assert_array_equal(received[0][1], preparation.median_then_mean(original.loc[original.identity.eq(2), 'corrected_mean'].to_numpy(float)))
-        assert not np.allclose(received[0][1], result.figure_data.loc[result.figure_data.identity.eq(2), 'value'].to_numpy(float))
+        expected = preparation.three_frame_mean(
+            original.loc[original.identity.eq(2), 'integrated_density'].to_numpy(float),
+            original.loc[original.identity.eq(2), 'frame_index'].to_numpy(int))
+        np.testing.assert_array_equal(received[0][1], expected[1:-1])
+        displayed = result.figure_data.loc[
+            result.figure_data.identity.eq(2) & result.figure_data.filtered_value.notna(),
+            'value'].to_numpy(float)
+        assert not np.allclose(received[0][1], displayed)
     finally:
         import matplotlib.pyplot as plt
         plt.close(result.figure)

@@ -1,0 +1,81 @@
+{
+  "verified_at": "2026-10-06T19:50:03.885137+00:00",
+  "scope": "Completed cell-grid presentation composition; no new experimental figure batch or independent scientific-algorithm validation",
+  "tests": {
+    "pymicroglia": {
+      "passed": 48,
+      "paths": [
+        "tests/test_cell_grid_composition.py",
+        "tests/test_shared_cell_grid.py",
+        "tests/test_all_cell_trace_grid.py",
+        "tests/test_cell_analysis_grid.py",
+        "tests/test_ui_catalog.py",
+        "tests/test_fixed_apertures.py"
+      ]
+    },
+    "circadian_workbench": {
+      "passed": 30,
+      "paths": [
+        "tests/test_grid_composition.py",
+        "tests/test_analysis_grid.py",
+        "tests/test_analysis_grid_svg.py"
+      ]
+    },
+    "documentation": "python -m mkdocs build --strict passed; temporary site removed",
+    "catalogue": "python tools/regenerate_catalogue.py --check: up to date",
+    "javascript": "node --check src/pymicroglia/ui/static/app.js: passed"
+  },
+  "source_sha256": {
+    "src\\pymicroglia\\figure_tables\\grid_presentation.py": "365f72f3d272df496646bd76ce2e95a78288a80aac61e5daa6928c8f66c65a90",
+    "src\\pymicroglia\\figure_tables\\cell_grid.py": "222e1bd7324374a64f66552cb9da04b4019dc37821e568f31753ec9f43dcadda",
+    "src\\pymicroglia\\visualisation\\panels\\all_cell_traces.py": "aab6f8e9c85bab2a985a72d39f26d66ed4984c06a3d2af786e6e0479bf1c74fb",
+    "src\\pymicroglia\\ui\\static\\app.js": "ce5d21f370d576227ab4a07712668b587149e9fc8b1957b8714188ad60d2820c",
+    "../../CircadianWorkbench/src\\circadian_workbench\\analysis_grid_composition.py": "b735611da15347f95a5a48389d6172e19a2b021088709f0dacfb67b2d964a35a",
+    "../../CircadianWorkbench/src\\circadian_workbench\\analysis_grid_layout.py": "b69d4b1b469cd80cf261f2ec16fd07cc600eceb46ca53e287a02dfdf97296005",
+    "../../CircadianWorkbench/src\\circadian_workbench\\analysis_grid_render.py": "03b82f98e2d955036d8cc6f5b6c7158b68c80c740f3ffbc64e8cf1f635a28657"
+  },
+  "opened_ui": {
+    "url": "http://127.0.0.1:60069/",
+    "owned_service_pid": 25400
+  },
+  "performance": {
+    "prior_round": {
+      "ready_card_to_dialog_seconds": 0.943,
+      "first_completed_headline_plots_seconds": 2.686,
+      "recording_switch_completed_plots_seconds": 3.022
+    },
+    "metadata_diagnostic": {
+      "json_bytes": 174114,
+      "cold_seconds": 3.513,
+      "warm_seconds": [
+        0.505,
+        0.447
+      ],
+      "profile_cold_seconds": 4.355,
+      "profile_import_cumulative_seconds": 3.622
+    },
+    "interpretation": "Shared-workstation observations, not controlled paired speed comparisons. Metadata requests occur once and include cold imports; no scientific work starts on control changes. App-wide plot load/switch budgets remain unmet and were not claimed solved by this feature."
+  },
+  "browser": {
+    "all_methods_ready_seconds": 2.057,
+    "first_dialog_seconds": 3.248,
+    "ready_card_to_dialog_seconds": 1.191,
+    "cell_grid_description_requests": 1,
+    "paired_selection_seconds": 0.115,
+    "typed_payload_verified": true,
+    "composition_controls_and_persistence_verified": true,
+    "unrequested_analysis_jobs": 0,
+    "themes_checked": [
+      "light",
+      "dark"
+    ],
+    "first_completed_headline_plots_seconds": 3.916,
+    "recording_switch_completed_plots_seconds": 4.873,
+    "performance_fixture": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\linked_exploration_20260929\\fixture.json",
+    "two_panel_analysis_and_draw_seconds": 53.74,
+    "native_and_trace_stacked_lanes_verified": true,
+    "page_errors": [],
+    "output": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\docs\\shared-cell-grid\\overlay-checks-final"
+  },
+  "fit_note": "FFT-NLLS curves evaluate completed components. Other period methods use the existing fixed-period descriptive cosinor during preparation; drawing never fits or repeats period tests."
+}

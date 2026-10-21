@@ -3,6 +3,7 @@ import inspect
 
 
 DESCRIPTIONS = {
+    "workers": "Independent fitting processes, 1 to 8; more than 1 supports cell_grid with trace analysis and all_cell_trace_grid. Default 1. Python scripts using workers need an if __name__ == '__main__' guard.",
     "pipeline_request": "Workflow request object or path to its JSON declaration.",
     "run": "Saved measurement run whose tables this action reads.",
     "state_options": "Additional validated StateOptions settings for learning and rhythm analysis.",
@@ -47,8 +48,27 @@ def actions(figure_common=()):
 
     from pymicroglia.pipelines._requests import FAMILIES
     from pymicroglia.figure_tables.film_action import follow
-    result.append(dict(name='follow',method='figure_tables.film_action.follow',params=rows(follow),
+    film_params = rows(follow)
+    for row in film_params:
+        if row['name'] == 'event_frames':
+            row.update(type='list', units='frames', description='Only these recorded zero-based event frame indices are filmed; empty selects all matching events.')
+        elif row['name'] == 'frame_range':
+            row.update(type='list', units='frames', description='Inclusive first and last zero-based label frames to show; trims display only, preserving identities and event decisions.')
+    result.append(dict(name='follow',method='figure_tables.film_action.follow',params=film_params,display_only=True,
         summary='Review accepted cell identities over the recording, lifespan or recorded event windows; display only.'))
+    from pymicroglia.video.cell_cards import cell_card_video
+    card_params = rows(cell_card_video)
+    descriptions = {
+        'identities': 'Saved identity labels to show together; empty selects the first three. At most six per readable movie.',
+        'frame_width_px': 'Movie width in pixels, at least 640; changes display size only.',
+        'output_name': 'Filename stem for the movie, exact measurement CSV and source receipt; null uses the recording name.',
+        'dry_run': 'Return the identity and native-frame plan without writing a movie.'}
+    for row in card_params:
+        if row['name'] in descriptions:
+            row['description'] = descriptions[row['name']]
+    result.append(dict(name='cell_card_video', method='video.cell_cards.cell_card_video',
+        params=card_params, display_only=True,
+        summary='Animate sharp original cell crops alongside their raw intensity, three-frame mean and mask-area traces with a synchronized native-time cursor.'))
     import importlib
     for name in FAMILIES:
         module = importlib.import_module("pymicroglia.pipelines." + name)

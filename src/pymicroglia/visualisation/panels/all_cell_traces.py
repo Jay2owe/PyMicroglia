@@ -59,22 +59,15 @@ def draw(points, settings, evidence=None, *, canvas=None):
     """Draw original-clock traces; share the y-axis only within each row."""
     identities = settings['identities']
     columns, rows = (settings['columns'], settings['rows'])
-    width, height = (max(8.0, columns * 2.7), max(5.0, rows * 1.75 + 2.1))
-    figure = _layout.figure(canvas, figsize=(width, height))
-    top, bottom = (1.25 / height, 1.1 / height)
-    grid = figure.add_gridspec(rows, columns, left=0.065, right=0.985, top=1 - top, bottom=bottom, wspace=0.055, hspace=0.28)
-    axes = []
+    from ... import workbench
+    figure, axes = workbench.create_cell_grid(canvas, count=len(identities),
+        rows=rows, columns=columns, sharex=True, sharey='row')
+    width, height = figure.get_size_inches()
     metric_names = settings['metrics']
     period_style = bool(settings.get('period_display_style', False))
     xlim = settings['xlim']
-    for index in range(rows * columns):
+    for index, ax in enumerate(axes):
         row, column = divmod(index, columns)
-        share = axes[row * columns] if column and row * columns < len(axes) else None
-        ax = figure.add_subplot(grid[row, column], sharex=axes[0] if axes else None, sharey=share)
-        axes.append(ax)
-        if index >= len(identities):
-            ax.set_visible(False)
-            continue
         cell = points[points.identity.eq(identities[index])]
         significant = False
         for number, metric in enumerate(metric_names):
@@ -96,6 +89,9 @@ def draw(points, settings, evidence=None, *, canvas=None):
                     annotation = annotation.removeprefix(settings['labels'][0] + ': ')
                 ax.set_title(annotation, loc='right', fontsize=8, color=house_colour('circadian_red') if period_style and significant else PERIOD_TEXT_COLOUR, pad=2)
         ax.set_xlim(*xlim)
+        from ..time_guides import time_guides
+        for hour in time_guides(xlim, settings.get('time_guides_hours'), settings.get('time_guides_offset_hours', 0.0)):
+            ax.axvline(hour, color=PERIOD_TEXT_COLOUR, linestyle='--', linewidth=0.65, alpha=0.6, zorder=0)
         tick_hours = float(settings.get('hour_ticks', 12.0))
         if not np.isfinite(tick_hours) or tick_hours <= 0:
             raise ValueError('hour_ticks must be a positive finite number')
@@ -116,12 +112,10 @@ def draw(points, settings, evidence=None, *, canvas=None):
         handles = [Line2D([], [], color=house_colour('circadian_red'), linewidth=2, label=f"{test_label} (uncorrected p < {settings.get('rhythmic_alpha', 0.05):g})"), Line2D([], [], color=house_colour('nan_text'), linewidth=2, label='Other cells')]
         if 'descriptive_fit' in points and points.descriptive_fit.notna().any():
             handles.append(Line2D([], [], color=house_colour('dark'), linewidth=2, linestyle=':', label=settings.get('fit_label') or 'Descriptive cosinor fit'))
-        grid.update(wspace=0.18, hspace=0.4)
-        figure.set_size_inches(max(width, columns * 5.2), height + 0.35 * rows + 0.8)
     else:
         handles = [plt.Line2D([], [], color=COLORS[i % len(COLORS)], linewidth=2, label=label) for i, label in enumerate(settings['labels'])]
     width, height = figure.get_size_inches()
-    figure.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1 - 0.68 / height), ncol=min(len(handles), 5), frameon=False, fontsize=10)
+    figure.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1 - 0.48 / height), ncol=min(len(handles), 5), frameon=False, fontsize=10)
     figure.text(0.02, 1 - 0.14 / height, settings['title'], fontsize=15, fontweight='bold', va='top')
     figure.text(0.012, 0.5, settings['unit'], rotation=90, ha='center', va='center', fontsize=16)
     figure.supxlabel('Recording time (hours)', y=0.16 / height, fontsize=10)
@@ -131,5 +125,98 @@ def draw(points, settings, evidence=None, *, canvas=None):
 def traces(figure, data, *, style=None, **options):
     from ._contract import Drawn
     settings={**data['settings'], 'title':'', 'claim':''}
+    if 'plot_table' in data:
+        figure, axes = draw_layers(data, settings, canvas=figure)
+        return Drawn(data['plot_table'], axes)
     figure,axes=draw(data['table'],settings,data['annotations'],canvas=figure)
     return Drawn(data['table'],axes)
+
+
+def draw_layers(data, settings, *, canvas):
+    """Draw declared layers on shared axes or independent lanes; data only."""
+    from ... import workbench
+    specs, identities = data['series_specs'], settings['identities']
+    presentation = settings['grid_presentation']
+    mode = presentation['layout']
+    from ...figure_tables.grid_presentation import trace_specs
+    groups = ([(identity, [spec]) for identity in identities for spec in trace_specs(data, identity)]
+              if mode == 'separate' else
+              [(identity, trace_specs(data, identity)) for identity in identities])
+    sizes = [len(selected) if mode == 'stack' else 1 for _, selected in groups]
+    figure, lanes = workbench.create_cell_grid_lanes(canvas, sizes=sizes,
+        rows=settings['rows'], columns=settings['columns'], sharex=True)
+    from ..time_guides import time_guides
+    for (identity, selected), group in zip(groups, lanes):
+        for index, spec in enumerate(selected):
+            axis = group[index] if mode == 'stack' else group[0]
+            rows = data['plot_table'].loc[data['plot_table'].identity.eq(identity) & data['plot_table'].plot_series.eq(spec['key'])].sort_values('frame_index', kind='stable')
+            color = COLORS[specs.index(spec) % len(COLORS)]
+            component = spec['layer'] == 'component'
+            label = spec['label']
+            if presentation['fft_components']:
+                color = house_colour('circadian_red') if component and not rows.empty and bool(rows.component_significant.iloc[0]) else house_colour('nan_text')
+            if component and not rows.empty:
+                label = rows.component_label.iloc[0]
+                if len(settings['metrics']) > 1:
+                    label = spec['label'].split(' | ')[0] + ' | ' + label
+            values = rows.plot_value.to_numpy(float)
+            axis.plot(rows.hours.to_numpy(float), values, color=color,
+                linewidth=presentation['line_width'], alpha=presentation['alpha'],
+                linestyle=':' if spec['layer'] == 'fit' else '--' if spec['layer'] == 'mean' else '-',
+                marker='o' if np.isfinite(values).sum() == 1 else None, label=label)
+            if presentation['show_fit'] and spec['layer'] == 'processed' and 'fit' not in presentation['trace_layers'] and 'descriptive_fit' in rows and rows.descriptive_fit.notna().any():
+                axis.plot(rows.hours.to_numpy(float), rows.descriptive_fit.to_numpy(float),
+                    color=color, linestyle=':', linewidth=presentation['line_width'], alpha=presentation['alpha'])
+            if mode != 'overlay':
+                axis.set_title(f'Cell {identity} | {spec["label"]}', loc='left', fontsize=10, pad=2)
+                axis.set_ylabel(spec['unit'], fontsize=8)
+                if not np.isfinite(values).any():
+                    message = rows.component_display_note.iloc[0] if component and not rows.empty else 'No completed fit' if spec['layer'] == 'fit' else 'No measured values'
+                    axis.text(.5, .5, message, transform=axis.transAxes, ha='center', va='center', fontsize=8)
+                if component:
+                    title = f'Cell {identity} | Component {int(rows.component.iloc[0])}' if not rows.empty and np.isfinite(rows.component.iloc[0]) else f'Cell {identity} | Components'
+                    if len(settings['metrics']) > 1:
+                        title += ' | ' + spec['label'].split(' | ')[0]
+                    axis.set_title(title, loc='left', fontsize=9, pad=2)
+                    axis.set_title(label.split(': ', 1)[-1], loc='right', fontsize=8, color=color, pad=2)
+                if settings.get('period_testing') and spec['layer'] in {'processed', 'fit'}:
+                    annotation = _period_annotation(data['annotations'], identity, [spec['metric']], [spec['label']])
+                    annotation = annotation.removeprefix(spec['label'] + ': ')
+                    axis.set_title(annotation, loc='right', fontsize=8, color=PERIOD_TEXT_COLOUR, pad=2)
+        for axis in group:
+            if mode == 'overlay':
+                axis.set_title(f'Cell {identity}', loc='left', fontsize=10, pad=2)
+                axis.set_ylabel(selected[0]['unit'], fontsize=8)
+                if settings.get('period_testing'):
+                    axis.set_title(_period_annotation(data['annotations'], identity, settings['metrics'], settings['labels']), loc='right', fontsize=8, color=PERIOD_TEXT_COLOUR, pad=2)
+                if presentation['fft_components'] and presentation['legend']:
+                    handles, labels = axis.get_legend_handles_labels()
+                    pairs = [(handle, label) for handle, label in zip(handles, labels) if 'Component ' in label]
+                    if pairs:
+                        axis.legend([pair[0] for pair in pairs], [pair[1] for pair in pairs], loc='upper right', fontsize=7, frameon=False)
+                if presentation['fft_components']:
+                    notes = data['plot_table'].loc[data['plot_table'].identity.eq(identity) & data['plot_table'].trace_layer.eq('component'), 'component_display_note'].dropna()
+                    notes = list(dict.fromkeys(note for note in notes if note))
+                    if notes:
+                        axis.text(.02, .02, '\n'.join(notes), transform=axis.transAxes, fontsize=8, va='bottom')
+            axis.set_xlim(*settings['xlim'])
+            for hour in time_guides(settings['xlim'], settings.get('time_guides_hours'), settings.get('time_guides_offset_hours', 0.0)):
+                axis.axvline(hour, color=PERIOD_TEXT_COLOUR, linestyle='--', linewidth=.65, alpha=.6, zorder=0)
+            interval = float(settings['hour_ticks'])
+            first = interval * math.ceil(settings['xlim'][0] / interval)
+            axis.xaxis.set_major_locator(FixedLocator(np.arange(first, settings['xlim'][1] + 1e-9, interval)))
+            axis.spines[['top', 'right']].set_visible(False)
+            axis.tick_params(axis='both', labelsize=8, length=3)
+    if presentation['legend']:
+        handles = [Line2D([], [], color=COLORS[index % len(COLORS)],
+                    linestyle=':' if spec['layer'] == 'fit' else '--' if spec['layer'] == 'mean' else '-',
+                    label=spec['label']) for index, spec in enumerate(specs)]
+        if presentation['fft_components']:
+            handles = [Line2D([], [], color=house_colour('circadian_red'), label=f"Significant component (unadjusted p < {settings['rhythmic_alpha']:g})"),
+                       Line2D([], [], color=house_colour('nan_text'), label='Other components / observations')]
+        if presentation['show_fit'] and 'processed' in presentation['trace_layers'] and 'fit' not in presentation['trace_layers'] and 'descriptive_fit' in data['plot_table'] and data['plot_table'].descriptive_fit.notna().any():
+            handles.append(Line2D([], [], color=house_colour('dark'), linestyle=':',
+                                  label=settings.get('fit_label') or 'Completed fit'))
+        figure.legend(handles=handles, loc='upper center', frameon=False, ncol=min(len(handles), 4), fontsize=10)
+    figure.supxlabel('Recording time (hours)', fontsize=10)
+    return figure, [axis for group in lanes for axis in group]

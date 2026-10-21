@@ -1,0 +1,581 @@
+{
+  "label": "candidate-final",
+  "fixture": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-media-performance-w40riy8u",
+  "corpus": [
+    {
+      "run": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-media-performance-w40riy8u\\run-0",
+      "stem": "RBM3_MCG_01",
+      "identity": 14,
+      "frame": 42,
+      "table_sha256": "fe9509502a942c31f955d7766fde990a727de4b2617ea0acd7cad6ae7bf5fadd",
+      "source_sha256": {
+        "labels": "6ea16f96e68196f99c266332cab089cd447a022ed2abee1d4cddcae5c0ce9a60",
+        "raw": "6876979dfacf9f7382e11624f2cf403d179697a8da6654849a527e0de12a69fe"
+      }
+    },
+    {
+      "run": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-media-performance-w40riy8u\\run-1",
+      "stem": "RBM3_MCG_05",
+      "identity": 1,
+      "frame": 56,
+      "table_sha256": "f6512f21daee2d4b0baca94289fa89e8c0f4029bebb33f2d08a8535aee941326",
+      "source_sha256": {
+        "labels": "91f9bd61d99fcaafad9c909051baca92f50c1cb0182d150365912f1d65c49e1d",
+        "raw": "a7f0be3b7cc3a5943247b74500ba3200c5ba11545044efa47c83f1aa68c8c6c8",
+        "unclaimed": "aa0db34ea686b920e3f4318a43ac9b083bf075f70241f42d8afc76a5c3e36c4b",
+        "provenance": "c6a3812d7a608589700992051dc287c1eb3bac6b77e1b426de57e9fe51f588dc",
+        "evidence": "41f379dfb10a3468826705f94a71de02684a9f764bb05d3ef131fdda1437a089"
+      }
+    }
+  ],
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "samples": [
+    {
+      "kind": "first-detail",
+      "stem": "RBM3_MCG_01",
+      "metadata_seconds": 0.0459999999984575,
+      "usable_seconds": 0.625,
+      "step_seconds": 0.07800000000133878,
+      "pixels_sha256": "85a2587fed0c5d3aee8f5cfb0221f4b2a7dd55c8855227b84b2c12c5faa9fa42",
+      "change_sha256": "4cc7e8e4d9f40afff4259b7a039cad66f166c62ff645fd1174dedf587bae6c5e",
+      "cells": 29,
+      "native_pixels_match": true,
+      "cache": {
+        "nearby_frames": 1,
+        "workers": 0,
+        "cell_bytes": 275880,
+        "cell_frames": 7
+      },
+      "requests": [
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42",
+          "start": 2969.2000000029802,
+          "seconds": 0.046,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42&identity=14",
+          "start": 2969.60000000149,
+          "seconds": 0.42,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/contacts?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42",
+          "start": 3206.900000002235,
+          "seconds": 1.3015999999977648,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=14",
+          "start": 3397.5,
+          "seconds": 0.09790000000223517,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/history?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=14&frame=42",
+          "start": 3397.900000002235,
+          "seconds": 2.2313000000007452,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10",
+          "start": 3398.400000002235,
+          "seconds": 0.12309999999776483,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10&frame=42",
+          "start": 3399.10000000149,
+          "seconds": 0.1798999999985099,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19",
+          "start": 3399.5,
+          "seconds": 0.21740000000223517,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19&frame=42",
+          "start": 3399.900000002235,
+          "seconds": 0.2693999999985099,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=43&identity=14",
+          "start": 3501.300000000745,
+          "seconds": 0.7665,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=41&identity=14",
+          "start": 4269.60000000149,
+          "seconds": 0.1941000000014901,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=44&identity=14",
+          "start": 4464.800000000745,
+          "seconds": 0.21480000000074506,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=40&identity=14",
+          "start": 4680.800000000745,
+          "seconds": 0.19330000000074507,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=45&identity=14",
+          "start": 4875.400000002235,
+          "seconds": 0.20369999999925495,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=39&identity=14",
+          "start": 5080.400000002235,
+          "seconds": 0.19919999999925495,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=43",
+          "start": 5790.5
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10&frame=43",
+          "start": 5794.70000000298
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19&frame=43",
+          "start": 5795.400000002235
+        }
+      ]
+    },
+    {
+      "kind": "switch",
+      "stem": "RBM3_MCG_05",
+      "metadata_seconds": 2.047000000002299,
+      "usable_seconds": 3.0159999999996217,
+      "step_seconds": 0.06299999999828287,
+      "pixels_sha256": "af1f8a105a4b8fa03fa57d7444e405b007a8c38bb2b6466d12128a6edfbf7a6a",
+      "change_sha256": "3a0f2dee10746463ae9034e887acdc8f31a702f185862a462e96c660a349eac5",
+      "cells": 27,
+      "native_pixels_match": true,
+      "cache": {
+        "nearby_frames": 1,
+        "workers": 0,
+        "cell_bytes": 3970122,
+        "cell_frames": 7
+      },
+      "requests": [
+        {
+          "path": "/api/exploration/comparison-workspace",
+          "start": 5986.300000000745,
+          "seconds": 0.06280000000074505,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05",
+          "start": 6050.10000000149,
+          "seconds": 1.765300000000745,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/rhythm-options?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05",
+          "start": 7953.300000000745,
+          "seconds": 0.06960000000149012,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/rhythm-history?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05",
+          "start": 7953.900000002235,
+          "seconds": 0.06880000000074506,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/comparison-preview",
+          "start": 7963.400000002235,
+          "seconds": 0.9033999999985098,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/barcode-order?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&engine=principal_component_gradient&metric=integrated_density&time_mean=3&scale=cell&identities=1%2C2%2C3%2C4%2C5%2C6%2C9%2C10%2C11%2C19%2C20%2C23%2C24%2C25%2C26%2C28%2C29%2C31%2C32%2C33%2C34%2C38%2C42%2C55%2C56%2C57%2C58",
+          "start": 7973.400000002235,
+          "seconds": 0.293,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/timeline?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&order=start",
+          "start": 7984.70000000298,
+          "seconds": 0.38379999999701975,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/tissue?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&layer=first_coverage&identities=1%2C2%2C3%2C4%2C5%2C6%2C9%2C10%2C11%2C19%2C20%2C23%2C24%2C25%2C26%2C28%2C29%2C31%2C32%2C33%2C34%2C38%2C42%2C55%2C56%2C57%2C58",
+          "start": 7987.800000000745,
+          "seconds": 0.2789000000022352,
+          "status": 422
+        },
+        {
+          "path": "/api/exploration/traces?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&metric=integrated_density&metrics=integrated_density&offset=0",
+          "start": 7992,
+          "seconds": 0.12970000000298024,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=0",
+          "start": 8021.60000000149,
+          "error": "AbortError"
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=0&identity=1",
+          "start": 8022.10000000149,
+          "error": "AbortError"
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=56",
+          "start": 8034.900000002235,
+          "seconds": 0.1863999999985099,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=56&identity=1",
+          "start": 8035.20000000298,
+          "seconds": 0.8662999999970198,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/tissue?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&layer=first_coverage&identities=1%2C2%2C3%2C4%2C5%2C6%2C9%2C10%2C11%2C19%2C20%2C23%2C24%2C25%2C26%2C28%2C29%2C31%2C32%2C33%2C34%2C38%2C42%2C55%2C56%2C57%2C58",
+          "start": 8083.800000000745,
+          "seconds": 0.4506999999992549,
+          "status": 422
+        },
+        {
+          "path": "/api/jobs",
+          "start": 8098.5,
+          "seconds": 0.18110000000149012,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/contacts?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=56",
+          "start": 8144.900000002235,
+          "seconds": 0.653800000000745,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=1",
+          "start": 8906.60000000149,
+          "seconds": 0.1926000000014901,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/history?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=1&frame=56",
+          "start": 8906.900000002235,
+          "seconds": 1.052699999999255,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=2",
+          "start": 8907.400000002235,
+          "seconds": 0.1808999999985099,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=2&frame=56",
+          "start": 8907.70000000298,
+          "seconds": 0.253,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=3",
+          "start": 8907.900000002235,
+          "seconds": 0.23539999999850988,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=3&frame=56",
+          "start": 8908.10000000149,
+          "seconds": 0.25230000000074504,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=57&identity=1",
+          "start": 9016.5,
+          "seconds": 0.25710000000149014,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=55&identity=1",
+          "start": 9275,
+          "seconds": 0.040200000002980234,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/frame-image?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=55",
+          "start": 9315.70000000298,
+          "seconds": 0.09009999999776483,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=58&identity=1",
+          "start": 9410.70000000298,
+          "seconds": 0.1295,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=54&identity=1",
+          "start": 9542.400000002235,
+          "seconds": 0.04389999999850988,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/frame-image?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=54",
+          "start": 9586.70000000298,
+          "seconds": 0.099,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=59&identity=1",
+          "start": 9690.5,
+          "seconds": 0.088,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=53&identity=1",
+          "start": 9779.900000002235,
+          "seconds": 0.04,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/frame-image?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=53",
+          "start": 9820.300000000745,
+          "seconds": 0.07510000000149011,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=57",
+          "start": 10072.400000002235
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=2&frame=57",
+          "start": 10076
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&identity=3&frame=57",
+          "start": 10076.300000000745
+        }
+      ]
+    },
+    {
+      "kind": "switch",
+      "stem": "RBM3_MCG_01",
+      "metadata_seconds": 1.9059999999990396,
+      "usable_seconds": 2.702999999997701,
+      "step_seconds": 0.09400000000096043,
+      "pixels_sha256": "85a2587fed0c5d3aee8f5cfb0221f4b2a7dd55c8855227b84b2c12c5faa9fa42",
+      "change_sha256": "4cc7e8e4d9f40afff4259b7a039cad66f166c62ff645fd1174dedf587bae6c5e",
+      "cells": 29,
+      "native_pixels_match": true,
+      "cache": {
+        "nearby_frames": 1,
+        "workers": 0,
+        "cell_bytes": 275880,
+        "cell_frames": 7
+      },
+      "requests": [
+        {
+          "path": "/api/exploration/contacts?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=57",
+          "start": 10171.60000000149,
+          "seconds": 1.8958999999985098,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/comparison-workspace",
+          "start": 10173.300000000745,
+          "seconds": 0.052100000001490114,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-1&stem=RBM3_MCG_05&frame=60&identity=1",
+          "start": 10187.5,
+          "seconds": 1.6469000000022351,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01",
+          "start": 10226.400000002235,
+          "seconds": 1.5628000000007451,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/rhythm-options?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01",
+          "start": 11988.800000000745,
+          "seconds": 0.08040000000223517,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/rhythm-history?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01",
+          "start": 11989.10000000149,
+          "seconds": 0.07980000000074505,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/comparison-preview",
+          "start": 11998.300000000745,
+          "seconds": 1.205900000002235,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/barcode-order?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&engine=principal_component_gradient&metric=integrated_density&time_mean=3&scale=cell&identities=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C10%2C11%2C12%2C13%2C14%2C15%2C17%2C18%2C19%2C20%2C21%2C22%2C23%2C25%2C26%2C30%2C33%2C36%2C42%2C44%2C52",
+          "start": 12009.60000000149,
+          "seconds": 0.059800000000745056,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/timeline?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&order=start",
+          "start": 12030.20000000298,
+          "seconds": 0.39,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/tissue?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&layer=first_coverage&identities=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C10%2C11%2C12%2C13%2C14%2C15%2C17%2C18%2C19%2C20%2C21%2C22%2C23%2C25%2C26%2C30%2C33%2C36%2C42%2C44%2C52",
+          "start": 12033.400000002235,
+          "seconds": 0.21230000000074506,
+          "status": 422
+        },
+        {
+          "path": "/api/exploration/traces?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&metric=integrated_density&metrics=integrated_density&offset=0",
+          "start": 12037.70000000298,
+          "seconds": 0.16539999999850988,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=0",
+          "start": 12068,
+          "error": "AbortError"
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=0&identity=1",
+          "start": 12068.5,
+          "error": "AbortError"
+        },
+        {
+          "path": "/api/exploration/tissue?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&layer=first_coverage&identities=1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C10%2C11%2C12%2C13%2C14%2C15%2C17%2C18%2C19%2C20%2C21%2C22%2C23%2C25%2C26%2C30%2C33%2C36%2C42%2C44%2C52",
+          "start": 12135.20000000298,
+          "seconds": 0.36819999999925496,
+          "status": 422
+        },
+        {
+          "path": "/api/jobs",
+          "start": 12150.800000000745,
+          "seconds": 0.07080000000074506,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42",
+          "start": 12201.900000002235,
+          "seconds": 0.1,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42&identity=14",
+          "start": 12202.300000000745,
+          "seconds": 0.5956000000014902,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/contacts?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=42",
+          "start": 12222,
+          "seconds": 0.3,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=14",
+          "start": 12803.300000000745,
+          "seconds": 0.21730000000074506,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/history?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=14&frame=42",
+          "start": 12803.900000002235,
+          "seconds": 2.0553999999985098,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10",
+          "start": 12804.400000002235,
+          "seconds": 0.17769999999925495,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10&frame=42",
+          "start": 12804.70000000298,
+          "seconds": 0.25719999999925497,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19",
+          "start": 12804.900000002235,
+          "seconds": 0.14680000000074506,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19&frame=42",
+          "start": 12805.10000000149,
+          "seconds": 0.3105,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=43&identity=14",
+          "start": 12906.5,
+          "seconds": 0.37040000000223516,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=41&identity=14",
+          "start": 13278,
+          "seconds": 0.23790000000223518,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=44&identity=14",
+          "start": 13516.800000000745,
+          "seconds": 0.25769999999925497,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=40&identity=14",
+          "start": 13775.800000000745,
+          "seconds": 0.21760000000149013,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=45&identity=14",
+          "start": 13994.400000002235,
+          "seconds": 0.18769999999925494,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=39&identity=14",
+          "start": 14182.70000000298,
+          "seconds": 0.20909999999776482,
+          "status": 200
+        },
+        {
+          "path": "/api/exploration/values?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&frame=43",
+          "start": 15008.300000000745
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=10&frame=43",
+          "start": 15012.60000000149
+        },
+        {
+          "path": "/api/exploration/cell-frame?run=C%3A%5CUsers%5COwner%5CAppData%5CLocal%5CTemp%5Cpymicroglia-media-performance-w40riy8u%5Crun-0&stem=RBM3_MCG_01&identity=19&frame=43",
+          "start": 15013
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

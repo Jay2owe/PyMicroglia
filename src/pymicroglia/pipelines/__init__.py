@@ -85,6 +85,7 @@ __all__ = [
 #: are analyses of a recording somebody already has.
 PIPELINE_NAMES: tuple[str, ...] = (
     "auto_microglia",
+    "native_red_green",
     "dluc_single_cell",
     "cry1_dluc_photon",
     "bioluminescence",

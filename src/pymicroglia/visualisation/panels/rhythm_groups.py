@@ -13,16 +13,17 @@ COLOURS = (house_colour('okabe_bluish_green'), house_colour('nan_text'))
 def wrap(value, width=105):
     return '\n'.join((textwrap.fill(line, width) for line in str(value).splitlines()))
 
-def points(axis, rows, label):
+def points(axis, rows, label, *, labels=LABELS, colours=COLOURS, counts=True, font_size=10):
     """Every finite cell is one point; horizontal offsets only separate marks."""
     for index, group in enumerate(rows['groups']):
-        axis.scatter(group['x'], group['y'], s=20, alpha=0.65, color=COLOURS[index], edgecolors='none')
-        axis.text(index, 1.02, f"{group['finite']}/{group['total']} finite", transform=axis.get_xaxis_transform(), ha='center', fontsize=9)
-    axis.set_xticks([0, 1], LABELS, fontsize=10)
-    axis.set_xlim(-0.45, 1.45)
-    axis.set_ylabel(wrap(label, 30), fontsize=10)
+        axis.scatter(group['x'], group['y'], s=20, alpha=0.65, color=colours[index % len(colours)], edgecolors='none')
+        if counts:
+            axis.text(index, 1.02, f"{group['finite']}/{group['total']} finite", transform=axis.get_xaxis_transform(), ha='center', fontsize=font_size*.9)
+    axis.set_xticks(range(len(labels)), labels, fontsize=font_size)
+    axis.set_xlim(-0.45, max(.55, len(labels)-.55))
+    axis.set_ylabel(wrap(label, 30), fontsize=font_size)
     axis.spines[['right', 'top']].set_visible(False)
-    axis.tick_params(labelsize=9)
+    axis.tick_params(labelsize=font_size*.9)
     if not rows['available']:
         axis.set_yticks([])
         axis.text(0.5, 0.5, 'No finite comparison values', transform=axis.transAxes, ha='center', fontsize=10)

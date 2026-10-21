@@ -42,7 +42,7 @@ from pymicroglia.measure.defaults import MICROGLIA_METRICS
 from pymicroglia.measure.declare import Column, Output, derived
 
 #: Bumped when this module's arithmetic changes; recorded in the run record.
-METHOD_VERSION = "2026-09-21-rhythms-v1"
+METHOD_VERSION = "2026-10-10-rhythms-asls-default"
 
 DEFAULTS = {
     "metrics": list(MICROGLIA_METRICS),

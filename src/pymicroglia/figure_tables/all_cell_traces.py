@@ -8,7 +8,8 @@ from ..measure.modules.rhythms import DEFAULTS as RHYTHM_DEFAULTS
 from ..visualisation.labels import describe
 from .radial import _selected_identities
 from .prepared import PreparedViews
-from .fft_component_grid import median_then_mean, test_cell_components
+from .fft_component_grid import three_frame_mean, test_cell_components
+from .cell_grid_inputs import identities as selected_cells, frame_mean, recipe, recording_clock, native_cell
 
 
 def parse_hours_per_tick(value):
@@ -19,20 +20,9 @@ def parse_hours_per_tick(value):
 
 def grid_shape(count: int, rows: int | None, columns: int | None) -> tuple[int, int]:
     """Square by default; one fixed dimension computes the other."""
-    for name, value in (('grid_rows', rows), ('grid_columns', columns)):
-        if value is not None and (isinstance(value, bool) or not isinstance(value, int) or value < 1):
-            raise ValueError(name + ' must be a positive integer')
-    if columns is None and rows is None:
-        columns = math.ceil(math.sqrt(count))
-    if columns is None:
-        columns = math.ceil(count / rows)
-    if rows is None:
-        rows = math.ceil(count / columns)
-    if rows * columns < count:
-        raise ValueError(f'grid_rows * grid_columns must hold all {count} selected cells')
-    return (rows, columns)
+    return workbench.cell_grid_shape(count, rows, columns)
 
-def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], resolved: dict, view: str, normalization: str, normalization_config: dict, period_testing: bool=True, *, fft_component_test: bool=False, recording: str | None=None, component_surrogates: int=199, component_block_hours: float=4.0, component_seed: int=20260923, filtering: dict | None=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], resolved: dict, view: str, normalization: str, normalization_config: dict, period_testing: bool=True, *, fft_component_test: bool=False, recording: str | None=None, component_surrogates: int=199, component_block_hours: float=4.0, component_seed: int=20260923, filtering: dict | None=None, preprocessing=None, progress=None, workers=1, _adjust=True) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Fit raw values; normalize independently for drawing, preserving gaps."""
     if view not in {'raw', 'detrended'}:
         raise ValueError('trace_view must be raw or detrended')
@@ -47,15 +37,31 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
         raise ValueError('unknown fit_method: ' + resolved['method'])
     if not fft_component_test and resolved['significance_method'] not in workbench.SIGNIFICANCE_METHODS:
         raise ValueError('significance_method must provide significance')
-    if fft_component_test and (resolved['method'] != 'fft_nlls' or resolved['multiple_testing'] != 'none' or resolved['detrend'] != 'robust_linear'):
-        raise ValueError('FFT component testing requires fft_nlls, robust_linear and no multiple-testing correction')
+    if fft_component_test and (resolved['method'] != 'fft_nlls' or resolved['multiple_testing'] != 'none' or resolved['detrend'] not in workbench.FFT_COMPONENT_DETRENDS):
+        raise ValueError('FFT component testing requires fft_nlls, asymmetric least-squares or robust linear detrending, and no multiple-testing correction')
     if fft_component_test and (component_surrogates < 1 or component_block_hours <= 0):
         raise ValueError('component_surrogates and component_block_hours must be positive')
+    if workers > 1 and len(identities) * len(metrics) > 1:
+        from .trace_workers import parallel_traces
+        points, evidence = parallel_traces(
+            frame, metrics, identities, resolved, view, normalization, normalization_config,
+            dict(period_testing=period_testing, fft_component_test=fft_component_test,
+                 recording=recording, component_surrogates=component_surrogates,
+                 component_block_hours=component_block_hours, component_seed=component_seed,
+                 filtering=filtering, preprocessing=preprocessing), workers=workers, progress=progress)
+        return points, _adjust_evidence(evidence, resolved, fft_component_test)
     params = resolved['params']
     points, tests = ([], [])
-    for identity in identities:
+    def report(stage, identity, metric, completed_cells):
+        if progress is not None:
+            progress({'stage': stage, 'completed': len(tests),
+                      'total': len(identities) * len(metrics),
+                      'completed_cells': completed_cells, 'total_cells': len(identities),
+                      'identity': int(identity), 'metric': metric})
+    for cell_index, identity in enumerate(identities):
         cell = frame.loc[frame.identity.eq(identity)].sort_values('frame_index', kind='stable')
-        for metric in metrics:
+        for metric_index, metric in enumerate(metrics):
+            report('fitting', identity, metric, cell_index)
             hours = cell.hours.to_numpy(float)
             raw = pd.to_numeric(cell[metric], errors='coerce').to_numpy(float)
             filter_error = ''
@@ -67,11 +73,12 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
                 except (ValueError, RuntimeError, workbench.cw.WorkbenchError) as error:
                     filtered = np.full(raw.shape, np.nan)
                     filter_error = str(error)
+            elif preprocessing is not None:
+                filtered = frame_mean(raw, cell.frame_index.to_numpy(int), preprocessing['mean_frames'])
             else:
-                filtered = median_then_mean(raw) if fft_component_test else raw.copy()
-            if (filtering is None and
-                    not np.array_equal(np.isfinite(raw), np.isfinite(filtered))):
-                raise ValueError('Three-frame filters changed measured frame availability')
+                filtered = (three_frame_mean(raw, cell.frame_index.to_numpy(int))
+                            if metric == 'integrated_density'
+                            else raw.copy())
             usable = np.isfinite(hours) & np.isfinite(filtered)
             processed = np.full(len(raw), np.nan)
             display = np.full(len(raw), np.nan)
@@ -101,12 +108,19 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
             for position, (hour, original, prepared, value) in enumerate(zip(hours, raw, processed, display)):
                 points.append({'identity': identity, 'metric': metric, 'frame_index': cell.frame_index.iloc[position], 'hours': hour, 'raw_value': original, 'filtered_value': filtered[position], 'processed_value': prepared, 'value': value})
             entry = {'identity': identity, 'metric': metric, 'observations': int(usable.sum()), 'estimation_method': resolved['method'], 'significance_method': 'fft_component' if fft_component_test else resolved['significance_method'], 'detrend': params['detrend'], 'trace_view': view, 'normalization': normalization, 'workbench_version': workbench.WORKBENCH_VERSION, 'applied_settings_json': json.dumps(params, default=str), 'estimate_status': 'not_tested', 'significance_status': 'not_tested', 'period_hours': np.nan, 'p_value': np.nan, 'q_value': np.nan, 'correction': resolved['multiple_testing'], 'alpha': resolved['rhythmic_alpha'], 'rhythm_status': 'unknown', 'reason': reason, 'display_note': display_note, 'period_testing': period_testing, 'cycles_observed': np.nan, 'supported_period': False, 'estimate_components_json': '[]', 'estimate_diagnostics_json': '{}', 'component_results_json': '[]', 'fft_selected_period_hours': np.nan, 'period_source_component': np.nan, 'alternate_fft_component': False, 'component_test_surrogates': component_surrogates if fft_component_test else np.nan, 'component_test_block_hours': component_block_hours if fft_component_test else np.nan}
+            entry.update(phase_hours=np.nan, phase_units=None, phase_reference=None,
+                         period_error_hours=np.nan, amplitude=np.nan)
+            entry['trace_filter_json'] = json.dumps(filtering) if filtering is not None else ''
             if not period_testing:
                 entry['reason'] = 'period testing disabled'
             elif usable.sum() >= resolved['min_observations']:
                 try:
                     estimate = workbench.estimate_one(hours[usable], filtered[usable], params, resolved['method'])
+                    entry.update({key: estimate.get(key) for key in
+                                  ('phase_hours', 'phase_units', 'phase_reference',
+                                   'period_error_hours', 'amplitude')})
                     if fft_component_test:
+                        report('component_test', identity, metric, cell_index)
                         components = estimate.get('components') or []
                         if view == 'detrended':
                             detrended = processed[usable]
@@ -125,6 +139,13 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
                                              and resolved['period_min_hours'] <= row['period_hours'] <= resolved['period_max_hours']]
                         best_test = min(tested_components, key=lambda row: row['empirical_p_uncorrected']) if tested_components else None
                         source = selected or best_test
+                        # A tested alternate component must carry its own phase,
+                        # rather than the phase of the estimator's first choice.
+                        component = next((c for c in components if source and
+                                          np.isclose(c['period_hours'], source['period_hours'])), None)
+                        entry.update(phase_hours=component.get('phase_hours') if component else np.nan,
+                                     amplitude=component.get('amplitude') if component else np.nan,
+                                     period_error_hours=component.get('period_error_hours') if component else np.nan)
                         entry.update(
                             period_hours=source['period_hours'] if source else np.nan,
                             fft_selected_period_hours=estimate.get('period_hours'),
@@ -151,13 +172,22 @@ def trace_data(frame: pd.DataFrame, metrics: list[str], identities: list[int], r
             elif not reason:
                 entry['reason'] = 'below min_observations'
             tests.append(entry)
+            report('testing', identity, metric,
+                   cell_index + int(metric_index == len(metrics) - 1))
     evidence = pd.DataFrame(tests)
+    if _adjust:
+        evidence = _adjust_evidence(evidence, resolved, fft_component_test)
+    return (pd.DataFrame(points), evidence)
+
+
+def _adjust_evidence(evidence, resolved, fft_component_test):
+    """Correct over the original full cell family, including parallel batches."""
     if not fft_component_test:
         for metric, indices in evidence.groupby('metric', sort=False).groups.items():
             evidence.loc[indices, 'q_value'] = workbench.adjust_pvalues(evidence.loc[indices, 'p_value'].to_numpy(float), resolved['multiple_testing'])
         tested = evidence.significance_status.eq('ok') & np.isfinite(evidence.q_value)
         evidence.loc[tested, 'rhythm_status'] = np.where(evidence.loc[tested, 'q_value'] < resolved['rhythmic_alpha'], 'rhythmic', 'not rhythmic')
-    return (pd.DataFrame(points), evidence)
+    return evidence
 
 def _fft_nlls_display_fit(segment: pd.DataFrame, result: pd.Series) -> np.ndarray:
     """Put the native multi-component fit on the existing affine display scale."""
@@ -213,20 +243,21 @@ def add_period_display(points: pd.DataFrame, evidence: pd.DataFrame) -> pd.DataF
             styled.loc[indices, 'fit_kind'] = 'descriptive single cosinor'
     return styled
 
-def prepare(source, options):
+def prepare(source, options, *, progress=None, workers=1):
     frame = source.table('cell_frame.csv')
     metrics = list(options.get('metrics'))
     if not metrics or len(metrics) != len(set(metrics)) or any((m not in frame for m in metrics)):
         raise ValueError('metrics must be distinct, nonempty columns of cell_frame.csv')
     if any((not pd.api.types.is_numeric_dtype(frame[m]) for m in metrics)):
         raise ValueError('metrics must be numeric columns')
-    present = sorted((int(x) for x in frame.identity.dropna().unique()))
     requested = options.get('cells')
-    identities = present if str(requested).lower() == 'all' else _selected_identities(frame, requested)
+    identities = selected_cells(frame, requested)
     if len(identities) != len(set(identities)) or not identities:
         raise ValueError('cells must name distinct measured cell numbers')
     if not identities:
         raise ValueError('cell_frame.csv contains no cells')
+    clock = recording_clock(frame)
+    frame = pd.concat([native_cell(frame, identity, clock).assign(identity=identity) for identity in identities], ignore_index=True)
     rows, columns = grid_shape(len(identities), options.get('grid_rows'), options.get('grid_columns'))
     fft_component_test = options.get('fft_component_test')
     if fft_component_test is None:
@@ -252,31 +283,45 @@ def prepare(source, options):
         component_surrogates=options.get('component_surrogates') or 199,
         component_block_hours=options.get('component_block_hours') or 4.0,
         component_seed=options.get('component_seed') or 20260923,
+        filtering=options.get('trace_filter'),
+        preprocessing=recipe(options.get('preprocessing')),
+        progress=progress,
+        workers=workers,
     )
     reference_style = period_testing and len(metrics) == 1 and (resolved['multiple_testing'] == 'none')
-    if reference_style:
+    presentation = options.get('grid_presentation') or {}
+    if reference_style or (period_testing and ('fit' in presentation.get('trace_layers', []) or presentation.get('show_fit') is True)):
         points = add_period_display(points, tests)
     finite = frame.hours.to_numpy(float)
     finite = finite[np.isfinite(finite)]
     if not len(finite):
         raise ValueError('cell_frame.csv has no finite recording time')
+    from pymicroglia.visualisation.time_guides import time_guides
+    time_guides([finite.min(), finite.max()], options.get('time_guides_hours'), options.get('time_guides_offset_hours', 0.0))
     native_fit = resolved['method'] == 'fft_nlls'
     fit_label = 'Actual summed FFT-NLLS fit' if native_fit and view == 'detrended' else '' if native_fit else 'Descriptive cosinor fit'
     fit_claim = 'Dotted curves are the actual summed FFT-NLLS models.' if native_fit and view == 'detrended' else 'No model curve is substituted because the exact FFT-NLLS model is on the detrended scale.' if native_fit else 'Dotted fits describe the displayed trace at each tested period.'
-    title = ('Native-frame cell traces | median3 → mean3 → robust linear → FFT-NLLS component test'
+    total_default = fft_component_test and metrics == ['integrated_density_mean3']
+    title = ('Native-frame cell traces | total light → mean3 → robust linear → FFT-NLLS component test'
+             if total_default else
+             'Native-frame cell traces | FFT-NLLS component test'
              if fft_component_test else
              f"Native-frame cell traces | {str(resolved['significance_method']).replace('_', ' ').title()} period test: uncorrected p"
              if resolved['multiple_testing'] == 'none' else 'All measured cell traces')
-    claim = ('Each cell retains its original observed clock; a three-frame median and then mean are fitted by FFT-NLLS after robust-linear detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves are the actual summed FFT-NLLS models.'
+    claim = ('Each cell retains its original observed clock; a centered three-frame mean of uncorrected total light is fitted by FFT-NLLS after robust-linear detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves are the actual summed FFT-NLLS models.'
+             if total_default else
+             'Each selected measurement is fitted by FFT-NLLS after robust-linear detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves are the actual summed FFT-NLLS models.'
              if fft_component_test else
              f'Each cell is measured at its original time points; display traces are normalized independently, and measured values before display scaling are period-tested with uncorrected p-values. {fit_claim}'
              if resolved['multiple_testing'] == 'none' and period_testing else
              'Every selected cell retains its original clock; each displayed measurement is normalized independently.')
-    settings = {'identities': identities, 'rows': rows, 'columns': columns, 'metrics': metrics, 'labels': [describe(name).label for name in metrics], 'unit': 'Self-normalized' if normal != 'none' else 'Original units', 'xlim': [float(finite.min()), float(finite.max())], 'title': title, 'trace_view': view, 'trace_normalization': normal, 'trace_normalization_config': config, 'period_testing': period_testing, 'hour_ticks': hour_ticks, 'period_display_style': reference_style, 'multiple_testing': resolved['multiple_testing'], 'rhythmic_alpha': resolved['rhythmic_alpha'], 'fit_method': resolved['method'], 'fit_label': fit_label, 'significance_method': resolved['significance_method'], 'detrend': resolved['detrend'], 'fft_component_test': fft_component_test, 'component_surrogates': options.get('component_surrogates'), 'component_block_hours': options.get('component_block_hours'), 'component_seed': options.get('component_seed'), 'workbench_version': workbench.WORKBENCH_VERSION, 'claim': claim, 'output_name': 'all-cell-trace-grid'}
+    settings = {'identities': identities, 'rows': rows, 'columns': columns, 'metrics': metrics, 'labels': [describe(name).label for name in metrics], 'unit': 'Self-normalized' if normal != 'none' else 'Original units', 'xlim': [float(finite.min()), float(finite.max())], 'title': title, 'trace_view': view, 'trace_normalization': normal, 'trace_normalization_config': config, 'period_testing': period_testing, 'hour_ticks': hour_ticks, 'time_guides_hours': options.get('time_guides_hours'), 'time_guides_offset_hours': options.get('time_guides_offset_hours', 0.0), 'period_display_style': reference_style, 'multiple_testing': resolved['multiple_testing'], 'rhythmic_alpha': resolved['rhythmic_alpha'], 'fit_method': resolved['method'], 'fit_label': fit_label, 'significance_method': resolved['significance_method'], 'detrend': resolved['detrend'], 'fft_component_test': fft_component_test, 'component_surrogates': options.get('component_surrogates'), 'component_block_hours': options.get('component_block_hours'), 'component_seed': options.get('component_seed'), 'workbench_version': workbench.WORKBENCH_VERSION, 'claim': claim, 'output_name': 'all-cell-trace-grid'}
     annotations = tests.copy() if settings['period_display_style'] else tests
     if settings['period_display_style'] and resolved['multiple_testing'] == 'none':
         annotations['q_value'] = np.nan
-    auxiliary = {'statistics.csv': tests, 'settings.csv': pd.DataFrame([{'settings_json':json.dumps(settings)}])}
+    settings['preprocessing'] = recipe(options.get('preprocessing'))
+    auxiliary = {'statistics.csv': tests, 'settings.csv': pd.DataFrame([{'settings_json':json.dumps(settings)}]),
+                 'input_traces.csv': points[['identity', 'metric', 'frame_index', 'hours', 'raw_value', 'filtered_value', 'processed_value']].copy()}
     if fft_component_test:
         component_rows = []
         for result in tests.itertuples():

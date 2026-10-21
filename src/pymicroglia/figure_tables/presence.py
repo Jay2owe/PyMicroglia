@@ -17,6 +17,12 @@ def mechanism_label(value: Any) -> str:
     name = str(value)
     return MECHANISM_LABELS.get(name, name.replace('_', ' '))
 
+
+def mechanism_palette(mechanisms):
+    """One shared colour-role assignment for saved tracker explanations."""
+    roles = ('teal', 'blue', 'plum', 'olive', 'red', 'cyan')
+    return {name: roles[i % len(roles)] for i, name in enumerate(sorted(set(mechanisms)))}
+
 def persistence_values(frame: Any) -> tuple[pd.DataFrame, np.ndarray, np.ndarray, list[int]]:
     """Prepare one three-state persistence raster from long-form presence rows.
 
@@ -141,7 +147,7 @@ def prepare(source,options):
     else:raise ValueError('order must be first_appearance, span or coverage')
     ordered=ordered.copy();ordered['row_order']=np.arange(len(ordered));ordered['marked']=ordered.identity.isin(silent);ordered['present_colour']='dark';ordered['end_marker']=np.where(ordered.marked,'x','')
     step=float(np.nanmedian(np.diff(np.sort(gaps.hours.unique())))) if not gaps.empty and gaps.hours.nunique()>1 else 1.
-    palette={m:['teal','blue','plum','olive','red','cyan'][i%6] for i,m in enumerate(mechanisms)}
+    palette=mechanism_palette(mechanisms)
     cuts=gaps.loc[gaps.state.eq('unclaimed'),['identity','frame_index','hours','mechanism']].copy()
     cuts['mechanism_label']=cuts.mechanism.map(lambda m:mechanism_label(m) if pd.notna(m) else 'Gap with no recorded explanation')
     cuts['gap_colour']=cuts.mechanism.map(palette).fillna('orange')

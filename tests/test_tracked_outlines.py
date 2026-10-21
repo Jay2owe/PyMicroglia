@@ -116,4 +116,22 @@ def test_display_actions_are_live_and_documented():
         assert details["pending"] is False
         names = {row["name"] for row in details["params"]}
         assert {"outline_width_px", "outline_opacity", "outline_colours",
-                "black_percentile", "white_percentile"} <= names
+                "black_percentile", "white_percentile", "cell_filter", "filter_grey_colour"} <= names
+
+
+def test_grey_decisions_forward_to_both_native_exports(tmp_path, monkeypatch):
+    from pymicroglia.cell_filters import evaluate
+    raw, labels = stacks(tmp_path)
+    selection = evaluate({1: {"identity": 1}, 2: {"identity": 2}},
+                         {"field": "identity", "cmp": "eq", "value": 1}, mode="keep")
+    seen = []
+    def render(source, **options):
+        seen.append(options["outline"])
+        return {"output": str(tmp_path / "display")}
+    monkeypatch.setattr("pymicroglia.video.stack_to_video", render)
+    monkeypatch.setattr("auto_organotypic.image.stack_to_image", render)
+    tracked_cell_video(raw, labels=labels, cell_filter=selection, filter_grey_colour="#123456")
+    tracked_cell_image(raw, labels=labels, frame_index=2, cell_filter=selection, filter_grey_colour="#123456")
+    for painter in seen:
+        assert painter.label_colours == {2: (18, 52, 86)}
+        assert painter.label_colour_evidence["display_only"] is True

@@ -177,18 +177,42 @@ def trace_of(frames, mask, ring):
 # nothing. One definition, imported twice.
 from auto_organotypic.baselines import (          # noqa: E402
     DEFAULT_BASELINES,
-    DEFAULT_DETRENDS,
     DETREND_ALIASES,
     DETREND_DEGREES,
     POLY_EDGE_H,
     amplitude,
-    detrend,
+    detrend as _baseline_detrend,
     polynomial_baseline,
     rolling_baseline,
     validate_baseline_windows,
     window_length,
     window_mean_dff,
 )
+
+from .baseline_defaults import DEFAULT_DETREND_METHOD
+
+DEFAULT_DETRENDS = (DEFAULT_DETREND_METHOD,)
+
+
+def detrend(traces, times_h, method: str = DEFAULT_DETREND_METHOD, *,
+            window_hours: float = 24.0, polynomial_degree: int = 3,
+            min_valid_fraction: float = 0.5,
+            bandwidth_hours: float | None = None,
+            low_cut_hours: float = 45.0, high_cut_hours: float = 4.0,
+            filter_order: int = 2,
+            lowess_fraction: float | None = None,
+            lowess_iterations: int = 3,
+            asls_smoothness: float = 1_000_000.0,
+            asls_asymmetry: float = 0.01, asls_iterations: int = 10):
+    """Legacy window-mean dF/F entrance with the microglial baseline default."""
+    return _baseline_detrend(
+        traces, times_h, method, window_hours=window_hours,
+        polynomial_degree=polynomial_degree, min_valid_fraction=min_valid_fraction,
+        bandwidth_hours=bandwidth_hours, low_cut_hours=low_cut_hours,
+        high_cut_hours=high_cut_hours, filter_order=filter_order,
+        lowess_fraction=lowess_fraction, lowess_iterations=lowess_iterations,
+        asls_smoothness=asls_smoothness, asls_asymmetry=asls_asymmetry,
+        asls_iterations=asls_iterations)
 
 
 # ---------------------------------------------------------------- the action

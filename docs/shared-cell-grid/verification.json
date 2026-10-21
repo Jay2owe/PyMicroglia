@@ -1,0 +1,91 @@
+{
+  "verified_at": "2026-10-05T21:53:52.789910+00:00",
+  "tests": {
+    "pymicroglia": {
+      "unique_passed": 46,
+      "paths": [
+        "tests/test_shared_cell_grid.py",
+        "tests/test_cell_analysis_grid.py",
+        "tests/test_all_cell_trace_grid.py",
+        "tests/test_ui_catalog.py",
+        "tests/test_cell_period_recipe.py",
+        "tests/test_trace_workers.py",
+        "tests/test_ui_server.py"
+      ],
+      "note": "45 passed in the final combined run. The cache test was refused by the environment guard after a concurrent Workbench edit, then passed on the current source in a targeted rerun with two additional checks."
+    },
+    "circadian_workbench": {
+      "unique_passed": 47,
+      "paths": [
+        "tests/test_analysis_grid.py",
+        "tests/test_analysis_grid_svg.py",
+        "tests/test_fractional_analysis_bins.py",
+        "tests/test_direct_spectral_components.py",
+        "tests/test_public_contracts.py"
+      ]
+    },
+    "catalogue": "python tools/regenerate_catalogue.py --check: up to date",
+    "javascript": "node --check src/pymicroglia/ui/static/app.js: passed"
+  },
+  "browser": {
+    "all_methods_ready_seconds": 1.19,
+    "first_dialog_seconds": 2.133,
+    "ready_card_to_dialog_seconds": 0.943,
+    "paired_selection_seconds": 0.049,
+    "typed_payload_verified": true,
+    "themes_checked": [
+      "light",
+      "dark"
+    ],
+    "first_completed_headline_plots_seconds": 2.686,
+    "recording_switch_completed_plots_seconds": 3.022,
+    "performance_fixture": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\linked_exploration_20260929\\fixture.json",
+    "two_panel_analysis_and_draw_seconds": 29.092,
+    "page_errors": [],
+    "output": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\docs\\shared-cell-grid\\ui-checks"
+  },
+  "native_environment": {
+    "versions": {
+      "python": "3.12.10",
+      "circadian-workbench": "0.15.0",
+      "numpy": "2.1.0",
+      "pandas": "2.2.2",
+      "scipy": "1.14.1",
+      "statsmodels": "0.14.2",
+      "PyWavelets": "1.9.0",
+      "analysis-kit": "0.1.0",
+      "matplotlib": "3.9.2",
+      "reportlab": "5.0.0",
+      "svglib": "2.2.0",
+      "reprofig": "0.5.1"
+    },
+    "code_sha256": {
+      "circadian_workbench": "39b2b0ab20d7fecf8601f8a0cfbfd0774b13576591e6274609ae7bdf00e5323a",
+      "analysis_kit": "71b4238ab782bfc526369f7da16002b18ecb576b1cffc64f31917cd6d0c65aab",
+      "reprofig": "0cbcaa3160e75526c8203260cd18f90647fbbeb541b5bdd4dee211e2b59cb9fd"
+    },
+    "execution": {
+      "implementation": "CPython",
+      "system": "Windows",
+      "machine": "AMD64",
+      "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+      "thread_environment": {
+        "OMP_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null,
+        "VECLIB_MAXIMUM_THREADS": null,
+        "NUMEXPR_NUM_THREADS": null
+      }
+    }
+  },
+  "source_sha256": {
+    "src\\pymicroglia\\figure_tables\\cell_grid.py": "c93f90b7782cb17d4f29934278069b5be8ea53fc9275856354d32465c1cfb8c2",
+    "src\\pymicroglia\\figure_tables\\cell_grid_inputs.py": "361850705c468d7acd85e70bc1e20cb7f614ef82705a472f3540396362c10ae8",
+    "src\\pymicroglia\\figure_tables\\cell_analysis_grid.py": "97a5c9245d5e5b8964fa3bed6d031099100a292ff03563a30e6d0b672392fcd0",
+    "src\\pymicroglia\\figure_tables\\all_cell_traces.py": "c455a7c9ec1407f58fcf4090fe358702e1b018552cd33485aac9173d1f897615",
+    "..\\..\\CircadianWorkbench\\src\\circadian_workbench\\analysis_grid.py": "2552f1151305223b5b70b4d0b3b19661bd5812e61f0e8ad332a8ac870369046c",
+    "..\\..\\CircadianWorkbench\\src\\circadian_workbench\\analysis_grid_layout.py": "78c75359e1d1a6c4bc7c42eeaf64dc77c23d5bcafb516efd770537ddeb31a257",
+    "..\\..\\CircadianWorkbench\\src\\circadian_workbench\\contracts.py": "a5fded03a0b024f5392a4864818200c5e74816cf5832058e52990780502f7726"
+  },
+  "scope": "Local integration and focused checks; no full-suite run, Graphify refresh, commit or release."
+}

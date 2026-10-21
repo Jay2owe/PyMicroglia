@@ -1,0 +1,26 @@
+{
+  "engine_version": 1,
+  "files": {
+    "scripts/project_contract.py": "d8c89d701cdb659c17fe392ec68f9debeda03ed255c3ebc7651d29e33b84e533",
+    "scripts/verify.py": "8ed5dc34f62c75efd9fe62dd0e0c93cd0627a634242993a8dd2e02c0d4a69f13",
+    "architecture.schema.json": "3004736eccfb1bd70d1a5bc4b3eef16d12930634afac646c82e475a2ff4fd2ba",
+    "scripts/contracts-requirements.txt": "5f651d151416ea9c937a410621aabd576f7d0e6fa9fa54263e314a7294c1c134"
+  },
+  "history": [
+    {
+      "date": "2026-10-06T17:46:02.106179+00:00",
+      "version": 1,
+      "reason": "initial installation"
+    },
+    {
+      "date": "2026-10-06T17:54:15.236056+00:00",
+      "version": 1,
+      "reason": "Do not expose component bindings when their contract fails; validated by discovery failure test."
+    },
+    {
+      "date": "2026-10-06T18:01:25.937912+00:00",
+      "version": 1,
+      "reason": "Stop only a timed-out check and its child processes; child-pipe regression and starter-profile integration tests pass."
+    }
+  ]
+}

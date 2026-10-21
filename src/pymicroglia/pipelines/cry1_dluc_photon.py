@@ -279,10 +279,11 @@ def _videos(folder: Path, registered, source, raw_positive, density,
                 rgb = np.concatenate(
                     (np.repeat(unregistered[..., None], 3, axis=2),
                      np.repeat(bright[..., None], 3, axis=2)), axis=1)
-            yield _annotate.caption_band(
-                rgb, captions[index], band_height=CAPTION_BAND_PX,
-                clock=_annotate.clock_label(frame, float(seconds[frame])
-                                            if len(seconds) > frame else 0.0))
+            elapsed = float(seconds[frame]) if len(seconds) > frame else 0.0
+            clock = _annotate.labelled(elapsed / 3600.0, "clock")
+            yield _annotate.stamp(
+                rgb, f"{captions[index]} | {clock}", position="top",
+                band_px=CAPTION_BAND_PX, fit_text=True)
 
     written: list[str] = []
     for index, name in enumerate(names):

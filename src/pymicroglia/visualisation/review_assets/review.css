@@ -1,0 +1,35 @@
+:root {color-scheme:dark; font-family:Inter,Segoe UI,system-ui,sans-serif; background:rgb(10,15,23); color:rgb(230,239,249); --muted:rgb(160,182,201); --border:rgb(43,59,75); --cyan:rgb(65,225,232); --amber:rgb(255,185,71)}
+* {box-sizing:border-box} body {margin:0; padding:26px 30px 18px; max-width:1920px; margin-inline:auto}
+h1,h2,h3,p,figure {margin:0} h1 {font-size:29px; font-weight:600; letter-spacing:-.7px} h2 {font-size:19px; font-weight:550; display:inline}
+h3 {font-size:16px; font-weight:550} p {color:var(--muted); line-height:1.5} button,select,input {font:inherit}
+button,select {background:rgb(26,37,51); color:inherit; border:1px solid var(--border); border-radius:7px; padding:7px 10px; font-size:12px}
+button {cursor:pointer} button:hover {border-color:var(--cyan); background:rgb(33,47,61)} button:disabled {opacity:.4; cursor:default}
+button:focus-visible,select:focus-visible,a:focus-visible,canvas:focus-visible {outline:2px solid var(--cyan); outline-offset:3px}
+label {font-size:12px; color:var(--muted); white-space:nowrap} label select {margin-left:5px} a {color:rgb(175,216,235); text-decoration:none}
+nav {display:flex; gap:18px; flex-wrap:wrap; font-size:12px} nav a:hover {color:var(--cyan)} .masthead {display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:22px}
+.eyebrow {font-size:10px; letter-spacing:2.5px; color:var(--cyan); display:block; margin-bottom:7px} #recording-summary {font-size:12px; margin-top:7px}
+.transport {position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:9px; background:rgba(17,25,37,.97); padding:13px 15px; border:1px solid var(--border); border-radius:10px; margin-bottom:19px; backdrop-filter:blur(8px)}
+#frame-slider {flex:1; min-width:90px; accent-color:var(--cyan); cursor:pointer} #time-label {font-size:12px; min-width:150px; font-variant-numeric:tabular-nums}
+main {display:grid; gap:20px} .first-row {display:grid; grid-template-columns:1.6fr 1fr; gap:20px; align-items:stretch}
+.panel {background:rgb(17,25,36); border:1px solid var(--border); border-radius:12px; padding:19px 20px; scroll-margin-top:85px; min-width:0}
+.section-heading {display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px}
+.section-number {color:var(--cyan); font-size:10px; letter-spacing:1px; margin-right:10px; vertical-align:middle}
+.description {font-size:12px; margin-bottom:14px; max-width:90ch} .small {font-size:11px; line-height:1.5; margin-top:8px}
+.status {font-size:12px; min-height:19px; margin-top:10px; color:rgb(205,223,239)} .inline-controls {display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.crop-pair {display:grid; grid-template-columns:1fr 1fr; gap:12px} figcaption {color:var(--muted); font-size:11px; margin-bottom:8px}
+canvas.movie {background:black; width:100%; aspect-ratio:1; display:block; border-radius:5px; image-rendering:pixelated}
+.legend {display:flex; gap:20px; font-size:11px; color:var(--muted); margin-top:13px; flex-wrap:wrap} .legend span {display:flex; align-items:center; gap:6px}
+.swatch {width:10px; height:10px; border-radius:2px; display:inline-block} .gained {background:var(--cyan)} .lost {background:var(--amber)} .outline {border:1px solid white}
+#sculpture {width:100%; height:clamp(290px,30vw,480px); display:block; touch-action:none; cursor:grab; background:rgb(12,19,29); border-radius:7px; margin-top:12px}
+#sculpture:active {cursor:grabbing} .cards {display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px}
+.cell-card {border:1px solid var(--border); background:rgb(12,19,29); border-radius:9px; padding:13px; min-width:0} .cell-card.selected {border-color:rgb(64,139,158)}
+.card-heading {display:flex; justify-content:space-between; align-items:center; margin-bottom:9px} .card-heading button {font-size:10px; padding:4px 7px}
+.card-body {display:grid; grid-template-columns:minmax(100px,1fr) minmax(130px,1.25fr); gap:10px; align-items:center} .card-traces {min-width:0}
+.card-missing {font-size:11px; color:var(--amber); margin-top:7px; min-height:16px} .trace {width:100%; height:auto; display:block; cursor:crosshair; overflow:visible}
+.trace-label {font-size:10px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; margin:5px 0 2px} .cursor {stroke:white; stroke-width:1; opacity:.75}
+.barcode-key {display:flex; align-items:center; gap:8px; font-size:11px; color:var(--muted); margin-bottom:11px} .colour-ramp {display:inline-block; width:120px; height:8px; border-radius:4px; background:linear-gradient(90deg,rgb(23,43,78),rgb(43,139,178),rgb(244,219,139))}
+.missing-key {margin-left:12px} .barcode-scroll {max-height:510px; overflow:auto; border-radius:5px; border:1px solid var(--border); background:rgb(12,19,29)}
+#barcode {display:block; width:100%; cursor:crosshair} #barcode-tooltip {min-height:17px} footer {font-size:11px; color:var(--muted); padding-top:20px}
+#review-error {background:rgb(65,28,32); padding:15px; margin-bottom:12px; color:rgb(255,210,210)}
+@media (max-width:1050px) {body {padding:20px} .first-row {grid-template-columns:1fr 1fr} .cards {grid-template-columns:repeat(2,minmax(0,1fr))} .card-body {grid-template-columns:1fr} .transport {flex-wrap:wrap} .transport label:last-child {display:none} #frame-slider {min-width:180px} .masthead {align-items:flex-start}}
+@media (max-width:720px) {body {padding:14px} .masthead {display:block} nav {margin-top:15px} .first-row {grid-template-columns:1fr} .cards {grid-template-columns:1fr} .card-body {grid-template-columns:1fr 1.2fr} .panel {padding:15px} .transport {gap:7px} #time-label {min-width:auto} #sculpture {height:360px}}

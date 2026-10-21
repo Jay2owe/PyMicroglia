@@ -144,7 +144,9 @@ def test_a_cell_with_too_few_frames_gets_no_row_rather_than_a_row_of_blanks() ->
 
     Four frames is the smallest matrix that can hold a diagonal run of two.
     """
-    frame = _cell_frame({1: np.arange(3, dtype=float), 2: np.linspace(0, 5, 9)})
+    frame = _cell_frame({1: np.arange(3, dtype=float),
+                         2: np.linspace(0, 5, 9),
+                         3: np.array([1.0])})
     tables = derive(frame, _context(params={"surrogates": 3}))
     assert sorted(tables["recurrence_quantification"]["identity"]) == [2]
     assert sorted(tables["recurrence"]["identity"].unique()) == [2]

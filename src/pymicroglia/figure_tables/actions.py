@@ -2,11 +2,20 @@
 from __future__ import annotations
 import importlib
 from pathlib import Path
+from contextvars import ContextVar
+from contextlib import nullcontext
+
+_figure_progress = ContextVar('pymicroglia_figure_progress', default=None)
 
 
 def draw(key, run, *, stem=None, view=None, theme="pyflash", output_dir=None,
          output_formats=("svg",), dpi=150, overwrite=False, claim="", text=None,
-         fig_width_in=None, fig_height_in=None, **options):
+         fig_width_in=None, fig_height_in=None, workers=1, **options):
+    if type(workers) is not int or not 1 <= workers <= 8:
+        raise ValueError("workers must be an integer from 1 to 8")
+    if workers > 1 and (key not in {'cell_grid', 'all_cell_trace_grid'} or
+                        (key == 'cell_grid' and options.get('analysis', 'trace') != 'trace')):
+        raise ValueError("Parallel workers apply to cell_grid with analysis='trace' or all_cell_trace_grid")
     import pandas as pd
     from matplotlib import pyplot as plt
     from ..visualisation import panels
@@ -50,9 +59,27 @@ def draw(key, run, *, stem=None, view=None, theme="pyflash", output_dir=None,
                          output_formats=output_formats,dpi=dpi,overwrite=overwrite,
                          fig_width_in=fig_width_in,fig_height_in=fig_height_in,**export)
     source = Tables(run, stem)
+    source.figure_theme = theme
     source.requested_views=tuple(v.key for v in selected)
     module, function = spec.prepare.split(":")
-    prepared, evidence = getattr(importlib.import_module(module), function)(source, settings)
+    prepare = getattr(importlib.import_module(module), function)
+    import inspect
+    kwargs = {'progress': _figure_progress.get()} if 'progress' in inspect.signature(prepare).parameters else {}
+    if 'workers' in inspect.signature(prepare).parameters:
+        kwargs['workers'] = workers
+    # Direct Python figure calls need the same bounded engine-identity capture
+    # as the recorded CLI dispatcher. Nested sessions reuse its outer capture;
+    # each scientific result still carries its own record and the engine is
+    # checked again before preparation can succeed.
+    scope = nullcontext()
+    if spec.refits:
+        from ..workbench import analysis_session
+        scope = analysis_session()
+    with scope:
+        prepared, evidence = prepare(source, settings, **kwargs)
+    progress = _figure_progress.get()
+    if progress:
+        progress({'stage': 'drawing completed results'})
     panels._applied(theme)
     import re
     if view is not None or len(selected)==1:
@@ -84,11 +111,16 @@ def draw(key, run, *, stem=None, view=None, theme="pyflash", output_dir=None,
                            **getattr(prepared,'wording',{})},recorded,text)
         from ..visualisation.panels.wording import finish
         finish(figure,wording)
+        if fig_width_in is not None or fig_height_in is not None:
+            width, height = figure.get_size_inches()
+            figure.set_size_inches(fig_width_in or width, fig_height_in or height)
         table = pd.concat(frames, ignore_index=True)
         folder = Path(output_dir) if output_dir else Path(run) / "figures" / key
         name = source.stem or "pooled"
         if view is not None:
             name += "_" + view
+        if progress:
+            progress({'stage': 'saving figures and evidence'})
         result = panels.save(figure, folder / name, table=table.to_dict("list"),
             sources=source.sources+[spec.source], settings={**settings,"view":view,"theme":theme,
                 "text":{slot:getattr(wording,slot) for slot in wording.sources},
@@ -109,10 +141,10 @@ def __getattr__(name):
         raise AttributeError(name)
     def action(run, *, stem=None, view=None, theme="pyflash", output_dir=None,
                output_formats=("svg",), dpi=150, overwrite=False, claim="", text=None,
-               fig_width_in=None,fig_height_in=None,**options):
+               fig_width_in=None,fig_height_in=None,workers=1,**options):
         return draw(name, run, stem=stem, view=view, theme=theme, output_dir=output_dir,
                     output_formats=output_formats, dpi=dpi, overwrite=overwrite, claim=claim,
-                    text=text,fig_width_in=fig_width_in,fig_height_in=fig_height_in,**options)
+                    text=text,fig_width_in=fig_width_in,fig_height_in=fig_height_in,workers=workers,**options)
     # These wrappers accept a declaration's options through **options. Expose
     # that exact public contract to callers and catalogue consistency checks.
     import inspect

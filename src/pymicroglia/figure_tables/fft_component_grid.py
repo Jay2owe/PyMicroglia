@@ -1,7 +1,8 @@
-"""The accepted cell-grid filter and FFT component decision.
+"""Cell-grid temporal filters and the FFT component decision.
 
-The filter is applied to contiguous measured frame runs. Missing cell frames
-remain missing, and the two three-frame operations run in the declared order.
+The default reporter filter is a centered three-frame arithmetic mean of
+uncorrected total light. The earlier median-then-mean filter remains callable
+for reproducing saved analyses.
 """
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ import hashlib
 import numpy as np
 
 from .. import workbench
+from ..measure.signal import centered_frame_mean
 
 
 def _three_frame(values: np.ndarray, kind: str) -> np.ndarray:
@@ -35,6 +37,11 @@ def _three_frame(values: np.ndarray, kind: str) -> np.ndarray:
 def median_then_mean(values: np.ndarray) -> np.ndarray:
     """Match the frozen three-frame median then mean treatment exactly."""
     return _three_frame(_three_frame(values, "median"), "mean")
+
+
+def three_frame_mean(values: np.ndarray, frames: np.ndarray) -> np.ndarray:
+    """Centered arithmetic mean only where three observed native frames exist."""
+    return centered_frame_mean(values, frames)
 
 
 def _test_seed(recording: str | None, identity: int, base: int) -> int:

@@ -28,6 +28,27 @@ def test_fft_component_gateway_does_not_require_package_attribute(monkeypatch):
     assert workbench.test_fft_components([0.0, 1.0], [1.0, 2.0], [24.0]) == expected
 
 
+def test_analysis_sessions_share_nested_capture_and_release_it_after_errors(monkeypatch):
+    from pymicroglia import workbench
+    calls = []
+    def identity():
+        calls.append(True)
+        return {'versions': {}, 'code_sha256': {}, 'execution': {}}
+    monkeypatch.setattr(workbench.cw.run_records, 'software_identity', identity)
+    with pytest.raises(RuntimeError, match='refused'):
+        with workbench.analysis_session() as outer:
+            with workbench.analysis_session() as inner:
+                assert inner is outer
+                raise RuntimeError('refused')
+    assert not workbench.cw.run_records.capturing()
+    with workbench.analysis_session() as fresh:
+        assert fresh is not outer
+        with workbench.analysis_session() as inner:
+            assert inner is fresh
+    assert len(calls) == 3  # Failed capture, fresh capture, fresh verification.
+    assert not workbench.cw.run_records.capturing()
+
+
 def test_late_start_normalization_keeps_recording_time():
     from pymicroglia import workbench
     hours = np.arange(12., 30., .5)

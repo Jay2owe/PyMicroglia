@@ -1,14 +1,14 @@
 """Positions and counts for saved detected versus undetected comparisons."""
 import numpy as np
 
-def points(rows):
-    groups=[]
-    for index, group in enumerate(('significant','not-significant')):
+def points(rows, groups=('significant', 'not-significant')):
+    prepared=[]
+    for index, group in enumerate(groups):
         block=rows[rows.group.eq(group)]
         valid=block[np.isfinite(block.value)]
         offsets=np.linspace(-.13,.13,len(valid)) if len(valid)>1 else np.zeros(len(valid))
-        groups.append(dict(x=index+offsets,y=valid.value.to_numpy(),finite=len(valid),total=len(block)))
-    return dict(groups=groups,available=any(group['finite'] for group in groups))
+        prepared.append(dict(x=index+offsets,y=valid.value.to_numpy(),finite=len(valid),total=len(block)))
+    return dict(groups=prepared,available=any(group['finite'] for group in prepared))
 
 def prepare(cells,units,settings):
     measurement=cells[cells.comparison_kind.eq('measurement') & cells.comparison.eq(settings['comparison'])]

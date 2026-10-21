@@ -1,0 +1,17 @@
+{
+  "all_methods_ready_seconds": 1.19,
+  "first_dialog_seconds": 2.133,
+  "ready_card_to_dialog_seconds": 0.943,
+  "paired_selection_seconds": 0.049,
+  "typed_payload_verified": true,
+  "themes_checked": [
+    "light",
+    "dark"
+  ],
+  "first_completed_headline_plots_seconds": 2.686,
+  "recording_switch_completed_plots_seconds": 3.022,
+  "performance_fixture": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\linked_exploration_20260929\\fixture.json",
+  "two_panel_analysis_and_draw_seconds": 29.092,
+  "page_errors": [],
+  "output": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\docs\\shared-cell-grid\\ui-checks"
+}

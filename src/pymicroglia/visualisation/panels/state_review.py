@@ -1,6 +1,6 @@
 """Draw saved state histories, rates, period evidence and persistence controls."""
 import numpy as np
-from . import colour, colours
+from . import colour, colours, overflow_colours
 from ._contract import Drawn
 
 
@@ -11,7 +11,8 @@ def _lanes(ax,data):
 
 def history(ax,data,*,style,**options):
     from matplotlib.lines import Line2D
-    palette = colours(n=len(data['states']))
+    count = len(data['states'])
+    palette = colours(n=count) if count <= len(colours()) else overflow_colours(count)
     colors = dict(zip(data['states'],palette))
     frame = data['table']
     for state,group in frame.groupby('state'):
@@ -23,7 +24,7 @@ def history(ax,data,*,style,**options):
     if frame.state.lt(0).any():
         handles.append(Line2D([],[],color=colour('muted'),marker='s',linestyle='none',label='Uncertain / excluded'))
     if handles:
-        ax.legend(handles=handles,frameon=False)
+        ax.legend(handles=handles,frameon=False,loc='upper left',bbox_to_anchor=(1.02,1))
     return Drawn(frame,ax)
 
 
@@ -48,8 +49,10 @@ def period(ax,data,*,style,**options):
 def switching(ax,data,*,style,**options):
     frame,cells = data['table'],data['cells']
     ax.scatter(frame.display_row,frame.switches_per_hour,s=65,color=colour('dark'))
+    rates = frame.switches_per_hour.to_numpy(float)
+    maximum = float(np.max(rates[np.isfinite(rates)],initial=0))
     ax.set(title='Switching between confident states',ylabel='Switches / observed hour',
-           xticks=cells.display_row,xticklabels=cells.cell_label,ylim=(0,None))
+           xticks=cells.display_row,xticklabels=cells.cell_label,ylim=(0,max(.05,maximum*1.1)))
     return Drawn(frame,ax)
 
 
@@ -62,7 +65,10 @@ def persistence(ax,data,*,style,**options):
     else:
         ax.scatter(frame.display_row,frame.significant_fraction_of_tested,s=65,color=colour('blue'))
         for row in frame.itertuples():
-            ax.annotate(f'{row.significant_simulations}/{row.tested}',(row.display_row,row.significant_fraction_of_tested),
+            # Counts above the threshold stay clear of its reference line;
+            # the actual fractions remain at their unchanged scatter positions.
+            label_y = max(row.significant_fraction_of_tested,data['alpha'] or 0)
+            ax.annotate(f'{row.significant_simulations}/{row.tested}',(row.display_row,label_y),
                         xytext=(0,9),textcoords='offset points',ha='center')
         if data['alpha'] is not None:
             ax.axhline(data['alpha'],color=colour('red'),linestyle=':')

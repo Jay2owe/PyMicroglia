@@ -201,6 +201,207 @@ to preserve its tracking gates; it is never the biological signal reported
 for a cell. The Motion run writes a full-field review TIFF. Native-frame
 identities are provisional until that review is accepted.
 
+## Independently selectable masks and refinement
+
+The refiner is like changing the outline on an already named cell. Each new
+analysis creates base masks and runs Motion normally. Refinement can then
+change the measured boundary while retaining those identities and, by default,
+their exact frame-by-frame presence. No earlier analysis or manually assembled files are
+required.
+
+```text
+registered photons -> base mask creator -> Motion identities
+       |                     |                    |
+       +---------------------+-> mask refiner ----+
+                                                 |
+                              refined outlines with fixed identities
+                                                 |
+                                  tracked measurements and grids
+```
+
+The default base creator is the existing U-Net on its unchanged rolling-mean
+window (3.9 hours, seven frames on the tuning recording). The default refiner
+uses single-frame U-Net predictions with the accepted overlap, size, movement
+and photon-support gates. The implementation currently computes refinement
+after Motion; its proposals receive only photons and base detections. Every
+method uses the same checked transfer of Motion identities onto the outlines.
+
+Both model selections and thresholds are independent:
+
+```python
+from pymicroglia.pipelines import auto_microglia
+
+# Paths below are examples: supply the trained model for each role.
+auto_microglia.run(
+    folder,
+    mask_method="unet",
+    mask_weights="models/base_model.pt",
+    mask_cut=0.8,
+    tracked_refinement_method="single_frame",
+    tracked_refinement_weights="models/bioluminescence_refiner.pt",
+    tracked_refinement_options={"cut": 0.8, "min_gain": 0.03},
+)
+
+# Keep the base creator and tracking; measure their original outlines.
+auto_microglia.run(folder, tracked_refinement_method="off")
+```
+
+`tracked_outline_refinement=False` is also supported. With refinement off,
+the model is never loaded and the original tracked label views go directly to
+measurement and grids. The existing eligibility decisions are applied in
+either mode. Short-gap measurement remains separate, with a default maximum
+of three frames; it never creates or changes a tracking identity.
+
+If weights are omitted, the `unet` base creator and `single_frame` refiner
+independently resolve the configured `PYMICROGLIA_MASK_WEIGHTS` model. The
+`cd68` refiner requires an explicit checkpoint; the `saved` provider needs no
+model. Set both model paths explicitly when using different reporters.
+Changing `mask_weights`, `mask_cut` or `mask_method_options` does not set the
+refiner's weights or options. A new reporter model must be trained and
+validated separately; choosing its path does not train it.
+
+Changing the **base creator** can change tracking because it changes Motion's
+detections. Changing or disabling **refinement alone** preserves Motion's
+inputs, identity history and eligibility decisions. The default policies also
+preserve each cell's frame-by-frame presence; the optional intersection policy
+below can suppress observations in the downstream masks.
+Measured areas and intensities can change, as can rhythm results derived from
+those measurements.
+
+### Adding another method
+
+Supply an importable `package.module:function` name. No tracker changes or
+registry edits are needed. The function and its settings are recorded, and
+custom implementation files and model weights are fingerprinted.
+
+- `mask_method="my_package.masks:predict"`, with `mask_method_options={...}`:
+  the function receives `pictures, weights=, threads=, um_per_px=, options=`.
+  `pictures` is a read-only time × height × width array of the original
+  rolling means (or one all-recording mean for the separate static mask).
+  Return `{"cells": integer_labels, "probability": probability_array}`;
+  optionally include `settings` and `warning`. Labels must be 0–65535 and
+  probabilities 0–1, with exactly the input shape. A different neural-network
+  architecture can load its own weights inside this adapter.
+- `tracked_refinement_method="my_package.outlines:refine"`, with
+  `tracked_refinement_options={...}`: the function receives `raw, baseline,
+  weights=, threads=, um_per_px=, options=`. Both arrays are read-only copies;
+  the provider makes geometry proposals rather than identity decisions. Return
+  a `{"kind": ..., "data": ...}` mapping using the common interface below.
+  Existing array-returning adapters retain the older contract: their labels
+  must match the baseline in every frame.
+
+The default shared handoff rejects a wrong shape, missing detection, added
+detection, lost identity or transfer of an existing pixel to a different identity. It
+writes separate refined labels, input/output hashes and a per-frame audit.
+It does not relink, renumber or rerun tracking. Failed refinement leaves the
+original tracking files available; partial outputs are not treated as a
+completed result. Use a new versioned run folder for retrying a failed run.
+
+### The common shape-proposal interface
+
+Any tool can provide proposals, independently of how Motion found or tracked
+the cells. The supported `kind` values are:
+
+- `labels`: a time × height × width integer object-label stack. Its numbers
+  are local object names and never become tracking identities.
+- `binary`: foreground pixels as boolean, zero/one or zero/255 masks (any
+  single positive foreground value is accepted).
+- `probability`: foreground probabilities in 0–1, with an explicit optional
+  `threshold` (default 0.5, foreground is strictly greater than the threshold).
+- `outlines`: a binary raster of closed cell contours. Open contours and
+  overlapping filled interiors are rejected.
+- `polygons`: one list per frame, containing polygons of `(x, y)` source-pixel
+  vertices. Polygons need at least three vertices and cannot overlap.
+- `aligned_labels`: an advanced adapter already matched each baseline
+  detection; the common validation checks its labels and pixel ownership.
+
+All geometry must have the original spatial coordinates and exact frame
+alignment. There is no implicit resizing, frame interpolation or registration.
+There is no implicit inference of which kind an array represents.
+
+The common `overlap` policy retains proposed components that overlap an
+existing cell. A foreground component covering several cells is divided using
+the nearest surviving original cell pixels; a new disconnected object is
+ignored. A cell missed by the provider retains its original mask. Optionally
+limit growth with `policy_options={"max_expansion_px": 8}`. That limit is
+disabled by default. This is a shape proposal requiring visual review; it is
+not evidence that every added pixel is biologically correct.
+
+The `single_frame` bioluminescence provider goes through the same conversion
+and identity-transfer interface, using its accepted `photon_support` policy.
+Its overlap, area, displacement and photon-support gates are unchanged.
+The `cd68` provider uses `overlap`, the frozen three-frame fluorescence model,
+and the original normalisation and foreground decoding. It performs no
+training, identity matching, temporal relinking or merge/split tracking.
+Both can explicitly select a policy with `tracked_refinement_options`.
+
+### Optional suppression without identity assignment
+
+Set `tracked_refinement_options={"policy": "intersection"}` to keep only the
+original Motion pixels also covered by the refiner's foreground. This is an
+eraser: it cannot add pixels, assign an identity, grow a mask or link cells.
+It is **off by default** and works with either network or any other provider.
+
+```python
+auto_microglia.run(
+    folder,
+    tracked_refinement_options={"policy": "intersection"},
+)
+```
+
+Use the same `policy` in `method_options` for `refine_motion`. Partial overlap
+shrinks a mask; no overlap removes that cell's observation for that frame.
+Disconnected surviving pieces keep their original identity. Later frames
+use the original Motion labels, so a cell can resume with its original name.
+Extra foreground never creates a cell or fills a Motion gap. The operation
+has no correspondence thresholds or `policy_options`; the chosen producer
+still uses its usual settings to generate foreground.
+
+Intersection uses the full provider foreground against **original Motion
+labels**, including cells outside the base detections. It bypasses overlap
+matching, photon-support gating, identity transfer and missing-cell fallback.
+The audit lists suppressed identities for each source frame and the settings
+record `identity_presence="subset_of_motion"` and `suppressed_cell_frames`.
+
+Measurements and grids use the intersected masks. The three-frame gap
+measurement step uses the original Motion history in this mode, so it cannot
+reconstruct deliberately suppressed observations; genuine pre-existing Motion
+gaps retain their existing treatment. Eligibility remains based on the original
+Motion history. Omitting `policy` restores the usual provider-specific default.
+
+### Choosing a provider for a new or completed analysis
+
+```python
+# New recording: add these options to the existing reporter-specific
+# base-mask and Motion configuration.
+auto_microglia.run(
+    folder,
+    tracked_refinement_method="cd68",
+    tracked_refinement_weights="models/cd68_foreground.pt",
+)
+
+# Existing completed tracking: proposals can come from any other application.
+from pymicroglia.tracking.post_refine import refine_motion
+result = refine_motion(
+    "registered_raw.tif", "motion_labels.tif",
+    source_frame_offset=2,
+    output_dir="refined_v1",
+    method="saved",
+    method_options={"path": "external_masks.tif", "kind": "binary"},
+)
+```
+
+Saved proposals must span the raw stack, including leading frames omitted by
+Motion. Polygon files contain the nested lists as JSON. The original Motion
+masks provide the reference shapes when earlier detection masks are absent.
+The returned `refined_labels` path feeds the existing measurement and grid
+functions. Original files remain untouched. Each run retains the producer's
+proposal labels, matched outlines, final measurement labels, frame audit,
+parameters and input/output hashes separately.
+
+Switching off refinement still bypasses every provider. Existing eligibility
+decisions and the three-frame gap-measurement setting remain unchanged.
+
 ## Which tracked cells go downstream
 
 Think of eligibility as a set of transparent copies laid over the finished

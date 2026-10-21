@@ -48,19 +48,42 @@ _auto_organotypic_config.use_project(
     only_if_unset=True,
 )
 
-from . import _optional, catalogue, config, imagej, io, metadata, params
-from . import recording
-from . import publication, results, series, store
-from .metadata import ChannelMap, Metadata, Window, assign_channels, usable_window
-from .recording import capture
-from .series import Series, open_series
-from .knowledge import describe, discover, doctor, validate
-from .params import ParamBlock, ParamDoc, harvest, harvest_many, parameter_name
-from .registry import REGISTRY, ClaimRequired, pending
-from .results import Batch, Recording
-from .run import ActionInvalid, ActionPending, run_action, run_recorded
+# Preserve the public facade without building every scientific action registry
+# just to open an image or read a parameter. The owning module still provides
+# each object, including exceptions and classes (no wrappers or duplicate types).
+_PUBLIC_MODULES = {
+    "_optional", "catalogue", "config", "imagej", "io", "metadata", "params",
+    "recording", "publication", "results", "series", "store",
+}
+_PUBLIC_OBJECTS = {
+    **dict.fromkeys(("ChannelMap", "Metadata", "Window", "assign_channels", "usable_window"), "metadata"),
+    "capture": "recording",
+    **dict.fromkeys(("Series", "open_series"), "series"),
+    "test_simulation_rhythm": "simulation_rhythm",
+    **dict.fromkeys(("describe", "discover", "doctor", "validate"), "knowledge"),
+    **dict.fromkeys(("ParamBlock", "ParamDoc", "harvest", "harvest_many", "parameter_name"), "params"),
+    **dict.fromkeys(("REGISTRY", "ClaimRequired", "pending"), "registry"),
+    **dict.fromkeys(("Batch", "Recording"), "results"),
+    **dict.fromkeys(("ActionInvalid", "ActionPending", "run_action", "run_recorded"), "run"),
+}
+
+
+def __getattr__(name):
+    import importlib
+    module = name if name in _PUBLIC_MODULES else _PUBLIC_OBJECTS.get(name)
+    if module is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    loaded = importlib.import_module(f"{__name__}.{module}")
+    value = loaded if name in _PUBLIC_MODULES else getattr(loaded, name)
+    globals()[name] = value
+    return value
+
+
+def __dir__():
+    return sorted(set(globals()) | set(__all__))
 
 __all__ = [
+    "test_simulation_rhythm",
     "__version__",
     # parameters
     "ParamBlock",

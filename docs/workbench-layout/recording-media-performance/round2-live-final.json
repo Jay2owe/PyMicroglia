@@ -1,0 +1,48 @@
+{
+  "measurements": [
+    {
+      "stem": "RBM3_MCG_01",
+      "seconds": 1.9003000000000465,
+      "image": true,
+      "change": true,
+      "loaded": 9,
+      "overviewPending": false
+    },
+    {
+      "stem": "RBM3_MCG_05",
+      "seconds": 0.6248000000000465,
+      "image": true,
+      "change": true,
+      "loaded": 9,
+      "overviewPending": true
+    }
+  ],
+  "latest": {
+    "stem": "RBM3_MCG_05",
+    "seconds": 0.6248000000000465,
+    "image": true,
+    "change": true,
+    "loaded": 9,
+    "overviewPending": true
+  },
+  "source": "RBM3_MCG_05",
+  "frame": 56,
+  "mediaBusy": false,
+  "pending": false,
+  "dropdown": 9,
+  "counts": {
+    "cells": 486,
+    "finite_cells": 486,
+    "recordings": 9,
+    "samples": 9,
+    "observations": 37388,
+    "total_cells": 486,
+    "excluded_cells": 0
+  },
+  "image": true,
+  "change": true,
+  "assets": [
+    "http://127.0.0.1:62862/assets/group-comparison.js?v=20261006-2",
+    "http://127.0.0.1:62862/assets/exploration.js?v=20261006-4"
+  ]
+}

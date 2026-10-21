@@ -64,9 +64,7 @@ COMMON_PARAMS: list[dict] = [
                     "or quality-control action, or the trace CSV for a trace panel. "
                     "The folder holding it also works."},
     {"name": "output_dir", "type": "path", "units": "-", "required": False, "default": None,
-     "description": "Where results are written. Defaults to an AI_Exports folder "
-                    "beside the source, which is where every protocol in this "
-                    "project already puts them."},
+     "description": "Folder where this action writes its results."},
     {"name": "output_name", "type": "str", "units": "-", "required": False, "default": None,
      "description": "Exact name for the primary output. Defaults to the source "
                     "stem plus the action's own suffix."},
@@ -1034,7 +1032,10 @@ _TRACK_PARAMS: list[dict] = [
     {"name": "tracker_options", "type": "mapping", "units": "-",
      "required": False, "default": None,
      "description": "Optional packaged-engine selector, normally stem for a "
-                    "multi-recording handoff; it does not change tracking rules."},
+                    "multi-recording handoff. Set bounded_memory=True and resume=True "
+                    "to reuse verified completed stages after interruption in the same folder; "
+                    "changed inputs, settings, code or software require a fresh folder. "
+                    "These execution options do not change tracking rules."},
 ]
 assert _PIPELINE_RUN[3]["name"] == "claim"
 
@@ -1214,6 +1215,10 @@ _TRACKED_DISPLAY_COMMON: list[dict] = [
     {"name": "outline_colours", "type": "str_or_list", "units": "RGB",
      "required": False, "default": "accepted",
      "description": "The accepted 12-colour identity cycle, or a custom list of RGB triples."},
+    {"name": "cell_filter", "type": "mapping", "units": "-", "required": False, "default": None,
+     "description": "Saved per-cell filter decisions; failed cells use the specified grey colour."},
+    {"name": "filter_grey_colour", "type": "str", "units": "RGB", "required": False, "default": "#aaaaaa",
+     "description": "Outline colour for cells failing the supplied filter."},
     {"name": "smooth_sigma_px", "type": "float", "units": "px",
      "required": False, "default": 1.6,
      "description": "Display-only spatial Gaussian smoothing; original photons remain unchanged for measurement."},
@@ -1362,6 +1367,15 @@ _CELL_IMAGE_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
 ]
 
 _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
+    {"name": "show_motion_trails", "type": "bool", "units": "-",
+     "required": False, "default": False,
+     "description": "Optional fading paths through previous observed positions of each tracked identity; off by default."},
+    {"name": "trail_frames", "type": "int", "units": "previous frames",
+     "required": False, "default": 4,
+     "description": "Maximum number of previous consecutive observed frames in each motion trail."},
+    {"name": "trail_opacity", "type": "float", "units": "0..1",
+     "required": False, "default": 0.65,
+     "description": "Opacity of the newest trail segment; older segments fade linearly."},
     {"name": "fill_tile", "type": "bool", "units": "-",
      "required": False, "default": True,
      "description": "Enlarge each fixed own-cell video crop to fill the common grid slot, keeping a one-pixel outline and recalibrating its scale bar. False retains native-pixel padding."},
@@ -1382,7 +1396,32 @@ _CELL_VIDEO_GRID_PARAMS: list[dict] = _CELL_GRID_COMMON + [
      "description": "Move the crop between observed cell centres across internal mask gaps; 'hold' keeps its last observed position."},
 ]
 
+_CELL_REVIEW_PARAMS = [
+    {"name": "raw", "type": "path", "units": "-", "required": True, "default": None,
+     "description": "Original single-channel time/y/x TIFF recording; measurements read these unfiltered pixels."},
+    {"name": "labels", "type": "path", "units": "-", "required": True, "default": None,
+     "description": "Saved labelled-mask TIFF with fixed cell identities; never relabelled by the review."},
+    {"name": "output", "type": "path", "units": "-", "required": True, "default": None,
+     "description": "New offline HTML review filename; existing review files are preserved and require a new name."},
+    {"name": "title", "type": "str", "units": "-", "required": False, "default": None,
+     "description": "Recording name displayed above the four linked review views; None uses the raw TIFF stem."},
+    {"name": "source_frame_offset", "type": "int", "units": "frames", "required": False, "default": 0,
+     "description": "Zero-based source frame containing labels[0]; preserve leading original frames as unlabelled."},
+    {"name": "frame_interval_h", "type": "float", "units": "hours/frame", "required": False, "default": 0.5,
+     "description": "Native time spacing used by the shared movie, trace and barcode time controls."},
+    {"name": "display_lut", "type": "str", "units": "-", "required": False, "default": "red",
+     "choices": ["red", "gray"],
+     "description": "Use a red or gray intensity ramp for original display pixels, without denoising or changing measurements."},
+    {"name": "display_range", "type": "list", "units": "source intensity", "required": False, "default": None,
+     "description": "Fixed lower/upper display intensity limits; None samples the whole recording for one fixed contrast range."},
+]
+
 _HANDOFF_ACTIONS: list[dict] = [
+    {"name": "cell_review",
+     "summary": "Export an offline linked shape-change map, rotatable outline history, animated cell cards and clickable recording barcode from saved identities and sharp original images.",
+     "method": "visualisation.cell_review.cell_review", "params": _CELL_REVIEW_PARAMS,
+     "display_only": True,
+     "method_version": "2026-09-28-saved-cell-review-v1"},
     {"name": "cell_eligibility",
      "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
      "method": "eligibility.evaluate", "params": _ELIGIBILITY_PARAMS,
@@ -1410,6 +1449,60 @@ _HANDOFF_ACTIONS: list[dict] = [
 ]
 
 _MEASURE_ACTIONS: list[dict] = [
+    {
+        "name": "measure_expanded_outlines",
+        "summary": "Compare original, exclusively expanded and background-corrected cell totals; every supplied cell limits growth.",
+        "method": "measure.measure_expanded_outlines",
+        "method_version": "2026-10-08-exclusive-expanded-outlines-v2",
+        "params": [
+            {"name":"raw", "type":"path", "units":"-", "required":True, "default":None,
+             "description":"Original single-channel measurement TIFF; display-filtered sources are not valid."},
+            {"name":"labels", "type":"path", "units":"-", "required":True, "default":None,
+             "description":"All saved identity labels; include neighbours even when measuring only selected cells."},
+            {"name":"output_dir", "type":"path", "units":"-", "required":True, "default":None,
+             "description":"New directory for exact expanded masks, tables and receipt."},
+            {"name":"identities", "type":"list", "units":"-", "required":False, "default":[],
+             "description":"Selected existing cell identities; empty selects all."},
+            {"name":"source_frame_offset", "type":"int", "units":"frames", "required":False, "default":0,
+             "description":"Native source frame corresponding to the first label frame."},
+            {"name":"frame_interval_h", "type":"float", "units":"hours", "required":False, "default":.5,
+             "description":"Elapsed time between native source frames."},
+            {"name":"expansion_px", "type":"float", "units":"pixels", "required":False, "default":3.,
+             "description":"Maximum Euclidean growth from original outlines; nearest cell wins shared territory."},
+            {"name":"background_inner_px", "type":"float", "units":"pixels", "required":False, "default":4.,
+             "description":"Empty gap beyond the expanded outline before sampling local background."},
+            {"name":"background_outer_px", "type":"float", "units":"pixels", "required":False, "default":12.,
+             "description":"Outer extent of the local background ring, excluding all expanded cells."},
+            {"name":"min_background_px", "type":"int", "units":"pixels", "required":False, "default":25,
+             "description":"Minimum finite clean background pixels; insufficient rings leave corrected totals missing."},
+            {"name":"background_statistic", "type":"str", "units":"-", "required":False, "default":"mean",
+             "description":"Mean (default, for total additive intensity) or median of finite background-ring pixels."},
+            {"name":"blocked", "type":"path", "units":"-", "required":False, "default":None,
+             "description":"Optional untracked foreground TIFF excluded from expansion and background."},
+            {"name":"claim", "type":"str", "units":"-", "required":False, "default":"",
+             "description":"Scientific comparison recorded with the outputs."},
+        ],
+    },
+    {
+        "name": "measure_fixed_apertures",
+        "summary": "Measure constant circle or square footprints following supplied native cell centroids; retain gaps and report overlap.",
+        "method": "measure.measure_fixed_apertures",
+        "method_version": "2026-10-06-fixed-centroid-apertures-v1",
+        "params": [
+            {"name": "movies", "type": "list", "units": "-", "required": True, "default": None,
+             "description": "Movie mappings with stem, raw and centroids paths; optional masks and raw_sha256."},
+            {"name": "output_dir", "type": "path", "units": "-", "required": True, "default": None,
+             "description": "New output directory for fixed-aperture measurement tables."},
+            {"name": "shapes", "type": "tuple", "units": "-", "required": False, "default": ["circle"],
+             "description": "Fixed footprint shapes: circle or square."},
+            {"name": "area_fraction", "type": "float", "units": "fraction", "required": False, "default": 1.,
+             "description": "Fraction of each cell's median positive outline area used for the fixed footprint."},
+            {"name": "raw_scale", "type": "float", "units": "-", "required": False, "default": 1.,
+             "description": "Multiplier converting raw image values to measurement units."},
+            {"name": "claim", "type": "str", "units": "-", "required": False, "default": "",
+             "description": "Scientific purpose recorded with the measurement."},
+        ],
+    },
     {
         "name": "measure",
         "summary": "Turn tracked labels into tables: one row per cell per "
@@ -1865,7 +1958,7 @@ def build(protocols: Path) -> dict:
                                    "outline_width_px", "outline_opacity",
                                    "mask_style", "mask_opacity", "display_filter",
                                    "fill_tile", "tile_size_px"}
-                if (entry["name"] != "measure_missing_gaps" and
+                if (entry["name"] not in {"measure_missing_gaps", "measure_expanded_outlines"} and
                         not (entry["name"] == "cell_eligibility" and
                              row["name"] == "max_gap_frames") and
                         not (entry["name"] in {"cell_image_grid", "cell_video_grid"}
@@ -1893,6 +1986,47 @@ def build(protocols: Path) -> dict:
                 else "2026-09-21-measure-chassis-v1"),
             "source": [],
         })
+
+    # The optional outline-based test is package-owned, not harvested from a
+    # source protocol. Read live defaults so rebuilding cannot drop the action.
+    import inspect
+    from pymicroglia import simulation_rhythm
+    descriptions = {
+        'source': 'Single-plane recorded TIFF; direct Python calls also accept TYX or TCYX arrays.',
+        'outlines': 'Saved detected TYX identity-outline TIFF or integer array; no emitting truth is supplied.',
+        'times_h': 'Finite increasing recording clock in hours, matching all source frames.',
+        'interval_hours': 'Positive measured frame interval, used when times_h is not supplied.',
+        'processing': 'none, asls, mean3 or asls_mean3; a list compares variants with the same recording conditions.',
+        'selection': 'pooled_recording selects shared optics from all eligible raw traces; fixed requires pattern and blur_pixels.',
+        'pattern': 'Fixed spatial emission hypothesis: uniform, boundary, centre or thin.',
+        'blur_pixels': 'Fixed Gaussian blur standard deviation in image pixels.',
+        'patterns': 'Distinct spatial emission hypotheses for recording-wide selection.',
+        'blur_grid_pixels': 'Distinct positive Gaussian blur standard deviations to compare.',
+        'annulus_pixels': 'Inner and outer local-background distances; neighbouring identities excluded.',
+        'options': 'Workbench optical rhythm settings, including period grid, refinement, residual blocks, surrogates, cycle limits and seed.',
+        'control': 'Measured instrumental-control mapping, retained through the existing control gate.',
+        'output_dir': 'Folder for simulation rhythm result and trace tables.',
+        'progress': 'Optional Python callback receiving per-trace completion counts.',
+    }
+    types={'source':'path','outlines':'path','times_h':'list','interval_hours':'float','selection':'str',
+           'pattern':'str','blur_pixels':'float','patterns':'list','blur_grid_pixels':'list','annulus_pixels':'list',
+           'options':'dict','control':'dict','output_dir':'path','processing':'Any','progress':'Any'}
+    units={'times_h':'h','interval_hours':'h','blur_pixels':'px','blur_grid_pixels':'px','annulus_pixels':'px'}
+    signature=inspect.signature(simulation_rhythm.test_simulation_rhythm);details={};defaults={}
+    for name,parameter in signature.parameters.items():
+        required=parameter.default is inspect.Parameter.empty
+        default=None if required else parameter.default
+        defaults[name]=list(default) if isinstance(default,tuple) else default
+        known=vocabulary.get(name)
+        row=dict(name=name,type=known['type'] if known else types[name],units=units.get(name,known.get('units','-') if known else '-'),
+                 required=required,description=descriptions[name])
+        if known is None:vocabulary[name]=dict(row)
+        details[name]={k:v for k,v in row.items() if k!='name'}
+    actions.append(dict(name='test_simulation_rhythm',
+        summary='Optional simulation-based rhythm test through detected outlines, with shared recording optics, summed light and conditional block significance.',
+        method='simulation_rhythm.test_simulation_rhythm',mutates=False,destructive=False,display_only=False,
+        params=list(signature.parameters),defaults=defaults,parameter_details=details,
+        method_version=simulation_rhythm.METHOD_VERSION,source=[]))
 
     # The tracking-gap limit and the measurement-only gap repair use the same
     # parameter name but have different action-specific meanings.

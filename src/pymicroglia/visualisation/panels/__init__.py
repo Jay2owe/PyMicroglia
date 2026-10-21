@@ -163,7 +163,8 @@ def overflow_colours(n: int, *, cmap: str | None = None) -> list[str]:
     """
     import matplotlib as mpl
 
-    table = _plt().get_cmap(cmap or overflow_cmap_name())
+    # Looking up colours must not switch the caller's backend or close its figures.
+    table = mpl.colormaps[cmap or overflow_cmap_name()]
     return [mpl.colors.to_hex(table(0.05 + 0.9 * k / max(n - 1, 1)))
             for k in range(n)]
 
@@ -492,8 +493,8 @@ def save(figure, path, *, table: Mapping[str, Sequence[Any]],
             }
             if set(keyed) & {"svg", "pdf", "png", "jpeg", "tiff", "webp", "avif", "heif"}:
                 selected_options = keyed.get(requested)
-        from .._delivery import render_destination
-        with render_destination(out) as staged:
+        from .._delivery import native_vector_images, render_destination
+        with render_destination(out) as staged, native_vector_images(figure, out):
             final_record = save_figure(
                 figure,
                 staged,

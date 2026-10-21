@@ -23,4 +23,8 @@ def finish(figure, wording):
     for axis in figure.axes:
         for getter,setter,limit in ((axis.get_xlabel,axis.set_xlabel,38),(axis.get_ylabel,axis.set_ylabel,24)):
             setter('\n'.join(textwrap.fill(line,limit) for line in getter().splitlines()))
-    figure.set_layout_engine('constrained',rect=(.01,bottom,.98,1-top-bottom))
+    # A native grid may deliberately disable automatic layout after reserving
+    # its own title/footer margins. Respect that choice through final export.
+    from matplotlib.layout_engine import PlaceHolderLayoutEngine
+    if not isinstance(figure.get_layout_engine(), PlaceHolderLayoutEngine):
+        figure.set_layout_engine('constrained',rect=(.01,bottom,.98,1-top-bottom))

@@ -13,58 +13,8 @@ from .cell_period_recipe import resolve_cell_period_recipe
 
 def _period_decisions(tiles, recipe: Mapping[str, Any], recording: str
                       ) -> dict[int, dict[str, Any]]:
-    import pandas as pd
-
-    from .. import workbench
-    from ..figure_tables.all_cell_traces import trace_data
-    from ..measure.modules.rhythms import DEFAULTS as rhythm_defaults
-
-    rows = []
-    for tile in tiles:
-        times, values = (np.asarray(part, float) for part in tile.trace)
-        rows.extend({"identity": int(tile.key), "frame_index": index,
-                     "hours": float(hour), "signal_mean": float(value)}
-                    for index, (hour, value) in enumerate(zip(times, values)))
-    resolved = workbench.resolve_analysis_options(
-        recipe.get("rhythm_params", rhythm_defaults),
-        lambda name: recipe.get(name))
-    component_test = recipe["fft_component_test"]
-    if component_test:
-        if (resolved["method"] != "fft_nlls" or
-                resolved["detrend"] != "robust_linear" or
-                resolved["multiple_testing"] != "none"):
-            raise ValueError("FFT component testing needs fft_nlls, robust_linear "
-                             "and no multiple-testing correction")
-        resolved["significance_method"] = "fft_component"
-        resolved["params"] = {
-            **resolved["params"], "primary_rhythm_test": "fft_component",
-            "period_methods": ["fft_nlls"]}
-    _, evidence = trace_data(
-        pd.DataFrame(rows), ["signal_mean"], [int(tile.key) for tile in tiles],
-        resolved, "raw", "none", {}, fft_component_test=component_test,
-        recording=recording,
-        component_surrogates=recipe["component_surrogates"],
-        component_block_hours=recipe["component_block_hours"],
-        component_seed=recipe["component_seed"],
-        filtering=recipe.get("filtering"))
-    decisions = {}
-    for row in evidence.itertuples(index=False):
-        period = float(row.period_hours) if row.period_hours is not None else np.nan
-        p_value = float(row.p_value) if row.p_value is not None else np.nan
-        q_value = float(row.q_value) if row.q_value is not None else np.nan
-        significant = (row.significance_status == "ok" and
-                       row.rhythm_status == "rhythmic" and
-                       bool(row.supported_period) and np.isfinite(period))
-        decisions[int(row.identity)] = {
-            "significant_period": bool(significant),
-            "period_hours": period if np.isfinite(period) else None,
-            "p_value": p_value if np.isfinite(p_value) else None,
-            "q_value": q_value if np.isfinite(q_value) else None,
-            "test_status": str(row.significance_status),
-            "rhythm_status": str(row.rhythm_status),
-            "supported_period": bool(row.supported_period),
-        }
-    return decisions
+    from ..figure_tables.cell_grid_selection import _period_decisions as prepare
+    return prepare(tiles, recipe, recording)
 
 
 def select_cell_tiles(tiles, *, raw, significant_period_only: bool = False,

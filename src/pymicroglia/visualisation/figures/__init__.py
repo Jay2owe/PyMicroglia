@@ -3,7 +3,7 @@ from ._declare import FIGURES, Figure, View, Option, Table, Stack, Input, figure
 
 
 def load():
-    from . import rhythms, saved, review, motility, spatial, surveillance, regimes, lifecycle, coupling, morphology, territory
+    from . import rhythms, saved, review, motility, spatial, surveillance, regimes, lifecycle, coupling, morphology, territory, cell_dynamics
     return FIGURES
 
 

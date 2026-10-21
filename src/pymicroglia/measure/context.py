@@ -172,6 +172,7 @@ class MeasurementContext:
     #: the tracking chain produced none. Read by the ``history`` module and by
     #: nothing else: it is the one module allowed to open a tracking CSV.
     decisions: Any = None
+    frame_times_hours: np.ndarray | None = None  # actual acquisition clock aligned to labels
 
     @property
     def channel_names(self) -> list[str]:
@@ -220,7 +221,8 @@ class MeasurementContext:
                 "frame_index": index,
                 "imagej_frame": index + 1,
                 "source_imagej_frame": index + 1 + self.source_frame_offset,
-                "hours": self.scale.hours(index + self.source_frame_offset),
+                "hours": (self.scale.hours(index + self.source_frame_offset)
+                          if self.frame_times_hours is None else self.frame_times_hours),
             }
         )
 

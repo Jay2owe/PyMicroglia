@@ -105,3 +105,52 @@ stage order. See the [pipeline index](pipelines/README.md).
 - `pymicroglia.workbench`: the single statistical dependency gateway.
 - `pymicroglia.visualisation.figures`: declarations and view availability.
 - `pymicroglia.run_action`: all six workflow and figure actions by registered name.
+
+## Linked cell review
+
+The [independent cell dynamics methods](cell-dynamics.md) provide the numerical
+analyses and their individual figure/video actions. Those are the reusable
+package pathway. The optional HTML demonstration below is a display client.
+
+`cell_review` exports one self-contained offline browser page from a
+single-channel raw TIFF and its existing labelled masks. The shape-change
+map, rotatable outline stack, animated cards and clickable recording barcode
+share one cell selector and native-frame clock. Pinned cards compare cells;
+clicking a trace or barcode patch selects a cell and frame everywhere.
+
+```python
+from pymicroglia.visualisation.cell_review import cell_review
+
+result = cell_review(
+    raw=r"C:\data\reporter.tif",
+    labels=r"C:\data\saved_refined_labels.tif",
+    output=r"C:\data\review_v2\reporter.html",
+    source_frame_offset=2,  # labels[0] belongs to the third source frame
+    frame_interval_h=0.5,
+    display_lut="red",  # "gray" also supported
+)
+```
+
+The same export is available through `run_action("cell_review", ...)`.
+It creates the HTML page, a measurement CSV and a provenance JSON receipt.
+Existing outputs require a new filename. All assets and source display frames
+are embedded; no browser extension, server or network connection is needed.
+
+Input masks may come from any reporter or refinement method. The review
+preserves their recorded labels and missing observations. It never segments,
+tracks, fills gaps, filters source images or changes accepted refinement
+settings. Motion trails remain off. Display enlargement uses nearest pixels,
+with a fixed recording-wide contrast range and scale bars in source pixels.
+
+Total intensity is the sum of original pixels inside each saved mask. The
+signal trace also shows the shared centred three-frame mean, requiring three
+consecutive observed frames. Mask area is the number of occupied pixels.
+Missing values are blank, including incomplete signal-mean windows; no period
+test is rerun. Barcode colours can use each cell's own range or one recording
+range. These are display tables, not a replacement for a measurement run.
+
+Review frame labels start at one; CSV `frame` indices start at zero. The time
+sculpture uses two spatial coordinates and observation time as height, never
+tissue depth. Cell-centred mask comparisons remove whole-pixel translation,
+not rotation or subpixel motion. Gain/loss colours describe pixels, not
+biological growth or retraction.

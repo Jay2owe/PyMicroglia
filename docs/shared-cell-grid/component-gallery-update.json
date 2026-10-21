@@ -1,0 +1,409 @@
+{
+  "summary": "PyMicroglia now has one Cell grid interface for traces and installed Circadian Workbench single-trace analyses. Registry-driven analysis controls share cell selection, preprocessing, layout and export helpers. Existing CD68, RBM3 and CRY1 experimental grids remain linked. The grid also supports compatible overlays, independent stacked lanes, separate panels and raw/mean/processed/completed-fit layers. The fitted-component option shows every FFT-NLLS wave in overlay or independent lanes, with individually significant conditional tests in red and other components in grey. Native and trace views retain test evidence, fitted amplitudes and clock gaps.",
+  "analysis_refs": [
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_analysis_grid.py",
+      "role": "cell selection, native-clock inputs and evidence"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/visualisation/panels/cell_analysis_grid.py",
+      "role": "completed figure drawing"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/guide/figures.md",
+      "role": "usage and parameter guide"
+    },
+    {
+      "path": "PyMicroglia/tests/test_cell_analysis_grid.py",
+      "role": "cell binding, public export and UI schema verification"
+    },
+    {
+      "path": "PyMicroglia/tools/verify_cell_analysis_grid_ui.py",
+      "role": "real browser verification"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid.py",
+      "role": "public native-analysis grid API"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_render.py",
+      "role": "native SVG vector adapter"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/guide/analysis-grid.md",
+      "role": "shared API and drawing performance evidence"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_analysis_grid.py",
+      "role": "native-value equality, missing masks, vector geometry and replay verification"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/scripts/benchmark_analysis_grid.py",
+      "role": "drawing comparison against a supplied baseline"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/index.html",
+      "role": "browser for all 15 requested experimental grids"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/direct_component_parity.json",
+      "role": "real-data equality receipt"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/direct_components_before.json",
+      "role": "frozen native baseline"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/check_direct_components.py",
+      "role": "independent replay of baseline comparison"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_svg.py",
+      "role": "streamed native vector composition"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis.py",
+      "role": "native fractional-clock analysis"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/arguments.py",
+      "role": "public fractional interval contract"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/contracts.py",
+      "role": "fractional interval data contract"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/actions.py",
+      "role": "direct native spectral calls"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_analysis_grid_svg.py",
+      "role": "focused regression checks"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_fractional_analysis_bins.py",
+      "role": "focused regression checks"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/tests/test_direct_spectral_components.py",
+      "role": "focused regression checks"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/run_receipt.json",
+      "role": "experimental grid run and unavailable-cell counts"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/README.md",
+      "role": "figure bundle explanation"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/plot.py",
+      "role": "figure producer"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/sources.csv",
+      "role": "figure source index"
+    },
+    {
+      "path": "PyMicroglia/development/single_frame_mask_unet/accepted_post_tracking/95_A3/observed_measurement/measure_95_A3_unet_refined_v3/.auto-organotypic/manifest.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_SKILL.md",
+      "role": "figure support source"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/measure/signal.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis_grid_svg.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/config.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_arguments.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_contracts.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_analysis_grid.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/src_actions.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_periodograms.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_amplitude.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_phase.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CD68/statistics_CD68_95_A3_wavelet_power.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/README.md",
+      "role": "figure bundle explanation"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/plot.py",
+      "role": "figure producer"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/sources.csv",
+      "role": "figure source index"
+    },
+    {
+      "path": "PyMicroglia/development/single_frame_mask_unet/accepted_post_tracking/RBM3_MCG_02/observed_measurement/measure_694232/.auto-organotypic/manifest.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_SKILL.md",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis_grid_svg.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/config.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_arguments.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_contracts.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_analysis_grid.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/src_actions.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_periodograms.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_amplitude.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_phase.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/RBM3/statistics_RBM3_MCG_02_wavelet_power.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/README.md",
+      "role": "figure bundle explanation"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/plot.py",
+      "role": "figure producer"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/sources.csv",
+      "role": "figure source index"
+    },
+    {
+      "path": "PyMicroglia/development/mask_to_motion_handoff/full_frame_20260921/v2/analysis_batch_retry_MCG_04/results/MCG_04/measurements/measure_3664f3/.auto-organotypic/manifest.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_SKILL.md",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis_grid_svg.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/config.json",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_arguments.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_contracts.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_analysis_grid.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/src_actions.py",
+      "role": "figure support source"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_periodograms.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_amplitude.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_phase.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/CRY1/statistics_CRY1_MCG_04_wavelet_power.csv",
+      "role": "figure statistics"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/register_fast.py",
+      "role": "equivalent audit-scan preconditions and deterministic compression cache"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/audit_scanner_equivalence.json",
+      "role": "audit scanner equivalence checks"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/visual_checks.json",
+      "role": "visual inspection receipt"
+    },
+    {
+      "path": "Analyses/CellGrids_20261005/browser_check.json",
+      "role": "all 15 browser choices verified"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_grid.py",
+      "role": "canonical registry-backed cell grid"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/cell_grid_inputs.py",
+      "role": "shared cell selection, native clocks and preprocessing"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/all_cell_traces.py",
+      "role": "compatible trace preparation using shared inputs"
+    },
+    {
+      "path": "PyMicroglia/tests/test_shared_cell_grid.py",
+      "role": "shared layout, recipe parity, spectrum reuse and job progress checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/verification.json",
+      "role": "focused integration verification and completed-plot timings"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/ui-checks/checks.json",
+      "role": "live browser checks, typed submissions and theme checks"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/analysis_grid_layout.py",
+      "role": "one grid layout for trace and native analysis panels"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/CircadianWorkbench/src/circadian_workbench/contracts.py",
+      "role": "native clock conversion preserving fractional-minute sample bins"
+    },
+    {
+      "path": "C:/Users/Owner/UK Dementia Research Institute Dropbox/Brancaccio Lab/Jamie/Experiments/Auto-Organotypic/docs/consolidation/cell-grid-integration.md",
+      "role": "accepted cross-package integration decision and verification"
+    },
+    {
+      "path": "PyMicroglia/src/pymicroglia/figure_tables/grid_presentation.py",
+      "role": "shared presentation contract and exact composed values"
+    },
+    {
+      "path": "PyMicroglia/tests/test_cell_grid_composition.py",
+      "role": "trace and native presentation parity checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/overlay-verification.json",
+      "role": "78 focused passing tests and measured browser checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/overlay-checks-final/checks.json",
+      "role": "typed controls, persistence, paired views and independent lanes"
+    },
+    {
+      "path": "../CircadianWorkbench/src/circadian_workbench/analysis_grid_composition.py",
+      "role": "native compatible-curve overlays"
+    },
+    {
+      "path": "../CircadianWorkbench/src/circadian_workbench/analysis_grid_layout.py",
+      "role": "shared lane placement"
+    },
+    {
+      "path": "../CircadianWorkbench/tests/test_grid_composition.py",
+      "role": "native composition checks"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/component-verification.json",
+      "role": "fitted-component verification receipt"
+    },
+    {
+      "path": "PyMicroglia/docs/shared-cell-grid/components-ui-checks/checks.json",
+      "role": "real-browser component controls and composition checks"
+    },
+    {
+      "path": "PyMicroglia/tests/test_fft_component_presentation.py",
+      "role": "component amplitude, significance, gap and cell-grid binding checks"
+    },
+    {
+      "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\CircadianWorkbench\\src\\circadian_workbench\\fft_component_display.py",
+      "role": "shared conditional tests, component significance styles and native lanes"
+    },
+    {
+      "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\CircadianWorkbench\\src\\circadian_workbench\\display_values.py",
+      "role": "native signed fitted-wave evaluation"
+    },
+    {
+      "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\CircadianWorkbench\\src\\circadian_workbench\\period_methods.py",
+      "role": "shared native fitting-input provenance"
+    },
+    {
+      "path": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\CircadianWorkbench\\tests\\test_fft_component_display.py",
+      "role": "native figure parity and conditional-test binding checks"
+    }
+  ]
+}

@@ -29,4 +29,4 @@ from ._declare import Figure,View,Table,Input,Stack,Option,figure
 figure(Figure('tissue_tectonics','Cell coverage and motion across the tissue field','spatial',
  views=tuple(View(key,tissue.spatial) for key in ['first_coverage','cumulative_occupancy','unique_cells','speed','significant_period','splitting_events']),
  reads=(Input('labels'),Stack('owner_count.tif'),Table('frame_summary'),Table('cell_frame'),Table('history_merge_split_events',optional=True)),
- prepare='pymicroglia.figure_tables.tissue:prepare',options=(Option('map_summary','median'),Option('map_assignment','occupancy_weighted_mean'),Option('map_luts',[]),Option('map_range','robust'))+tuple(replace(o,default='none') if o.name=='multiple_testing' else o for o in circadian_options()),refits=True,layout='grid(2,3)'))
+ prepare='pymicroglia.figure_tables.tissue:prepare',options=(Option('map_summary','median'),Option('map_assignment','occupancy_weighted_mean'),Option('map_luts',[]),Option('map_range','robust'),Option('reporter_metric','integrated_density_mean3'))+tuple(replace(o,default='none') if o.name=='multiple_testing' else o for o in circadian_options()),refits=True,layout='grid(2,3)'))

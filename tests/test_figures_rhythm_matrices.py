@@ -17,15 +17,27 @@ from tests.test_motion_parity import FROZEN_RUN,FIXTURE,expected,_same_cell
 def test_complete_original_table(key,view,style_column):
     spec=load()[key];module,function=spec.prepare.split(':')
     options={o.name:o.default for o in spec.options}
+    if key=='cd68_reporter_rhythm':
+        options['metrics']='corrected_mean'
+    elif key=='metric_rhythm_matrix':
+        options['metrics']=['corrected_mean', 'area_px', 'speed', 'reach_p95']
+    elif key=='stable_traits_versus_states':
+        options['metrics']=['area_px','corrected_mean','skeleton_branches',
+                            'solidity','ramification_index','turnover_index']
     if key=='all_cell_trace_grid':
         # These are the recorded options of the original frozen figure.
-        options.update(metrics=['corrected_mean'],multiple_testing='bh',detrend='robust_linear')
+        options.update(metrics=['corrected_mean'],multiple_testing='bh',
+                       detrend='robust_linear',fft_component_test=False,
+                       fit_method='lomb',significance_method='lomb')
     data,_=getattr(importlib.import_module(module),function)(Tables(FROZEN_RUN,'parity_A1'),options)
     original=gzip.decompress((FIXTURE/'figures'/f'{spec.slug}.csv.gz').read_bytes())
     hashes=expected()['figures'][spec.slug]['plotted_sha256']
     assert hashlib.sha256(original).hexdigest()==hashes.get('data/der/figure_data.csv',hashes.get('figure_data.csv'))
     before=pd.read_csv(StringIO(original.decode()),dtype=str,keep_default_na=False)
     after=pd.read_csv(StringIO(data[view]['table'].to_csv(index=False)),dtype=str,keep_default_na=False)
+    if key=='all_cell_trace_grid':
+        # The current table also records the value after temporal filtering.
+        after=after[before.columns]
     assert list(after)==list(before) and len(after)==len(before)
     differences=[(column,index) for column in before if column!=style_column
         for index,(a,b) in enumerate(zip(after[column],before[column])) if not _same_cell(column,a,b)]
@@ -35,5 +47,7 @@ def test_complete_original_table(key,view,style_column):
 def test_repeatability_keeps_frozen_insufficient_cycles_refusal():
     from pymicroglia.figure_tables.cycle_repeatability import prepare
     spec=load()['second_verse']
+    options={o.name:o.default for o in spec.options}
+    options['metrics']='corrected_mean'
     with pytest.raises(ValueError,match='No cells passed the primary rhythm test'):
-        prepare(Tables(FROZEN_RUN,'parity_A1'),{o.name:o.default for o in spec.options})
+        prepare(Tables(FROZEN_RUN,'parity_A1'),options)

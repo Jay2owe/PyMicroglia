@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "focused_tests": {
+    "passed": 36,
+    "command": "python -m pytest tests/test_ui_server.py tests/test_ui_results.py tests/test_ui_quicklook.py tests/test_ui_motion_contract.py tests/test_ui_end_to_end.py tests/test_ui_desktop.py tests/test_ui_catalog.py tests/test_ui_exploration_catalog.py tests/test_ui_exploration_core.py tests/test_ui_exploration_data.py tests/test_ui_exploration_images.py tests/test_ui_exploration_results.py tests/test_ui_exploration_integration.py tests/test_cell_review_action.py tests/test_cell_review_data.py -q"
+  },
+  "browser_checks": 14,
+  "browser_receipt": "../../development/linked_exploration_20260929/browser-verification.json",
+  "preserved_workspace_fingerprints": {
+    "styles": "32c4ebcf274e71f6d64481f4104d8956582de2b975b80b9a0e4b6b50dd4fb1b6",
+    "desktop": "41be51da835b5485b60892d26ec7a00b874c2c621552a398b294c5ce1a927dbc",
+    "openAuto": "6dffb3bf18a88854429a479abb284392747689d342425aa0d8aa058e0b1a7f2c",
+    "motion_handlers": "de8f95d6c629b3e2dd7b0319bb12477852077c0649aa5100ee5d7de90ce2efe7",
+    "motion_proxy": "8732de47a8730a557be0ec55dfc1fc985469bb414d3c456ae882c30967ccfaa5",
+    "motion-sidebar": "c0810af08c38d4e6d9e19de095049b526f66e90e2e4de205b5ba1194cbef8685",
+    "auto-workspace": "56ab583ac4e9ba8f3d59968347c7e09c7a048908e9869c614b0f2093fa23a383",
+    "motion-workspace": "f952eb93105613bdde89e50bd6ad9b2d9f015184b17236b5aebef53f460d77b5"
+  },
+  "source_data_changed": false,
+  "implicit_analysis_jobs": 0,
+  "graph_refreshed": false
+}

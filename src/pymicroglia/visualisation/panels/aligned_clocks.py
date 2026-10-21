@@ -6,7 +6,8 @@ from ..labels import semantic_label
 
 
 def wall(ax,data,*,style=None,**options):
-    t=data['table'];ax.plot(t.hours,t['mean'],color=colour('teal'));ax.fill_between(t.hours,t.lo,t.hi,color=colour('teal'),alpha=.22)
+    hue=options.get('colour') or colour('teal')
+    t=data['table'];ax.plot(t.hours,t['mean'],color=hue,label=options.get('label'));ax.fill_between(t.hours,t.lo,t.hi,color=hue,alpha=.22)
     ax.set(xlabel='Hours from recording start',ylabel=semantic_label(data['metric']))
     _hours(ax,options)
     return Drawn(t,ax)

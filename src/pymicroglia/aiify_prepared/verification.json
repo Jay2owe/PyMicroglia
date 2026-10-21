@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "counts": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "all_actions_covered": true,
+  "artifacts_unchanged": true,
+  "source_current": true,
+  "artifacts": {
+    "actions.py": "c7094f2e8a48ca491e0829e4bdffec82ac39b38ebeaa1333b28bb0f35cb4aba8",
+    "test_actions.py": "c758ca0c31ab2d130fd09609b88c8bf7e2b7b25a45f1996ca9fccdacb38392b0",
+    "guide.md": "da8822ac3eddb40db685e51f328b25809e465287151a8af4416c173ad4d2921b",
+    "TEST.md": "4d437cf1f6fb936adb0304b0c33d171140a34e6478c02bddabf885addf497ebd"
+  },
+  "manifest_hash": "294f70ceeb56937da4b3d87696f9b6b1786d09c1cb3d8ec39a651c366dbe7f2c",
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "test_actions.py",
+    "-q",
+    "--junitxml",
+    "<temporary-report>"
+  ],
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "returncode": 0,
+  "elapsed_s": 103.281,
+  "verified": "2026-10-06T21:11:49Z",
+  "output": "..                                                                       [100%]\n2 passed in 93.94s (0:01:33)\n"
+}

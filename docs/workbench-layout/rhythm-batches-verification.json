@@ -1,0 +1,57 @@
+{
+  "fixture": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-rhythm-batch-6g63q4_b",
+  "controls_seconds": 14.264999999999873,
+  "batch_id": "bda6e474b7a04adf8b808adda31d8c72",
+  "recordings": [
+    {
+      "run": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-rhythm-batch-6g63q4_b\\0",
+      "stem": "same_name",
+      "job_id": "396fd6727f9f4057af569db6930b0335",
+      "state": "completed",
+      "progress": {
+        "stage": "completed",
+        "completed": 2,
+        "total": 2,
+        "completed_cells": 2,
+        "total_cells": 2,
+        "elapsed_seconds": 5.829000000000178,
+        "remaining_seconds": 0
+      },
+      "analysis_id": "396fd6727f9f4057af569db6930b0335",
+      "error": null,
+      "reused": false,
+      "finished_at": "2026-10-06T09:45:15.836888+00:00"
+    },
+    {
+      "run": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pymicroglia-rhythm-batch-6g63q4_b\\1",
+      "stem": "same_name",
+      "job_id": "f79661ad728840c2b19d423046741d8d",
+      "state": "completed",
+      "progress": {
+        "stage": "completed",
+        "completed": 2,
+        "total": 2,
+        "completed_cells": 2,
+        "total_cells": 2,
+        "elapsed_seconds": 5.25,
+        "remaining_seconds": 0
+      },
+      "analysis_id": "f79661ad728840c2b19d423046741d8d",
+      "error": null,
+      "reused": false,
+      "finished_at": "2026-10-06T09:45:21.107861+00:00"
+    }
+  ],
+  "counts": {
+    "cells": 4,
+    "finite_cells": 4,
+    "recordings": 2,
+    "samples": 2,
+    "observations": 580,
+    "total_cells": 4,
+    "excluded_cells": 0
+  },
+  "restored": true,
+  "themes_and_narrow_controls": true,
+  "source_tables_unchanged": true
+}

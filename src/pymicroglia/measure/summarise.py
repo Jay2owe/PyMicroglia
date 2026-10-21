@@ -46,6 +46,7 @@ SUMMARY_METRICS = [
     "signal_mean",
     "corrected_mean",
     "integrated_density",
+    "integrated_density_mean3",
     "corrected_integrated_density",
     "signal_to_background",
     "punctate_fraction",
@@ -264,6 +265,10 @@ def build_movie_summary(
             zero_background_fraction is not None and zero_background_fraction > 0.9
         )
         summary["intensity"] = {
+            "median_total_light_mean3": (
+                float(cell_summary["integrated_density_mean3_median"].median())
+                if "integrated_density_mean3_median" in cell_summary else None
+            ),
             "median_corrected_mean": float(cell_summary["corrected_mean_median"].median()),
             "input_already_background_subtracted": background_is_zero,
             "zero_background_fraction": zero_background_fraction,

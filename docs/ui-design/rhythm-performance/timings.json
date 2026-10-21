@@ -1,0 +1,120 @@
+{
+  "source": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\measure\\95_A3\\cell_frame.csv",
+  "source_sha256": "7782a44ede355d274bf8b24f017ff7932bb9c7f546616b15d10fded98b19cce3",
+  "selected_identities": [
+    1,
+    19,
+    39,
+    58,
+    115,
+    164
+  ],
+  "observations": 513,
+  "metric": "signal_mean",
+  "settings": {
+    "metrics": [
+      "signal_mean"
+    ],
+    "cells": "all",
+    "grid_rows": null,
+    "grid_columns": null,
+    "trace_view": "detrended",
+    "trace_normalization": "minmax",
+    "trace_normalization_config": {},
+    "hour_ticks": 12.0,
+    "period_testing": true,
+    "fft_component_test": true,
+    "component_surrogates": 199,
+    "component_block_hours": 4.0,
+    "component_seed": 20260923,
+    "fit_method": "fft_nlls",
+    "significance_method": null,
+    "period_config": {
+      "nlls_max_components": 5,
+      "nlls_improvement_alpha": 0.05
+    },
+    "period_min_hours": 2.0,
+    "period_max_hours": 48.0,
+    "rhythmic_alpha": 0.05,
+    "multiple_testing": "none",
+    "min_observations": 24,
+    "min_cycles": 2.0,
+    "detrend": "robust_linear",
+    "detrend_window_hours": null,
+    "detrend_polynomial_degree": null,
+    "detrend_min_valid_fraction": null,
+    "detrend_bandwidth_hours": null,
+    "detrend_low_cut_hours": null,
+    "detrend_high_cut_hours": null,
+    "detrend_filter_order": null,
+    "detrend_lowess_fraction": null,
+    "detrend_lowess_iterations": null,
+    "detrend_asls_smoothness": null,
+    "detrend_asls_asymmetry": null,
+    "detrend_asls_iterations": null
+  },
+  "samples": [
+    {
+      "trial": 0,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline": 8.022980800000369,
+      "candidate": 4.331533300006413
+    },
+    {
+      "trial": 1,
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "candidate": 4.342694699997082,
+      "baseline": 8.738009099994088
+    },
+    {
+      "trial": 2,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline": 8.837070300003688,
+      "candidate": 4.274279999997816
+    }
+  ],
+  "exact_scientific_and_display_parity": true,
+  "environment": {
+    "versions": {
+      "python": "3.12.10",
+      "circadian-workbench": "0.15.0",
+      "numpy": "2.1.0",
+      "pandas": "2.2.2",
+      "scipy": "1.14.1",
+      "statsmodels": "0.14.2",
+      "PyWavelets": "1.9.0",
+      "analysis-kit": "0.1.0",
+      "matplotlib": "3.9.2",
+      "reportlab": "5.0.0",
+      "svglib": "2.2.0",
+      "reprofig": "0.5.1"
+    },
+    "code_sha256": {
+      "circadian_workbench": "4fa0350c2bd71d772daff78f89a127840875a7ababb4b3b743824752a0f07829",
+      "analysis_kit": "71b4238ab782bfc526369f7da16002b18ecb576b1cffc64f31917cd6d0c65aab",
+      "reprofig": "0cbcaa3160e75526c8203260cd18f90647fbbeb541b5bdd4dee211e2b59cb9fd"
+    },
+    "execution": {
+      "implementation": "CPython",
+      "system": "Windows",
+      "machine": "AMD64",
+      "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+      "thread_environment": {
+        "OMP_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null,
+        "MKL_NUM_THREADS": null,
+        "VECLIB_MAXIMUM_THREADS": null,
+        "NUMEXPR_NUM_THREADS": null
+      }
+    }
+  }
+}

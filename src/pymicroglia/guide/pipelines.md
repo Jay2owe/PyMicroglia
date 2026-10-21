@@ -132,7 +132,13 @@ named colour or RGB triple, `outline_width_px` to a pixel width, and
 `mask_style="fill"` and `mask_opacity=0.35` (or another fraction). Set
 `show_outline=False` for no overlay. A missing mask is never painted.
 
-For the accepted A104 visual filter, set
+Display denoising is off by default. Cell grids read the original registered
+frames, and enlargement uses nearest-neighbour sampling so source pixels
+are never blended. This also applies to the batch grid renderers; filtering
+must be requested explicitly with `--display-filter a104` there. Crop-centre
+smoothing steadies the viewing window only and does not smooth image pixels.
+
+For optional A104 display denoising, set
 `display_filter={"method": "a104"}`. It processes the complete source frames
 before moving-cell crops and caches a `DISPLAY_ONLY` TIFF beside the source.
 When the photon TIFF contains normalized values rather than camera counts,

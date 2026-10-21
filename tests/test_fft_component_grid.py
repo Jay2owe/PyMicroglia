@@ -10,7 +10,7 @@ def test_default_grid_declares_accepted_analysis():
     options = {option.name: option.default for option in spec.options}
     assert options['fft_component_test'] is True
     assert options['fit_method'] == 'fft_nlls'
-    assert options['detrend'] == 'robust_linear'
+    assert options['detrend'] == 'asymmetric_least_squares'
     assert options['multiple_testing'] == 'none'
     assert options['period_min_hours'] == 2.0
     assert options['period_max_hours'] == 48.0

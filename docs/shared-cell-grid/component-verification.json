@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-10-06T20:38:13.947241+00:00",
+  "scope": "FFT-NLLS fitted-component presentation, shared native values and conditional tests; no new experimental batch",
+  "tests": {
+    "pymicroglia": {
+      "passed": 42,
+      "paths": [
+        "tests/test_fft_component_presentation.py",
+        "tests/test_cell_grid_composition.py",
+        "tests/test_shared_cell_grid.py",
+        "tests/test_cell_analysis_grid.py",
+        "tests/test_ui_catalog.py"
+      ]
+    },
+    "circadian_workbench": {
+      "passed": 33,
+      "paths": [
+        "tests/test_fft_component_display.py",
+        "tests/test_grid_composition.py",
+        "tests/test_analysis_grid.py",
+        "tests/test_fft_nlls_search_bounds.py"
+      ]
+    },
+    "earlier_trace_regressions": {
+      "passed": 20,
+      "paths": [
+        "tests/test_cell_grid_composition.py",
+        "tests/test_all_cell_trace_grid.py"
+      ]
+    },
+    "catalogue": "python tools/regenerate_catalogue.py --check: up to date"
+  },
+  "browser": {
+    "all_methods_ready_seconds": 4.129,
+    "first_dialog_seconds": 5.587,
+    "ready_card_to_dialog_seconds": 1.458,
+    "cell_grid_description_requests": 1,
+    "paired_selection_seconds": 0.04,
+    "typed_payload_verified": true,
+    "fft_components_typed_payload_and_persistence_verified": true,
+    "composition_controls_and_persistence_verified": true,
+    "unrequested_analysis_jobs": 0,
+    "themes_checked": [
+      "light",
+      "dark"
+    ],
+    "two_panel_analysis_and_draw_seconds": 86.035,
+    "native_and_trace_stacked_lanes_verified": true,
+    "fft_component_overlay_and_stack_verified": true,
+    "page_errors": [],
+    "output": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\docs\\shared-cell-grid\\components-ui-checks"
+  },
+  "opened_ui": {
+    "url": "http://127.0.0.1:53376/",
+    "owned_service_pid": 7024
+  },
+  "source_sha256": {
+    "src/pymicroglia/figure_tables/grid_presentation.py": "b72872e9bcbfca074ba63c5f0deccaab7af987597749f2e520b59d9a6b5527f3",
+    "src/pymicroglia/figure_tables/cell_grid.py": "a2ecf2f1c96e38ad41b10473a9e692ce375754f7c4f601b67a5698eae6a9920b",
+    "src/pymicroglia/figure_tables/cell_analysis_grid.py": "1bdac1c37b1b3ea69ee14cd4930fd3bdd431bb4c075150c2efaec839f0fa52fe",
+    "src/pymicroglia/workbench.py": "d2e9a885636081f4217696e965aed744db6e0e21e2e8a1313ad99be813189db1",
+    "src/pymicroglia/_workbench/descriptive.py": "da0cfeabd78222b734c1bfd83bd7d37abbd89103368f79c5ff4ba1316ed1e2d4",
+    "src/pymicroglia/visualisation/panels/all_cell_traces.py": "feccb566040facd46db428cec146379357aeeea1120147ab7c04e274b4f750b8",
+    "src/pymicroglia/ui/static/app.js": "5eaa7c0a28624c2e338d12f5e14b0148feb8a3f9cb0c15391a4969635f062797",
+    "tests/test_fft_component_presentation.py": "e91e3625d059ee6d0036a9363619a8accb6ca3f38f6ee0cbcdae134ded5d4cab",
+    "tools/verify_cell_analysis_grid_ui.py": "3feaec40a379f92376f69102999b84d9698ac3ecf97704a7108540cddbd8624f",
+    "../../CircadianWorkbench/src/circadian_workbench/fft_component_display.py": "b8d3f6048d5a469d42c2e7dcf7e3e4c8f83a3777cbf7fe6a2862ba8e00f36980",
+    "../../CircadianWorkbench/src/circadian_workbench/display_values.py": "41f0aed8eba94823a54fd9066fc094530f35adac0ceec20b03ac4dc2e1149e34",
+    "../../CircadianWorkbench/src/circadian_workbench/analysis_grid.py": "4b02dd94419b2b176db373254352eb00e60fc1de893046132a59dee4f7badf7c",
+    "../../CircadianWorkbench/src/circadian_workbench/period_methods.py": "3bf36a3ee8596ff1184a37c1869462c24a38b20186a1a72116c9878fb34e2fa8",
+    "../../CircadianWorkbench/src/circadian_workbench/analysis.py": "f3239ad18bf7b524c16f9f48eb5010ad13bc1623a809ecc5b2e9cac9e442f662",
+    "../../CircadianWorkbench/src/circadian_workbench/actions.py": "8b17bf58f42f893fa2ce053a548b38addb8a1ee46d67cda2be0c4ab362956603",
+    "../../CircadianWorkbench/tests/test_fft_component_display.py": "38f0b463e2cde975561dd0a853ec8c673d4572c60c0bce71b19642431b2a377e"
+  },
+  "scientific_basis": "Native figure parity and independent analytical signed-cosine evaluation for display; existing conditional test reused. Component amplitudes share the original affine normalization factor, with no per-component rescaling or multiple-comparison correction."
+}

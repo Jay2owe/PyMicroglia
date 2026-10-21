@@ -140,7 +140,8 @@ def cell_image_grid(raw, labels, *, output_dir=None, output_name=None,
     ``significant_period_only`` select rows before the largest-cell crop is
     sized; the default keeps every identity. The observed mask is outlined by
     default. ``mask_style='fill'`` tints its interior with ``mask_opacity``.
-    ``display_filter={'method': 'a104'}`` filters only rendered full frames;
+    Display filtering is off by default; enlargement uses nearest source pixels.
+    ``display_filter={'method': 'a104'}`` explicitly filters rendered full frames;
     cell traces and cycle selection remain on the original photons.
     Still crops use each observed mask's intensity-weighted centroid by default.
     Each cell keeps one crop sized to its largest observed mask extent across

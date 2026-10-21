@@ -11,6 +11,20 @@ import numpy as np
 import pandas as pd
 
 
+DEFAULT_TRACE_ORDER = "principal_component_gradient"
+TRACE_ORDER_ENGINES = {
+    "principal_component_gradient": "Principal component gradient",
+    "spectral_continuum": "Spectral continuum",
+}
+
+
+def trace_order_catalogue() -> dict:
+    """The same ordering engines and default used by saved trace matrices."""
+    return {"default": DEFAULT_TRACE_ORDER,
+            "engines": [{"key": key, "label": label}
+                        for key, label in TRACE_ORDER_ENGINES.items()]}
+
+
 TRACE_ORDER_ALIASES = {
     "principal_component": "principal_component_gradient",
     "pattern": "principal_component_gradient",
@@ -274,7 +288,7 @@ def displayed_onsets(
 def trace_pattern_order(
     matrix: pd.DataFrame,
     *,
-    method: str = "principal_component_gradient",
+    method: str = DEFAULT_TRACE_ORDER,
     smooth_points: int = 5,
 ) -> list[Any]:
     """Order whole row patterns without shifting the matrix columns."""

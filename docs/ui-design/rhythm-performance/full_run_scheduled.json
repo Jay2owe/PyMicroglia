@@ -1,0 +1,3851 @@
+{
+  "job": {
+    "id": "972439c8b3b44286a77f87c3ec3a5f64",
+    "kind": "exploration_rhythms",
+    "action": "rhythm_analysis",
+    "state": "completed",
+    "submitted_at": "2026-10-01T12:01:36.824655+00:00",
+    "error": null,
+    "outputs": [
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\972439c8b3b44286a77f87c3ec3a5f64\\result.json",
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\972439c8b3b44286a77f87c3ec3a5f64\\statistics.csv",
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\972439c8b3b44286a77f87c3ec3a5f64\\reproduce.py"
+    ],
+    "cells": 94,
+    "progress": {
+      "stage": "completed",
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "elapsed_seconds": 99.53100000000268,
+      "remaining_seconds": 0
+    },
+    "params": {
+      "run": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3",
+      "stem": "95_A3",
+      "options": {
+        "metrics": [
+          "signal_mean"
+        ]
+      }
+    },
+    "started_at": "2026-10-01T12:01:36.825657+00:00",
+    "finished_at": "2026-10-01T12:03:16.358390+00:00",
+    "rhythm_result": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\972439c8b3b44286a77f87c3ec3a5f64\\result.json",
+    "reused": false
+  },
+  "duration_seconds": 99.532733,
+  "execution": {
+    "workers": 4,
+    "executor": "process",
+    "scheduler": "spectral_entropy_descending"
+  },
+  "exact_result_rows": true,
+  "exact_statistics_excluding_run_records": true,
+  "source_csv_sha256": "7782a44ede355d274bf8b24f017ff7932bb9c7f546616b15d10fded98b19cce3",
+  "max_progress_latency_seconds": 0.5008862999966368,
+  "progress": [
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 66,
+      "metric": "signal_mean",
+      "completed": 46,
+      "total": 94,
+      "completed_cells": 46,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 78,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 20.593999999997322,
+      "remaining_seconds": 21.48939130434503
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 66,
+      "metric": "signal_mean",
+      "completed": 46,
+      "total": 94,
+      "completed_cells": 46,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 78,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 20.593999999997322,
+      "remaining_seconds": 21.48939130434503
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 66,
+      "metric": "signal_mean",
+      "completed": 46,
+      "total": 94,
+      "completed_cells": 46,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 78,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 20.593999999997322,
+      "remaining_seconds": 21.48939130434503
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 68,
+      "metric": "signal_mean",
+      "completed": 47,
+      "total": 94,
+      "completed_cells": 47,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 33.85899999999674,
+      "remaining_seconds": 33.85899999999674
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 68,
+      "metric": "signal_mean",
+      "completed": 47,
+      "total": 94,
+      "completed_cells": 47,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 33.85899999999674,
+      "remaining_seconds": 33.85899999999674
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 68,
+      "metric": "signal_mean",
+      "completed": 47,
+      "total": 94,
+      "completed_cells": 47,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 33.85899999999674,
+      "remaining_seconds": 33.85899999999674
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 68,
+      "metric": "signal_mean",
+      "completed": 47,
+      "total": 94,
+      "completed_cells": 47,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 66,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 33.85899999999674,
+      "remaining_seconds": 33.85899999999674
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 15,
+      "metric": "signal_mean",
+      "completed": 48,
+      "total": 94,
+      "completed_cells": 48,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 15,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 35.796999999991385,
+      "remaining_seconds": 34.30545833332508
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 15,
+      "metric": "signal_mean",
+      "completed": 48,
+      "total": 94,
+      "completed_cells": 48,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 15,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 35.796999999991385,
+      "remaining_seconds": 34.30545833332508
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 110,
+      "metric": "signal_mean",
+      "completed": 49,
+      "total": 94,
+      "completed_cells": 49,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 110,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 36.71899999999732,
+      "remaining_seconds": 33.72153061224244
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 3,
+      "metric": "signal_mean",
+      "completed": 50,
+      "total": 94,
+      "completed_cells": 50,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 3,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 37.34399999999732,
+      "remaining_seconds": 32.862719999997644
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 24,
+      "metric": "signal_mean",
+      "completed": 51,
+      "total": 94,
+      "completed_cells": 51,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 24,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 37.6869999999908,
+      "remaining_seconds": 31.77531372548244
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 16,
+      "metric": "signal_mean",
+      "completed": 52,
+      "total": 94,
+      "completed_cells": 52,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 16,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 38.26499999999942,
+      "remaining_seconds": 30.906346153845686
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 16,
+      "metric": null,
+      "completed": 53,
+      "total": 94,
+      "completed_cells": 53,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 25,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 38.95299999999406,
+      "remaining_seconds": 30.133452830184083
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 25,
+      "metric": "signal_mean",
+      "completed": 53,
+      "total": 94,
+      "completed_cells": 53,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 25,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 39.0619999999908,
+      "remaining_seconds": 30.217773584898545
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 1,
+      "metric": "signal_mean",
+      "completed": 55,
+      "total": 94,
+      "completed_cells": 55,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 1,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 40.07799999999406,
+      "remaining_seconds": 28.418945454541245
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 1,
+      "metric": "signal_mean",
+      "completed": 55,
+      "total": 94,
+      "completed_cells": 55,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 1,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 40.07799999999406,
+      "remaining_seconds": 28.418945454541245
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 37,
+      "metric": "signal_mean",
+      "completed": 56,
+      "total": 94,
+      "completed_cells": 56,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 68,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 41.03100000000268,
+      "remaining_seconds": 27.842464285716105
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 48,
+      "metric": "signal_mean",
+      "completed": 57,
+      "total": 94,
+      "completed_cells": 57,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 48,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 48.51499999999942,
+      "remaining_seconds": 31.492192982455762
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 48,
+      "metric": null,
+      "completed": 58,
+      "total": 94,
+      "completed_cells": 58,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 141,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 48.96899999999732,
+      "remaining_seconds": 30.39455172413627
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 33,
+      "metric": "signal_mean",
+      "completed": 59,
+      "total": 94,
+      "completed_cells": 59,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 33,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 49.546999999991385,
+      "remaining_seconds": 29.39228813558811
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 33,
+      "metric": "signal_mean",
+      "completed": 59,
+      "total": 94,
+      "completed_cells": 59,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 33,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 49.546999999991385,
+      "remaining_seconds": 29.39228813558811
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 33,
+      "metric": "signal_mean",
+      "completed": 59,
+      "total": 94,
+      "completed_cells": 59,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 33,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 49.546999999991385,
+      "remaining_seconds": 29.39228813558811
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 33,
+      "metric": "signal_mean",
+      "completed": 59,
+      "total": 94,
+      "completed_cells": 59,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 33,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 49.546999999991385,
+      "remaining_seconds": 29.39228813558811
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 152,
+      "metric": "signal_mean",
+      "completed": 60,
+      "total": 94,
+      "completed_cells": 60,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 152,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 51.38999999999942,
+      "remaining_seconds": 29.12099999999967
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 51,
+      "metric": "signal_mean",
+      "completed": 61,
+      "total": 94,
+      "completed_cells": 61,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 51,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 52.046999999991385,
+      "remaining_seconds": 28.156573770487142
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 51,
+      "metric": "signal_mean",
+      "completed": 61,
+      "total": 94,
+      "completed_cells": 61,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 51,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 52.046999999991385,
+      "remaining_seconds": 28.156573770487142
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 51,
+      "metric": "signal_mean",
+      "completed": 61,
+      "total": 94,
+      "completed_cells": 61,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 51,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 52.046999999991385,
+      "remaining_seconds": 28.156573770487142
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 59,
+      "metric": "signal_mean",
+      "completed": 63,
+      "total": 94,
+      "completed_cells": 63,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 59,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 53.70299999999406,
+      "remaining_seconds": 26.425285714282793
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 44,
+      "metric": "signal_mean",
+      "completed": 64,
+      "total": 94,
+      "completed_cells": 64,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 44,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 54.03100000000268,
+      "remaining_seconds": 25.327031250001255
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 44,
+      "metric": null,
+      "completed": 65,
+      "total": 94,
+      "completed_cells": 65,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 11,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 54.70299999999406,
+      "remaining_seconds": 24.405953846151196
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 11,
+      "metric": "signal_mean",
+      "completed": 65,
+      "total": 94,
+      "completed_cells": 65,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 11,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 54.8119999999908,
+      "remaining_seconds": 24.45458461538051
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 55,
+      "metric": "signal_mean",
+      "completed": 66,
+      "total": 94,
+      "completed_cells": 66,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 23,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 55,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 55.73399999999674,
+      "remaining_seconds": 23.644727272725888
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 40,
+      "metric": "signal_mean",
+      "completed": 68,
+      "total": 94,
+      "completed_cells": 68,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 40,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 56.15600000000268,
+      "remaining_seconds": 21.471411764706904
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 145,
+      "metric": "signal_mean",
+      "completed": 69,
+      "total": 94,
+      "completed_cells": 69,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 145,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 56.60899999999674,
+      "remaining_seconds": 20.51050724637563
+    },
+    {
+      "state": "running",
+      "stage": "component_test",
+      "identity": 42,
+      "metric": "signal_mean",
+      "completed": 70,
+      "total": 94,
+      "completed_cells": 70,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 42,
+          "stage": "component_test",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 57.296999999991385,
+      "remaining_seconds": 19.644685714282762
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 80,
+      "metric": "signal_mean",
+      "completed": 71,
+      "total": 94,
+      "completed_cells": 71,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 80,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 57.421999999991385,
+      "remaining_seconds": 18.601492957743687
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 158,
+      "metric": "signal_mean",
+      "completed": 72,
+      "total": 94,
+      "completed_cells": 72,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 158,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 58.01499999999942,
+      "remaining_seconds": 17.72680555555538
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 10,
+      "metric": "signal_mean",
+      "completed": 74,
+      "total": 94,
+      "completed_cells": 74,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 10,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 58.78100000000268,
+      "remaining_seconds": 15.886756756757482
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 10,
+      "metric": null,
+      "completed": 75,
+      "total": 94,
+      "completed_cells": 75,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 124,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 59.296999999991385,
+      "remaining_seconds": 15.021906666664485
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 31,
+      "metric": "signal_mean",
+      "completed": 76,
+      "total": 94,
+      "completed_cells": 76,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 31,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 59.59399999999732,
+      "remaining_seconds": 14.114368421051998
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 104,
+      "metric": "signal_mean",
+      "completed": 77,
+      "total": 94,
+      "completed_cells": 77,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 104,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 60.26499999999942,
+      "remaining_seconds": 13.305259740259611
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 139,
+      "metric": null,
+      "completed": 79,
+      "total": 94,
+      "completed_cells": 79,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 101,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 60.78100000000268,
+      "remaining_seconds": 11.540696202532153
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 161,
+      "metric": "signal_mean",
+      "completed": 80,
+      "total": 94,
+      "completed_cells": 80,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 157,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 61.23399999999674,
+      "remaining_seconds": 10.71594999999943
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 157,
+      "metric": null,
+      "completed": 81,
+      "total": 94,
+      "completed_cells": 81,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 126,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 70.04699999999139,
+      "remaining_seconds": 11.242111111109729
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 14,
+      "metric": "signal_mean",
+      "completed": 82,
+      "total": 94,
+      "completed_cells": 82,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 14,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 70.32799999999406,
+      "remaining_seconds": 10.291902439023522
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 14,
+      "metric": null,
+      "completed": 83,
+      "total": 94,
+      "completed_cells": 83,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 27,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 70.98399999999674,
+      "remaining_seconds": 9.407518072288724
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 27,
+      "metric": null,
+      "completed": 84,
+      "total": 94,
+      "completed_cells": 84,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 160,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 71.57799999999406,
+      "remaining_seconds": 8.52119047618977
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 160,
+      "metric": "signal_mean",
+      "completed": 84,
+      "total": 94,
+      "completed_cells": 84,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 160,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 71.67199999999139,
+      "remaining_seconds": 8.532380952379926
+    },
+    {
+      "state": "running",
+      "stage": "fitting",
+      "identity": 45,
+      "metric": "signal_mean",
+      "completed": 85,
+      "total": 94,
+      "completed_cells": 85,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 45,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 72.48399999999674,
+      "remaining_seconds": 7.67477647058789
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 159,
+      "metric": null,
+      "completed": 87,
+      "total": 94,
+      "completed_cells": 87,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 163,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.09399999999732,
+      "remaining_seconds": 5.881126436781393
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 60,
+      "metric": null,
+      "completed": 91,
+      "total": 94,
+      "completed_cells": 91,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.38999999999942,
+      "remaining_seconds": 2.4194505494505303
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 60,
+      "metric": null,
+      "completed": 91,
+      "total": 94,
+      "completed_cells": 91,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.38999999999942,
+      "remaining_seconds": 2.4194505494505303
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 60,
+      "metric": null,
+      "completed": 91,
+      "total": 94,
+      "completed_cells": 91,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.38999999999942,
+      "remaining_seconds": 2.4194505494505303
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 60,
+      "metric": null,
+      "completed": 91,
+      "total": 94,
+      "completed_cells": 91,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.38999999999942,
+      "remaining_seconds": 2.4194505494505303
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 60,
+      "metric": null,
+      "completed": 91,
+      "total": 94,
+      "completed_cells": 91,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 161,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 73.38999999999942,
+      "remaining_seconds": 2.4194505494505303
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 92,
+      "total": 94,
+      "completed_cells": 92,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        },
+        {
+          "identity": 37,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 75.96899999999732,
+      "remaining_seconds": 1.6514999999999418
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 37,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 84.53100000000268,
+      "remaining_seconds": 0.9089354838709965
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 37,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 84.53100000000268,
+      "remaining_seconds": 0.9089354838709965
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 37,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 84.53100000000268,
+      "remaining_seconds": 0.9089354838709965
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 37,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 84.53100000000268,
+      "remaining_seconds": 0.9089354838709965
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 86.45299999999406,
+      "remaining_seconds": null
+    },
+    {
+      "state": "completed",
+      "stage": "completed",
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "elapsed_seconds": 99.53100000000268,
+      "remaining_seconds": 0
+    }
+  ]
+}

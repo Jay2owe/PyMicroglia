@@ -31,6 +31,7 @@ from __future__ import annotations
 import platform
 import sys
 import time
+from contextlib import nullcontext
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -388,7 +389,8 @@ def analyse_movie(config: MeasureConfig, movie: MovieSpec, run: Path, *,
     source = store.fingerprint(movie.labels)
     key_params = {"run": run_label, "stem": movie.stem}
 
-    requested = list(modules or config.enabled_modules or [m.name for m in list_modules()])
+    requested = list(modules or config.enabled_modules or
+                     [m.name for m in list_modules() if m.name != 'expanded_intensity'])
     measurement_names = [m.name for m in list_modules()]
     derived_names = [m.name for m in list_derived()]
     unregistered = [name for name in requested
@@ -619,9 +621,13 @@ def run(config: MeasureConfig, output_dir, *, run_label: str | None = None,
     run_dir.mkdir(parents=True, exist_ok=True)
     started = _now()
     clock = time.perf_counter()
-    results = [analyse_movie(config, movie, run_dir, run_label=folder.label,
-                             modules=list(modules) if modules else None)
-               for movie in selected]
+    # Older supported Auto-Organotypic releases retain immediate indexing.
+    # Newer stores batch only the rebuildable discovery index; each result's
+    # own ledger is durable before the next result is written.
+    with getattr(store.manifest, "batch_updates", nullcontext)():
+        results = [analyse_movie(config, movie, run_dir, run_label=folder.label,
+                                 modules=list(modules) if modules else None)
+                   for movie in selected]
 
     design = {
         **config.conditions.as_dict(),

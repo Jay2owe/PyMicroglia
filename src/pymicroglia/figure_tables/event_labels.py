@@ -3,3 +3,12 @@ EVENT_LABELS: dict[str, str] = {'present_at_start': 'already there when recordin
 
 def event_label(event):
     return EVENT_LABELS.get(event, str(event).replace("_", " "))
+
+
+# Compact labels for the same saved classifications in recording-wide review.
+EVENT_TITLES = {
+    'born': 'Births', 'divided': 'Divisions', 'absorbed': 'Merges / hiding',
+    'appeared': 'Appeared', 'entered_field': 'Entered field', 'left_field': 'Left field',
+    'died': 'Deaths', 'lost': 'Lost identities', 'vanished': 'Vanished',
+    'present_at_start': 'Recording start', 'present_at_end': 'Recording end',
+}

@@ -35,7 +35,7 @@ def isolated_session_store(tmp_path_factory):
     root=tmp_path_factory.mktemp("session_store")
     with pytest.MonkeyPatch.context() as patch:
         for prefix in ("AUTO_ORGANOTYPIC", "PYMICROGLIA"):
-            patch.delenv(prefix+"_INDEX", raising=False)
+            patch.setenv(prefix+"_INDEX", str(root/"index"))
             patch.setenv(prefix+"_STORE", str(root/"pixels"))
             patch.setenv(prefix+"_DECISIONS", str(root/"decisions"))
         yield root
@@ -47,7 +47,7 @@ def isolated_artifact_index(tmp_path_factory, isolated_session_store):
     root=tmp_path_factory.mktemp('artifact_store')
     with pytest.MonkeyPatch.context() as patch:
         for prefix in ('AUTO_ORGANOTYPIC','PYMICROGLIA'):
-            patch.delenv(prefix+'_INDEX',raising=False)
+            patch.setenv(prefix+'_INDEX',str(root/'index'))
             patch.setenv(prefix+'_STORE',str(root/'pixels'))
             patch.setenv(prefix+'_DECISIONS',str(root/'decisions'))
         yield root

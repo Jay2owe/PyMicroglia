@@ -63,6 +63,7 @@ class Figure:
     saved: bool = False
     grammar: str = "small-multiples"
     purpose: str = 'result'
+    alias_of: str = ''
 
     @property
     def slug(self):

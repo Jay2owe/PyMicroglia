@@ -15,6 +15,8 @@ docstrings; nothing of theirs is here.
 
 from __future__ import annotations
 
+from .signal import DEFAULT_REPORTER_METRIC
+
 __all__ = ["MICROGLIA_METRICS", "MICROGLIA_STATE_METRICS"]
 
 #: The measurements a microglial cell can be said to have a *level* of, and
@@ -24,7 +26,7 @@ __all__ = ["MICROGLIA_METRICS", "MICROGLIA_STATE_METRICS"]
 #: rather than have one module reach into another's settings.
 MICROGLIA_METRICS: tuple[str, ...] = (
     "area_px",
-    "corrected_mean",
+    DEFAULT_REPORTER_METRIC,
     "solidity",
     "ramification_index",
     "turnover_index",

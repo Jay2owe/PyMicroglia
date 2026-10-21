@@ -10,6 +10,10 @@ outside it that belongs to no other cell. Comparing a cell to the field beside
 it rather than to a single number for the whole image is what stops slow
 illumination drift being read as biology.
 
+The default reporter readout is the uncorrected sum inside the mask, averaged
+over three consecutive observed frames. Background-corrected and spatial-mean
+measurements remain available as separate columns.
+
 Ported from Motion's ``analysis/modules/intensity.py`` on 2026-09-21 (stage 04 of the Motion port); the arithmetic is unchanged.
 """
 
@@ -22,9 +26,10 @@ from skimage.morphology import disk
 
 from pymicroglia.measure.context import MeasurementContext
 from pymicroglia.measure.declare import Column, Output, measurement
+from pymicroglia.measure.signal import centered_frame_mean
 
 #: Bumped when this module's arithmetic changes; recorded in the run record.
-METHOD_VERSION = "2026-09-21-intensity-v1"
+METHOD_VERSION = "2026-09-24-intensity-total-mean3-v2"
 
 DEFAULTS = {
     "background_ring_inner_px": 4,
@@ -48,6 +53,7 @@ PRODUCES = (
     Column("signal_p90", "Reporter signal, 90th percentile", "camera units", "reporter"),
     Column("signal_max", "Brightest pixel", "camera units", "reporter"),
     Column("integrated_density", "Reporter total", "camera units", "reporter"),
+    Column("integrated_density_mean3", "Reporter total, 3-frame mean", "camera units", "reporter"),
     Column("background_median", "Local background", "camera units", "reporter"),
     Column("background_px", "Local background ring", "px", "reporter"),
     Column("background_is_zero", "Background read exactly zero", "0 or 1", "reporter"),
@@ -168,6 +174,13 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
             rows.append(row)
 
     cell_frame = pd.DataFrame(rows).sort_values(["identity", "frame_index"]).reset_index(drop=True)
+    cell_frame["integrated_density_mean3"] = np.nan
+    for _identity, indices in cell_frame.groupby("identity").groups.items():
+        trace = cell_frame.loc[indices].sort_values("frame_index")
+        cell_frame.loc[trace.index, "integrated_density_mean3"] = centered_frame_mean(
+            trace.integrated_density.to_numpy(float),
+            trace.frame_index.to_numpy(int),
+        )
 
     # dF/F against each cell's own median, the standard way to compare cells
     # whose absolute brightness differs for reasons that are not biological.

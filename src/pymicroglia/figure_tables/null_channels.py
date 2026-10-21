@@ -18,11 +18,11 @@ def prepare(source,options):
     rhythm_params = resolved['params']
     detrending = {name: resolved[name] for name in workbench.DETREND_DEFAULTS}
     metrics = [metric for metric in metrics if metric in combined]
-    if 'corrected_mean' in frame:
-        measured = frame.groupby('hours', as_index=False)['corrected_mean'].median()
+    if 'integrated_density_mean3' in frame:
+        measured = frame.groupby('hours', as_index=False)['integrated_density_mean3'].median()
         combined = combined.merge(measured, on='hours', how='left')
-        if 'corrected_mean' not in metrics:
-            metrics.append('corrected_mean')
+        if 'integrated_density_mean3' not in metrics:
+            metrics.append('integrated_density_mean3')
     traces = combined[['hours', *metrics]].melt(id_vars='hours', var_name='channel', value_name='value').dropna(subset=['hours', 'value'])
     fits = workbench.estimate_grouped_rhythms(traces, group_columns=['channel'], value_column='value', params=rhythm_params, method=resolved['method'], significance_method=resolved['significance_method'], detrend=resolved['detrend'], detrend_window_hours=resolved['detrend_window_hours'], min_observations=resolved['min_observations'], correction=resolved['multiple_testing'], min_cycles=resolved['min_cycles'])
     generator = np.random.default_rng(20260825)
@@ -50,7 +50,7 @@ def prepare(source,options):
                 null_amplitudes.append(float(null_amplitude) / scale)
         surrogate_amplitude = float(np.mean(null_amplitudes)) if null_amplitudes else np.nan
         row = fitted.to_dict()
-        row.update({'kind': 'measurement' if channel == 'corrected_mean' else 'tracker', 'relative_fit_amplitude': relative_amplitude, 'surrogate_amplitude': surrogate_amplitude, 'excess': relative_amplitude - surrogate_amplitude, 'surrogate_count': len(null_amplitudes)})
+        row.update({'kind': 'measurement' if channel == 'integrated_density_mean3' else 'tracker', 'relative_fit_amplitude': relative_amplitude, 'surrogate_amplitude': surrogate_amplitude, 'excess': relative_amplitude - surrogate_amplitude, 'surrogate_count': len(null_amplitudes)})
         rows.append(row)
     data = pd.DataFrame(rows)
     standard=[]

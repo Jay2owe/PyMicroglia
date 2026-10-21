@@ -66,6 +66,16 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("doctor", help="is the control layer healthy, and which Python is this")
     sub.add_parser("discover", help="reconcile the registry against what is importable")
 
+    ui = sub.add_parser("ui", help="open the full PyMicroglia desktop workbench")
+    ui.add_argument("--browser", action="store_true", help="use a browser instead of a native window")
+    ui.add_argument("--project", default=None, help="saved Auto-Organotypic project folder")
+    ui.add_argument("--motion-root", default=None, help="Motion checkout with saved edit sessions")
+    ui.add_argument("--motion-url", default=None, help="already-running loopback Motion service")
+    serve = sub.add_parser("serve", help="serve the workbench on this computer")
+    serve.add_argument("--project", default=None)
+    serve.add_argument("--motion-root", default=None)
+    serve.add_argument("--motion-url", default=None)
+
     describe = sub.add_parser("describe", help="what an action does and what it takes")
     describe.add_argument("action", nargs="?")
 
@@ -204,6 +214,12 @@ def _needs_kit(what: str) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     command = args.command
+
+    if command in {"ui", "serve"}:
+        from .ui.desktop import launch
+        return launch(browser=getattr(args, "browser", False), project=args.project,
+                      motion_root=args.motion_root, motion_url=args.motion_url,
+                      serve_only=command == "serve")
 
     if command == "doctor":
         return _emit(knowledge.doctor())

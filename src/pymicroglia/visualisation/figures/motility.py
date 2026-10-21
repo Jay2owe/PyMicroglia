@@ -17,4 +17,4 @@ figure(Figure('displacement_curves','How centroid displacement grows with elapse
 from ..panels import trajectories
 figure(Figure('identity_trajectories','Centroid paths with independent measured encodings','motility',views=(View('map',trajectories.paths),),
  reads=(Table('cell_frame'),Table('cell_summary'),Table('rhythms',optional=True)),prepare='pymicroglia.figure_tables.trajectories:prepare',
- options=(Option('metrics','net_displacement_px'),Option('trace_luts',None),Option('line_width_metric',''),Option('line_width_range',[.55,2.8]),Option('line_dash_metric',''),Option('rhythm_metric','corrected_mean'),Option('period_bins',[2.,12.,20.,28.,48.]))))
+ options=(Option('metrics','net_displacement_px'),Option('trace_luts',None),Option('line_width_metric',''),Option('line_width_range',[.55,2.8]),Option('line_dash_metric',''),Option('rhythm_metric','integrated_density_mean3'),Option('period_bins',[2.,12.,20.,28.,48.]))))

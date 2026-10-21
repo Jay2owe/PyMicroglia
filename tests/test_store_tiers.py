@@ -29,6 +29,7 @@ from pymicroglia.store import budget, manifest, tier_a, tier_b
 @pytest.fixture
 def store_root(tmp_path, monkeypatch):
     monkeypatch.setenv("PYMICROGLIA_STORE", str(tmp_path / "cache"))
+    monkeypatch.setenv("PYMICROGLIA_INDEX", str(tmp_path / "index"))
     monkeypatch.delenv("PYMICROGLIA_DECISIONS", raising=False)
     return tmp_path / "cache"
 
@@ -79,13 +80,13 @@ def test_the_default_root_is_the_projects_own_store(monkeypatch, tmp_path):
     assert root.parent == config.project_root(start=source, names=(project.name,))
 
 
-def test_every_tier_b_path_sits_under_the_configured_root(store_root):
-    """One root, so evicting it or pinning it offline reaches all of it."""
+def test_pixel_paths_use_cache_root_and_index_has_its_own_root(store_root, tmp_path):
+    """Pixel eviction reaches all arrays while the local catalogue stays separate."""
     for path in (tier_b.array_path("registered", "abc"),
                  tier_b.sidecar_path("registered", "abc"),
-                 tier_b.partial_path("registered", "abc"),
-                 manifest.path()):
+                 tier_b.partial_path("registered", "abc")):
         assert store_root in path.parents, path
+    assert manifest.path() == tmp_path / "index" / "manifest.json"
 
 
 def test_a_dehydrated_array_is_reported_rather_than_read(store_root, monkeypatch):

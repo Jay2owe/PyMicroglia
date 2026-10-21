@@ -1,0 +1,9 @@
+/* Shared action fields retain the application's theme and layout tokens. */
+.cell-grid-analysis, .cell-grid-preprocessing { grid-column: 1 / -1; margin: 0; }
+.cell-grid-preprocessing { padding: 0; }
+.cell-grid-analysis .field-list { padding: .5rem 0; }
+.cell-grid-analysis .field { min-width: 0; }
+.cell-grid-analysis textarea { min-width: 0; }
+.field-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .4rem; max-block-size: 18rem; overflow: auto; }
+.field-checks label { display: flex; align-items: start; gap: .4rem; font-size: .85rem; }
+.field-checks input[type="checkbox"] { inline-size: auto; margin-block-start: .2rem; }

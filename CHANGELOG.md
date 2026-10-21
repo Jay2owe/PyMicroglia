@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+- Reduce complete-correction audit memory with reusable snapshots, streaming
+  hashes and frame-wise provenance, and release consumed evidence before later
+  tracking passes. Scientific correction archives and precision are unchanged.
+  Measurement scope: `validation/completed_base_20261012/memory/README.md`.
+- Update the packaged native Motion engine to the accepted October 12 speed
+  implementation and recording-setting audit. Both execution modes install the
+  same accepted optimization contexts and record correction-stage timings.
+- New Motion inputs retain all source frames by default, supply their own
+  acquisition interval, and no longer require five detected cells. Result
+  alignment follows the configured frame exclusion, including exclusions over two.
+- Integrate the complete round-218 attempt-4 correction sequence after native
+  tracking, including generation of its gap-tracking and restoration evidence
+  from each new recording. Final results use the completed correction output;
+  native labels remain an immutable parent. Validation status and scope are in
+  `docs/motion-complete-accepted-base.md`.
+
 ## 0.3.0 - 2026-09-23
 
 - Add a post-Motion eligibility stage to `auto_microglia`. It defaults to

@@ -24,7 +24,7 @@ __all__ = ["MODULES", "MODULE_NAMES", "load"]
 #: Every module file this package ships, in the order Motion imported them.
 #: Data rather than imports, so that listing the names costs nothing.
 MODULES: tuple[str, ...] = (
-    "channels", "contacts", "coupling", "history", "intensity", "lifecycle",
+    "channels", "contacts", "coupling", "history", "intensity", "expanded_intensity", "lifecycle",
     "morphology", "motility", "neighbours", "object_geometry", "objects",
     "presence", "provenance", "recurrence", "regimes", "rhythms",
     "sequence_distance", "sholl", "surveillance", "territory",
@@ -35,7 +35,7 @@ MODULES: tuple[str, ...] = (
 #: the fifteen pixel-reading modules first, then the nine derived ones. What
 #: ``describe measure`` offers as the choices for ``enabled_modules``.
 MODULE_NAMES: tuple[str, ...] = (
-    "morphology", "intensity", "channels", "objects", "object_geometry",
+    "morphology", "intensity", "expanded_intensity", "channels", "objects", "object_geometry",
     "motility", "surveillance", "motion_evidence", "presence", "lifecycle",
     "territory", "sholl", "contacts", "neighbours", "provenance",
     "regimes", "recurrence", "sequence_distance", "coupling", "rhythms",

@@ -1,0 +1,4397 @@
+{
+  "top_tabs": [
+    "Auto-Organotypic",
+    "Motion tracks",
+    "PyMicroglia extras"
+  ],
+  "counts": {
+    "actions": 52,
+    "figures": 89,
+    "figure_views": 229,
+    "measurement_modules": 25,
+    "pipelines": 12
+  },
+  "pages": [
+    {
+      "key": "rhythms",
+      "title": "Signal and rhythms",
+      "question": "Does the reporter vary rhythmically, and when?",
+      "groups": [
+        {
+          "style": "Traces and time profiles",
+          "figures": [
+            {
+              "key": "all_cell_trace_grid",
+              "title": "All measured cell traces",
+              "views": [
+                "traces"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cell_analysis_grid",
+              "title": "Cell analysis grid",
+              "views": [
+                "analyses"
+              ],
+              "saved": false
+            },
+            {
+              "key": "second_verse",
+              "title": "Within-cell repeatability of a detected cycle",
+              "views": [
+                "profiles",
+                "peak_agreement",
+                "peak_shift"
+              ],
+              "saved": false
+            },
+            {
+              "key": "rhythm_strength",
+              "title": "Explicit daily-profile amplitude and stability",
+              "views": [
+                "strength",
+                "stability",
+                "ranking"
+              ],
+              "saved": false
+            },
+            {
+              "key": "active_span",
+              "title": "Daily active windows with comparable supported periods",
+              "views": [
+                "spans",
+                "agreement",
+                "rest_to_peak"
+              ],
+              "saved": false
+            },
+            {
+              "key": "rhythm_cell_report",
+              "title": "Selected cell rhythm evidence",
+              "views": [
+                "raw",
+                "detrended",
+                "native",
+                "images"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_trace_grid",
+              "title": "Selected cells on recording time",
+              "views": [
+                "raw",
+                "detrended",
+                "native"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythmicity_above_noise",
+              "title": "Rhythm calls against a drift-matched noise floor",
+              "views": [
+                "floor"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Clocks and phase",
+          "figures": [
+            {
+              "key": "own_clock_composite",
+              "title": "Recording-time and peak-aligned population traces",
+              "views": [
+                "wall_clock",
+                "realigned",
+                "carried"
+              ],
+              "saved": false
+            },
+            {
+              "key": "clock_face",
+              "title": "Detected cycle position and oscillation amplitude",
+              "views": [
+                "dial",
+                "rose",
+                "histogram"
+              ],
+              "saved": false
+            },
+            {
+              "key": "rhythm_timing_matrices",
+              "title": "Timing and separate consistency",
+              "views": [
+                "offset",
+                "within-cell",
+                "within-sample",
+                "across-samples"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_pair_report",
+              "title": "Saved compatible timing evidence",
+              "views": [
+                "detection",
+                "offsets",
+                "traces",
+                "timing"
+              ],
+              "saved": true
+            }
+          ]
+        },
+        {
+          "style": "Matrices and distributions",
+          "figures": [
+            {
+              "key": "metric_rhythm_matrix",
+              "title": "Rhythms across selected measurements",
+              "views": [
+                "matrix"
+              ],
+              "saved": false
+            },
+            {
+              "key": "radial_occupancy_rhythms",
+              "title": "Rhythms of relative radial occupancy",
+              "views": [
+                "matrix"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cd68_reporter_rhythm",
+              "title": "Reporter rhythms of individual cells",
+              "views": [
+                "raster",
+                "period_peak_matrix",
+                "period_histogram"
+              ],
+              "saved": false
+            },
+            {
+              "key": "rhythm_screen",
+              "title": "Complete cell rhythm screen",
+              "views": [
+                "periods",
+                "status"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_screen_summary",
+              "title": "Detection and period support",
+              "views": [
+                "fraction",
+                "periods"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_time_matrix",
+              "title": "Saved measurements over time",
+              "views": [
+                "matrix",
+                "status"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_group_comparison",
+              "title": "Rhythm-defined measurement groups",
+              "views": [
+                "cells",
+                "samples",
+                "duration",
+                "missingness"
+              ],
+              "saved": true
+            },
+            {
+              "key": "rhythm_agreement",
+              "title": "Agreement between detected rhythms",
+              "views": [
+                "matrix",
+                "counts",
+                "unit_agreement",
+                "fractions"
+              ],
+              "saved": true
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "rhythm_discovery"
+      ],
+      "pipelines": [
+        "rhythm_discovery"
+      ],
+      "measurements": [
+        "rhythms",
+        "trend"
+      ]
+    },
+    {
+      "key": "tissue",
+      "title": "Tissue and territory",
+      "question": "How does activity spread across the field?",
+      "groups": [
+        {
+          "style": "Spatial maps and image sequences",
+          "figures": [
+            {
+              "key": "tissue_expansion_sequence",
+              "title": "Within-cell changes across the tissue",
+              "views": [
+                "field"
+              ],
+              "saved": false
+            },
+            {
+              "key": "spatial_rhythm_maps",
+              "title": "Rhythm periods and peak timing across the tissue",
+              "views": [
+                "period",
+                "phase"
+              ],
+              "saved": false
+            },
+            {
+              "key": "spatial_rhythm_progression",
+              "title": "Rhythm progression across space",
+              "views": [
+                "positions",
+                "matrix"
+              ],
+              "saved": false
+            },
+            {
+              "key": "reporter_shape_timing",
+              "title": "Reporter-to-shape timing across the tissue",
+              "views": [
+                "timing"
+              ],
+              "saved": false
+            },
+            {
+              "key": "tissue_coverage_gaps",
+              "title": "Gaps in tissue coverage over time",
+              "views": [
+                "field",
+                "coverage"
+              ],
+              "saved": false
+            },
+            {
+              "key": "negative_space",
+              "title": "Field coverage by occupancy source",
+              "views": [
+                "coverage",
+                "composition"
+              ],
+              "saved": false
+            },
+            {
+              "key": "tissue_tectonics",
+              "title": "Cell coverage and motion across the tissue field",
+              "views": [
+                "first_coverage",
+                "cumulative_occupancy",
+                "unique_cells",
+                "speed",
+                "significant_period",
+                "splitting_events"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Coverage and pixel flow",
+          "figures": [
+            {
+              "key": "patch_ledger",
+              "title": "Per-cell territory coverage and pixel revisits",
+              "views": [
+                "revisit",
+                "coverage",
+                "core"
+              ],
+              "saved": false
+            },
+            {
+              "key": "pixel_fate_flow",
+              "title": "Pixel fate across selected windows",
+              "views": [
+                "flow",
+                "shares",
+                "sensitivity"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [],
+      "pipelines": [],
+      "measurements": [
+        "objects",
+        "object_geometry"
+      ]
+    },
+    {
+      "key": "cell_explorer",
+      "title": "Cell explorer",
+      "question": "What happened to this cell?",
+      "groups": [
+        {
+          "style": "Images and films",
+          "figures": [
+            {
+              "key": "cell_report_card",
+              "title": "Cell image and measurement report card",
+              "views": [
+                "tiles",
+                "traces"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cell_trace_card",
+              "title": "Original cell image and its measured traces",
+              "views": [
+                "card"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cell_time_sculpture",
+              "title": "Observed cell outlines through time",
+              "views": [
+                "outlines"
+              ],
+              "saved": false
+            },
+            {
+              "key": "mask_change_map",
+              "title": "Changes in one saved cell mask",
+              "views": [
+                "map"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Matrices",
+          "figures": [
+            {
+              "key": "recording_barcode",
+              "title": "Saved cell measurements across native frames",
+              "views": [
+                "barcode"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "cell_review",
+        "cell_image_grid",
+        "cell_video_grid",
+        "cell_card_video"
+      ],
+      "pipelines": [],
+      "measurements": [
+        "intensity",
+        "channels"
+      ]
+    },
+    {
+      "key": "shape",
+      "title": "Shape and surveillance",
+      "question": "How did the cell change its footprint?",
+      "groups": [
+        {
+          "style": "Traces and timelines",
+          "figures": [
+            {
+              "key": "breath_trace",
+              "title": "Cell-footprint area gained, lost and retained between frames",
+              "views": [
+                "breath",
+                "small_multiples"
+              ],
+              "saved": false
+            },
+            {
+              "key": "change_ledger",
+              "title": "Per-cell changes between declared windows",
+              "views": [
+                "ledger",
+                "paired",
+                "spread"
+              ],
+              "saved": false
+            },
+            {
+              "key": "conservation_ledger",
+              "title": "Gross footprint exchange against net size change",
+              "views": [
+                "ledger",
+                "cancelled",
+                "against_size"
+              ],
+              "saved": false
+            },
+            {
+              "key": "breakout_triggered_average",
+              "title": "Responses around ranked measured frames",
+              "views": [
+                "triggered",
+                "alignment",
+                "comparison"
+              ],
+              "saved": false
+            },
+            {
+              "key": "upheaval_events",
+              "title": "Large cell-footprint changes through time",
+              "views": [
+                "raster",
+                "rates",
+                "tiles"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Maps and matrices",
+          "figures": [
+            {
+              "key": "sholl_kymograph",
+              "title": "Radial occupancy from soma over time",
+              "views": [
+                "kymograph"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [],
+      "pipelines": [],
+      "measurements": [
+        "morphology",
+        "sholl",
+        "surveillance",
+        "territory",
+        "territory_shape"
+      ]
+    },
+    {
+      "key": "movement",
+      "title": "Movement and lifespan",
+      "question": "Where did the cell go, and how long did it persist?",
+      "groups": [
+        {
+          "style": "Traces and distributions",
+          "figures": [
+            {
+              "key": "step_size_distribution",
+              "title": "Frame-to-frame step size distribution",
+              "views": [
+                "distribution"
+              ],
+              "saved": false
+            },
+            {
+              "key": "displacement_curves",
+              "title": "How centroid displacement grows with elapsed time",
+              "views": [
+                "curves",
+                "alpha"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cells_on_screen",
+              "title": "Cells on screen, persistence and lifespan",
+              "views": [
+                "counts",
+                "foreground",
+                "persistence",
+                "lifespan",
+                "arrivals",
+                "coverage"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cell_lifecycle_events",
+              "title": "How cell tracks began, ended and divided",
+              "views": [
+                "timelines",
+                "ledger",
+                "timing"
+              ],
+              "saved": false
+            },
+            {
+              "key": "cell_lifecycle_summary",
+              "title": "Track events across the recording",
+              "views": [
+                "fates",
+                "accumulation",
+                "families"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Spatial maps",
+          "figures": [
+            {
+              "key": "identity_trajectories",
+              "title": "Centroid paths with independent measured encodings",
+              "views": [
+                "map"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [],
+      "pipelines": [],
+      "measurements": [
+        "motility",
+        "walk"
+      ]
+    },
+    {
+      "key": "states",
+      "title": "States and traits",
+      "question": "What states recur, and which features are stable?",
+      "groups": [
+        {
+          "style": "Timelines and transitions",
+          "figures": [
+            {
+              "key": "cell_state_timelines",
+              "title": "Cell states in original recording time",
+              "views": [
+                "intervals",
+                "observations",
+                "membership"
+              ],
+              "saved": true
+            },
+            {
+              "key": "cell_state_time_summaries",
+              "title": "Saved cell state time summaries",
+              "views": [
+                "occupancy",
+                "switches",
+                "transitions",
+                "bouts"
+              ],
+              "saved": true
+            },
+            {
+              "key": "regime_ribbon",
+              "title": "Size-and-movement subgroup assigned to every cell-frame",
+              "views": [
+                "ribbon",
+                "occupancy",
+                "profiles"
+              ],
+              "saved": false
+            },
+            {
+              "key": "regime_transitions",
+              "title": "Observed behavioural regime transitions against shuffled time",
+              "views": [
+                "matrix",
+                "null",
+                "dwell"
+              ],
+              "saved": false
+            },
+            {
+              "key": "regime_reporter_bridge",
+              "title": "Reporter signal inside and outside one shape regime",
+              "views": [
+                "paired",
+                "triggered",
+                "plane"
+              ],
+              "saved": false
+            },
+            {
+              "key": "predictability_clock",
+              "title": "Next-state mismatch over an explicitly declared cycle",
+              "views": [
+                "error",
+                "by_regime",
+                "dial"
+              ],
+              "saved": false
+            },
+            {
+              "key": "state_histories",
+              "title": "Shared states, different cell histories",
+              "views": [
+                "history",
+                "period",
+                "switching",
+                "persistence"
+              ],
+              "saved": false
+            },
+            {
+              "key": "recurrence_wall",
+              "title": "Returns to previous measured states",
+              "views": [
+                "wall",
+                "rate",
+                "quantified"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Cards and profiles",
+          "figures": [
+            {
+              "key": "accepted_state_card",
+              "title": "Observed accepted-state card",
+              "views": [
+                "profiles",
+                "population",
+                "traces",
+                "images"
+              ],
+              "saved": true
+            },
+            {
+              "key": "state_profiles",
+              "title": "Observed profiles of accepted states",
+              "views": [
+                "values",
+                "membership"
+              ],
+              "saved": true
+            }
+          ]
+        },
+        {
+          "style": "Comparisons and trees",
+          "figures": [
+            {
+              "key": "state_support_summary",
+              "title": "Support for a shared state vocabulary",
+              "views": [
+                "criteria",
+                "outcomes"
+              ],
+              "saved": true
+            },
+            {
+              "key": "state_sample_comparisons",
+              "title": "Saved sample state comparisons",
+              "views": [
+                "samples",
+                "contrasts"
+              ],
+              "saved": true
+            },
+            {
+              "key": "regime_programmes",
+              "title": "Similarity of saved cell state sequences",
+              "views": [
+                "similarity",
+                "tree",
+                "groups"
+              ],
+              "saved": false
+            },
+            {
+              "key": "stable_traits_versus_states",
+              "title": "Within-cell versus between-cell variability",
+              "views": [
+                "ranking"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "states",
+        "cluster",
+        "behaviour_states"
+      ],
+      "pipelines": [
+        "behaviour_states"
+      ],
+      "measurements": [
+        "regimes",
+        "recurrence",
+        "sequence_distance"
+      ]
+    },
+    {
+      "key": "relationships",
+      "title": "Neighbours and coordination",
+      "question": "How do cells and measurements relate?",
+      "groups": [
+        {
+          "style": "Traces and lag profiles",
+          "figures": [
+            {
+              "key": "measurement_relationship_reports",
+              "title": "Measurement relationship reports",
+              "views": [
+                "coefficients",
+                "traces",
+                "scatter",
+                "lags"
+              ],
+              "saved": true
+            },
+            {
+              "key": "measurement_lag_profiles",
+              "title": "Measurement lag profiles",
+              "views": [
+                "coefficients",
+                "support"
+              ],
+              "saved": true
+            },
+            {
+              "key": "spatial_coordination_pair_card",
+              "title": "Selected cell-pair report",
+              "views": [
+                "traces",
+                "relationships",
+                "rhythms",
+                "states"
+              ],
+              "saved": true
+            },
+            {
+              "key": "phase_compass",
+              "title": "Within-cell metric coupling across time lags",
+              "views": [
+                "profile",
+                "per_cell",
+                "pairs"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Networks and spatial maps",
+          "figures": [
+            {
+              "key": "spatial_coordination_connections",
+              "title": "Supported spatial connections",
+              "views": [
+                "map",
+                "evidence"
+              ],
+              "saved": true
+            },
+            {
+              "key": "neighbour_coordination",
+              "title": "Neighbour coordination across the tissue",
+              "views": [
+                "connections",
+                "null"
+              ],
+              "saved": false
+            },
+            {
+              "key": "independence_map",
+              "title": "Phase difference against distance between cells",
+              "views": [
+                "distance",
+                "field",
+                "measures"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Pair and sample comparisons",
+          "figures": [
+            {
+              "key": "measurement_relationship_overview",
+              "title": "Measurement relationship overview",
+              "views": [
+                "within_cells",
+                "between_cells",
+                "delays"
+              ],
+              "saved": true
+            },
+            {
+              "key": "measurement_relationship_populations",
+              "title": "Measurement relationship populations",
+              "views": [
+                "cells",
+                "samples"
+              ],
+              "saved": true
+            },
+            {
+              "key": "spatial_coordination_overview",
+              "title": "Spatial evidence overview",
+              "views": [
+                "coverage",
+                "geometry",
+                "timing",
+                "recordings"
+              ],
+              "saved": true
+            },
+            {
+              "key": "spatial_coordination_samples",
+              "title": "Spatial sample comparisons",
+              "views": [
+                "samples",
+                "contrasts",
+                "timing"
+              ],
+              "saved": true
+            },
+            {
+              "key": "contact_ledger",
+              "title": "Contact-pair measurement similarity",
+              "views": [
+                "pairs",
+                "overall",
+                "duration"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "measurement_relationships",
+        "spatial_coordination"
+      ],
+      "pipelines": [
+        "measurement_relationships",
+        "spatial_coordination"
+      ],
+      "measurements": [
+        "contacts",
+        "neighbours",
+        "coupling"
+      ]
+    },
+    {
+      "key": "interventions",
+      "title": "Interventions and groups",
+      "question": "What changed after an event or treatment?",
+      "groups": [
+        {
+          "style": "Traces and timing",
+          "figures": [
+            {
+              "key": "intervention_response_traces",
+              "title": "Intervention response traces",
+              "views": [
+                "original",
+                "anchored"
+              ],
+              "saved": true
+            },
+            {
+              "key": "intervention_response_timing",
+              "title": "Intervention response timing",
+              "views": [
+                "response",
+                "recovery",
+                "coverage"
+              ],
+              "saved": true
+            },
+            {
+              "key": "intervention_rhythm_changes",
+              "title": "Intervention rhythm changes",
+              "views": [
+                "period",
+                "amplitude",
+                "contrasts"
+              ],
+              "saved": true
+            }
+          ]
+        },
+        {
+          "style": "Cell reports",
+          "figures": [
+            {
+              "key": "intervention_cell_report",
+              "title": "Intervention cell report",
+              "views": [
+                "original",
+                "anchored",
+                "evidence"
+              ],
+              "saved": true
+            }
+          ]
+        },
+        {
+          "style": "Group and control comparisons",
+          "figures": [
+            {
+              "key": "intervention_response_overview",
+              "title": "Intervention response overview",
+              "views": [
+                "coverage",
+                "before_after",
+                "changes",
+                "controls"
+              ],
+              "saved": true
+            },
+            {
+              "key": "intervention_sample_effects",
+              "title": "Intervention sample effects",
+              "views": [
+                "changes",
+                "controls",
+                "coverage"
+              ],
+              "saved": true
+            },
+            {
+              "key": "intervention_response_patterns",
+              "title": "Intervention response patterns",
+              "views": [
+                "cells",
+                "outcomes",
+                "samples",
+                "recurrence"
+              ],
+              "saved": true
+            },
+            {
+              "key": "contrast_forest",
+              "title": "Declared comparisons",
+              "views": [
+                "effects",
+                "correction",
+                "design"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "intervention_response"
+      ],
+      "pipelines": [
+        "intervention_response"
+      ],
+      "measurements": []
+    },
+    {
+      "key": "methods",
+      "title": "Evidence and methods",
+      "question": "How robust is this result?",
+      "groups": [
+        {
+          "style": "Diagnostic images",
+          "figures": [
+            {
+              "key": "audit_focused",
+              "title": "Focused saved method evidence",
+              "views": [
+                "input",
+                "processed",
+                "native",
+                "diagnostics"
+              ],
+              "saved": true
+            }
+          ]
+        },
+        {
+          "style": "Performance and agreement",
+          "figures": [
+            {
+              "key": "audit_performance",
+              "title": "Saved method audit performance",
+              "views": [
+                "recovery",
+                "false_alarms"
+              ],
+              "saved": true
+            },
+            {
+              "key": "audit_periods",
+              "title": "Saved method audit periods",
+              "views": [
+                "recovery",
+                "errors"
+              ],
+              "saved": true
+            },
+            {
+              "key": "audit_decisions",
+              "title": "Saved method audit decisions",
+              "views": [
+                "decision",
+                "evidence"
+              ],
+              "saved": true
+            },
+            {
+              "key": "audit_disagreement",
+              "title": "Saved method audit disagreement",
+              "views": [
+                "periods",
+                "tests"
+              ],
+              "saved": true
+            },
+            {
+              "key": "period_method_audit",
+              "title": "Period-method audit",
+              "views": [
+                "method_grid"
+              ],
+              "saved": false
+            },
+            {
+              "key": "null_channel_phase_test",
+              "title": "Tracker uncertainty channels through the selected rhythm analysis",
+              "views": [
+                "channels",
+                "against_floor",
+                "amplitudes"
+              ],
+              "saved": false
+            },
+            {
+              "key": "surveillance_not_translocation",
+              "title": "Per-cell measurement density",
+              "views": [
+                "density"
+              ],
+              "saved": false
+            },
+            {
+              "key": "territory_anchoring",
+              "title": "Cell-centre spatial range relative to cell size",
+              "views": [
+                "anchoring"
+              ],
+              "saved": false
+            }
+          ]
+        },
+        {
+          "style": "Cell and sample comparisons",
+          "figures": [
+            {
+              "key": "cell_group_comparison",
+              "title": "Cell and group comparison",
+              "views": [
+                "cells",
+                "samples",
+                "paired",
+                "box",
+                "violin",
+                "histogram",
+                "time_course",
+                "effects"
+              ],
+              "saved": false
+            }
+          ]
+        }
+      ],
+      "actions": [
+        "method_audit"
+      ],
+      "pipelines": [
+        "method_audit"
+      ],
+      "measurements": []
+    }
+  ],
+  "inventory": [
+    {
+      "kind": "action",
+      "name": "register",
+      "view": "",
+      "title": "Register",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Register a time-lapse by translation-only phase correlation on a stable channel, applied to every channel at full resolution.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "register_three_channel",
+      "view": "",
+      "title": "Register Three Channel",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Register three-channel phase/green/red organotypic time-lapses on the red neuronal channel.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "export_registered_stack",
+      "view": "",
+      "title": "Export Registered Stack",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Export cropped registered raw two-channel stacks with no unmixing, normalisation or rescaling.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "remove_cosmic_rays",
+      "view": "",
+      "title": "Remove Cosmic Rays",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Replace cosmic-ray damage using one outlier rule asked of a pixel, of a line and of the bleed off a saturated pixel, after registration.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "remove_static_background",
+      "view": "",
+      "title": "Remove Static Background",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Remove the static background and shot noise for display only, preserving pulse amplitude at circadian periods.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "display_filter",
+      "view": "",
+      "title": "Display Filter",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Minimally filtered bioluminescence display that keeps the background visible so the channel merges without looking clipped; display only.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "background",
+      "view": "",
+      "title": "Background",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Estimate the off-tissue background from the structural channel, never from the image corners, and check the tissue mask actually contains the bioluminescence.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "segment",
+      "view": "",
+      "title": "Segment",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Detect still cells by soma prominence and watershed, then sweep for further candidates. No minimum cell area, by rule.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "automatic_scn_outline",
+      "view": "",
+      "title": "Automatic Scn Outline",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Draw the accepted A007 two-lobe SCN outline from a registered red-channel time mean or selected hyperstack channel using a mean, maximum projection or chosen frame and valid-field mask, either retain that selected plane or stream one transform across every stack plane, apply the accepted A006 top-up orientation by default, and write a mask-relative square crop.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "export_roi",
+      "view": "",
+      "title": "Export Roi",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Write a RoiSet.zip Fiji can open: one region per segmented object, plus the SCN region and its two lobes.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "extract_traces",
+      "view": "",
+      "title": "Extract Traces",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "One trace per segmented object, with its local ring subtracted, and dF/F against each trace's window mean rather than an instantaneous rolling baseline.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "run_controls",
+      "view": "",
+      "title": "Run Controls",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Area-matched decoys placed on tissue and read in absolute counts, plus the instrumental control that tests whether a rhythm is also off tissue, in another channel, or in image sharpness.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "test_rhythm",
+      "view": "",
+      "title": "Test Rhythm",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Period and cosinor for every trace, from circadian-workbench, and refused outright for a source with no instrumental control.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "unmix",
+      "view": "",
+      "title": "Unmix",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Linearly unmix a signal channel from a scaled autofluorescence channel, per frame, with one constant coefficient for the whole recording.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "red_only_video",
+      "view": "",
+      "title": "Red Only Video",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Linearly unmix microglial mCherry from autofluorescence on every raw frame, apply the saved registration transform, and export registered two-channel stacks plus timestamped red-only videos.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "composite_video",
+      "view": "",
+      "title": "Composite Video",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Render timestamped red/green microglia composite videos from registered two-channel stacks, correcting autofluorescence drift with a display-only endpoint gain curve.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "phase_green_red_video",
+      "view": "",
+      "title": "Phase Green Red Video",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Render timestamped green/red videos from a registered three-channel organotypic time-lapse and audit which channel is which, leaving the scientific data unnormalised.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "stack_to_mp4",
+      "view": "",
+      "title": "Stack To Mp4",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Render a TIFF time-lapse stack as an MP4 at a stated number of experimental hours per second, through a named colour map.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "trace_panel",
+      "view": "",
+      "title": "Trace Panel",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw a stack of time-trace panels from one or more trace CSVs, choosing which trace goes in which panel, merging several onto one panel, with independent control of colours, detrend, grey underlay, edge shading, time window, x ticks and vertical lines.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "dluc_single_cell",
+      "view": "",
+      "title": "Dluc Single Cell",
+      "home": "auto/complete workflows",
+      "style": "operation",
+      "summary": "Segment and trace single-cell dLuc bioluminescence from a registered time-lapse, with detrending, rhythmicity tests, instrumental controls, quality-control figures and publication videos.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cry1_dluc_photon",
+      "view": "",
+      "title": "Cry1 Dluc Photon",
+      "home": "auto/complete workflows",
+      "style": "operation",
+      "summary": "Register four-channel Cry1-dLuc time-lapses on the bright-field channel and render photon-aware bioluminescence videos and quality-control figures, leaving the saved TIFF as raw transformed counts.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "registration_figure",
+      "view": "",
+      "title": "Registration Figure",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw the per-frame translation registration applied and the residual it left, from the stored shift table rather than from pixels.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cosmic_ray_preview",
+      "view": "",
+      "title": "Cosmic Ray Preview",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw one frame before and after cosmic-ray removal beside the replacement mask, choosing the frame that lost the most pixels.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "channel_figure",
+      "view": "",
+      "title": "Channel Figure",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw each channel's frame and intensity histogram side by side, so a swapped or bleeding channel is visible before anything is measured.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "frames_figure",
+      "view": "",
+      "title": "Frames Figure",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw the first, middle and last frame of every channel with its timestamp, which catches a wrongly ordered hyperstack in three plane reads.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_overlay",
+      "view": "",
+      "title": "Cell Overlay",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw the segmented objects as outlines over the tissue and the bioluminescence they were found in, with each object's local background ring.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "roi_overlay",
+      "view": "",
+      "title": "Roi Overlay",
+      "home": "auto/videos and figures",
+      "style": "operation",
+      "summary": "Draw stored regions over the frame they were drawn on, so a region decision can be checked once instead of re-made every run.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "publication_workbook",
+      "view": "",
+      "title": "Publication Workbook",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Combine ReproFig figure data and every declared statistical test into one verified journal Excel workbook.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "track",
+      "view": "",
+      "title": "Track",
+      "home": "motion/review tracks",
+      "style": "operation",
+      "summary": "Give every cell an identity that outlives a frame: link the masked regions of one recording through movement, merges, splits and temporary invisibility, and write the label stack, the unclaimed ledger, the provenance sidecar, the motion evidence and the decision tables the measure step reads. Runs the frozen Motion engine shipped with the wheel.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "measure",
+      "view": "",
+      "title": "Measure",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Turn tracked labels into tables: one row per cell per frame, rolled up per cell and per frame, one folder per kind of table with one ledger each, and a manifest that fingerprints what went in and what came out. Every registered measurement module runs unless told which.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "measure_expanded_outlines",
+      "view": "",
+      "title": "Measure expanded outlines",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Compare original, exclusively expanded and background-corrected cell totals; every supplied cell limits growth.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "measure_fixed_apertures",
+      "view": "",
+      "title": "Measure fixed apertures",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Measure constant circle or square footprints following supplied native cell centroids; retain gaps and report overlap.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "pool",
+      "view": "",
+      "title": "Pool",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Concatenate an existing run's per-movie tables into <run>/pooled/, recording which movies contributed to each table, how many rows each gave and which columns one movie had that another did not.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "window",
+      "view": "",
+      "title": "Window",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Re-roll an existing run's summaries inside declared windows, per cell and per frame, with each window's values against its baseline window. Re-measures nothing.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "contrasts",
+      "view": "",
+      "title": "Contrasts",
+      "home": "micro/results and export",
+      "style": "operation",
+      "summary": "Test every declared contrast over an existing run's pooled tables, one row per contrast per metric, corrected within each declared family. Pending until the Circadian Workbench importer of the rhythm stage lands.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "measure_missing_gaps",
+      "view": "",
+      "title": "Measure Missing Gaps",
+      "home": "motion/continuity and evidence",
+      "style": "operation",
+      "summary": "Optionally measure original photons in stable missing-cell gaps after tracking, using the nearest accepted outline; write separate proposal rows only.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_review",
+      "view": "",
+      "title": "Cell Review",
+      "home": "micro/cell_explorer",
+      "style": "operation",
+      "summary": "Export an offline linked shape-change map, rotatable outline history, animated cell cards and clickable recording barcode from saved identities and sharp original images.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_eligibility",
+      "view": "",
+      "title": "Cell Eligibility",
+      "home": "motion/continuity and evidence",
+      "style": "operation",
+      "summary": "Audit final Motion identities and write independent analysis, video and image label views without changing tracking or renumbering cells.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "tracked_cell_video",
+      "view": "",
+      "title": "Tracked Cell Video",
+      "home": "motion/review tracks",
+      "style": "operation",
+      "summary": "Draw configurable per-identity outlines over the original photon movie using the accepted review-video display defaults.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "tracked_cell_image",
+      "view": "",
+      "title": "Tracked Cell Image",
+      "home": "motion/review tracks",
+      "style": "operation",
+      "summary": "Draw configurable per-identity outlines over one original-photon frame for a still quality-control image.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_image_grid",
+      "view": "",
+      "title": "Cell Image Grid",
+      "home": "micro/cell_explorer",
+      "style": "operation",
+      "summary": "Show every selected tracked cell through its best cycle or one shared event window using the Auto-Organotypic image grid.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_video_grid",
+      "view": "",
+      "title": "Cell Video Grid",
+      "home": "micro/cell_explorer",
+      "style": "operation",
+      "summary": "Play every selected tracked cell through the original recording in a purple grid with live mask outlines and moving crops across mask gaps.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "states",
+      "view": "",
+      "title": "States",
+      "home": "micro/states",
+      "style": "operation",
+      "summary": "Learn shared cell-frame states and describe their dynamics and separately tested rhythms.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cluster",
+      "view": "",
+      "title": "Cluster",
+      "home": "micro/states",
+      "style": "operation",
+      "summary": "Learn whole-cell fingerprints and describe cohort clusters with held-out reconstruction checks.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "follow",
+      "view": "",
+      "title": "Follow",
+      "home": "motion/review tracks",
+      "style": "operation",
+      "summary": "Review accepted cell identities over the recording, lifespan or recorded event windows; display only.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "cell_card_video",
+      "view": "",
+      "title": "Cell Card Video",
+      "home": "micro/cell_explorer",
+      "style": "operation",
+      "summary": "Animate sharp original cell crops alongside their raw intensity, three-frame mean and mask-area traces with a synchronized native-time cursor.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "rhythm_discovery",
+      "view": "",
+      "title": "Rhythm Discovery",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Run the rhythm discovery workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "method_audit",
+      "view": "",
+      "title": "Method Audit",
+      "home": "micro/methods",
+      "style": "operation",
+      "summary": "Run the method audit workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "measurement_relationships",
+      "view": "",
+      "title": "Measurement Relationships",
+      "home": "micro/relationships",
+      "style": "operation",
+      "summary": "Run the measurement relationships workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "behaviour_states",
+      "view": "",
+      "title": "Behaviour States",
+      "home": "micro/states",
+      "style": "operation",
+      "summary": "Run the behaviour states workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "spatial_coordination",
+      "view": "",
+      "title": "Spatial Coordination",
+      "home": "micro/relationships",
+      "style": "operation",
+      "summary": "Run the spatial coordination workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "intervention_response",
+      "view": "",
+      "title": "Intervention Response",
+      "home": "micro/interventions",
+      "style": "operation",
+      "summary": "Run the intervention response workflow on saved measurement tables.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "own_clock_composite",
+      "view": "wall_clock",
+      "title": "Recording-time and peak-aligned population traces",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Recording-time and peak-aligned population traces",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "own_clock_composite",
+      "view": "realigned",
+      "title": "Recording-time and peak-aligned population traces",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Recording-time and peak-aligned population traces",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "own_clock_composite",
+      "view": "carried",
+      "title": "Recording-time and peak-aligned population traces",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Recording-time and peak-aligned population traces",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "clock_face",
+      "view": "dial",
+      "title": "Detected cycle position and oscillation amplitude",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Detected cycle position and oscillation amplitude",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "clock_face",
+      "view": "rose",
+      "title": "Detected cycle position and oscillation amplitude",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Detected cycle position and oscillation amplitude",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "clock_face",
+      "view": "histogram",
+      "title": "Detected cycle position and oscillation amplitude",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Detected cycle position and oscillation amplitude",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "all_cell_trace_grid",
+      "view": "traces",
+      "title": "All measured cell traces",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "All measured cell traces",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "metric_rhythm_matrix",
+      "view": "matrix",
+      "title": "Rhythms across selected measurements",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythms across selected measurements",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "radial_occupancy_rhythms",
+      "view": "matrix",
+      "title": "Rhythms of relative radial occupancy",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythms of relative radial occupancy",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "second_verse",
+      "view": "profiles",
+      "title": "Within-cell repeatability of a detected cycle",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Within-cell repeatability of a detected cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "second_verse",
+      "view": "peak_agreement",
+      "title": "Within-cell repeatability of a detected cycle",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Within-cell repeatability of a detected cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "second_verse",
+      "view": "peak_shift",
+      "title": "Within-cell repeatability of a detected cycle",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Within-cell repeatability of a detected cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cd68_reporter_rhythm",
+      "view": "raster",
+      "title": "Reporter rhythms of individual cells",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Reporter rhythms of individual cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cd68_reporter_rhythm",
+      "view": "period_peak_matrix",
+      "title": "Reporter rhythms of individual cells",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Reporter rhythms of individual cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cd68_reporter_rhythm",
+      "view": "period_histogram",
+      "title": "Reporter rhythms of individual cells",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Reporter rhythms of individual cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_strength",
+      "view": "strength",
+      "title": "Explicit daily-profile amplitude and stability",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Explicit daily-profile amplitude and stability",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_strength",
+      "view": "stability",
+      "title": "Explicit daily-profile amplitude and stability",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Explicit daily-profile amplitude and stability",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_strength",
+      "view": "ranking",
+      "title": "Explicit daily-profile amplitude and stability",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Explicit daily-profile amplitude and stability",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "active_span",
+      "view": "spans",
+      "title": "Daily active windows with comparable supported periods",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Daily active windows with comparable supported periods",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "active_span",
+      "view": "agreement",
+      "title": "Daily active windows with comparable supported periods",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Daily active windows with comparable supported periods",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "active_span",
+      "view": "rest_to_peak",
+      "title": "Daily active windows with comparable supported periods",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Daily active windows with comparable supported periods",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_overview",
+      "view": "within_cells",
+      "title": "Measurement relationship overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Measurement relationship overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_overview",
+      "view": "between_cells",
+      "title": "Measurement relationship overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Measurement relationship overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_overview",
+      "view": "delays",
+      "title": "Measurement relationship overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Measurement relationship overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_reports",
+      "view": "coefficients",
+      "title": "Measurement relationship reports",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement relationship reports",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_reports",
+      "view": "traces",
+      "title": "Measurement relationship reports",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement relationship reports",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_reports",
+      "view": "scatter",
+      "title": "Measurement relationship reports",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement relationship reports",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_reports",
+      "view": "lags",
+      "title": "Measurement relationship reports",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement relationship reports",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_lag_profiles",
+      "view": "coefficients",
+      "title": "Measurement lag profiles",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement lag profiles",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_lag_profiles",
+      "view": "support",
+      "title": "Measurement lag profiles",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Measurement lag profiles",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_populations",
+      "view": "cells",
+      "title": "Measurement relationship populations",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Measurement relationship populations",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "measurement_relationship_populations",
+      "view": "samples",
+      "title": "Measurement relationship populations",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Measurement relationship populations",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_support_summary",
+      "view": "criteria",
+      "title": "Support for a shared state vocabulary",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Support for a shared state vocabulary",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_support_summary",
+      "view": "outcomes",
+      "title": "Support for a shared state vocabulary",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Support for a shared state vocabulary",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_profiles",
+      "view": "values",
+      "title": "Observed profiles of accepted states",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed profiles of accepted states",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_profiles",
+      "view": "membership",
+      "title": "Observed profiles of accepted states",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed profiles of accepted states",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_timelines",
+      "view": "intervals",
+      "title": "Cell states in original recording time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Cell states in original recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_timelines",
+      "view": "observations",
+      "title": "Cell states in original recording time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Cell states in original recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_timelines",
+      "view": "membership",
+      "title": "Cell states in original recording time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Cell states in original recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_time_summaries",
+      "view": "occupancy",
+      "title": "Saved cell state time summaries",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Saved cell state time summaries",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_time_summaries",
+      "view": "switches",
+      "title": "Saved cell state time summaries",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Saved cell state time summaries",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_time_summaries",
+      "view": "transitions",
+      "title": "Saved cell state time summaries",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Saved cell state time summaries",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_state_time_summaries",
+      "view": "bouts",
+      "title": "Saved cell state time summaries",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Saved cell state time summaries",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_sample_comparisons",
+      "view": "samples",
+      "title": "Saved sample state comparisons",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Saved sample state comparisons",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "state_sample_comparisons",
+      "view": "contrasts",
+      "title": "Saved sample state comparisons",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Saved sample state comparisons",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "accepted_state_card",
+      "view": "profiles",
+      "title": "Observed accepted-state card",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed accepted-state card",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "accepted_state_card",
+      "view": "population",
+      "title": "Observed accepted-state card",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed accepted-state card",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "accepted_state_card",
+      "view": "traces",
+      "title": "Observed accepted-state card",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed accepted-state card",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "accepted_state_card",
+      "view": "images",
+      "title": "Observed accepted-state card",
+      "home": "micro/states",
+      "style": "Cards and profiles",
+      "summary": "Observed accepted-state card",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_overview",
+      "view": "coverage",
+      "title": "Spatial evidence overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial evidence overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_overview",
+      "view": "geometry",
+      "title": "Spatial evidence overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial evidence overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_overview",
+      "view": "timing",
+      "title": "Spatial evidence overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial evidence overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_overview",
+      "view": "recordings",
+      "title": "Spatial evidence overview",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial evidence overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_samples",
+      "view": "samples",
+      "title": "Spatial sample comparisons",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial sample comparisons",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_samples",
+      "view": "contrasts",
+      "title": "Spatial sample comparisons",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial sample comparisons",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_samples",
+      "view": "timing",
+      "title": "Spatial sample comparisons",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Spatial sample comparisons",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_connections",
+      "view": "map",
+      "title": "Supported spatial connections",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Supported spatial connections",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_connections",
+      "view": "evidence",
+      "title": "Supported spatial connections",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Supported spatial connections",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_pair_card",
+      "view": "traces",
+      "title": "Selected cell-pair report",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Selected cell-pair report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_pair_card",
+      "view": "relationships",
+      "title": "Selected cell-pair report",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Selected cell-pair report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_pair_card",
+      "view": "rhythms",
+      "title": "Selected cell-pair report",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Selected cell-pair report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_coordination_pair_card",
+      "view": "states",
+      "title": "Selected cell-pair report",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Selected cell-pair report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_overview",
+      "view": "coverage",
+      "title": "Intervention response overview",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_overview",
+      "view": "before_after",
+      "title": "Intervention response overview",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_overview",
+      "view": "changes",
+      "title": "Intervention response overview",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_overview",
+      "view": "controls",
+      "title": "Intervention response overview",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response overview",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_cell_report",
+      "view": "original",
+      "title": "Intervention cell report",
+      "home": "micro/interventions",
+      "style": "Cell reports",
+      "summary": "Intervention cell report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_cell_report",
+      "view": "anchored",
+      "title": "Intervention cell report",
+      "home": "micro/interventions",
+      "style": "Cell reports",
+      "summary": "Intervention cell report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_cell_report",
+      "view": "evidence",
+      "title": "Intervention cell report",
+      "home": "micro/interventions",
+      "style": "Cell reports",
+      "summary": "Intervention cell report",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_traces",
+      "view": "original",
+      "title": "Intervention response traces",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention response traces",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_traces",
+      "view": "anchored",
+      "title": "Intervention response traces",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention response traces",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_timing",
+      "view": "response",
+      "title": "Intervention response timing",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention response timing",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_timing",
+      "view": "recovery",
+      "title": "Intervention response timing",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention response timing",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_timing",
+      "view": "coverage",
+      "title": "Intervention response timing",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention response timing",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_rhythm_changes",
+      "view": "period",
+      "title": "Intervention rhythm changes",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention rhythm changes",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_rhythm_changes",
+      "view": "amplitude",
+      "title": "Intervention rhythm changes",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention rhythm changes",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_rhythm_changes",
+      "view": "contrasts",
+      "title": "Intervention rhythm changes",
+      "home": "micro/interventions",
+      "style": "Traces and timing",
+      "summary": "Intervention rhythm changes",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_sample_effects",
+      "view": "changes",
+      "title": "Intervention sample effects",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention sample effects",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_sample_effects",
+      "view": "controls",
+      "title": "Intervention sample effects",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention sample effects",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_sample_effects",
+      "view": "coverage",
+      "title": "Intervention sample effects",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention sample effects",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_patterns",
+      "view": "cells",
+      "title": "Intervention response patterns",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response patterns",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_patterns",
+      "view": "outcomes",
+      "title": "Intervention response patterns",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response patterns",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_patterns",
+      "view": "samples",
+      "title": "Intervention response patterns",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response patterns",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "intervention_response_patterns",
+      "view": "recurrence",
+      "title": "Intervention response patterns",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Intervention response patterns",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_screen",
+      "view": "periods",
+      "title": "Complete cell rhythm screen",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Complete cell rhythm screen",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_screen",
+      "view": "status",
+      "title": "Complete cell rhythm screen",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Complete cell rhythm screen",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_screen_summary",
+      "view": "fraction",
+      "title": "Detection and period support",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Detection and period support",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_screen_summary",
+      "view": "periods",
+      "title": "Detection and period support",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Detection and period support",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_cell_report",
+      "view": "raw",
+      "title": "Selected cell rhythm evidence",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cell rhythm evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_cell_report",
+      "view": "detrended",
+      "title": "Selected cell rhythm evidence",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cell rhythm evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_cell_report",
+      "view": "native",
+      "title": "Selected cell rhythm evidence",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cell rhythm evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_cell_report",
+      "view": "images",
+      "title": "Selected cell rhythm evidence",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cell rhythm evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_trace_grid",
+      "view": "raw",
+      "title": "Selected cells on recording time",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cells on recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_trace_grid",
+      "view": "detrended",
+      "title": "Selected cells on recording time",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cells on recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_trace_grid",
+      "view": "native",
+      "title": "Selected cells on recording time",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Selected cells on recording time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_time_matrix",
+      "view": "matrix",
+      "title": "Saved measurements over time",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Saved measurements over time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_time_matrix",
+      "view": "status",
+      "title": "Saved measurements over time",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Saved measurements over time",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_group_comparison",
+      "view": "cells",
+      "title": "Rhythm-defined measurement groups",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythm-defined measurement groups",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_group_comparison",
+      "view": "samples",
+      "title": "Rhythm-defined measurement groups",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythm-defined measurement groups",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_group_comparison",
+      "view": "duration",
+      "title": "Rhythm-defined measurement groups",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythm-defined measurement groups",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_group_comparison",
+      "view": "missingness",
+      "title": "Rhythm-defined measurement groups",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Rhythm-defined measurement groups",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_agreement",
+      "view": "matrix",
+      "title": "Agreement between detected rhythms",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Agreement between detected rhythms",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_agreement",
+      "view": "counts",
+      "title": "Agreement between detected rhythms",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Agreement between detected rhythms",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_agreement",
+      "view": "unit_agreement",
+      "title": "Agreement between detected rhythms",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Agreement between detected rhythms",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_agreement",
+      "view": "fractions",
+      "title": "Agreement between detected rhythms",
+      "home": "micro/rhythms",
+      "style": "Matrices and distributions",
+      "summary": "Agreement between detected rhythms",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_timing_matrices",
+      "view": "offset",
+      "title": "Timing and separate consistency",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Timing and separate consistency",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_timing_matrices",
+      "view": "within-cell",
+      "title": "Timing and separate consistency",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Timing and separate consistency",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_timing_matrices",
+      "view": "within-sample",
+      "title": "Timing and separate consistency",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Timing and separate consistency",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_timing_matrices",
+      "view": "across-samples",
+      "title": "Timing and separate consistency",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Timing and separate consistency",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_pair_report",
+      "view": "detection",
+      "title": "Saved compatible timing evidence",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Saved compatible timing evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_pair_report",
+      "view": "offsets",
+      "title": "Saved compatible timing evidence",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Saved compatible timing evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_pair_report",
+      "view": "traces",
+      "title": "Saved compatible timing evidence",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Saved compatible timing evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythm_pair_report",
+      "view": "timing",
+      "title": "Saved compatible timing evidence",
+      "home": "micro/rhythms",
+      "style": "Clocks and phase",
+      "summary": "Saved compatible timing evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_performance",
+      "view": "recovery",
+      "title": "Saved method audit performance",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit performance",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_performance",
+      "view": "false_alarms",
+      "title": "Saved method audit performance",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit performance",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_periods",
+      "view": "recovery",
+      "title": "Saved method audit periods",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit periods",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_periods",
+      "view": "errors",
+      "title": "Saved method audit periods",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit periods",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_decisions",
+      "view": "decision",
+      "title": "Saved method audit decisions",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit decisions",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_decisions",
+      "view": "evidence",
+      "title": "Saved method audit decisions",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit decisions",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_disagreement",
+      "view": "periods",
+      "title": "Saved method audit disagreement",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit disagreement",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_disagreement",
+      "view": "tests",
+      "title": "Saved method audit disagreement",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Saved method audit disagreement",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_focused",
+      "view": "input",
+      "title": "Focused saved method evidence",
+      "home": "micro/methods",
+      "style": "Diagnostic images",
+      "summary": "Focused saved method evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_focused",
+      "view": "processed",
+      "title": "Focused saved method evidence",
+      "home": "micro/methods",
+      "style": "Diagnostic images",
+      "summary": "Focused saved method evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_focused",
+      "view": "native",
+      "title": "Focused saved method evidence",
+      "home": "micro/methods",
+      "style": "Diagnostic images",
+      "summary": "Focused saved method evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "audit_focused",
+      "view": "diagnostics",
+      "title": "Focused saved method evidence",
+      "home": "micro/methods",
+      "style": "Diagnostic images",
+      "summary": "Focused saved method evidence",
+      "requires_saved_pipeline": true
+    },
+    {
+      "kind": "figure view",
+      "name": "period_method_audit",
+      "view": "method_grid",
+      "title": "Period-method audit",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Period-method audit",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "null_channel_phase_test",
+      "view": "channels",
+      "title": "Tracker uncertainty channels through the selected rhythm analysis",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Tracker uncertainty channels through the selected rhythm analysis",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "null_channel_phase_test",
+      "view": "against_floor",
+      "title": "Tracker uncertainty channels through the selected rhythm analysis",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Tracker uncertainty channels through the selected rhythm analysis",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "null_channel_phase_test",
+      "view": "amplitudes",
+      "title": "Tracker uncertainty channels through the selected rhythm analysis",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Tracker uncertainty channels through the selected rhythm analysis",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "surveillance_not_translocation",
+      "view": "density",
+      "title": "Per-cell measurement density",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Per-cell measurement density",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "territory_anchoring",
+      "view": "anchoring",
+      "title": "Cell-centre spatial range relative to cell size",
+      "home": "micro/methods",
+      "style": "Performance and agreement",
+      "summary": "Cell-centre spatial range relative to cell size",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contrast_forest",
+      "view": "effects",
+      "title": "Declared comparisons",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Declared comparisons",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contrast_forest",
+      "view": "correction",
+      "title": "Declared comparisons",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Declared comparisons",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contrast_forest",
+      "view": "design",
+      "title": "Declared comparisons",
+      "home": "micro/interventions",
+      "style": "Group and control comparisons",
+      "summary": "Declared comparisons",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "state_histories",
+      "view": "history",
+      "title": "Shared states, different cell histories",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Shared states, different cell histories",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "state_histories",
+      "view": "period",
+      "title": "Shared states, different cell histories",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Shared states, different cell histories",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "state_histories",
+      "view": "switching",
+      "title": "Shared states, different cell histories",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Shared states, different cell histories",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "state_histories",
+      "view": "persistence",
+      "title": "Shared states, different cell histories",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Shared states, different cell histories",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "counts",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "foreground",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "persistence",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "lifespan",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "arrivals",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cells_on_screen",
+      "view": "coverage",
+      "title": "Cells on screen, persistence and lifespan",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Cells on screen, persistence and lifespan",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_report_card",
+      "view": "tiles",
+      "title": "Cell image and measurement report card",
+      "home": "micro/cell_explorer",
+      "style": "Images and films",
+      "summary": "Cell image and measurement report card",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_report_card",
+      "view": "traces",
+      "title": "Cell image and measurement report card",
+      "home": "micro/cell_explorer",
+      "style": "Images and films",
+      "summary": "Cell image and measurement report card",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "step_size_distribution",
+      "view": "distribution",
+      "title": "Frame-to-frame step size distribution",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Frame-to-frame step size distribution",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "displacement_curves",
+      "view": "curves",
+      "title": "How centroid displacement grows with elapsed time",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "How centroid displacement grows with elapsed time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "displacement_curves",
+      "view": "alpha",
+      "title": "How centroid displacement grows with elapsed time",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "How centroid displacement grows with elapsed time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "identity_trajectories",
+      "view": "map",
+      "title": "Centroid paths with independent measured encodings",
+      "home": "micro/movement",
+      "style": "Spatial maps",
+      "summary": "Centroid paths with independent measured encodings",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_expansion_sequence",
+      "view": "field",
+      "title": "Within-cell changes across the tissue",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Within-cell changes across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_rhythm_maps",
+      "view": "period",
+      "title": "Rhythm periods and peak timing across the tissue",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Rhythm periods and peak timing across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_rhythm_maps",
+      "view": "phase",
+      "title": "Rhythm periods and peak timing across the tissue",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Rhythm periods and peak timing across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_rhythm_progression",
+      "view": "positions",
+      "title": "Rhythm progression across space",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Rhythm progression across space",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "spatial_rhythm_progression",
+      "view": "matrix",
+      "title": "Rhythm progression across space",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Rhythm progression across space",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "reporter_shape_timing",
+      "view": "timing",
+      "title": "Reporter-to-shape timing across the tissue",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Reporter-to-shape timing across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "neighbour_coordination",
+      "view": "connections",
+      "title": "Neighbour coordination across the tissue",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Neighbour coordination across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "neighbour_coordination",
+      "view": "null",
+      "title": "Neighbour coordination across the tissue",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Neighbour coordination across the tissue",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_coverage_gaps",
+      "view": "field",
+      "title": "Gaps in tissue coverage over time",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Gaps in tissue coverage over time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_coverage_gaps",
+      "view": "coverage",
+      "title": "Gaps in tissue coverage over time",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Gaps in tissue coverage over time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "change_ledger",
+      "view": "ledger",
+      "title": "Per-cell changes between declared windows",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Per-cell changes between declared windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "change_ledger",
+      "view": "paired",
+      "title": "Per-cell changes between declared windows",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Per-cell changes between declared windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "change_ledger",
+      "view": "spread",
+      "title": "Per-cell changes between declared windows",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Per-cell changes between declared windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "rhythmicity_above_noise",
+      "view": "floor",
+      "title": "Rhythm calls against a drift-matched noise floor",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Rhythm calls against a drift-matched noise floor",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "conservation_ledger",
+      "view": "ledger",
+      "title": "Gross footprint exchange against net size change",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Gross footprint exchange against net size change",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "conservation_ledger",
+      "view": "cancelled",
+      "title": "Gross footprint exchange against net size change",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Gross footprint exchange against net size change",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "conservation_ledger",
+      "view": "against_size",
+      "title": "Gross footprint exchange against net size change",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Gross footprint exchange against net size change",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "breath_trace",
+      "view": "breath",
+      "title": "Cell-footprint area gained, lost and retained between frames",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Cell-footprint area gained, lost and retained between frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "breath_trace",
+      "view": "small_multiples",
+      "title": "Cell-footprint area gained, lost and retained between frames",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Cell-footprint area gained, lost and retained between frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "breakout_triggered_average",
+      "view": "triggered",
+      "title": "Responses around ranked measured frames",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Responses around ranked measured frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "breakout_triggered_average",
+      "view": "alignment",
+      "title": "Responses around ranked measured frames",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Responses around ranked measured frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "breakout_triggered_average",
+      "view": "comparison",
+      "title": "Responses around ranked measured frames",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Responses around ranked measured frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "upheaval_events",
+      "view": "raster",
+      "title": "Large cell-footprint changes through time",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Large cell-footprint changes through time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "upheaval_events",
+      "view": "rates",
+      "title": "Large cell-footprint changes through time",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Large cell-footprint changes through time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "upheaval_events",
+      "view": "tiles",
+      "title": "Large cell-footprint changes through time",
+      "home": "micro/shape",
+      "style": "Traces and timelines",
+      "summary": "Large cell-footprint changes through time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_programmes",
+      "view": "similarity",
+      "title": "Similarity of saved cell state sequences",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Similarity of saved cell state sequences",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_programmes",
+      "view": "tree",
+      "title": "Similarity of saved cell state sequences",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Similarity of saved cell state sequences",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_programmes",
+      "view": "groups",
+      "title": "Similarity of saved cell state sequences",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Similarity of saved cell state sequences",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_ribbon",
+      "view": "ribbon",
+      "title": "Size-and-movement subgroup assigned to every cell-frame",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Size-and-movement subgroup assigned to every cell-frame",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_ribbon",
+      "view": "occupancy",
+      "title": "Size-and-movement subgroup assigned to every cell-frame",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Size-and-movement subgroup assigned to every cell-frame",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_ribbon",
+      "view": "profiles",
+      "title": "Size-and-movement subgroup assigned to every cell-frame",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Size-and-movement subgroup assigned to every cell-frame",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_transitions",
+      "view": "matrix",
+      "title": "Observed behavioural regime transitions against shuffled time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Observed behavioural regime transitions against shuffled time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_transitions",
+      "view": "null",
+      "title": "Observed behavioural regime transitions against shuffled time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Observed behavioural regime transitions against shuffled time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_transitions",
+      "view": "dwell",
+      "title": "Observed behavioural regime transitions against shuffled time",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Observed behavioural regime transitions against shuffled time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_reporter_bridge",
+      "view": "paired",
+      "title": "Reporter signal inside and outside one shape regime",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Reporter signal inside and outside one shape regime",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_reporter_bridge",
+      "view": "triggered",
+      "title": "Reporter signal inside and outside one shape regime",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Reporter signal inside and outside one shape regime",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "regime_reporter_bridge",
+      "view": "plane",
+      "title": "Reporter signal inside and outside one shape regime",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Reporter signal inside and outside one shape regime",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "predictability_clock",
+      "view": "error",
+      "title": "Next-state mismatch over an explicitly declared cycle",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Next-state mismatch over an explicitly declared cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "predictability_clock",
+      "view": "by_regime",
+      "title": "Next-state mismatch over an explicitly declared cycle",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Next-state mismatch over an explicitly declared cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "predictability_clock",
+      "view": "dial",
+      "title": "Next-state mismatch over an explicitly declared cycle",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Next-state mismatch over an explicitly declared cycle",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_events",
+      "view": "timelines",
+      "title": "How cell tracks began, ended and divided",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "How cell tracks began, ended and divided",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_events",
+      "view": "ledger",
+      "title": "How cell tracks began, ended and divided",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "How cell tracks began, ended and divided",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_events",
+      "view": "timing",
+      "title": "How cell tracks began, ended and divided",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "How cell tracks began, ended and divided",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_summary",
+      "view": "fates",
+      "title": "Track events across the recording",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Track events across the recording",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_summary",
+      "view": "accumulation",
+      "title": "Track events across the recording",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Track events across the recording",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_lifecycle_summary",
+      "view": "families",
+      "title": "Track events across the recording",
+      "home": "micro/movement",
+      "style": "Traces and distributions",
+      "summary": "Track events across the recording",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "independence_map",
+      "view": "distance",
+      "title": "Phase difference against distance between cells",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Phase difference against distance between cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "independence_map",
+      "view": "field",
+      "title": "Phase difference against distance between cells",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Phase difference against distance between cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "independence_map",
+      "view": "measures",
+      "title": "Phase difference against distance between cells",
+      "home": "micro/relationships",
+      "style": "Networks and spatial maps",
+      "summary": "Phase difference against distance between cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contact_ledger",
+      "view": "pairs",
+      "title": "Contact-pair measurement similarity",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Contact-pair measurement similarity",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contact_ledger",
+      "view": "overall",
+      "title": "Contact-pair measurement similarity",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Contact-pair measurement similarity",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "contact_ledger",
+      "view": "duration",
+      "title": "Contact-pair measurement similarity",
+      "home": "micro/relationships",
+      "style": "Pair and sample comparisons",
+      "summary": "Contact-pair measurement similarity",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "phase_compass",
+      "view": "profile",
+      "title": "Within-cell metric coupling across time lags",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Within-cell metric coupling across time lags",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "phase_compass",
+      "view": "per_cell",
+      "title": "Within-cell metric coupling across time lags",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Within-cell metric coupling across time lags",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "phase_compass",
+      "view": "pairs",
+      "title": "Within-cell metric coupling across time lags",
+      "home": "micro/relationships",
+      "style": "Traces and lag profiles",
+      "summary": "Within-cell metric coupling across time lags",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "recurrence_wall",
+      "view": "wall",
+      "title": "Returns to previous measured states",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Returns to previous measured states",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "recurrence_wall",
+      "view": "rate",
+      "title": "Returns to previous measured states",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Returns to previous measured states",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "recurrence_wall",
+      "view": "quantified",
+      "title": "Returns to previous measured states",
+      "home": "micro/states",
+      "style": "Timelines and transitions",
+      "summary": "Returns to previous measured states",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "sholl_kymograph",
+      "view": "kymograph",
+      "title": "Radial occupancy from soma over time",
+      "home": "micro/shape",
+      "style": "Maps and matrices",
+      "summary": "Radial occupancy from soma over time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "stable_traits_versus_states",
+      "view": "ranking",
+      "title": "Within-cell versus between-cell variability",
+      "home": "micro/states",
+      "style": "Comparisons and trees",
+      "summary": "Within-cell versus between-cell variability",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "negative_space",
+      "view": "coverage",
+      "title": "Field coverage by occupancy source",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Field coverage by occupancy source",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "negative_space",
+      "view": "composition",
+      "title": "Field coverage by occupancy source",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Field coverage by occupancy source",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "patch_ledger",
+      "view": "revisit",
+      "title": "Per-cell territory coverage and pixel revisits",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Per-cell territory coverage and pixel revisits",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "patch_ledger",
+      "view": "coverage",
+      "title": "Per-cell territory coverage and pixel revisits",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Per-cell territory coverage and pixel revisits",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "patch_ledger",
+      "view": "core",
+      "title": "Per-cell territory coverage and pixel revisits",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Per-cell territory coverage and pixel revisits",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "pixel_fate_flow",
+      "view": "flow",
+      "title": "Pixel fate across selected windows",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Pixel fate across selected windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "pixel_fate_flow",
+      "view": "shares",
+      "title": "Pixel fate across selected windows",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Pixel fate across selected windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "pixel_fate_flow",
+      "view": "sensitivity",
+      "title": "Pixel fate across selected windows",
+      "home": "micro/tissue",
+      "style": "Coverage and pixel flow",
+      "summary": "Pixel fate across selected windows",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "first_coverage",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "cumulative_occupancy",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "unique_cells",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "speed",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "significant_period",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "tissue_tectonics",
+      "view": "splitting_events",
+      "title": "Cell coverage and motion across the tissue field",
+      "home": "micro/tissue",
+      "style": "Spatial maps and image sequences",
+      "summary": "Cell coverage and motion across the tissue field",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "mask_change_map",
+      "view": "map",
+      "title": "Changes in one saved cell mask",
+      "home": "micro/cell_explorer",
+      "style": "Images and films",
+      "summary": "Changes in one saved cell mask",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_time_sculpture",
+      "view": "outlines",
+      "title": "Observed cell outlines through time",
+      "home": "micro/cell_explorer",
+      "style": "Images and films",
+      "summary": "Observed cell outlines through time",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_trace_card",
+      "view": "card",
+      "title": "Original cell image and its measured traces",
+      "home": "micro/cell_explorer",
+      "style": "Images and films",
+      "summary": "Original cell image and its measured traces",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "recording_barcode",
+      "view": "barcode",
+      "title": "Saved cell measurements across native frames",
+      "home": "micro/cell_explorer",
+      "style": "Matrices",
+      "summary": "Saved cell measurements across native frames",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "auto_microglia",
+      "view": "",
+      "title": "Auto Microglia",
+      "home": "auto/complete workflows",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline", "name": "native_red_green", "view": "",
+      "title": "Full recordings: original Red and Green", "home": "auto/complete workflows",
+      "style": "workflow", "summary": "Red-derived masks, full-camera shared registration and native-channel outline totals",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module", "name": "expanded_intensity", "view": "",
+      "title": "Expanded-outline total light", "home": "micro/rhythms", "style": "measurement",
+      "summary": "Exclusive expanded apertures with a separate background-corrected total",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "dluc_single_cell",
+      "view": "",
+      "title": "Dluc Single Cell",
+      "home": "auto/complete workflows",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "cry1_dluc_photon",
+      "view": "",
+      "title": "Cry1 Dluc Photon",
+      "home": "auto/complete workflows",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "bioluminescence",
+      "view": "",
+      "title": "Bioluminescence",
+      "home": "auto/complete workflows",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "phase_green_red",
+      "view": "",
+      "title": "Phase Green Red",
+      "home": "auto/complete workflows",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "rhythm_discovery",
+      "view": "",
+      "title": "Rhythm Discovery",
+      "home": "micro/rhythms",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "method_audit",
+      "view": "",
+      "title": "Method Audit",
+      "home": "micro/methods",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "measurement_relationships",
+      "view": "",
+      "title": "Measurement Relationships",
+      "home": "micro/relationships",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "behaviour_states",
+      "view": "",
+      "title": "Behaviour States",
+      "home": "micro/states",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "spatial_coordination",
+      "view": "",
+      "title": "Spatial Coordination",
+      "home": "micro/relationships",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "pipeline",
+      "name": "intervention_response",
+      "view": "",
+      "title": "Intervention Response",
+      "home": "micro/interventions",
+      "style": "workflow",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "morphology",
+      "view": "",
+      "title": "Morphology",
+      "home": "micro/shape",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "intensity",
+      "view": "",
+      "title": "Intensity",
+      "home": "micro/cell_explorer",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "channels",
+      "view": "",
+      "title": "Channels",
+      "home": "micro/cell_explorer",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "objects",
+      "view": "",
+      "title": "Objects",
+      "home": "micro/tissue",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "object_geometry",
+      "view": "",
+      "title": "Object Geometry",
+      "home": "micro/tissue",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "motility",
+      "view": "",
+      "title": "Motility",
+      "home": "micro/movement",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "surveillance",
+      "view": "",
+      "title": "Surveillance",
+      "home": "micro/shape",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "motion_evidence",
+      "view": "",
+      "title": "Motion Evidence",
+      "home": "motion/continuity and evidence",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "presence",
+      "view": "",
+      "title": "Presence",
+      "home": "motion/continuity and evidence",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "lifecycle",
+      "view": "",
+      "title": "Lifecycle",
+      "home": "motion/continuity and evidence",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "territory",
+      "view": "",
+      "title": "Territory",
+      "home": "micro/shape",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "sholl",
+      "view": "",
+      "title": "Sholl",
+      "home": "micro/shape",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "contacts",
+      "view": "",
+      "title": "Contacts",
+      "home": "micro/relationships",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "neighbours",
+      "view": "",
+      "title": "Neighbours",
+      "home": "micro/relationships",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "provenance",
+      "view": "",
+      "title": "Provenance",
+      "home": "motion/continuity and evidence",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "regimes",
+      "view": "",
+      "title": "Regimes",
+      "home": "micro/states",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "recurrence",
+      "view": "",
+      "title": "Recurrence",
+      "home": "micro/states",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "sequence_distance",
+      "view": "",
+      "title": "Sequence Distance",
+      "home": "micro/states",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "coupling",
+      "view": "",
+      "title": "Coupling",
+      "home": "micro/relationships",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "rhythms",
+      "view": "",
+      "title": "Rhythms",
+      "home": "micro/rhythms",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "trend",
+      "view": "",
+      "title": "Trend",
+      "home": "micro/rhythms",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "territory_shape",
+      "view": "",
+      "title": "Territory Shape",
+      "home": "micro/shape",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "walk",
+      "view": "",
+      "title": "Walk",
+      "home": "micro/movement",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "measurement module",
+      "name": "history",
+      "view": "",
+      "title": "History",
+      "home": "motion/continuity and evidence",
+      "style": "table",
+      "summary": "",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "cells",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Individual cells",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "samples",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Recording / sample points",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "paired",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Paired samples",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "box",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Box plot",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "violin",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Violin plot",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "histogram",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Histogram",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "time_course",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Condition time course",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_group_comparison",
+      "view": "effects",
+      "title": "Cell and group comparison",
+      "home": "micro/methods",
+      "style": "Cell and sample comparisons",
+      "summary": "Effect sizes with intervals",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "figure view",
+      "name": "cell_analysis_grid",
+      "view": "analyses",
+      "title": "Cell analysis grid",
+      "home": "micro/rhythms",
+      "style": "Traces and time profiles",
+      "summary": "Cell analysis grid",
+      "requires_saved_pipeline": false
+    }
+  ]
+}

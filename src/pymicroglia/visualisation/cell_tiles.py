@@ -17,6 +17,7 @@ from auto_organotypic import series, store
 from auto_organotypic.outline.crop import CROP_SCALES
 from auto_organotypic.render import outlines as _outlines
 from auto_organotypic.render.tile_source import TileSource
+from .cell_crop_geometry import _resize_photons, _window, _window_origin, _size_for
 
 
 class _SharedRaw:
@@ -92,37 +93,26 @@ class _CellView:
                 if self.display_size and self.display_size != size else crop)
 
 
-def _resize_photons(crop: np.ndarray, size: tuple[int, int]) -> np.ndarray:
-    """Fill a common grid slot while preserving valid edge intensities."""
-    from PIL import Image
 
-    if np.isfinite(crop).all():
-        return np.asarray(Image.fromarray(crop).resize(
-            size, Image.Resampling.BILINEAR), np.float32)
-    valid = np.isfinite(crop).astype(np.float32)
-    values = np.nan_to_num(crop, nan=0.0)
-    numerator = np.asarray(Image.fromarray(values).resize(
-        size, Image.Resampling.BILINEAR), np.float32)
-    denominator = np.asarray(Image.fromarray(valid).resize(
-        size, Image.Resampling.BILINEAR), np.float32)
-    out = np.full(numerator.shape, np.nan, np.float32)
-    np.divide(numerator, denominator, out=out, where=denominator > .5)
-    return out
-
-
-def _window(image, centre, size, *, fill, dtype, clamp=False):
-    width, height = size
-    cy, cx = (int(round(value)) for value in centre)
-    top, left = cy - height // 2, cx - width // 2
-    if clamp:
-        top = min(max(top, 0), max(0, image.shape[0] - height))
-        left = min(max(left, 0), max(0, image.shape[1] - width))
-    out = np.full((height, width), fill, dtype)
-    y0, x0 = max(top, 0), max(left, 0)
-    y1, x1 = min(top + height, image.shape[0]), min(left + width, image.shape[1])
-    if y1 > y0 and x1 > x0:
-        out[y0 - top:y1 - top, x0 - left:x1 - left] = image[y0:y1, x0:x1]
-    return out
+def _paint_motion_trail(rgb, positions, *, centre, frame_size, display_size,
+                        source_shape, clamp, colour, opacity, trail_frames):
+    """Add a fading, display-only path in the current frame's crop coordinates."""
+    top, left = _window_origin(centre, frame_size, source_shape, clamp)
+    scale_x = display_size[0] / frame_size[0]
+    scale_y = display_size[1] / frame_size[1]
+    points = [(round((xy[1] - left + .5) * scale_x - .5),
+               round((xy[0] - top + .5) * scale_y - .5))
+              for xy in positions]
+    layer = Image.new("RGBA", (rgb.shape[1], rgb.shape[0]))
+    draw = ImageDraw.Draw(layer)
+    for age in range(len(points) - 1, 0, -1):
+        alpha = round(255 * opacity * (trail_frames - age + 1) / trail_frames)
+        draw.line((points[age], points[age - 1]),
+                  fill=(*colour, alpha), width=2)
+    if layer.getbbox() is None:
+        return rgb
+    return np.array(Image.alpha_composite(
+        Image.fromarray(rgb).convert("RGBA"), layer).convert("RGB"))
 
 
 def _labels(value):
@@ -134,14 +124,6 @@ def _labels(value):
             return tifffile.imread(path), path
     return np.asarray(value), None
 
-
-def _size_for(reach: tuple[int, int], crop: str) -> tuple[int, int]:
-    factor = float(CROP_SCALES[crop])
-    side = max(2 * reach[0] + 1, 2 * reach[1] + 1)
-    scaled = math.ceil(side * factor)
-    if scaled % 2 == 0:
-        scaled += 1
-    return scaled, scaled
 
 
 def _draw_source_pixel_bar(rgb: np.ndarray, source_width_px: int) -> np.ndarray:
@@ -255,6 +237,9 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                outline_colour=_outlines.DEFAULT_COLOUR,
                outline_width_px: int = _outlines.DEFAULT_WIDTH_PX,
                outline_opacity: float = _outlines.DEFAULT_OPACITY,
+               show_motion_trails: bool = False,
+               trail_frames: int = 4,
+               trail_opacity: float = 0.65,
                unavailable_label: str = "CELL NOT OBSERVED",
                ) -> list[TileSource]:
     """One moving, native-pixel tile per positive tracked identity.
@@ -316,10 +301,16 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         raise ValueError("mask_style must be 'outline' or 'fill'")
     if not 0 <= float(mask_opacity) <= 1:
         raise ValueError("mask_opacity must be between 0 and 1")
+    if not isinstance(show_motion_trails, bool):
+        raise ValueError("show_motion_trails must be true or false")
+    if isinstance(trail_frames, bool) or not isinstance(trail_frames, int) or trail_frames < 1:
+        raise ValueError("trail_frames must be a positive whole number")
+    if not np.isfinite(trail_opacity) or not 0 <= trail_opacity <= 1:
+        raise ValueError("trail_opacity must be between zero and one")
     supports_live_overlay = "frame_overlay" in TileSource.__dataclass_fields__
     if frame_crop and "frame_um_per_px" not in TileSource.__dataclass_fields__:
         raise RuntimeError("frame-specific cell crops need the updated grid renderer")
-    if outline and (not supports_live_overlay or
+    if (outline or show_motion_trails) and (not supports_live_overlay or
                     not hasattr(_outlines, "paint_mask") or
                     (mask_style == "fill" and
                      not hasattr(_outlines, "paint_mask_fill"))):
@@ -356,6 +347,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
         bounds = {}
         traces = {}
         observed = {}
+        motion_centres = {}
         for label_index in range(len(label_values)):
             raw_index = offset + label_index
             frame = np.asarray(label_values[label_index])
@@ -372,7 +364,10 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                     bounds[identity] = np.full((total, 4), np.nan, float)
                     traces[identity] = np.full(total, np.nan, float)
                     observed[identity] = np.zeros(total, bool)
+                    motion_centres[identity] = np.full((total, 2), np.nan, float)
                 yy, xx = np.nonzero(frame == identity)
+                motion_centres[identity][raw_index] = (float(yy.mean()),
+                                                       float(xx.mean()))
                 cy, cx = _mask_centre(yy, xx, photons, centre_method)
                 centres[identity][raw_index] = (cy, cx)
                 bounds[identity][raw_index] = (yy.min(), yy.max(),
@@ -493,7 +488,8 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
             if not 0 <= index < len(label_values):
                 return (_draw_source_pixel_bar(rgb, frame_size[0])
                         if use_pixel_bar else rgb)
-            if outline:
+            mask = None
+            if outline or show_motion_trails:
                 crop_labels = _window(label_values[index],
                                       centres_for_cell[int(frame)], frame_size,
                                       fill=0, dtype=label_values.dtype,
@@ -502,6 +498,24 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                 if display_size_for_cell != frame_size:
                     mask = np.asarray(Image.fromarray(mask.astype(np.uint8)).resize(
                         display_size_for_cell, Image.Resampling.NEAREST), bool)
+            if show_motion_trails and trail_opacity > 0 and observed[cell][int(frame)]:
+                points = [motion_centres[cell][int(frame)]]
+                for prior in range(int(frame) - 1,
+                                   max(-1, int(frame) - trail_frames - 1), -1):
+                    if not observed[cell][prior]:
+                        break
+                    points.append(motion_centres[cell][prior])
+                if len(points) > 1:
+                    before_trail = rgb
+                    rgb = _paint_motion_trail(
+                        rgb, points, centre=centres_for_cell[int(frame)],
+                        frame_size=frame_size, display_size=display_size_for_cell,
+                        source_shape=(height, width),
+                        clamp=frame_crop or clamp_to_frame,
+                        colour=_outlines._colour(outline_colour),
+                        opacity=trail_opacity, trail_frames=trail_frames)
+                    rgb[mask] = before_trail[mask]
+            if outline:
                 if mask_style == "fill":
                     rgb = _outlines.paint_mask_fill(
                         rgb, mask, colour=outline_colour, opacity=mask_opacity)
@@ -532,6 +546,7 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                       "crop": mode if explicit is None else None,
                       "crop_size_px": list(size), "trace_channel": channel + 1,
                       "display_size_px": list(display_size),
+                      "display_resampling": "nearest",
                       "tile_fill": bool(fill_tile),
                       "frame_crop": bool(frame_crop),
                       "clamp_to_frame": bool(frame_crop or clamp_to_frame),
@@ -567,8 +582,11 @@ def cell_tiles(raw, labels, *, source_frame_offset: int = 0,
                                          else outline_colour),
                       "outline_width_px": int(outline_width_px),
                       "outline_opacity": float(outline_opacity),
+                      "show_motion_trails": bool(show_motion_trails),
+                      "trail_frames": int(trail_frames),
+                      "trail_opacity": float(trail_opacity),
                       "trace": "sum of original photons inside observed tracked mask; display only"}
-        tile_options = ({"frame_overlay": frame_overlay if outline or use_pixel_bar else None,
+        tile_options = ({"frame_overlay": frame_overlay if outline or show_motion_trails or use_pixel_bar else None,
                          "unavailable_label": unavailable_label}
                         if supports_live_overlay else {})
         if frame_crop:

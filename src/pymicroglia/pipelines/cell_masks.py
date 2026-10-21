@@ -111,6 +111,7 @@ def mask_run(prepared: Any, folder: Path, notes: Any = None, *,
              min_area: int | None = None, max_area: int = 0,
              window_hours: float = WINDOW_HOURS,
              weights: str | Path | None = None,
+             method: str = "unet", method_options: dict | None = None,
              threads: int = 0, reuse: bool = True) -> dict[str, Any]:
     """Mask every frame of a prepared run, and write the three stacks out.
 
@@ -132,7 +133,7 @@ def mask_run(prepared: Any, folder: Path, notes: Any = None, *,
     are refusals rather than silent skips -- this only runs when it was asked
     for, so failing to do it is something the caller must hear about.
     """
-    from ..learned_mask import apply as masking      # noqa: PLC0415 - torch
+    from .. import mask_methods
 
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
@@ -140,13 +141,13 @@ def mask_run(prepared: Any, folder: Path, notes: Any = None, *,
     interval = float(getattr(prepared, "frame_interval_h", 0.0) or 0.0)
     window = frames_for(interval, window_hours)
     pictures = rolling_mean(np.asarray(prepared.dluc, np.float32), window)
-    chosen = weights or masking.weights()
+    chosen, cut, backend = mask_methods.configure(method, weights, cut, method_options)
 
-    asked = {"cut": masking.ACCEPTED_CUT if cut is None else float(cut),
+    asked = {"cut": cut,
              "grow_to": grow_to, "min_area": min_area,
              "max_area": int(max_area),
              "um_per_px": getattr(prepared, "um_per_px", None),
-             "every_frame": True}
+             "every_frame": True, "predictor": backend}
     recipe = _recipe(pictures, asked, weights=chosen, window=window)
 
     named = getattr(prepared.source, "path", prepared.source)
@@ -171,14 +172,12 @@ def mask_run(prepared: Any, folder: Path, notes: Any = None, *,
     # 2026-09-15: about 1.2x for nothing but how the tensors are arranged, and
     # where the difference was measured through to the mask it moved one pixel
     # in sixty-six million. Two runs of it agree byte for byte.
-    model = masking.hurry(masking.load_model(chosen), threads=threads)
-
-    out = masking.mask_pictures(
-        model, pictures,
+    out = mask_methods.predict(
+        pictures, method=method, weights=chosen, threads=threads,
         um_per_px=asked["um_per_px"],
         cut=asked["cut"],
         grow_to=grow_to, min_area=min_area, max_area=max_area,
-        source="the recording's own metadata")
+        method_options=method_options)
 
     written: dict[str, str] = {}
     for key, array, dtype in (("mask_probability", out["probability"], np.float32),
@@ -192,8 +191,9 @@ def mask_run(prepared: Any, folder: Path, notes: Any = None, *,
     settings.update({"window_hours": float(window_hours),
                      "window_frames": window,
                      "frame_interval_h": interval,
-                     "weights": str(chosen),
-                     "pixel_range": list(getattr(model, "pixel_range", ())),
+                     "weights": str(chosen) if chosen is not None else None,
+                     "predictor": backend,
+                     "pixel_range": out["pixel_range"],
                      "cells_found": int(np.max(out["cells"])) if out["cells"].size
                                     else 0})
 
@@ -248,6 +248,7 @@ def mask_still(prepared: Any, folder: Path, notes: Any = None, *,
                cut: float | None = None, grow_to: float | None = None,
                min_area: int | None = None, max_area: int = 0,
                weights: str | Path | None = None,
+               method: str = "unet", method_options: dict | None = None,
                threads: int = 0, reuse: bool = True) -> dict[str, Any]:
     """One label image for the whole recording, from its accumulated light.
 
@@ -268,18 +269,18 @@ def mask_still(prepared: Any, folder: Path, notes: Any = None, *,
     project exists to remove, and until it does this is the honest shape of the
     answer rather than a hidden one.
     """
-    from ..learned_mask import apply as masking      # noqa: PLC0415 - torch
+    from .. import mask_methods
 
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     picture = np.asarray(prepared.dluc, np.float32).mean(0)
-    chosen = weights or masking.weights()
+    chosen, cut, backend = mask_methods.configure(method, weights, cut, method_options)
 
-    asked = {"cut": masking.ACCEPTED_CUT if cut is None else float(cut),
+    asked = {"cut": cut,
              "grow_to": grow_to, "min_area": min_area,
              "max_area": int(max_area),
              "um_per_px": getattr(prepared, "um_per_px", None),
-             "every_frame": False}
+             "every_frame": False, "predictor": backend}
     recipe = _recipe(picture[None], asked, weights=chosen, window=1)
 
     named = getattr(prepared.source, "path", prepared.source)
@@ -293,11 +294,11 @@ def mask_still(prepared: Any, folder: Path, notes: Any = None, *,
                 "outputs": kept["outputs"], "settings": kept["settings"],
                 "warning": kept.get("warning"), "reused": True}
 
-    model = masking.hurry(masking.load_model(chosen), threads=threads)
-    out = masking.mask_pictures(
-        model, picture[None], um_per_px=asked["um_per_px"], cut=asked["cut"],
+    out = mask_methods.predict(
+        picture[None], method=method, weights=chosen, threads=threads,
+        um_per_px=asked["um_per_px"], cut=asked["cut"],
         grow_to=grow_to, min_area=min_area, max_area=max_area,
-        source="the recording's own metadata")
+        method_options=method_options)
 
     labels = np.asarray(out["cells"][0], np.uint16)
     path = folder / f"{stem}_learned_cells_still.tif"
@@ -305,6 +306,7 @@ def mask_still(prepared: Any, folder: Path, notes: Any = None, *,
 
     settings = dict(out["settings"])
     settings.update({"from": "the mean of every frame",
+                     "predictor": backend,
                      "frames": int(np.asarray(prepared.dluc).shape[0]),
                      "cells_found": int(labels.max()) if labels.size else 0})
     if notes is not None:
@@ -353,19 +355,21 @@ def fingerprint(array: np.ndarray) -> str:
 
 
 def _recipe(pictures: np.ndarray, settings: dict[str, Any], *,
-            weights: Path, window: int) -> dict[str, Any]:
+            weights: Path | None, window: int) -> dict[str, Any]:
     """Everything that changes the answer, and nothing that does not.
 
     The wall-clock time, the thread count and the output folder are all absent
     on purpose: a run that differs only in those produced the same mask, and
     recomputing it would be paying for a fact already on disk.
     """
-    weights = Path(weights)
-    try:
-        stamp = weights.stat()
-        named = {"weights": weights.name, "weights_bytes": stamp.st_size}
-    except OSError:
-        named = {"weights": weights.name, "weights_bytes": None}
+    from ..tracking.contract import sha256_of
+
+    named = {"weights": None, "weights_bytes": None, "weights_sha256": None}
+    if weights is not None:
+        weights = Path(weights)
+        named = {"weights": str(weights.resolve()),
+                 "weights_bytes": weights.stat().st_size,
+                 "weights_sha256": sha256_of(weights)}
     return {"method_version": METHOD_VERSION, "pictures": fingerprint(pictures),
             "window_frames": int(window), **named,
             **{key: settings[key] for key in sorted(settings)

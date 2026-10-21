@@ -1,0 +1,450 @@
+{
+  "title": "Four linked views of saved microglial cells",
+  "end_goal": "Open one offline browser review per recording and inspect mask gains and losses, a rotating stack of outlines through time, animated cell cards with signal and area traces, and a clickable recording barcode. All four views share the selected cell and native recording frame. Export the ten accepted CD68 recordings as a new version and preserve their saved identity histories and prior outputs.",
+  "why": "Movies alone make it difficult to follow shape changes or connect an interesting frame to its cell trace. The linked views make those comparisons immediate while preserving the accepted masks and identities as the source of every display.",
+  "architecture": "Like four windows onto the same recording, each view reads one frozen review payload.\n\n```mermaid\nflowchart LR\n  A[Saved raw recording and labelled masks] --> B[Prepare display pixels, mask geometry and trace tables]\n  B --> C[Offline browser review]\n  C --> D[Shape changes]\n  C --> E[Time sculpture]\n  C --> F[Animated cell cards]\n  C --> G[Recording barcode]\n  H[Shared cell and time selection] --> D\n  H --> E\n  H --> F\n  H --> G\n```\n\nPreparation belongs in PyMicroglia's figure_tables package; browser rendering belongs in visualisation. The export is a self-contained local HTML document with no network dependency. This is package-specific display work, consuming the saved Motion labels rather than changing another package.",
+  "house_rules": "Read AGENTS.md and respect the sibling consolidation map. Read raw sources and labels only; never rerun tracking, refine masks, assign identities, fill mask gaps, or write back to inputs. Keep native frame offsets and sampling times explicit. Display pixels have fixed recording-wide contrast, no denoising and nearest-neighbour enlargement. Motion trails remain off by default. Missing observations are blank, not zeros. New outputs go in development/cd68_v5; preserve earlier versions. Saved standalone figures go through plot-that; the interactive webpage contains its own dashboard charts. Keep Python visualisation files under 600 lines and place preparation outside the rendering package. Run focused gates after each stage, record their evidence, mark stages _COMPLETED, and finalize only after all gates pass. The user has authorized writing and executing the full conversational plan, so no intermediate approval is required.",
+  "stages": [
+    {
+      "number": "01",
+      "title": "Frozen review data and portable export",
+      "size": "one preparation and export slice",
+      "why": "All four displays need one consistent source of cell identity, mask geometry, time and original signal. Establish that source before any view so selecting a cell can never change its tracking history.",
+      "depends_on": [],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "src/pymicroglia/measure/signal.py",
+        "src/pymicroglia/visualisation/cell_tiles.py",
+        "pyproject.toml"
+      ],
+      "scope": [
+        "Validate single-channel raw and non-negative integer label stacks, source-frame offset and cadence.",
+        "Prepare lossless mask row runs, all component contours, observed centres, native times, mask area, total raw intensity and the shared consecutive three-frame intensity mean.",
+        "Encode unfiltered source frames as PNG display images with one recording-wide contrast range.",
+        "Write an offline HTML review, display table and provenance receipt without modifying source files.",
+        "Ship the HTML, CSS and JavaScript assets in the package."
+      ],
+      "out_of_scope": [
+        "Shape-change colouring belongs to stage 02.",
+        "Rotating time sculpture belongs to stage 03.",
+        "Cards and barcode belong to stages 04 and 05.",
+        "Any segmentation, tracking or period fitting is outside this plan."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/figure_tables/cell_review_data.py",
+          "change": "NEW",
+          "reason": "Prepare immutable native-frame observations and trace tables."
+        },
+        {
+          "path": "src/pymicroglia/figure_tables/cell_review_geometry.py",
+          "change": "NEW",
+          "reason": "Encode exact masks and all observed contours."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/cell_review.py",
+          "change": "NEW",
+          "reason": "Public unattended portable browser-export function."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets",
+          "change": "NEW",
+          "reason": "Small separate browser renderer assets."
+        },
+        {
+          "path": "pyproject.toml",
+          "change": "MODIFY",
+          "reason": "Include browser assets in installed distributions."
+        },
+        {
+          "path": "tests/test_cell_review_data.py",
+          "change": "NEW",
+          "reason": "Check offsets, sums, missing observations, source immutability and portable payloads."
+        }
+      ],
+      "implementation_sketch": "Public function: cell_review(raw, labels, *, output, title=None, source_frame_offset=0, frame_interval_h=0.5, display_lut='red', display_range=None). Preparation returns a JSON-safe payload with ids, times_h, source shape, PNG frames and per-cell observations. An observation stores anchor, centre, bounds, exact row runs and component contours. Every source frame exists; frames without a labelled observation have null area and signal. Reuse measure.signal.centered_frame_mean(window=3), which refuses to bridge missing frames. Write sibling <stem>_measurements.csv and <stem>_review.json receipts. The renderer loads a finished payload and assets; it does not filter or segment. Test a small translated cell with a gap and a source offset against hand-calculated sums and the original input hashes.",
+      "exit_gate": [
+        "python -m pytest -q tests/test_cell_review_data.py passes.",
+        "A synthetic exported HTML embeds its frames and data, loads without external URLs, and its receipt states no display filtering and no motion trails.",
+        "python -m pytest -q tests/test_visualisation_limits.py passes."
+      ],
+      "known_risks": "Contours must include holes and disconnected pieces; exact row runs remain the authority for occupied pixels. A source offset must shift labels to the native frame rather than shortening the movie. Reject incompatible stack geometry rather than guessing. Large exports must check free disk space and preserve failure receipts."
+    },
+    {
+      "number": "01a",
+      "title": "Display preparation boundaries",
+      "size": "small prerequisite boundary repair",
+      "why": "The existing display boundary checks expose scientific preparation inside two grid renderer modules and an oversized shared crop module. Move those exact functions to their owning helpers so the required architecture gate can pass without changing masks, identities, period calculations or rendered pixels.",
+      "depends_on": [
+        "01"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "tests/test_visualisation_limits.py",
+        "src/pymicroglia/visualisation/cell_selection.py",
+        "src/pymicroglia/visualisation/cell_period_recipe.py",
+        "src/pymicroglia/visualisation/cell_tiles.py"
+      ],
+      "scope": [
+        "Move the existing period-decision calculation and Motion-profile loading to a figure_tables helper.",
+        "Preserve old entry points and monkeypatchable selection dispatch.",
+        "Move exact crop/resize functions to a small visualisation geometry module and retain their imported names."
+      ],
+      "out_of_scope": [
+        "Changing any selection settings, period recipe, crop geometry, mask or tracking behavior."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/figure_tables/cell_grid_selection.py",
+          "change": "NEW",
+          "reason": "Own existing scientific preparation outside rendering."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/cell_selection.py",
+          "change": "MODIFY",
+          "reason": "Delegate the existing calculation while preserving its dispatch."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/cell_period_recipe.py",
+          "change": "MODIFY",
+          "reason": "Read validated profile through preparation helper."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/cell_crop_geometry.py",
+          "change": "NEW",
+          "reason": "Hold unchanged sharp-pixel crop functions."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/cell_tiles.py",
+          "change": "MODIFY",
+          "reason": "Import unchanged helpers and meet the 600-line cap."
+        }
+      ],
+      "implementation_sketch": "Move function bodies verbatim. Keep visualisation.cell_selection._period_decisions as a forwarding function so existing dispatch and tests stay compatible. In cell_period_recipe, obtain the same profile and candidate from a new preparation function. Import the moved crop helpers back under their original private names; their inputs, outputs and rounding remain unchanged.",
+      "exit_gate": [
+        "python -m pytest -q tests/test_visualisation_limits.py passes.",
+        "Existing cell-grid pipeline, period recipe, cell-video-grid and motion-trail focused tests pass."
+      ],
+      "known_risks": "Keep forwarding wrappers for existing consumers and monkeypatches. Check nearest resizing and source-pixel crop origins with existing regression tests; do not alter defaults or add new scientific behavior."
+    },
+    {
+      "number": "02",
+      "title": "Shape change weather map",
+      "size": "one linked display slice",
+      "why": "Mask gains and losses are easier to spot as coloured pixels than as competing outlines. The view should let the user distinguish changes in the recording coordinates from changes after centring the same cell.",
+      "depends_on": [
+        "01",
+        "01a"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "src/pymicroglia/visualisation/overlays.py",
+        "tests/test_cell_motion_trails.py"
+      ],
+      "scope": [
+        "Add shared native-frame slider, cell selector and play/pause controls.",
+        "Draw cyan gained pixels and amber lost pixels against the previous consecutive observed frame.",
+        "Offer original-coordinate and cell-centred comparisons using integer translations without resampling masks.",
+        "Show raw source crop, current outline, colour legend and missing-comparison explanation."
+      ],
+      "out_of_scope": [
+        "Biological classifications of gained or lost pixels.",
+        "Gap filling or identity assignment.",
+        "Sculpture, cards and barcode are stages 03\u201305."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.html",
+          "change": "NEW",
+          "reason": "Dashboard shell and shape-change controls."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.css",
+          "change": "NEW",
+          "reason": "Responsive sharp-pixel presentation."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.js",
+          "change": "NEW",
+          "reason": "Shared state, native crops, time playback and event routing."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/changes.js",
+          "change": "NEW",
+          "reason": "Exact gain/loss comparisons and rendering."
+        },
+        {
+          "path": "tests/test_cell_review_browser.py",
+          "change": "NEW",
+          "reason": "Browser checks of aligned and original changes, missing masks and linked frame selection."
+        }
+      ],
+      "implementation_sketch": "Expand the selected observation's exact runs into integer pixel keys only for the displayed comparison. In centred mode subtract each observation's stored integer anchor; in original mode keep native coordinates. Gained=current minus previous; lost=previous minus current. A pure whole-pixel translation must show zero centred changes and nonzero original changes. If either consecutive observation is absent, show no coloured comparison and do not reach across the gap. Shared state is {cellId, frame, playing, coordinateMode}; each view subscribes to a single update function. Keep the browser rendering test runnable using Playwright without adding a runtime dependency.",
+      "exit_gate": [
+        "Synthetic browser review shows the expected gained/lost pixels for translation and a changed protrusion.",
+        "Centred translation yields zero gained/lost pixels; native-coordinate translation yields the hand-calculated nonzero counts.",
+        "Selecting a missing frame shows a blank mask and no comparison to an earlier frame; browser reports no page errors."
+      ],
+      "known_risks": "Integer centring removes whole-pixel translation, not rotation or subpixel motion; describe the view accurately. Browser image loading must not allow a late frame to paint over a newer selection. Disable image smoothing for every movie canvas."
+    },
+    {
+      "number": "03",
+      "title": "Rotatable time sculpture",
+      "size": "one three-dimensional display slice",
+      "why": "Stacking the saved outlines with time as height exposes movement and shape history at a glance. Rotation should reveal that history without inventing an outline between observations.",
+      "depends_on": [
+        "01",
+        "02"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "src/pymicroglia/visualisation/panels/cell_review.py",
+        "src/pymicroglia/visualisation/follow.py"
+      ],
+      "scope": [
+        "Render every observed contour at its native observation time in a browser canvas.",
+        "Add drag rotation, wheel zoom, reset view and recording-coordinate versus centred display.",
+        "Highlight the shared selected frame and use a time gradient with labelled time height and pixel axes.",
+        "Leave absent observations as gaps; include disconnected components and holes."
+      ],
+      "out_of_scope": [
+        "A reconstructed cell surface or invented intermediate masks.",
+        "Three-dimensional tissue coordinates; this is two spatial dimensions plus time.",
+        "Cards and barcode are stages 04 and 05."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/sculpture.js",
+          "change": "NEW",
+          "reason": "Canvas projection and rotatable observed outline stack."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.html",
+          "change": "NEW",
+          "reason": "Sculpture pane and coordinate/rotation controls."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.css",
+          "change": "NEW",
+          "reason": "Sculpture layout and input feedback."
+        },
+        {
+          "path": "tests/test_cell_review_browser.py",
+          "change": "NEW",
+          "reason": "Verify observed slice counts, gaps, native time height and rotation."
+        }
+      ],
+      "implementation_sketch": "Represent each contour as (native x, native y, times_h[frame]); subtract the cell anchor only in centred mode. Fit the drawing volume to the selected identity's observed bounds. Apply a yaw and pitch projection and painter-order outlines by depth. Use a visual time-height scale, labelled hours, without changing source times. Drag changes angles; reset restores a readable oblique view. Current-frame outlines receive a stronger stroke; null observations generate no geometry.",
+      "exit_gate": [
+        "Browser reports exactly the synthetic cell's observed frames as slices, including a visible missing-time gap.",
+        "Drag rotation changes the displayed projection and reset restores the initial view without changing the selected identity or frame.",
+        "Native time height matches the payload cadence and source-frame offset; no errors during cell changes."
+      ],
+      "known_risks": "A crowded stack can obscure contours; supply zoom and coordinate choices while keeping every observation available. Axis labels must say time rather than tissue depth. Canvas redraws must remain responsive for the accepted 99-frame label histories."
+    },
+    {
+      "number": "04",
+      "title": "Animated cell cards and synchronized traces",
+      "size": "one card display slice",
+      "why": "Linking sharp cell movies to signal and mask-area traces makes an interesting trace point immediately inspectable. Several pinned cards support comparisons without altering the underlying measurements.",
+      "depends_on": [
+        "01",
+        "02"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "src/pymicroglia/visualisation/cell_tiles.py",
+        "src/pymicroglia/measure/signal.py"
+      ],
+      "scope": [
+        "Render the selected cell and a small set of pinned comparison cells as animated cards.",
+        "Draw total raw intensity with the consecutive three-frame mean and mask area from prepared tables.",
+        "Move one time cursor across all traces and movies; allow trace clicks to choose a native frame.",
+        "Show absent masks explicitly, preserve source time and avoid interpolating trace gaps."
+      ],
+      "out_of_scope": [
+        "New rhythm fitting or classifications.",
+        "Smoothing source images or filling missing masks.",
+        "Recording barcode and action discovery belong to stage 05."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/cards.js",
+          "change": "NEW",
+          "reason": "Animated native-pixel cards and saved-data trace panels."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.html",
+          "change": "NEW",
+          "reason": "Card pinning and synchronized trace UI."
+        },
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/review.css",
+          "change": "NEW",
+          "reason": "Readable movie and trace card layout."
+        },
+        {
+          "path": "tests/test_cell_review_browser.py",
+          "change": "NEW",
+          "reason": "Verify click-to-time, cursor alignment, pinning and blank observations."
+        }
+      ],
+      "implementation_sketch": "Cards read the shared frame, payload PNG and exact saved contours. Crop geometry is fixed for each cell's largest observed extent, with black padding outside the image and no smoothing. SVG trace paths are split at null values; the raw intensity line stays visible beneath the explicitly labelled three-frame mean. All cursors use native times_h, and clicks choose the closest native frame. The selected cell is always the first card; pinned comparison identities are stored only as display state.",
+      "exit_gate": [
+        "Browser changes the shared movie frame when either signal or area trace is clicked, and every card cursor agrees.",
+        "Pinning and changing selected cell preserve existing IDs and introduce no duplicate cards.",
+        "A missing mask leaves signal/area gaps and a clear absent-mask label; canvas image smoothing is disabled."
+      ],
+      "known_risks": "Independent trace scales can exaggerate magnitude comparisons; label each card's units and scales. Do not turn a null measurement into zero. A movie may show raw tissue at a missing-mask time, but must never display an invented mask."
+    },
+    {
+      "number": "05",
+      "title": "Clickable recording barcode and reusable action",
+      "size": "one recording navigation and API slice",
+      "why": "A row for every established cell exposes recording-wide changes and missing observations. Registering the exporter makes the four views reusable for new analyses and other reporters without manually assembling files.",
+      "depends_on": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "src/pymicroglia/registry.py",
+        "tools/regenerate_catalogue.py",
+        "docs/wiki/api-reference.md"
+      ],
+      "scope": [
+        "Draw one barcode row per unchanged identity and one column per native source frame.",
+        "Switch between total intensity, its three-frame mean and mask area, with per-cell or recording-wide colour scaling labelled explicitly.",
+        "Click a barcode patch to select that identity and frame across all four views; display missing values as blank.",
+        "Register an unattended display-only cell_review export action with documented parameters and a mechanical claim.",
+        "Document reuse for raw recordings and masks from any reporter."
+      ],
+      "out_of_scope": [
+        "Reordering or rewriting tracking histories.",
+        "Changing accepted mask refinement defaults.",
+        "Batch exports and final review evidence belong to stage 06."
+      ],
+      "files_touched": [
+        {
+          "path": "src/pymicroglia/visualisation/review_assets/barcode.js",
+          "change": "NEW",
+          "reason": "Measurement matrix and click navigation."
+        },
+        {
+          "path": "src/pymicroglia/registry.py",
+          "change": "MODIFY",
+          "reason": "Bind the export action and its mechanical claim."
+        },
+        {
+          "path": "tools/regenerate_catalogue.py",
+          "change": "MODIFY",
+          "reason": "Declare cell_review and every export parameter."
+        },
+        {
+          "path": "src/pymicroglia/data/actions.json",
+          "change": "MODIFY",
+          "reason": "Regenerate the shipped action catalogue."
+        },
+        {
+          "path": "docs/wiki/api-reference.md",
+          "change": "MODIFY",
+          "reason": "Explain the reusable review exporter and missing-data semantics."
+        },
+        {
+          "path": "tests/test_cell_review_browser.py",
+          "change": "NEW",
+          "reason": "Exercise metric/scaling changes and linked selection."
+        },
+        {
+          "path": "tests/test_cell_review_action.py",
+          "change": "NEW",
+          "reason": "Check catalogue signature, claims and executable action export."
+        }
+      ],
+      "implementation_sketch": "Canvas matrix rows use payload.ids without renaming; columns use times_h. Colour only finite prepared measurements, and document whether each row or the whole recording shares a scale. Translate pointer coordinates to a native row/column, call the common selection function, and show exact identity, frame, time and value in a tooltip. Export remains unattended: it writes an HTML app but never waits for a user to operate it. Add visualisation.cell_review to registry.MODULE_NAMES and declare cell_review in the catalogue source. Regenerate package catalogue and skill references, preserving unrelated settings.",
+      "exit_gate": [
+        "Clicking a barcode patch updates selected identity, native frame, card cursors, shape comparison and sculpture highlight together.",
+        "Blank mask observations remain blank in all barcode metrics; changing scale or metric never changes IDs.",
+        "Focused action, registry, equivalent-script and record-completeness checks pass; catalogue regeneration --check succeeds."
+      ],
+      "known_risks": "A per-cell normalized colour can hide between-cell intensity differences; provide and label both scale modes. The action must remain display-only and non-destructive. Bundle assets must be installed with the wheel so a new checkout is unnecessary."
+    },
+    {
+      "number": "06",
+      "title": "Accepted recording exports and completion evidence",
+      "size": "one full-data delivery slice",
+      "why": "The views need to work on the accepted recordings, not just small fixtures. A separate version, verified source fingerprints, browser checks and an opened review make the result usable immediately.",
+      "depends_on": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "read_first": [
+        "00_overview.md",
+        "AGENTS.md",
+        "development/cd68_v4/inputs.json",
+        "development/cd68_v4/settings.json",
+        "development/cd68_v3/render_config.json"
+      ],
+      "scope": [
+        "Check free space and estimate peak export size before loading the recordings.",
+        "Export all ten frozen CD68 raw/label pairs into development/cd68_v5 with 101 source frames and source offset two.",
+        "Create an offline recording index and reproducible batch/verification scripts.",
+        "Verify 813 established identities, unchanged source fingerprints, blank leading frames and exact raw-signal/area measurements.",
+        "Exercise all four views in a browser, capture verification evidence and open the review for the user.",
+        "Update the existing Research Gallery record, record gate evidence and finalize the completed split-plan."
+      ],
+      "out_of_scope": [
+        "Replacing earlier review versions.",
+        "Training a network or regenerating tracking/refinement.",
+        "Publishing externally or creating presentation copies."
+      ],
+      "files_touched": [
+        {
+          "path": "development/cd68_v5",
+          "change": "NEW",
+          "reason": "Versioned HTML reviews, tables, receipts, index and verification outputs."
+        },
+        {
+          "path": "development/cd68_v5/export_reviews.py",
+          "change": "NEW",
+          "reason": "Reproducible frozen-source batch export and offline index."
+        },
+        {
+          "path": "development/cd68_v5/verify_reviews.py",
+          "change": "NEW",
+          "reason": "Verify completeness, source hashes, measurements and browser interactions."
+        },
+        {
+          "path": "development/cd68_v5/README.md",
+          "change": "NEW",
+          "reason": "Explain how to open and regenerate the review."
+        },
+        {
+          "path": "docs/cell-review-views/execution.json",
+          "change": "NEW",
+          "reason": "Durable stage gates and outcome evidence."
+        }
+      ],
+      "implementation_sketch": "Read the existing development/cd68_v4/inputs.json manifest and compare its raw/labels SHA256 fingerprints before using any intermediate. Call the public exporter with source_frame_offset=2 and frame_interval_h=0.5. Each recording has a standalone HTML review and sibling CSV/JSON provenance, with index.html linking all ten. Verify sources again after export and compare exported identity/frame presence to the exact saved labels. Browser checks cover real and synthetic data; collect page errors and display timings. Link HTML outputs and source code to the existing accepted-analysis Gallery record rather than creating a duplicate. Mark every stage complete only after its recorded gates pass, then run plan_records.py finalize.",
+      "exit_gate": [
+        "All ten HTML reviews, measurement tables and provenance receipts exist and cover 101 native source frames and 813 established identities.",
+        "Every source raw/label hash matches the frozen manifest after export; independent sums/areas and identity presence agree with saved masks.",
+        "Browser checks pass for all four views without page errors, including a missing observation and the first two unlabelled frames.",
+        "Offline index and a populated review are opened for the user; existing Research Gallery record is updated.",
+        "plan_records.py check and finalize succeed after all six stages are marked _COMPLETED."
+      ],
+      "known_risks": "Do not duplicate large TIFF sources into the output version. Avoid keeping decoded images for all recordings in memory at once. Preserve failed export receipts and resume only verified matching outputs. If a source is offline, use the existing path and wait for its authorized download; stop only for a proven unavailable source or insufficient disk space."
+    }
+  ]
+}

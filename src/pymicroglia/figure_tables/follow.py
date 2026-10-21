@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-DEFAULTS: dict = {'span': 'recording', 'fps': 6, 'frame_px': 640, 'crop_px': 0, 'crop_margin_px': 8, 'locator': True, 'neighbours': True, 'event_hold_frames': 6, 'image_filter': 'auto-organotypic', 'display_black_percentile': 50.0, 'display_white_percentile': 99.8, 'display_gamma': 0.7, 'display_gain': 1.0, 'display_spatial_sigma': 1.0, 'display_pool_px': 4.0, 'display_sharpness': 3.0, 'display_noise_multiple': 1.0, 'display_pad_frames': 64, 'cell_lut': 'dluc_purple', 'outline': 'outline'}
+DEFAULTS: dict = {'span': 'recording', 'fps': 6, 'frame_px': 640, 'crop_px': 0, 'crop_margin_px': 8, 'locator': True, 'neighbours': True, 'event_hold_frames': 6, 'image_filter': 'auto-organotypic', 'display_black_percentile': 50.0, 'display_white_percentile': 99.8, 'display_gamma': 0.7, 'display_gain': 1.0, 'display_spatial_sigma': 1.0, 'display_pool_px': 4.0, 'display_sharpness': 3.0, 'display_noise_multiple': 1.0, 'display_pad_frames': 64, 'cell_lut': 'dluc_purple', 'outline': 'outline', 'context_caption': '', 'source_frame_offset': 0}
 
 @dataclass
 class Film:
@@ -43,11 +43,20 @@ def _plan(cell_frame: pd.DataFrame, identity: int, labels, options: dict) -> tup
                 reach = max(reach, int(np.ptp(rows)) // 2 + 1, int(np.ptp(columns)) // 2 + 1)
         half = reach + int(options['crop_margin_px'])
     window = 2 * half + 1
-    known = {int(row.frame_index): (float(row.centroid_y), float(row.centroid_x)) for row in cell.itertuples()}
+    known = {}
+    for row in cell.itertuples():
+        frame = int(row.frame_index)
+        centre = (getattr(row, 'centroid_y', np.nan), getattr(row, 'centroid_x', np.nan))
+        if not np.isfinite(centre).all():
+            yy, xx = np.nonzero(labels[frame] == identity)
+            if not yy.size:
+                continue
+            centre = (float(yy.mean()), float(xx.mean()))
+        known[frame] = tuple(map(float, centre))
     if not known:
         raise ValueError(f'cell {identity} has no centroid to follow')
     centres, named = ([], [])
-    held = known[first]
+    held = known[min(known)]
     for frame_index in frames:
         held = known.get(frame_index, held)
         centres.append(held)

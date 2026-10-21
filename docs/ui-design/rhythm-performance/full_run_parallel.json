@@ -1,0 +1,321 @@
+{
+  "job": {
+    "id": "f29d8d89fcfd4f17a2b67c9ab1e12218",
+    "kind": "exploration_rhythms",
+    "action": "rhythm_analysis",
+    "state": "completed",
+    "submitted_at": "2026-10-01T11:50:37.422186+00:00",
+    "error": null,
+    "outputs": [
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\f29d8d89fcfd4f17a2b67c9ab1e12218\\result.json",
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\f29d8d89fcfd4f17a2b67c9ab1e12218\\statistics.csv",
+      "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\f29d8d89fcfd4f17a2b67c9ab1e12218\\reproduce.py"
+    ],
+    "cells": 94,
+    "progress": {
+      "stage": "completed",
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "elapsed_seconds": 128.43700000000536,
+      "remaining_seconds": 0
+    },
+    "params": {
+      "run": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3",
+      "stem": "95_A3",
+      "options": {
+        "metrics": [
+          "signal_mean"
+        ]
+      }
+    },
+    "started_at": "2026-10-01T11:50:37.423197+00:00",
+    "finished_at": "2026-10-01T11:52:45.855692+00:00",
+    "rhythm_result": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\f29d8d89fcfd4f17a2b67c9ab1e12218\\result.json",
+    "reused": false
+  },
+  "seconds": 128.432495,
+  "compared_to": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\single_frame_mask_unet\\accepted_post_tracking\\95_A3\\observed_measurement\\measure_95_A3_unet_refined_v3\\AI_Exports\\exploration_rhythms\\8dc0b8ff48930e10\\615c4a1818b04763b120eff7f4537fef\\result.json",
+  "exact_94_cell_evidence_parity": true,
+  "exact_full_statistics_parity_excluding_timestamped_run_records": true,
+  "progress_observations": [
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 161,
+      "metric": null,
+      "completed": 93,
+      "total": 94,
+      "completed_cells": 93,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [
+        {
+          "identity": 116,
+          "stage": "fitting",
+          "metric": "signal_mean"
+        }
+      ],
+      "elapsed_seconds": 85.65600000000268,
+      "remaining_seconds": 0.9210322580645449
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 127.01499999999942,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 127.01499999999942,
+      "remaining_seconds": null
+    },
+    {
+      "state": "running",
+      "stage": "testing",
+      "identity": 116,
+      "metric": null,
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "workers": 4,
+      "active_cells": [],
+      "elapsed_seconds": 127.01499999999942,
+      "remaining_seconds": null
+    },
+    {
+      "state": "completed",
+      "stage": "completed",
+      "completed": 94,
+      "total": 94,
+      "completed_cells": 94,
+      "total_cells": 94,
+      "elapsed_seconds": 128.43700000000536,
+      "remaining_seconds": 0
+    }
+  ],
+  "max_progress_request_seconds": 0.027995299999020062,
+  "execution": {
+    "workers": 4,
+    "executor": "process"
+  }
+}

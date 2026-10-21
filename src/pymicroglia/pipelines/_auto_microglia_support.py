@@ -223,6 +223,143 @@ def _eligible_tracks(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
     return out
 
 
+def _base_mask_configuration(settings: Mapping[str, Any]) -> dict:
+    """Record the actual stage settings, including lower-level overrides."""
+    from .. import mask_methods
+
+    result = mask_methods.describe(settings.get("method", "unet"),
+                                   settings.get("method_options"))
+    result.update({key: value for key, value in settings.items()
+                   if key not in {"method", "method_options", "notes", "threads", "reuse"}})
+    result.update(mask_methods.model_reference(
+        settings.get("weights"), default=result["method"] == "unet"))
+    return result
+
+
+def _refine_tracking(tracking: Mapping[str, Any],
+                     handoff: Mapping[str, Any], masks: Mapping[str, Any],
+                     eligibility: Mapping[str, Any], folder: Path, *,
+                     gated_masks: Mapping[str, str] | None = None,
+                     weights: str | Path | None = None,
+                     threads: int = 4, method: str = "single_frame",
+                     options: Mapping[str, Any] | None = None
+                     ) -> tuple[dict, dict, dict]:
+    """Make measurement label views after Motion; retain every Motion file."""
+    import json
+
+    import numpy as np
+    import tifffile
+
+    from ..tracking import post_refine
+    from ..tracking.contract import sha256_of
+
+    manifest = Path(handoff["outputs"]["motion_inputs"])
+    document = json.loads(manifest.read_text(encoding="utf-8"))
+    motion_input_hash = sha256_of(manifest)
+    by_stem = {Path(path).stem: one for path, one in masks.items()}
+    if len(by_stem) != len(masks):
+        raise ValueError("two mask recordings have the same stem")
+    refined_tracking: dict[str, Any] = {}
+    refined_views: dict[str, Any] = {}
+    reports: dict[str, Any] = {}
+    for stem, result in tracking.items():
+        if stem not in by_stem:
+            raise ValueError(f"{stem}: no seven-frame mask for Motion's recording")
+        prepared = document["prepared"][stem]
+        report = post_refine.run(
+            by_stem[stem]["outputs"]["mask_cells"],
+            prepared["measurement_raw"], result["labels"],
+            output_dir=folder / "tracked_outline_refinement" / stem,
+            source_frame_offset=int(result["source_frame_offset"]),
+            gated_masks=(gated_masks or {}).get(stem), weights=weights,
+            threads=threads, method=method, method_options=dict(options or {}),
+            um_per_px=by_stem[stem].get("settings", {}).get("um_per_px"))
+        path = Path(report["outputs"]["refined_labels"])
+        digest = sha256_of(path)
+        refined_tracking[stem] = {
+            **result, "labels": str(path),
+            "sha256": {**result.get("sha256", {}), "labels": digest},
+            "motion_identity_labels": result["labels"],
+        }
+        if report["settings"].get("identity_presence") == "subset_of_motion":
+            # Deliberately erased observations are not gaps for reconstruction.
+            refined_tracking[stem]["gap_identity_labels"] = result["labels"]
+        views = {}
+        original = eligibility[stem]
+        refined = np.asarray(tifffile.imread(path))
+        for destination, view in original["views"].items():
+            if view["filtered"]:
+                excluded = np.asarray(original["excluded_identities"], dtype=refined.dtype)
+                selected = np.where(np.isin(refined, excluded), 0, refined)
+                selected_path = path.parent / f"{destination}_labels.tif"
+                tifffile.imwrite(selected_path, selected, compression="zlib",
+                                 photometric="minisblack")
+                view_path, view_hash = str(selected_path), sha256_of(selected_path)
+            else:
+                view_path, view_hash = str(path), digest
+            views[destination] = {**view, "labels": view_path,
+                                  "sha256": view_hash,
+                                  "motion_labels": view["labels"]}
+        refined_views[stem] = {**original, "views": views,
+                               "identity_source_labels": result["labels"]}
+        reports[stem] = {**report, "motion_labels": result["labels"],
+                         "motion_labels_sha256": sha256_of(result["labels"]),
+                         "views": views}
+    if sha256_of(manifest) != motion_input_hash:
+        raise RuntimeError("Motion input manifest changed during outline refinement")
+    return refined_tracking, refined_views, reports
+
+
+def _measure_gaps(tracking: Mapping[str, Any],
+                  handoff: Mapping[str, Any], masks: Mapping[str, Any],
+                  folder: Path, *,
+                  max_gap_frames: int = 3,
+                  measured: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Add labelled measurement-only rows for short Motion identity gaps."""
+    import json
+
+    from ..measure.gaps import accepted_signal_trace, measure_tracked_gaps
+    from ..tracking.contract import DecisionTables
+
+    document = json.loads(Path(handoff["outputs"]["motion_inputs"])
+                          .read_text(encoding="utf-8"))
+    by_stem = {Path(path).stem: one for path, one in masks.items()}
+    reports: dict[str, Any] = {}
+    for stem, result in tracking.items():
+        decisions = result.get("decisions")
+        if not isinstance(decisions, Mapping):
+            reports[stem] = {"status": "unavailable",
+                             "reason": "Motion merge-event decisions are unavailable",
+                             "measurement_only_frames": 0}
+            continue
+        events = DecisionTables.from_mapping(decisions).path("merge_events")
+        if not events.is_file():
+            reports[stem] = {"status": "unavailable",
+                             "reason": f"Motion merge-event table is absent: {events}",
+                             "measurement_only_frames": 0}
+            continue
+        prepared = document["prepared"][stem]
+        reports[stem] = measure_tracked_gaps(
+            result.get("gap_identity_labels", result["labels"]),
+            cells_native=by_stem[stem]["outputs"]["mask_cells"],
+            photons_native=prepared["measurement_raw"],
+            merge_events=events,
+            frame_interval_h=float(prepared["frame_interval_min"]) / 60.0,
+            source_frame_offset=int(result["source_frame_offset"]),
+            excluded_identities=(),
+            output_dir=folder / "tracked_gap_measurement" / stem,
+            max_gap_frames=max_gap_frames)
+        if measured and stem in measured:
+            observed = (Path(measured[stem]["folder"]) / "measure" /
+                        stem / "cell_frame.csv")
+            reports[stem]["accepted_signal_trace"] = accepted_signal_trace(
+                observed,
+                reports[stem]["outputs"]["measurement_additions"],
+                output_dir=folder / "tracked_gap_measurement" / stem,
+                source_frame_offset=int(result["source_frame_offset"]))
+    return reports
+
+
 def _tracked_videos(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
                     eligibility: Mapping[str, Any], folder: Path, *,
                     options: Mapping[str, Any] | None) -> dict[str, Any]:

@@ -11,4 +11,4 @@ figure(Figure('sholl_kymograph','Radial occupancy from soma over time','morpholo
 from ..panels import traits
 figure(Figure('stable_traits_versus_states','Within-cell versus between-cell variability','morphology',
  views=(View('ranking',traits.ranking,block=True),),reads=(Table('cell_summary',scope='run'),),
- prepare='pymicroglia.figure_tables.traits:prepare',options=(Option('metrics',['area_px','corrected_mean','skeleton_branches','solidity','ramification_index','turnover_index']),Option('hues',[]))))
+ prepare='pymicroglia.figure_tables.traits:prepare',options=(Option('metrics',['area_px','integrated_density_mean3','skeleton_branches','solidity','ramification_index','turnover_index']),Option('hues',[]))))

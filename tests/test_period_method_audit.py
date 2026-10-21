@@ -34,6 +34,61 @@ def test_audit_exposes_the_complete_shared_circadian_contract():
     assert {'identity', 'cells', 'metrics', 'detrend_methods', 'period_methods', 'median_window_points'} <= declared
     detrend_default = next((option.default for option in spec.options if option.name == 'detrend_methods'))
     assert 'robust_linear' in detrend_default
+    assert next(option.default for option in spec.options if option.name == 'median_window_points') is None
+    assert next(option.default for option in spec.options if option.name == 'input_filters') is None
+
+
+def test_native_audit_default_has_no_additional_filtered_checks():
+    tables = _builder_globals()['analyse_traces'](
+        _two_length_frame().query('identity == 7'), identities=[7], metrics=['corrected_mean'],
+        detrends=['linear'], estimators=['lomb'], params=_params(),
+        fallback_significance_method='lomb', correction='none', alpha=.05,
+        min_observations=24, min_cycles=3)
+    assert len(tables[1]) == 1
+    assert set(tables[1].preprocessor) == {'raw'}
+    assert tables[1].iloc[0].filter_method == 'none'
+
+
+def test_native_figure_draws_every_selected_filter_without_refitting(monkeypatch):
+    import matplotlib.pyplot as plt
+    from pymicroglia.figure_tables.method_audit import prepare
+    from pymicroglia.visualisation.panels.method_audit import grid
+    class Source:
+        def table(self, name):
+            return _two_length_frame().query('identity == 7')
+        def module_params(self, name):
+            return {}
+    options = {option.name: option.default for option in get_figure('period-method-audit').options}
+    options.update(identity=7, metrics=['corrected_mean'], detrend='linear', fit_method='lomb',
+                   detrend_methods=['linear'], period_methods=['lomb'], significance_method='lomb',
+                   multiple_testing='none', input_filters=[{'method': 'median', 'window_points': 3},
+                       {'method': 'median', 'window_points': 5}, {'method': 'mean', 'window_points': 5}])
+    views, statistics = prepare(Source(), options)
+    assert len(statistics) == 4
+    assert len(views['method_grid']['config']['input_filters']) == 4
+    def no_refit(*args, **kwargs):
+        pytest.fail('Drawing saved filter comparisons must not refit them')
+    monkeypatch.setattr(workbench, 'estimate_trace', no_refit)
+    # Public figure actions supply a constrained canvas. The native audit owns
+    # explicit grid margins and must retain them when drawn on that canvas.
+    figure = plt.figure(layout='constrained')
+    try:
+        drawn = grid(figure, views['method_grid'], style={})
+        from pymicroglia.visualisation.panels.wording import finish
+        from pymicroglia.visualisation.text import Wording
+        finish(figure, Wording(title='Period-method audit', footnote='Saved diagnostics'))
+        figure.canvas.draw()
+        # Reference, detrended overlay, estimator overlay, four completed comparisons.
+        assert len(drawn.axes) == 7
+        assert drawn.axes[0].get_position().x0 == pytest.approx(.06)
+        assert drawn.axes[0].get_position().x1 == pytest.approx(.985)
+        assert drawn.axes[1].get_position().width > .25
+        assert len(drawn.axes[1].lines) == 5  # four inputs and the zero guide
+        assert len(figure.legends[0].texts) == 4
+        assert all('None' not in text.get_text() or 'unfiltered' in text.get_text()
+                   for text in figure.legends[0].texts)
+    finally:
+        plt.close(figure)
 
 def test_audit_keeps_recording_lengths_and_cycle_sufficiency_trace_specific():
     analyse = _builder_globals()['analyse_traces']
@@ -60,6 +115,22 @@ def test_median_prefilter_is_a_visible_sensitivity_input_not_raw_replacement():
     assert raw['analysis_input_value'].max() == 100.0
     assert median['raw_value'].max() == 100.0
     assert median['analysis_input_value'].max() < 2.0
+
+def test_native_audit_shares_one_verified_software_identity(monkeypatch):
+    original = workbench.cw.run_records.software_identity
+    calls = []
+    def identity():
+        calls.append(True)
+        return original()
+    monkeypatch.setattr(workbench.cw.run_records, 'software_identity', identity)
+    _, results, *_ = _builder_globals()['analyse_traces'](
+        _two_length_frame().query('identity == 7'), identities=[7], metrics=['corrected_mean'],
+        detrends=['none', 'linear'], estimators=['lomb'], median_window_points=3,
+        params=_params(), fallback_significance_method='lomb', correction='none',
+        alpha=.05, min_observations=24, min_cycles=3)
+    assert len(results) == 4
+    assert len(calls) == 2
+
 
 def test_common_comparison_is_the_completed_workbench_builder_not_a_refit(monkeypatch):
     import matplotlib.pyplot as plt

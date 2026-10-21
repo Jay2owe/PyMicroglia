@@ -19,10 +19,10 @@ METHOD_VERSION = "2026-09-21-coupling-v1"
 DEFAULTS = {
     "max_lag_frames": 24,
     "metric_pairs": [
-        ["turnover_index", "corrected_mean"],
+        ["turnover_index", "integrated_density_mean3"],
         ["area_px", "turnover_index"],
     ],
-    "between_metrics": ["corrected_mean"],
+    "between_metrics": ["integrated_density_mean3"],
     "min_overlap_frames": 60,
     "surrogates": 200,
     "random_state": 20260825,

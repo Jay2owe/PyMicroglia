@@ -36,6 +36,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                     outline_colour: Any = DEFAULT_COLOUR,
                     outline_width_px: int = DEFAULT_WIDTH_PX,
                     outline_opacity: float = DEFAULT_OPACITY,
+                    show_motion_trails: bool = False,
+                    trail_frames: int = 4,
+                    trail_opacity: float = 0.65,
                     mask_style: str = "outline",
                     mask_opacity: float = 0.35,
                     display_filter: str | Mapping[str, Any] | None = None,
@@ -58,7 +61,11 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     The default is a purple photon ramp, top-left names, and cyan outlines
     from the observed mask. Pass ``show_outline=False`` to hide them.
     ``mask_style='fill'`` tints the observed cell with ``mask_opacity``.
-    ``display_filter={'method': 'a104'}`` filters only rendered full frames;
+    Motion trails are off by default. Set ``show_motion_trails=True`` to show
+    the previous four observed positions with older segments dimmer, or
+    change ``trail_frames`` to choose how many previous frames to show.
+    Display filtering is off by default; enlargement uses nearest source pixels.
+    ``display_filter={'method': 'a104'}`` explicitly filters rendered full frames;
     cell traces and period tests still use original photons.
     ``centre_smoothing_frames`` steadies only the crop path. It does not alter
     the tracked masks, photon values or source-frame timing. Zero disables it.
@@ -98,6 +105,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
     outline_colour = video_options.pop("outline_colour", outline_colour)
     outline_width_px = video_options.pop("outline_width_px", outline_width_px)
     outline_opacity = video_options.pop("outline_opacity", outline_opacity)
+    show_motion_trails = video_options.pop("show_motion_trails", show_motion_trails)
+    trail_frames = video_options.pop("trail_frames", trail_frames)
+    trail_opacity = video_options.pop("trail_opacity", trail_opacity)
     mask_style = video_options.pop("mask_style", mask_style)
     mask_opacity = video_options.pop("mask_opacity", mask_opacity)
     display_filter = video_options.pop("display_filter", display_filter)
@@ -137,7 +147,10 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
         centre_method=centre_method,
         outline=outline, outline_colour=outline_colour,
         outline_width_px=outline_width_px,
-        outline_opacity=outline_opacity, mask_style=mask_style,
+        outline_opacity=outline_opacity,
+        show_motion_trails=show_motion_trails,
+        trail_frames=trail_frames, trail_opacity=trail_opacity,
+        mask_style=mask_style,
         mask_opacity=mask_opacity, unavailable_label="NO MASK")
     if display_raw is not None and tiles:
         video_options.setdefault("frame_interval_h",
@@ -192,6 +205,9 @@ def cell_video_grid(raw, labels, *, output_dir=None, output_name=None,
                            else outline_colour),
         "outline_width_px": int(outline_width_px),
         "outline_opacity": float(outline_opacity),
+        "show_motion_trails": bool(show_motion_trails),
+        "trail_frames": int(trail_frames),
+        "trail_opacity": float(trail_opacity),
         "mask_style": mask_style if outline else "none",
         "mask_opacity": float(mask_opacity),
         "scale_bar_units": (tiles[0].provenance["scale_bar_units"]

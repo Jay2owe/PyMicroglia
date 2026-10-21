@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Software project architecture contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project", "profile", "required_paths", "checks"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project": {"type": "string", "minLength": 1},
+    "profile": {"enum": ["python-browser-app", "scientific-image-app", "content-website"]},
+    "source_root": {"$ref": "#/$defs/path"},
+    "required_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+    "boundaries": {"type": "array", "items": {"$ref": "#/$defs/boundary"}},
+    "components": {"type": "array", "items": {"$ref": "#/$defs/component"}},
+    "theme": {"$ref": "#/$defs/theme"},
+    "content": {"$ref": "#/$defs/content"},
+    "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/check"}}
+  },
+  "$defs": {
+    "path": {"type": "string", "minLength": 1, "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)).+$"},
+    "strings": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "sources", "forbidden"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path"}},
+        "forbidden": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "exceptions": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false,
+          "required": ["path", "import", "reason"],
+          "properties": {"path": {"$ref": "#/$defs/path"}, "import": {"type": "string", "minLength": 1}, "reason": {"type": "string", "minLength": 1}}
+        }}
+      }
+    },
+    "component": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "path", "symbol", "kind", "purpose", "options", "states", "examples", "uses"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1}, "title": {"type": "string", "minLength": 1},
+        "path": {"$ref": "#/$defs/path"}, "symbol": {"type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"},
+        "kind": {"enum": ["javascript", "python"]}, "purpose": {"type": "string", "minLength": 1},
+        "options": {"$ref": "#/$defs/strings"}, "states": {"$ref": "#/$defs/strings"},
+        "examples": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path"}},
+        "uses": {"type": "array", "minItems": 1, "items": {
+          "type": "object", "additionalProperties": false, "required": ["path", "call"],
+          "properties": {"path": {"$ref": "#/$defs/path"}, "call": {"type": "string", "minLength": 1}}
+        }}
+      }
+    },
+    "theme": {
+      "type": "object", "additionalProperties": false, "required": ["files", "required_tokens"],
+      "properties": {
+        "files": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path"}},
+        "required_tokens": {"$ref": "#/$defs/strings"},
+        "runtime_tokens": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false, "required": ["name", "reason"],
+          "properties": {"name": {"type": "string", "pattern": "^--"}, "reason": {"type": "string", "minLength": 1}}
+        }},
+        "rules": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false, "required": ["path", "selectors"],
+          "properties": {
+            "path": {"$ref": "#/$defs/path"}, "selectors": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+            "forbid_raw_colours": {"type": "boolean"}, "forbid_fixed_layout": {"type": "boolean"}
+          }
+        }}
+      }
+    },
+    "content": {
+      "type": "object", "additionalProperties": false, "required": ["path", "required_fields", "unique_key"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"}, "required_fields": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "unique_key": {"type": "string", "minLength": 1}, "link_fields": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "argv", "groups", "timeout_seconds"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1}, "kind": {"enum": ["pytest", "command"]},
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "groups": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["fast", "release"]}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 1800},
+        "min_passed": {"type": "integer", "minimum": 1}, "allow_skips": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "allOf": [{"if": {"properties": {"kind": {"const": "pytest"}}}, "then": {"required": ["min_passed"]}}]
+    }
+  }
+}

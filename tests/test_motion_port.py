@@ -29,7 +29,10 @@ def test_frozen_motion_archive_imports_without_sibling_project(tmp_path):
                    "events", "accepted_postprocessing")}
     scientific_hash = hashlib.sha256(json.dumps(
         scientific, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    assert scientific_hash == "b20ba4a9c7aef16d79c9379c57cb97639e0b5d72f70174bff021b207b5c5b380"
+    assert scientific_hash == "ba4c9a858ba0f7c0b8b2405effa34fba2b7c39eb902a7f6f59ef4e6eedb798a1"
+    assert "minimum_observations" not in config["anchor"]
+    assert config["source_frame_offset"] == 0
+    assert "frame_interval_min" not in config  # supplied for each acquisition
     assert config["dataset"] == "Tracked recording"
     assert config["stems"] == [] and config["pinned_files"] == {}
     assert config["registered_input_dir"] == config["motion_input_dir"] == "."

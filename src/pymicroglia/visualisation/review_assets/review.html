@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saved cell review</title><style>__CELL_REVIEW_CSS__</style></head>
+<body>
+<header class="masthead"><div><span class="eyebrow">CELL OBSERVATORY</span><h1 id="recording-title">Saved cell review</h1>
+<p id="recording-summary">Preparing the saved recording…</p></div>
+<nav aria-label="Review views"><a href="#shape-view">Shape changes</a><a href="#sculpture-view">Time sculpture</a><a href="#cards-view">Cell cards</a><a href="#barcode-view">Barcode</a></nav></header>
+<div class="transport" aria-label="Shared cell and time controls">
+<label>Cell <select id="cell-select" aria-label="Saved cell identity"></select></label>
+<button id="step-back" aria-label="Previous frame">Previous</button><button id="play" aria-label="Play recording">Play</button>
+<button id="step-forward" aria-label="Next frame">Next</button>
+<input id="frame-slider" type="range" min="0" value="0" aria-label="Recording frame">
+<output id="time-label" aria-live="off"></output>
+<label>Playback <select id="speed" aria-label="Playback frames per second"><option value="2">2 frames/s</option><option value="4" selected>4 frames/s</option><option value="8">8 frames/s</option><option value="12">12 frames/s</option></select></label>
+</div>
+<p id="review-error" role="alert" hidden></p>
+<main id="review-root">
+<div class="first-row">
+<section id="shape-view" class="panel"><div class="section-heading"><div><span class="section-number">01</span><h2>Shape change weather map</h2></div>
+<label>Compare <select id="change-mode"><option value="centered" selected>Cell centred</option><option value="original">Recording coordinates</option></select></label></div>
+<p class="description">Cyan marks gained mask pixels; amber marks lost pixels since the previous frame.</p>
+<div class="crop-pair"><figure><figcaption>Original signal + saved outline</figcaption><canvas id="raw-crop" width="480" height="480" class="movie" aria-label="Selected cell on original signal"></canvas></figure>
+<figure><figcaption id="change-caption">Cell-centred mask changes</figcaption><canvas id="change-crop" width="480" height="480" class="movie" aria-label="Gained and lost mask pixels"></canvas></figure></div>
+<div class="legend"><span><i class="swatch gained"></i>Gained</span><span><i class="swatch lost"></i>Lost</span><span><i class="swatch outline"></i>Current outline</span></div>
+<p id="change-status" class="status"></p><p class="small">Centring removes whole-pixel translation. Colours describe mask changes, not biological growth or retraction.</p>
+</section>
+<section id="sculpture-view" class="panel"><div class="section-heading"><div><span class="section-number">02</span><h2>Time sculpture</h2></div></div>
+<p class="description">A stack of saved outlines. Height is time, not tissue depth.</p>
+<div class="inline-controls"><label>Position <select id="sculpture-mode"><option value="centered">Cell centred</option><option value="original">Recording coordinates</option></select></label><button id="sculpture-reset">Reset view</button></div>
+<canvas id="sculpture" width="720" height="620" aria-label="Rotatable outline history" tabindex="0"></canvas>
+<p id="sculpture-status" class="status">Outline view is preparing.</p><p class="small">Drag to rotate · wheel to zoom · white marks the selected time · missing masks leave gaps.</p>
+</section>
+</div>
+<section id="cards-view" class="panel"><div class="section-heading"><div><span class="section-number">03</span><h2>Animated cell cards</h2></div><button id="pin-cell">Pin selected cell</button></div>
+<p class="description">One time cursor links every movie and trace. Click a trace to inspect that frame.</p><div id="cards" class="cards"></div>
+<p class="small">Signal is the sum of original pixels inside the saved mask. The brighter signal line is its centred three-frame mean; gaps stay blank. Each trace has its own labelled vertical scale.</p>
+</section>
+<section id="barcode-view" class="panel"><div class="section-heading"><div><span class="section-number">04</span><h2>Recording barcode</h2></div>
+<div class="inline-controls"><label>Colour <select id="barcode-metric"><option value="signal_mean3">Total intensity · three-frame mean</option><option value="signal_raw">Total intensity · raw</option><option value="area">Mask area</option></select></label>
+<label>Scale <select id="barcode-scale"><option value="cell">Within each cell</option><option value="recording">Shared across recording</option></select></label></div></div>
+<p class="description">Every row is an existing cell identity. Click any patch to open that cell and time in all four views.</p>
+<div class="barcode-key"><span>Low</span><span class="colour-ramp"></span><span>High</span><span class="missing-key">Blank = no measurement</span></div>
+<div class="barcode-scroll"><canvas id="barcode" width="1200" height="320" aria-label="Recording measurement barcode" tabindex="0"></canvas></div>
+<p id="barcode-status" class="status">Barcode is preparing.</p><p id="barcode-tooltip" class="small" aria-live="polite"></p>
+</section>
+</main>
+<footer>Saved identities and masks are read only. Sharp source pixels · fixed recording contrast · motion trails off.</footer>
+<script id="review-data" type="application/json">__CELL_REVIEW_DATA__</script>
+<script>__CELL_REVIEW_JS__</script></body></html>

@@ -110,6 +110,16 @@ class _SourceLike:
         return f"SourceId(size=9, sample='ab', path={self.path!r}, mtime_ns=0)"
 
 
+def test_changed_weights_with_same_filename_and_size_invalidate_reuse(stub_network, tmp_path):
+    prepared = FakePrepared(np.full((3, 12, 12), 5.0, np.float32))
+    first = cell_masks.mask_run(prepared, tmp_path / "run")
+    weights = tmp_path / "model.pt"
+    weights.write_bytes(b"x" * weights.stat().st_size)
+    second = cell_masks.mask_run(prepared, tmp_path / "run")
+    assert not first["reused"] and not second["reused"]
+    assert len(stub_network) == 2
+
+
 # ── the window is a duration, not a count of files ──────────────────────────
 def test_the_window_is_the_trained_duration_on_this_recording():
     """Seven frames natively, and half as many when the camera ran half as often.

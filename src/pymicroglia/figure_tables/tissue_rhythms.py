@@ -25,12 +25,12 @@ class RhythmMap:
 
 RHYTHM_MAPS = {
     "reporter_period_hours": RhythmMap(
-        "Reporter cell period", "Estimated period (h)", ("corrected_mean",)),
+        "Reporter cell period", "Estimated period (h)", ("integrated_density_mean3",)),
     "turnover_period_hours": RhythmMap(
         "Turnover cell period", "Estimated period (h)", ("turnover_index",),
         role="surveillance"),
     "reporter_fitted_relative_amplitude": RhythmMap(
-        "Fitted reporter relative amplitude", "Fitted amplitude / mean", ("corrected_mean",)),
+        "Fitted reporter relative amplitude", "Fitted amplitude / mean", ("integrated_density_mean3",)),
     "turnover_fitted_variation": RhythmMap(
         "Turnover fitted variation", "% model-explained variation", ("turnover_index",),
         role="surveillance", limits=(0.0, 100.0)),
@@ -72,12 +72,15 @@ def analyse_rhythm_maps(source, options, frame: pd.DataFrame, requested: list[st
     significance_method = resolved["significance_method"]
     min_cycles = resolved["min_cycles"]
     params = resolved["params"]
-    required = {signal for name in requested for signal in RHYTHM_MAPS[name].signals}
+    reporter_metric = str(options.get('reporter_metric', 'integrated_density_mean3'))
+    signal_for = lambda signal: reporter_metric if signal == 'integrated_density_mean3' else signal
+    required = {signal_for(signal) for name in requested
+                for signal in RHYTHM_MAPS[name].signals}
     # Reporter and turnover maps keep their established joint correction family.
-    standard = {"corrected_mean", "turnover_index"}
+    standard = {reporter_metric, "turnover_index"}
     candidates = standard if required <= standard else required
     signals = [name for name in dict.fromkeys(
-        ("corrected_mean", "turnover_index", *sorted(required)))
+        (reporter_metric, "turnover_index", *sorted(required)))
         if name in candidates and name in frame]
     missing = required - set(signals)
     if missing:
@@ -126,7 +129,7 @@ def analyse_rhythm_maps(source, options, frame: pd.DataFrame, requested: list[st
 
     values = {}
     for name in requested:
-        group = by_signal[RHYTHM_MAPS[name].signals[0]]
+        group = by_signal[signal_for(RHYTHM_MAPS[name].signals[0])]
         if name in PERIOD_MAPS:
             result = group.period_hours.where(group.period_map_displayed)
         elif name == "reporter_fitted_relative_amplitude":

@@ -108,7 +108,7 @@ def _plot_fit(ax: Any, traces: pd.DataFrame, results: pd.DataFrame, trace_id: st
             continue
         colour = config['colours'][preprocessor]
         linestyle = '-' if preprocessor == 'raw' else (0, (5, 2))
-        ax.plot(panel['hours'], panel['plotted_value'], color=colour, linewidth=config['stroke']['data'], alpha=0.34)
+        ax.plot(panel['hours'], panel['plotted_value'], color=colour, linewidth=config['stroke']['data'], linestyle=linestyle, alpha=0.75)
         ax.plot(panel['hours'], panel['fitted_value'], color=colour, linewidth=config['stroke']['fit'], linestyle=linestyle)
     ax.axhline(0, color=config['colours']['reference'], linewidth=config['stroke']['guide'], zorder=0)
     ax.set_xlim(low_hour, high_hour)
@@ -253,7 +253,8 @@ def draw(figure: Any, rect: tuple[float, float, float, float], traces: pd.DataFr
                 axis = figure.add_subplot(grid[grid_row, column_index])
                 if config['period_min_hours'] < cycle_ceiling < config['period_max_hours']:
                     axis.axvline(cycle_ceiling, color=config['colours']['warning'], linewidth=config['stroke']['guide'], linestyle=(0, (3, 2)))
-                for preprocessor, y_base in zip(config['preprocessors'], [1.0, 0.0]):
+                positions = list(reversed(range(len(config['preprocessors']))))
+                for preprocessor, y_base in zip(config['preprocessors'], positions):
                     subset = components.loc[components['trace_id'].eq(trace_id) & components['detrend'].eq(detrend) & components['estimator'].eq('fft_nlls') & components['preprocessor'].eq(preprocessor)]
                     for local_index, (_, component) in enumerate(subset.iterrows()):
                         y = y_base + 0.12 * (local_index - (len(subset) - 1) / 2)
@@ -266,11 +267,11 @@ def draw(figure: Any, rect: tuple[float, float, float, float], traces: pd.DataFr
                         axis.errorbar(period, y, xerr=error if np.isfinite(error) else None, fmt='o' if selected else 'D', markersize=config['component_marker'], markerfacecolor=colour if selected else config['colours']['page'], markeredgecolor=colour, color=colour, linewidth=config['stroke']['guide'], capsize=1.7)
                         axis.text(period, y + 0.13, f'{period:.1f}', ha='center', va='bottom', fontsize=config['font']['small'], clip_on=True)
                 axis.set_xlim(config['period_min_hours'], config['period_max_hours'])
-                axis.set_ylim(-0.45, 1.45)
-                axis.set_yticks([0, 1], ['Median', 'Raw'])
+                axis.set_ylim(-0.45, len(positions)-0.55)
+                axis.set_yticks(positions, [config['preprocessor_labels'][key] for key in config['preprocessors']])
                 axis.text(0.02, 0.03, 'Component significance not tested', transform=axis.transAxes, ha='left', va='bottom', fontsize=config['font']['small'])
                 if config['period_min_hours'] < cycle_ceiling < config['period_max_hours']:
-                    axis.text(cycle_ceiling + 0.01 * (config['period_max_hours'] - config['period_min_hours']), 1.38, 'cycle ceiling', color=config['colours']['warning'], ha='left', va='top', fontsize=config['font']['small'])
+                    axis.text(cycle_ceiling + 0.01 * (config['period_max_hours'] - config['period_min_hours']), len(positions)-.62, 'cycle ceiling', color=config['colours']['warning'], ha='left', va='top', fontsize=config['font']['small'])
                 _finish_axis(axis, config)
                 row_axes.append(axis)
                 column_index += 1
@@ -315,9 +316,11 @@ def draw(figure: Any, rect: tuple[float, float, float, float], traces: pd.DataFr
             for axis in row_axes[:1 + len(estimators)]:
                 axis.set_xticks(ticks)
             if shared_comparisons:
-                tables = grid[grid_row + 1, :].subgridspec(1, len(config['preprocessors']), wspace=0.12)
+                count = len(config['preprocessors'])
+                table_columns = min(2, count)
+                tables = grid[grid_row + 1, :].subgridspec((count+table_columns-1)//table_columns, table_columns, wspace=0.12, hspace=.3)
                 for index, preprocessor in enumerate(config['preprocessors']):
-                    axis = figure.add_subplot(tables[0, index])
+                    axis = figure.add_subplot(tables[index//table_columns, index%table_columns])
                     axes.append(axis)
                     entries = results.loc[results['trace_id'].eq(trace_id) & results['detrend'].eq(detrend) & results['preprocessor'].eq(preprocessor)]
                     value = entries.iloc[0].get('workbench_comparison_json') if not entries.empty else None

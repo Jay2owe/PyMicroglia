@@ -237,6 +237,10 @@ def derive(cell_frame: pd.DataFrame, context: MeasurementContext) -> dict[str, p
     quantified_rows: list[dict] = []
     for identity, group in complete.groupby("identity", sort=True):
         group = group.sort_values("frame_index")
+        # Detrending requires two time points; short tracks cannot enter the
+        # state matrix even when their recurrence result would be omitted.
+        if len(group) < max(min_observations, 2):
+            continue
         hours = group["hours"].to_numpy(float)
         values = state_matrix(
             hours,

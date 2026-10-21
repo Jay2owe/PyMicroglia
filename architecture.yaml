@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "project": "pymicroglia",
+  "profile": "scientific-image-app",
+  "source_root": "src",
+  "required_paths": [
+    "scripts/verify.py",
+    "scripts/project_contract.py",
+    "architecture.schema.json",
+    "architecture.lock.json",
+    "src/pymicroglia/ui/capability_map.json",
+    "src/pymicroglia/ui/catalog.py",
+    "tests/test_project_contracts.py"
+  ],
+  "boundaries": [
+    {
+      "id": "scientific-adapters-without-server",
+      "sources": [
+        "src/pymicroglia/rhythm.py",
+        "src/pymicroglia/scn_outline.py",
+        "src/pymicroglia/registration.py"
+      ],
+      "forbidden": [
+        "fastapi",
+        "pymicroglia.ui",
+        "circadian_workbench.analysis",
+        "circadian_workbench.statistics",
+        "auto_organotypic.server"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "linked-cell-selection",
+      "title": "Linked image and trace selection",
+      "path": "src/pymicroglia/ui/static/exploration-core.js",
+      "symbol": "selection",
+      "kind": "javascript",
+      "purpose": "One cell/frame selection used by the existing image and trace workspace",
+      "options": [
+        "data",
+        "current",
+        "patch"
+      ],
+      "states": [
+        "ready",
+        "new recording",
+        "restored selection"
+      ],
+      "examples": [
+        "tests/test_project_contracts.py",
+        "tests/test_ui_exploration_core.py"
+      ],
+      "uses": [
+        {
+          "path": "src/pymicroglia/ui/static/exploration.js",
+          "call": "C.selection"
+        }
+      ]
+    },
+    {
+      "id": "capability-catalogue",
+      "title": "Live capability catalogue",
+      "path": "src/pymicroglia/ui/catalog.py",
+      "symbol": "validate_map",
+      "kind": "python",
+      "purpose": "Validate existing navigation against live action, figure and pipeline registries",
+      "options": [
+        "data"
+      ],
+      "states": [
+        "valid",
+        "missing action",
+        "missing view"
+      ],
+      "examples": [
+        "tests/test_ui_catalog.py"
+      ],
+      "uses": [
+        {
+          "path": "tests/test_project_contracts.py",
+          "call": "validate_map"
+        }
+      ]
+    }
+  ],
+  "theme": {
+    "files": [
+      "src/pymicroglia/ui/static/exploration.css"
+    ],
+    "required_tokens": [
+      "--xp-text",
+      "--xp-muted",
+      "--xp-line",
+      "--xp-control-gap"
+    ],
+    "rules": [
+      {
+        "path": "src/pymicroglia/ui/static/exploration.css",
+        "selectors": [
+          ".xp-filter-row",
+          ".xp-filter-group",
+          ".xp-filter-empty"
+        ],
+        "forbid_raw_colours": true,
+        "forbid_fixed_layout": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "live-catalogue-and-selection",
+      "kind": "pytest",
+      "argv": [
+        "{python}",
+        "-m",
+        "pytest",
+        "tests/test_project_contracts.py",
+        "tests/test_ui_catalog.py",
+        "tests/test_ui_exploration_core.py",
+        "tests/test_ui_exploration_catalog.py",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "groups": [
+        "fast",
+        "release"
+      ],
+      "timeout_seconds": 90,
+      "min_passed": 8
+    },
+    {
+      "id": "saved-exploration-and-images",
+      "kind": "pytest",
+      "argv": [
+        "{python}",
+        "-m",
+        "pytest",
+        "tests/test_ui_exploration_context.py",
+        "tests/test_ui_exploration_images.py",
+        "tests/test_ui_exploration_filters.py",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "groups": [
+        "release"
+      ],
+      "timeout_seconds": 120,
+      "min_passed": 8
+    }
+  ]
+}

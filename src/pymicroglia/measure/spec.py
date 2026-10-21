@@ -487,6 +487,7 @@ class MovieSpec:
     subject: str | None = None
     expected_sha256: dict[str, str] = field(default_factory=dict)
     notes: str = ""
+    frame_times: Path | None = None  # CSV source_frame (zero-based), hours since acquisition start
 
     @classmethod
     def from_dict(cls, raw_dict: Mapping[str, Any], root: Path | None = None) -> "MovieSpec":
@@ -515,6 +516,7 @@ class MovieSpec:
             subject=raw_dict.get("subject"),
             expected_sha256=dict(raw_dict.get("sha256", {})),
             notes=str(raw_dict.get("notes", "")),
+            frame_times=resolve(raw_dict.get("frame_times")),
         )
 
     def tracking_mapping(self) -> dict[str, Any]:
@@ -547,6 +549,7 @@ class MovieSpec:
             "subject": self.subject,
             "sha256": dict(self.expected_sha256),
             "notes": self.notes,
+            "frame_times": text(self.frame_times),
         }
 
 

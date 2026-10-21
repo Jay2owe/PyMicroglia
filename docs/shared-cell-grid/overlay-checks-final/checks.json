@@ -1,0 +1,21 @@
+{
+  "all_methods_ready_seconds": 2.057,
+  "first_dialog_seconds": 3.248,
+  "ready_card_to_dialog_seconds": 1.191,
+  "cell_grid_description_requests": 1,
+  "paired_selection_seconds": 0.115,
+  "typed_payload_verified": true,
+  "composition_controls_and_persistence_verified": true,
+  "unrequested_analysis_jobs": 0,
+  "themes_checked": [
+    "light",
+    "dark"
+  ],
+  "first_completed_headline_plots_seconds": 3.916,
+  "recording_switch_completed_plots_seconds": 4.873,
+  "performance_fixture": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\development\\linked_exploration_20260929\\fixture.json",
+  "two_panel_analysis_and_draw_seconds": 53.74,
+  "native_and_trace_stacked_lanes_verified": true,
+  "page_errors": [],
+  "output": "C:\\Users\\Owner\\UK Dementia Research Institute Dropbox\\Brancaccio Lab\\Jamie\\Experiments\\Microglia Project\\PyMicroglia\\docs\\shared-cell-grid\\overlay-checks-final"
+}

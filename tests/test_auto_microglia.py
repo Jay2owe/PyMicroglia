@@ -137,6 +137,22 @@ def fake_motion_engine(monkeypatch):
     monkeypatch.setattr(video_grid_module, "cell_video_grid", fake_grid)
 
 
+@pytest.fixture(autouse=True)
+def fake_post_tracking(monkeypatch):
+    """The real post-tracking transforms have their own array-level tests."""
+    def refine(tracking, _handoff, _masks, eligibility, _folder, **_options):
+        return tracking, eligibility, {
+            stem: {"settings": {"changed_pixels": 0}}
+            for stem in tracking}
+
+    def gaps(tracking, _handoff, _masks, _folder, **_options):
+        return {stem: {"measurement_only_frames": 0}
+                for stem in tracking}
+
+    monkeypatch.setattr(auto_microglia, "_refine_tracking", refine)
+    monkeypatch.setattr(auto_microglia, "_measure_gaps", gaps)
+
+
 # ── a chain that is not the chain ───────────────────────────────────────────
 @pytest.fixture
 def fake_chain(monkeypatch, tmp_path):
@@ -266,6 +282,143 @@ def test_user_can_filter_analysis_video_and_image_independently(
             ["eligibility_labels"] == result["views"]["images"]["labels"])
     assert (manifest["outputs"]["tracked_cell_video_grid"][stem]
             ["eligibility_labels"] == result["views"]["videos"]["labels"])
+
+
+def test_accepted_gap_trace_is_exposed_with_tracked_measurement(
+        fake_chain, fake_mask, fake_measurement, tmp_path, monkeypatch):
+    monkeypatch.setattr(auto_microglia, "_measure_gaps",
+                        lambda tracking, *_args, **_kwargs: {
+                            stem: {"measurement_only_frames": 3,
+                                   "accepted_signal_trace": {
+                                       "path": "accepted_signal_trace.csv"}}
+                            for stem in tracking})
+    result = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out",
+        tracked_video=False, tracked_image=False)
+    stem = fake_chain["stack"].stem
+    assert result["outputs"]["tracked_measurement"][stem][
+        "accepted_signal_trace"]["path"] == "accepted_signal_trace.csv"
+    assert result["outputs"]["motion"]["tracking"][stem]["labels"].endswith(
+        "tracked.tif")
+
+
+def test_new_analysis_refines_only_downstream_and_can_be_turned_off(
+        fake_chain, fake_measurement, tmp_path, monkeypatch):
+    import tifffile
+    from pymicroglia import mask_methods
+    from pymicroglia.pipelines._auto_microglia_support import _refine_tracking
+
+    monkeypatch.setattr(auto_microglia, "_refine_tracking", _refine_tracking)
+    monkeypatch.setattr(auto_microglia._Registered, "dluc",
+                        property(lambda self: np.ones((5, 16, 16), np.float32)))
+    base_model, refine_model = tmp_path / "base.pt", tmp_path / "cd68.pt"
+    base_model.write_bytes(b"base")
+    refine_model.write_bytes(b"refiner")
+    calls = []
+
+    def predict(pictures, **settings):
+        calls.append(settings)
+        cells = np.zeros(pictures.shape, np.uint16)
+        x = 4 if Path(settings["weights"]) == refine_model else 3
+        cells[:, 3:7, x:x + 4] = 1
+        if Path(settings["weights"]) == refine_model:
+            cells[3] = 0
+        return {"cells": cells, "mask": cells > 0,
+                "probability": (cells > 0).astype("float32"),
+                "settings": {"cut": settings["cut"], "um_per_px": 2},
+                "pixel_range": [2, 2], "warning": None}
+
+    monkeypatch.setattr(mask_methods, "predict", predict)
+    measured_labels = []
+    from pymicroglia import measure as measurement
+
+    def measure(movies, *, output_dir, **options):
+        measured_labels.append(movies[0]["labels"])
+        return {"run": {"folder": str(output_dir), "run_label": "example"}}
+
+    monkeypatch.setattr(measurement, "measure", measure)
+    outputs = []
+    for method in ("single_frame", "off", "intersection"):
+        outputs.append(auto_microglia.run(
+            str(tmp_path / "source"), output_dir=tmp_path / method,
+            mask_weights=base_model, mask_cut=0.8,
+            tracked_refinement_method="single_frame" if method == "intersection" else method,
+            tracked_refinement_weights=refine_model,
+            tracked_refinement_options={"cut": 0.7, "min_gain": -1,
+                **({"policy": "intersection"} if method == "intersection" else {})},
+            cells=False))
+    on, off, intersection = outputs
+    stem = fake_chain["stack"].stem
+    original_on = on["outputs"]["motion"]["tracking"][stem]["labels"]
+    original_off = off["outputs"]["motion"]["tracking"][stem]["labels"]
+    assert np.array_equal(tifffile.imread(original_on), tifffile.imread(original_off))
+    base_on = next(iter(on["outputs"]["cell_masks"].values()))["mask_cells"]
+    base_off = next(iter(off["outputs"]["cell_masks"].values()))["mask_cells"]
+    assert np.array_equal(tifffile.imread(base_on), tifffile.imread(base_off))
+    refined_path = on["outputs"]["tracked_outline_refinement"][stem]["outputs"]["refined_labels"]
+    refined, original = tifffile.imread(refined_path), tifffile.imread(original_on)
+    assert not np.array_equal(refined, original)
+    assert [set(np.unique(f)) for f in refined] == [set(np.unique(f)) for f in original]
+    assert np.array_equal(tifffile.imread(measured_labels[0]), refined)
+    assert np.array_equal(tifffile.imread(measured_labels[1]), tifffile.imread(original_off))
+    assert on["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"] == refined_path
+    assert on["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"] == refined_path
+    assert "tracked_outline_refinement" not in off["outputs"]
+    refiner_calls = [s for s in calls if Path(s["weights"]) == refine_model]
+    assert len(refiner_calls) == 2 and all(s["cut"] == 0.7 for s in refiner_calls)
+    assert all(s["cut"] == 0.8 for s in calls if Path(s["weights"]) == base_model)
+    intersection_report = intersection["outputs"]["tracked_outline_refinement"][stem]
+    cropped_path = intersection_report["outputs"]["refined_labels"]
+    cropped = tifffile.imread(cropped_path)
+    assert not cropped[1].any()
+    assert set(np.unique(cropped[2])) == {0, 1}
+    assert np.array_equal(cropped, tifffile.imread(measured_labels[2]))
+    assert np.array_equal(original, tifffile.imread(
+        intersection["outputs"]["motion"]["tracking"][stem]["labels"]))
+    assert intersection["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"] == cropped_path
+    assert intersection["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"] == cropped_path
+
+
+def test_refiner_never_inherits_base_weights_or_threshold(
+        fake_chain, fake_mask, fake_measurement, tmp_path, monkeypatch):
+    seen = {}
+
+    def refine(tracking, handoff, masks, eligibility, folder, **options):
+        seen.update(options)
+        return tracking, eligibility, {stem: {"settings": {"changed_pixels": 0}}
+                                       for stem in tracking}
+
+    monkeypatch.setattr(auto_microglia, "_refine_tracking", refine)
+    auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
+                       mask_weights="different_base.pt", mask_cut=0.99)
+    assert seen["weights"] is None and seen["options"] is None
+
+
+def test_bad_refiner_is_refused_before_starting_registration(tmp_path, fake_chain):
+    with pytest.raises(ValueError, match="unknown single-frame"):
+        auto_microglia.run(str(tmp_path), tracked_refinement_options={"ctu": 0.9})
+    assert "options" not in fake_chain
+
+
+def test_named_run_cannot_reuse_a_different_refiner(
+        fake_chain, fake_mask, fake_measurement, tmp_path):
+    settings = dict(output_dir=tmp_path / "out", run_label="fixed",
+                    tracked_refinement_method="off")
+    first = auto_microglia.run(str(tmp_path / "source"), **settings)
+    again = auto_microglia.run(str(tmp_path / "source"), if_exists="skip", **settings)
+    assert again["reused"]
+    settings["tracked_refinement_method"] = "single_frame"
+    with pytest.raises(ValueError, match="different mask settings"):
+        auto_microglia.run(str(tmp_path / "source"), if_exists="skip", **settings)
+
+
+def test_stage_overrides_are_recorded_as_actual_base_configuration(
+        fake_chain, fake_mask, fake_measurement, tmp_path):
+    result = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out",
+        mask_cut=0.8, cell_masks_options={"cut": 0.9})
+    assert fake_mask[0]["cut"] == 0.9
+    assert result["summary"]["mask_configuration"]["base"]["cut"] == 0.9
 
 
 def test_automated_grids_share_one_period_recipe_and_frame_limits(

@@ -109,7 +109,19 @@ def first_coverage_time(labels: Any, hours: Any) -> np.ndarray:
     elapsed[visited] = times[first_indices[visited]] - times[0]
     return elapsed
 
-def cumulative_occupancy(labels: Any, hours: Any) -> np.ndarray:
+
+def distinct_owner_count(labels: Any) -> np.ndarray:
+    """Count different saved positive identities ever occupying each pixel."""
+    stack = np.asarray(labels)
+    if stack.ndim != 3 or not np.issubdtype(stack.dtype, np.integer) or np.any(stack < 0):
+        raise ValueError("Owner count needs nonnegative integer frame-by-row-by-column labels")
+    counts = np.zeros(stack.shape[1:], dtype=np.uint32)
+    for identity in np.unique(stack):
+        if identity > 0:
+            counts += np.any(stack == identity, axis=0)
+    return counts
+
+def cumulative_occupancy(labels: Any, hours: Any, *, final_only: bool = False) -> np.ndarray:
     """Cumulative occupied hours per pixel, pooling all nonzero cell identities.
 
     Integrate observed occupancy between successive timestamps using the mean
@@ -117,6 +129,8 @@ def cumulative_occupancy(labels: Any, hours: Any) -> np.ndarray:
     observed interval to each endpoint; never extrapolate beyond the recording.
     The first frame has zero accumulated elapsed time. Missing observations are
     not accepted as background, and identities cannot double-count a pixel.
+    ``final_only`` returns the final field without allocating a floating-point
+    movie. It retains the same per-interval arithmetic and accumulation order.
     """
     stack = np.asarray(labels)
     times = np.asarray(hours, float)
@@ -126,6 +140,17 @@ def cumulative_occupancy(labels: Any, hours: Any) -> np.ndarray:
         raise ValueError("occupancy times must be finite and strictly increasing")
     if not np.isfinite(stack).all() or np.any(stack < 0):
         raise ValueError("labels must be finite and nonnegative; missing observations are not background")
+    if final_only:
+        total = np.zeros(stack.shape[1:], dtype=float)
+        previous = stack[0] > 0
+        for frame, interval in zip(stack[1:], np.diff(times)):
+            current = frame > 0
+            increment = np.add(previous, current, dtype=float)
+            increment *= .5
+            increment *= interval
+            total += increment
+            previous = current
+        return total
     occupied = (stack > 0).astype(float)
     increments = (occupied[:-1] + occupied[1:]) * .5 * np.diff(times)[:, None, None]
     return np.concatenate([np.zeros_like(increments[:1]), np.cumsum(increments, axis=0)])

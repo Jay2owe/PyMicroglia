@@ -25,7 +25,7 @@ from ..panels import triggered
 figure(Figure('breakout_triggered_average','Responses around ranked measured frames','surveillance',
  views=(View('triggered',triggered.responses),View('alignment',triggered.alignment),View('comparison',triggered.responses)),
  reads=(Table('cell_frame'),),prepare='pymicroglia.figure_tables.triggered:prepare',
- options=(Option('metrics',['area_px','ramification_index','corrected_mean']),Option('event_metric','turnover_index'),Option('event_direction','high'),Option('top_events',1),Option('window',12)),layout='column'))
+ options=(Option('metrics',['area_px','ramification_index','integrated_density_mean3']),Option('event_metric','turnover_index'),Option('event_direction','high'),Option('top_events',1),Option('window',12)),layout='column'))
 
 from ._declare import Input
 from ..panels import upheaval

@@ -33,7 +33,7 @@ def prepare(source,options):
     first=values.first_coverage_time(labels,hours);array,table=_pixels(first,0,limit,column='first_covered_hours')
     table['first_covered_frame_index']=np.argmax(labels>0,axis=0)[table.row.to_numpy(int),table.column.to_numpy(int)]
     record('first_coverage',array,table,'first_covered_hours','First covered (h)',(0,limit))
-    cumulative=values.cumulative_occupancy(labels,hours)[-1];array,table=_pixels(cumulative,0,limit,np.any(labels>0,axis=0))
+    cumulative=values.cumulative_occupancy(labels,hours,final_only=True);array,table=_pixels(cumulative,0,limit,np.any(labels>0,axis=0))
     table['frame_index']=len(labels)-1;table['hours']=float(hours[-1]);record('cumulative_occupancy',array,table,'value','Cumulative occupied time (h)',(0,limit))
     maximum=int(np.nanmax(owners));limits=(1.,float(max(maximum,1)+(maximum==1)))
     array,table=_pixels(owners,*limits,owners>=1,column='owner_count');table['minimum_owner_count']=1
@@ -42,7 +42,8 @@ def prepare(source,options):
     aux['speed_cells.csv']=cells.assign(summary_operation=options['map_summary']);record('speed',array,table,'value',str(options['map_summary']).capitalize()+' cell speed ('+describe(SPEED_METRIC).unit_text(source.interval)+')',limits)
     rhythm,fits,_,params=analyse_rhythm_maps(source,options,frame,[INTENSITY_PERIOD_METRIC])
     array,table,cells,limits=cell_metric(labels,rhythm[INTENSITY_PERIOD_METRIC],metric=INTENSITY_PERIOD_METRIC,assignment=assignment,range_mode='full',limits=tuple(params['period_search_hours']),allow_empty=True)
-    intensity=fits.loc[fits.metric.eq('corrected_mean')];supported,exploratory=_period_support_masks(labels,intensity)
+    reporter_metric=str(options.get('reporter_metric','integrated_density_mean3'))
+    intensity=fits.loc[fits.metric.eq(reporter_metric)];supported,exploratory=_period_support_masks(labels,intensity)
     yy=table.row.to_numpy(int);xx=table.column.to_numpy(int)
     table['has_supported_contributor']=supported[yy,xx];table['has_exploratory_contributor']=exploratory[yy,xx]
     table['period_support']=np.select([table.has_supported_contributor&table.has_exploratory_contributor,table.has_supported_contributor,table.has_exploratory_contributor],['mixed support','supported period','exploratory period'],default='excluded')
