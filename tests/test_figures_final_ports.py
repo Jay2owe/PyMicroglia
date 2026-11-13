@@ -27,19 +27,18 @@ def test_declared_cycle_retains_original_table_and_rules():
 
 
 def test_tissue_maps_retain_every_original_pixel():
-    data=prepare('tissue_tectonics',reporter_metric='corrected_mean');hashes=expected()['figures']['tissue-tectonics']['plotted_sha256']
-    for name,table in data.auxiliary.items():
-        if name in {'rhythm_map_fits.csv','statistics.csv'}:
-            import gzip
-            from io import StringIO
-            from tests.test_motion_parity import FIXTURE,_same_cell
-            original=gzip.decompress((FIXTURE/('tissue_'+name+'.gz')).read_bytes())
-            assert hashlib.sha256(original).hexdigest()==hashes['data/der/'+name]
-            frozen=pd.read_csv(StringIO(original.decode()),dtype=str,keep_default_na=False)
-            actual=table.fillna('').astype(str)
-            assert actual.shape==frozen.shape and list(actual)==list(frozen)
-            for column in actual:
-                assert all(_same_cell(column,a,b) for a,b in zip(actual[column],frozen[column])),column
+    # Tables built from rhythm fits meet the Workbench baseline (the Workbench
+    # arithmetic moved after Motion's 0.8.2); everything else still meets Motion.
+    from tests.test_motion_parity import FIXTURE,workbench_baseline as load_baseline
+    workbench_baseline=load_baseline()
+    data=workbench_baseline.tissue_tables();hashes=expected()['figures']['tissue-tectonics']['plotted_sha256']
+    for name,table in data.items():
+        if name in workbench_baseline.TISSUE:
+            assert not workbench_baseline.differences('tissue_'+name,table),name
+            if name in {'rhythm_map_fits.csv','statistics.csv'}:
+                original=FIXTURE/('tissue_'+name+'.gz')
+                assert hashlib.sha256(workbench_baseline.gzip.decompress(original.read_bytes())).hexdigest()==hashes['data/der/'+name]
+                assert not workbench_baseline.motion_differences(table,workbench_baseline.read(original)),name
             continue
         assert digest(table)==hashes['data/der/'+name],name
 

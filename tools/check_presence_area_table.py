@@ -28,15 +28,19 @@ def main():
     stacks = [tifffile.imread(folder / name) for name in
               ('01_issue005.tif', '04_issue008.tif', '07_issue011.tif', '08_issue012.tif', '10_blob_residency.tif')]
     rng = np.random.default_rng(8)
-    for number in range(120):
+    for number in range(200):
         shape = (int(rng.integers(1, 9)), int(rng.integers(1, 30)), int(rng.integers(1, 30)))
-        dtype = [np.uint16, np.int32, np.int64][number % 3]
+        dtype = [np.uint16, np.int32, np.int64, np.uint8, np.uint32][number % 5]
         stack = rng.integers(0, 12, shape).astype(dtype)
         stack[rng.random(shape) < 0.5] = 0
-        if number % 10 == 1 and dtype != np.uint16:
+        if number % 10 == 1 and np.dtype(dtype).kind == 'i':
             stack[0, 0, 0] = -3
         if number % 10 == 2 and dtype == np.int64:
             stack[0, 0, 0] = 1 << 40
+        if number % 10 == 4 and dtype == np.uint32:
+            stack[-1, -1, -1] = (1 << 20) + number
+        if number % 10 == 9 and dtype == np.uint32:
+            stack[0, 0, 0] = (1 << 20) - 1
         if number % 10 == 3:
             stack[:] = 0
         stacks.append(stack)
@@ -63,9 +67,26 @@ def main():
                 rows.append(outcome(presence.resolve_minimum_persistent_area, stack, params))
         return rows
     tick = time.perf_counter(); expected = evaluate(); before = time.perf_counter() - tick
+    import types
+    alias = types.ModuleType('alias_under_test')
+    alias.resolve_minimum_persistent_area = presence.resolve_minimum_persistent_area
+    alias._identity_frames = presence._identity_frames
+    stranger = types.ModuleType('stranger_under_test')
+    stranger.resolve_minimum_persistent_area = len
+    originals = (presence.resolve_minimum_persistent_area, presence._identity_frames)
     with table.install(presence) as stats:
         assert stats['supported']
         tick = time.perf_counter(); actual = evaluate(); after = time.perf_counter() - tick
+        with table.aliases(presence, alias, stranger) as patched:
+            assert patched == 2, patched
+            assert alias.resolve_minimum_persistent_area is presence.resolve_minimum_persistent_area
+            assert alias._identity_frames is presence._identity_frames
+            assert stranger.resolve_minimum_persistent_area is len
+            for stack in stacks[:5]:
+                for params in settings:
+                    assert outcome(alias.resolve_minimum_persistent_area, stack, params) == outcome(originals[0], stack, params)
+        assert (alias.resolve_minimum_persistent_area, alias._identity_frames) == originals
+    assert (presence.resolve_minimum_persistent_area, presence._identity_frames) == originals
     for number, (e, f) in enumerate(zip(expected, actual)):
         assert e == f, number
     report = dict(status='pass', stacks=len(stacks), real_stacks=5, comparisons=len(expected),

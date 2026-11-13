@@ -1,0 +1,47 @@
+{
+  "frozen": "2026-10-30",
+  "contract": "Exhaustive speed pass of the drop-a-folder-and-run path in PyMicroglia and Auto-Organotypic, to practical diminishing returns. Scientific outputs, labels, manifests and refusals must match the baseline exactly apart from declared volatile fields; a deliberate behaviour change is listed in the README with its reason.",
+  "material": "A candidate is material when it can remove at least 10% or 0.5 s from a drop-step case, or at least 5% or 30 s per recording from a chain case.",
+  "budgets": {
+    "drop to table": "<= 1 s for 12 stacks, <= 3 s for 96 stacks or one instrument folder",
+    "label save": "<= 200 ms",
+    "run click to first stage shown": "<= 2 s plus the page's polling interval",
+    "results list": "<= 500 ms",
+    "Auto-Organotypic create project": "<= 2 s for 12 stacks"
+  },
+  "workloads": {
+    "separate95": "real Incucyte vessel 95 per-image export, 15,708 planes, read only",
+    "local1/12/96": "hard links of one real 49-frame B4 Green+Red stack (1152 x 1536)",
+    "small": "one real recording: B4, first day, 49 frames",
+    "typical": "one real recording: B4, first three days, 145 frames",
+    "growth": "three real recordings: B4 day 1, B5 day 1, B4 day 2",
+    "r20": "20 earlier run manifests beside one stack",
+    "labels500": "500 labelled recordings"
+  },
+  "required": [
+    "action:pm.inspect.separate95",
+    "action:pm.run_params.separate95",
+    "action:pm.inspect.local1",
+    "action:pm.inspect.local12",
+    "action:pm.inspect.local96",
+    "action:pm.inspect.file1",
+    "action:pm.save_labels.local12",
+    "action:pm.save_labels.local96",
+    "action:pm.run_params.local12",
+    "action:pm.run_params.local96",
+    "action:pm.results.r20",
+    "action:pm.chain.small",
+    "action:pm.chain.typical",
+    "action:pm.chain.growth",
+    "action:ao.inspect_inputs.local12",
+    "action:ao.inspect_inputs.local96",
+    "action:ao.create_project.local12",
+    "action:ao.save_annotations.local12",
+    "action:ao.labels_by_stem.labels500",
+    "workflow:pm.page.drop-to-table",
+    "workflow:pm.page.run-to-first-stage",
+    "workflow:pm.page.reopen-with-results",
+    "workflow:ao.page.paste-to-inputs",
+    "workflow:ao.page.create-and-process"
+  ]
+}

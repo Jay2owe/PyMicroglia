@@ -118,7 +118,7 @@ def main():
             ah._issue_module=timed_load
             stack.callback(setattr,ah,'_issue_module',loader)
             profiler=cProfile.Profile();profiler.enable()
-            try:holder['result']=ah._issue012(labels,ledger,protected,raw,lag,cfg.source_frame_offset)
+            try:holder['result']=ah._domain_ownership_reconcile(labels,ledger,protected,raw,lag,cfg.source_frame_offset)
             finally:
                 profiler.disable();profiler.dump_stats(a.output/'profile.pstats')
             holder['comparison']={}

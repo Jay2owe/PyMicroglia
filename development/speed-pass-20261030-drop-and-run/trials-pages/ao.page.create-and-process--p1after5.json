@@ -1,0 +1,17 @@
+{
+ "case": "ao.page.create-and-process",
+ "label": "p1after5",
+ "source": "<session>/scratch\\drop-speed\\final",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\final\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\final\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 2.0711,
+ "segments": {
+  "create_and_process": 2.0711
+ },
+ "server_start_seconds": 6.229,
+ "output_sha256": "8803962d2b8455f4a05de3acf25b4bed54ade443a9ce30c31daa2f4f4bfa365b",
+ "error": null,
+ "browser": "http://127.0.0.1:9333"
+}

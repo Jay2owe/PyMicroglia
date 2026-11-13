@@ -11,7 +11,7 @@
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[char]);
   async function api(path, options={}) {
     const response=await fetch(path,{...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});
-    let result; try{result=await response.json();}catch{result={message:await response.text()};}
+    const text=await response.text();let result;try{result=JSON.parse(text);}catch{result={message:text};}
     if(!response.ok) throw new Error(result.detail||result.message||`Request failed (${response.status})`);
     return result;
   }
@@ -44,7 +44,7 @@
     state.page=page;localStorage.setItem("pm-page",page);renderNav();renderPage();
     const jump=()=>state.explorer?.ready.then(()=>{const e=state.explorer;e.$(page)?.scrollIntoView({block:"start"});requestAnimationFrame(()=>e.draw());});
     if(returning&&selected)ensureExplorationRun(selected.run,selected.stem).then(jump).catch(error=>{$("run-context").textContent=error.message;});
-    else if(!["events","rhythm-audit"].includes(page))jump();
+    else if(!["events","rhythm-audit","intake"].includes(page))jump();
   }
   function openRhythmAudit(selection=null){
     if(!state.auditBrowser){
@@ -62,6 +62,32 @@
     const data=state.explorer?.sourceData||state.explorationData;
     state.auditBrowser.open(data,selection);
   }
+  function openIntake(){
+    if(!state.intake)state.intake=window.PyMicrogliaIntake.mount($("intake-host"),{api,
+      onOpenRun:folder=>{$("run-path").value=folder;localStorage.setItem("pm-run-folder",folder);state.page="follow";localStorage.setItem("pm-page","follow");renderNav();selectRun(false);},
+      onJob:()=>refreshJobs()});
+    state.intake.open();
+  }
+  // Drops anywhere: the Auto-Organotypic tab starts an experiment there; every
+  // other view analyses the recordings with the full automated chain.
+  function dropPaths(paths){
+    $("drop-overlay").hidden=true;
+    if(state.workspace==="auto"&&state.config?.auto_url){$("auto-frame").contentWindow?.postMessage({type:"auto-organotypic-drop",paths},new URL(state.config.auto_url).origin);return;}
+    if(state.workspace!=="micro")setWorkspace("micro");
+    if(state.page!=="intake")setMicroPage("intake");
+    state.intake?.add(paths);
+  }
+  window.pyMicrogliaDrop=dropPaths;
+  let dragDepth=0;
+  const draggingFiles=event=>[...(event.dataTransfer?.types||[])].includes("Files");
+  function showDropOverlay(){$("drop-overlay").textContent=state.workspace==="auto"?"Drop to start an Auto-Organotypic experiment":"Drop to analyse with the full chain";$("drop-overlay").hidden=false;}
+  document.addEventListener("dragenter",event=>{if(!draggingFiles(event))return;dragDepth++;showDropOverlay();});
+  document.addEventListener("dragleave",event=>{if(!draggingFiles(event))return;dragDepth=Math.max(0,dragDepth-1);if(!dragDepth)$("drop-overlay").hidden=true;});
+  document.addEventListener("dragover",event=>{if(draggingFiles(event))event.preventDefault();});
+  document.addEventListener("drop",event=>{if(!draggingFiles(event))return;event.preventDefault();dragDepth=0;$("drop-overlay").hidden=true;
+    if(!window.pywebview&&state.workspace!=="auto"){if(state.workspace!=="micro")setWorkspace("micro");setMicroPage("intake");state.intake?.hint("This browser does not reveal where dropped files are. Paste the file or folder path instead, or use the desktop window.");}});
+  // The embedded Auto-Organotypic page announces a drag so this window can catch the drop with real paths.
+  window.addEventListener("message",event=>{if(event.source===$("auto-frame").contentWindow&&event.data?.type==="auto-organotypic-drag"&&window.pywebview){dragDepth=0;showDropOverlay();}});
   function openEvents(){
     if(!state.eventBrowser){state.eventBrowser=window.PyMicrogliaEvents.mount({api,
       cohort:data=>{const explorer=state.explorer;return explorer?.sourceData?.run===data?.run&&explorer?.sourceData?.stem===data?.stem?explorer.cohortIds:null;},
@@ -81,6 +107,10 @@
   }
   function renderNav() {
     const nav=$("micro-nav");nav.innerHTML="";
+    const startDivider=document.createElement("span");startDivider.className="nav-divider";startDivider.textContent="START";nav.append(startDivider);
+    const intakeButton=document.createElement("button");intakeButton.textContent="Analyse recordings";intakeButton.dataset.page="intake";
+    intakeButton.classList.toggle("active",state.page==="intake");intakeButton.onclick=()=>setMicroPage("intake");nav.append(intakeButton);
+    const exploreDivider=document.createElement("span");exploreDivider.className="nav-divider";exploreDivider.textContent="EXPLORE RESULTS";nav.append(exploreDivider);
     for(const group of state.explorationCatalogue?.groups||[]){
       const button=document.createElement("button");button.textContent=group.title;button.dataset.page=group.key;
       button.classList.toggle("active",group.key===state.page||state.page==="rhythms"&&group.key==="follow");
@@ -124,6 +154,12 @@
     if(events){$("exploration-host").hidden=true;content.hidden=true;state.explorer?.pause();if(state.workspace==="micro")openEvents();return;}
     state.eventBrowser?.close();
     if(audit){$("exploration-host").hidden=true;content.hidden=true;state.explorer?.pause();if(state.workspace==="micro")openRhythmAudit();return;}
+    if(state.page!=="intake")state.intake?.close();
+    const eyebrow=$("micro-page-head").querySelector(".eyebrow");eyebrow.dataset.usual??=eyebrow.textContent;
+    eyebrow.textContent=state.page==="intake"?"PYMICROGLIA / START":eyebrow.dataset.usual;
+    $("micro-toolbar").style.display=state.page==="intake"?"none":"";  // .toolbar's display overrides [hidden]
+    if(state.page==="intake"){$("exploration-host").hidden=true;content.hidden=true;state.explorer?.pause();
+      $("page-title").textContent="Analyse recordings";$("page-question").textContent="Drop stacks or a folder, label them, then run the whole analysis.";openIntake();return;}
     const onDemand=["results","pipelines","all_methods"].includes(state.page);
     $("exploration-host").hidden=onDemand;content.hidden=!onDemand;
     if(onDemand)state.explorer?.pause();
@@ -565,9 +601,12 @@
   async function initialize(){
     if(localStorage.getItem("pm-workspace")==="events"){localStorage.setItem("pm-workspace","micro");localStorage.setItem("pm-page","events");}
     if(localStorage.getItem("pm-workspace")==="micro"&&localStorage.getItem("pm-page")==="events"){$("run-path").value=new URL(location.href).searchParams.get("run")||localStorage.getItem("pm-run-folder")||"";state.page="events";setWorkspace("micro");}
-    try{[state.config,state.map,state.explorationCatalogue]=await Promise.all([api("/api/config"),api("/api/catalogue"),api("/api/exploration/catalogue")]);
+    try{[state.config,state.map,state.explorationCatalogue]=await Promise.all([api("/api/config"),api("/api/catalogue"),
+        // A broken figure list must not stop new recordings being analysed.
+        api("/api/exploration/catalogue").catch(error=>{$("exploration-readout").textContent=`Linked views unavailable: ${error.message}`;return {groups:[]};})]);
       const lastPage=localStorage.getItem("pm-page");
-      if(lastPage && ["results","all_methods","pipelines","follow","tissue","compare","events","rhythm-audit"].includes(lastPage))state.page=lastPage;
+      if(lastPage && ["intake","results","all_methods","pipelines","follow","tissue","compare","events","rhythm-audit"].includes(lastPage))state.page=lastPage;
+      else if(!localStorage.getItem("pm-run-folder"))state.page="intake";
       const url=new URL(window.location.href),requestedRun=url.searchParams.get("run");
       if(requestedRun){url.searchParams.delete("run");history.replaceState(null,"",url);}
       const savedRunFolder=requestedRun||localStorage.getItem("pm-run-folder")||"";

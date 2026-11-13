@@ -1,0 +1,1300 @@
+{
+  "schema": "pymicroglia.accepted-completed-feedback.v1",
+  "accepted_attempt": "R218-A004",
+  "saved_feedback": {
+    "satisfied": 1798,
+    "total": 2348
+  },
+  "required_boundaries": [
+    [
+      "anchored",
+      "anchored_owner"
+    ],
+    [
+      "anchored",
+      "coupled_return"
+    ],
+    [
+      "anchored",
+      "observed_memory"
+    ],
+    [
+      "anchored",
+      "recurrent_borrower"
+    ],
+    [
+      "anchored",
+      "recurrent_memory"
+    ],
+    [
+      "birth",
+      "birth_validation"
+    ],
+    [
+      "birth",
+      "coobserved_memory"
+    ],
+    [
+      "birth",
+      "overlapping_detector"
+    ],
+    [
+      "birth",
+      "shared_parent"
+    ],
+    [
+      "branch",
+      "fresh_discovery"
+    ],
+    [
+      "branch",
+      "recurrent_branches"
+    ],
+    [
+      "contact",
+      "r204_a004"
+    ],
+    [
+      "current",
+      "r195_a002"
+    ],
+    [
+      "current",
+      "r196_a001"
+    ],
+    [
+      "current",
+      "r197_a002"
+    ],
+    [
+      "current",
+      "r198_a003"
+    ],
+    [
+      "current",
+      "r199_a001"
+    ],
+    [
+      "current",
+      "r200_a004"
+    ],
+    [
+      "current",
+      "r201_a002"
+    ],
+    [
+      "current",
+      "r202_a007"
+    ],
+    [
+      "current",
+      "r203_a003"
+    ],
+    [
+      "detector",
+      "bookended"
+    ],
+    [
+      "detector",
+      "dual"
+    ],
+    [
+      "detector",
+      "gap"
+    ],
+    [
+      "detector",
+      "resident"
+    ],
+    [
+      "detector",
+      "successive"
+    ],
+    [
+      "dim",
+      "departing_dim_reuse"
+    ],
+    [
+      "dim",
+      "dim_satellite"
+    ],
+    [
+      "dim",
+      "moving_flicker"
+    ],
+    [
+      "dim",
+      "smaller_flicker"
+    ],
+    [
+      "dim",
+      "spatial_exchange"
+    ],
+    [
+      "duplicate",
+      "detached_soma"
+    ],
+    [
+      "duplicate",
+      "duplicate_sites"
+    ],
+    [
+      "duplicate",
+      "short_contact"
+    ],
+    [
+      "duplicate",
+      "small_remnants"
+    ],
+    [
+      "embedded",
+      "coupled_exchange"
+    ],
+    [
+      "embedded",
+      "embedded_soma"
+    ],
+    [
+      "embedded",
+      "multistage_handoff"
+    ],
+    [
+      "embedded",
+      "terminal_handoff"
+    ],
+    [
+      "final",
+      "r213_a010"
+    ],
+    [
+      "final",
+      "r214_a003"
+    ],
+    [
+      "final",
+      "r215_a003"
+    ],
+    [
+      "final",
+      "r217_a001"
+    ],
+    [
+      "final",
+      "r218_a004"
+    ],
+    [
+      "fragment",
+      "contacts"
+    ],
+    [
+      "fragment",
+      "fragments"
+    ],
+    [
+      "fragment",
+      "remnants"
+    ],
+    [
+      "handoff",
+      "absent_return"
+    ],
+    [
+      "handoff",
+      "brief_contact"
+    ],
+    [
+      "handoff",
+      "displaced_continuation"
+    ],
+    [
+      "handoff",
+      "exclusive_terminal"
+    ],
+    [
+      "handoff",
+      "precontact_terminal"
+    ],
+    [
+      "handoff",
+      "raw_rejoin"
+    ],
+    [
+      "handoff",
+      "stable_branch"
+    ],
+    [
+      "initial",
+      "lineage_union"
+    ],
+    [
+      "optical",
+      "adjacent_pseudosoma"
+    ],
+    [
+      "optical",
+      "compact_optical"
+    ],
+    [
+      "optical",
+      "contact_name"
+    ],
+    [
+      "optical",
+      "extreme_optical"
+    ],
+    [
+      "optical",
+      "persistent_optical"
+    ],
+    [
+      "optical",
+      "transient_weak_seat"
+    ],
+    [
+      "owner",
+      "contact_edge_continuation"
+    ],
+    [
+      "owner",
+      "dormant_raw_soma_bridge"
+    ],
+    [
+      "owner",
+      "owner_handoffs"
+    ],
+    [
+      "owner",
+      "persistent_resident_contacts"
+    ],
+    [
+      "owner",
+      "protected_owner_closure"
+    ],
+    [
+      "owner",
+      "reciprocal_owner_bridge"
+    ],
+    [
+      "owner",
+      "stable_large_contacts"
+    ],
+    [
+      "owner",
+      "weak_soma_bridge"
+    ],
+    [
+      "ownerless",
+      "expanded_dropout_cores"
+    ],
+    [
+      "ownerless",
+      "flanked_contacts"
+    ],
+    [
+      "ownerless",
+      "leading_soma"
+    ],
+    [
+      "ownerless",
+      "ownerless_runs"
+    ],
+    [
+      "ownerless",
+      "short_ownerless_runs"
+    ],
+    [
+      "ownerless",
+      "sustained_contacts"
+    ],
+    [
+      "process",
+      "process_extensions"
+    ],
+    [
+      "process",
+      "process_groups"
+    ],
+    [
+      "recovery",
+      "r178_a020"
+    ],
+    [
+      "recovery",
+      "r179_a002"
+    ],
+    [
+      "recovery",
+      "r180_a002"
+    ],
+    [
+      "recovery",
+      "r181_a001"
+    ],
+    [
+      "recovery",
+      "r182_a002"
+    ],
+    [
+      "recovery",
+      "r183_a004"
+    ],
+    [
+      "recovery",
+      "r184_a001"
+    ],
+    [
+      "recovery",
+      "r185_a002"
+    ],
+    [
+      "recovery",
+      "r186_a001"
+    ],
+    [
+      "recovery",
+      "r187_a002"
+    ],
+    [
+      "recovery",
+      "r188_a001"
+    ],
+    [
+      "recovery",
+      "r189_a001"
+    ],
+    [
+      "recovery",
+      "r190_a002"
+    ],
+    [
+      "recovery",
+      "r191_a003"
+    ],
+    [
+      "recovery",
+      "r192_a001"
+    ],
+    [
+      "recovery",
+      "r193_a002"
+    ],
+    [
+      "recovery",
+      "r194_a003"
+    ],
+    [
+      "repeated",
+      "distinct_holders"
+    ],
+    [
+      "repeated",
+      "repeated_name"
+    ],
+    [
+      "repeated",
+      "weak_continuation"
+    ],
+    [
+      "repeated",
+      "weak_discovery"
+    ],
+    [
+      "reviewed",
+      "R205-A007"
+    ],
+    [
+      "reviewed",
+      "R206-A002"
+    ],
+    [
+      "reviewed",
+      "R207-A003"
+    ],
+    [
+      "reviewed",
+      "R208-A005"
+    ],
+    [
+      "reviewed",
+      "R210-A011"
+    ],
+    [
+      "terminal",
+      "dormant_basins"
+    ],
+    [
+      "terminal",
+      "large_flickers"
+    ],
+    [
+      "terminal",
+      "separable_basins"
+    ],
+    [
+      "terminal",
+      "short_excursions"
+    ],
+    [
+      "terminal",
+      "soma_free_satellites"
+    ],
+    [
+      "terminal",
+      "terminal_return"
+    ],
+    [
+      "union",
+      "emergent_branch"
+    ],
+    [
+      "union",
+      "fragmented_holder"
+    ],
+    [
+      "union",
+      "reviewed_union"
+    ],
+    [
+      "union",
+      "short_anchor_branch"
+    ],
+    [
+      "union",
+      "temporal_gap"
+    ]
+  ],
+  "required_inventories": [
+    "bridge",
+    "intensity",
+    "interface",
+    "motion",
+    "owners",
+    "shape",
+    "temporal",
+    "tracked"
+  ],
+  "metric": "Saved feedback relationships; not dense pixel accuracy or a prediction for new data",
+  "original_recipe_sha256": "9d64fc876b3afe22cf47ed0f54a45c86a8650f2f177de92a76fa9068216806e8",
+  "files_sha256": {
+    "code/completed_feedback_sequence.py": "9e8234dfb1640cf9dd986d8eded036fe38e2a24ca41137e0e2bef0f9266f533b",
+    "code/initial_completed_feedback_composition.py": "4a220dce5f6b307f47b436ed02032e858f71f336d3e96bb857104055762eab02",
+    "code/density_reciprocal_overlap.py": "5b2649db96a293aab84369b194cb80613fc94d69a8587e66b03f647627f6175f",
+    "code/recurrent_cyclic_alias.py": "e918457817cfb3c61007629568ec7dc885cf219d6c569f3afc4afba9578fd8e1",
+    "code/resident_takeover.py": "29e786ddd157429831438bc0d62ce6d43c1e95f1d0ab3458da040206551ba42f",
+    "code/events.py": "b4a1712e9d72326c7829c2246ee0b685c408089af64b5bf0a3f0080f57465dc4",
+    "code/tracking.py": "1e537e028b8d0f1b25cac360e470443a3eb3b008f5c1e203fa15473277466372",
+    "code/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "code/separating_outline_motion.py": "81acaaee5193f779e591e30f3fbad931c4d82e4245b0c24a7dcafcef1e3d8acb",
+    "code/shared_outline_motion.py": "463b9b9e988cebac2652427da7db78b7505c8f5bbdafa8d7bd8ffbe685ae900d",
+    "code/high_confidence_lineage_union.py": "d86fa47070a508699dcecec6a1679698b87c198cb8c72bef6870b62f7ea46974",
+    "code/grouped_cell_geometry.py": "fce21490819f5c6cd927574fa80aa9df821b8b4693754131525ecf82292f1215",
+    "code/owner_sampling_speed.py": "7bb2eadfb2fd7ad88a42e5c874e7b2cfd72b43435b00a300ac939a2869943146",
+    "code/resident_sampling_speed.py": "5378663f685574bc16ce19a37b686dbeae34f03c070640d68373cc20a12a26fa",
+    "code/overlap_pair_encoding.py": "14e67fb74679e5365257a960177d4a9dd1156918dc00b5a430f7cb6150f69997",
+    "code/fragment_contact_composition.py": "23788699169ddbc39f1ff0fecc2c22c9f111480be3c6666ea2b8820b76b6d9c9",
+    "code/local_fragment_reunion.py": "0e80070f4c64e06804ecc88fc09e21244cb77adf612e4b278dc9b1216b671c88",
+    "code/episode_consistent_fusion.py": "1c4d2e3522b931861e3a807f6e7c48073853647c5569dcc1128d10bcb629265f",
+    "code/owner_consensus.py": "0080d7c3bf52221d3ae9407eef762dbe01920a2f848732656d4d773f5d625c71",
+    "code/component_accounting.py": "1d603d000ac5515641b97b98df81e0c4243195b5b2b56f0e81a810b9db567f87",
+    "code/ownership_spatial_units.py": "87a54698f7debc6e41ded6cdf634d11783a1e4e6fc54c30ea63b4ea5163bbf08",
+    "code/detector_spatial_units.py": "e22a5a569764c2d236a74c20f1d1e30139308706c74113a7f750a1697107622c",
+    "code/recurrent_two_body_fusion.py": "47d2e8e558e9ad9dfe2c88557af14859c1dbfba699fe6ae4d4a991763b7bbb11",
+    "code/merge_partition_speed.py": "60676569ff34d0e63aa1f419bc65412d0f892bdbef29732183222bbc0c6aa9cf",
+    "code/array_bounds.py": "cfbd0e54627d31e5c0b02089f43dec8be6ae0075957cee8285a63fbb878a330d",
+    "code/separable_merge_recovery.py": "d6f2f7ac9be0d2d5da3be647b066473a7cbd72ec278979c7a644cfb6d4df3086",
+    "code/bookended_remnant_partition.py": "096e6453f1065368e2804fe6e43f2785e348c73d7e50fc70e9e6ed500053c855",
+    "code/owner_episode_composition.py": "42136a0960a0e90df95cc83ab732d78451aab469e7122176e5e234936ddb875c",
+    "code/complete_owner_handoff_episodes_a003.py": "4cb7f54fda6732a2308b6ceee9109794c0bf9de77ef60893848e667f7ee61c09",
+    "code/complete_owner_handoff_episodes_r10_a002.py": "5305c91dc515bcfcf7612825fbdce55d4d6773edae27d71bfd86bfca8f8938f1",
+    "code/bridge_weak_soma_gaps.py": "a6e44e36a2a172992ebb789403a1ef517b7d91f92d4662c6697bd8938d8f80ca",
+    "code/bridge_strong_owner_flickers.py": "59cd4adf795939f5df7457800c2fb02bcafca5f7b4263701ac8a304270666e9c",
+    "code/bridge_dormant_raw_soma_gaps.py": "ab66a73777369674bfc9b717b3a56d4351fb84020e9e44d3079c21906e3a3fce",
+    "code/bridge_two_frame_owner_gaps.py": "a9e6209c6f626390dec9c4c8a1309ce80d650cc9d8b0fbe16e4fbad205dff24a",
+    "code/recover_stable_large_soma_contacts.py": "2d9d0652389640e86eba9df87d83ab0ce6f0ed573d35ed6acc4c7a3cd3fff6a6",
+    "code/recover_stable_dual_soma_contacts.py": "12c1ecf9362a51f3e42846733f099c9b117f38fe341e8ac237d64a13358fefe7",
+    "code/recover_persistent_resident_contacts.py": "b9b8abe3a7cef9ead503db73711daaa1a644202879f0e71774da7ebd50f15bdd",
+    "code/recover_contact_edge_continuation.py": "863fb91447a42865206a7bfdf1311c7938ff62b155161e90969a078b686fb755",
+    "code/ownerless_contact_composition.py": "dd7a0dde8057e449ca9caa2325d6f5332f4aba64f35d9a5f8d4d6e502947058c",
+    "code/recover_ownerless_soma_runs.py": "f230ba9d0b1dcd55272bc0efad4ce549c551156991979224d719fa1df462b31f",
+    "code/recover_short_ownerless_soma_runs.py": "1cc348723a4e8f7c7eb4cb9b417b9600ff5cdcb08f4a41fa5885e37a1809ebe5",
+    "code/expand_short_dropout_soma_cores.py": "ce5f69d0c72a466f5d5bf0d362db95786ec5eaccd81152a5913b3c279f618b6f",
+    "code/recover_leading_soma_from_future_run.py": "43f6c26731fba9d3d3cada2e1ecd79393080182625ca1a83611acabf7a58aade",
+    "code/recover_flanked_large_contact_interruptions.py": "f7683a6d56eb2643d266d6ab6b557e1629a8997d70ec2aa8aefff09f26556f1d",
+    "code/recover_sustained_weak_contact_splits.py": "1800dcf739d3f603ad0fd8d6b1fe1312fc00f0cf849aaadb20025558eccd62f4",
+    "code/recover_terminal_name_switch_contacts_lazy_areas.py": "7cfaac3ef1322df9a93059e5d6addd6b98f143e232ec188cea1cccb4d0f1f395",
+    "code/embedded_handoff_composition.py": "615f8fb8bbfea56e06163c35d0b72fc784113776dc3e764afc657320b3ecdc64",
+    "code/recover_terminal_name_switch_contacts_a002.py": "61a0fd44981a4bd14fbf68e79a792df912293d17a91277fb030d62c296dc7038",
+    "code/recover_bounded_embedded_somata.py": "0e2b7865bcb418d7754a13417dfaa7e25fc1c3be923aa123d26ef8ba5ea93bd2",
+    "code/recover_reciprocal_retired_name_a002.py": "d86704a5883b1ca6bb50017b7442b8bc0ade8286ff90142ff36e146aaef015dc",
+    "code/extend_terminal_raw_soma_handoff_v2.py": "9a249954f2fc2a776a772e3f5fb75f4f1740d64f906de94873be8d5ce908907b",
+    "code/recover_reciprocal_long_handoff.py": "9c2c712e08227759cfb20240c0b9ac5c47b4376f8d864fc9407f9aa7b97be1d5",
+    "code/recover_dim_displaced_name_paths.py": "eeadd6a3ea37ac9f903c5fcaa1515e72fd1f5317dfc97be86d7efde0f0f086e1",
+    "code/recover_multistage_reciprocal_handoff.py": "d6519dcd260e69ff014b0a675d73331a754265b3a2cccfe14e52d982f95c1a4a",
+    "code/review_union_composition.py": "f6ab732db1a0dc53ffc159545803831fae3502fc075e8003ac1b746b5367bced",
+    "code/recover_emergent_reciprocal_late_handoff.py": "68a208d02d3d6444e537f32f0514719a8312b5b0bbba23079add47c13f2c85f4",
+    "code/recover_short_anchor_soma_name.py": "04362b79ae182ddba14173479f932dc09570d870fedcbbec4737382b73240fc0",
+    "code/recover_fragmented_holder_terminal_name.py": "3233ddfdb57e99504aa96c5e6c04afceb9f66ef19df9904d46d4f54d39d6e5b6",
+    "code/recover_temporal_gap_owner_bridge.py": "824c084028dce28a7ea5986603c9156e5ec4479266b5d1408eb046c5e259ed01",
+    "code/optical_source_composition.py": "a22378fa0b3a5dc149691e23e0a86306f116839faf5dc39b3f29f842b9493725",
+    "code/recover_contact_bounded_soma_name.py": "1ace997e913cddd2bb5e8156ce67a1ab2511abf041a557083787ff6f61ae5689",
+    "code/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "code/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "code/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "code/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "code/remove_transient_weak_seats.py": "bf3ae88d107ff4bbd589de3110efde18de8cd156927bdfb0d6f1461861a7e520",
+    "code/recurrent_branch_composition.py": "9f6ce75c6abb62f437fd5cdfa35ae4805e5f2637c27082a9a7f690ca47d2f0a0",
+    "code/recurrent_branch_inventory.py": "c80839e42670ce6bfff8e1bff4eb356f29a4396e2b55eb863193d992e5b6a8b7",
+    "code/reunite_recurrent_elongated_branches.py": "02e5f53778aafc7f04ca8fb4364feb03759106382e211bedf58cd8cf4064cb6d",
+    "code/process_group_composition_v2.py": "b0181022e0991bc7fb90dbaf8e8918d4a4ec376bc1f7eacd2991394703327227",
+    "code/process_inventory_tracked.py": "6864e0175fb3450ef76d97d5fd0e915399587b0b132f8713eae0f3b211f21b36",
+    "code/process_inventory_temporal.py": "176a73d7c37f8cb8d2cf1f725f66950f88e5bd631d0187cb93cd5acaa9827acf",
+    "code/process_inventory_owners.py": "f6327cc8356901eac08c13ce7f952d7e27be8d81c2020b3640d4b3df362dbc29",
+    "code/process_inventory_intensity.py": "5adedde22dfd8bd9b849958ce20d442a3d84c955b9a1562677992f568b1e005f",
+    "code/process_inventory_shape.py": "148dcf5f3cee800cb8bb99fca7adbefc013f1acbcdd2040ca14d22400c309831",
+    "code/process_inventory_interface_v2.py": "f594f666f6b106e7adebcf19cc42d6bf1f9e82ff793cf78fd858dff7c74a52fc",
+    "code/process_inventory_bridge.py": "b1e51f7e4e7f0b83e5e09bc09ff4b87b2e285480c3fd0cb44551b2264bdffde0",
+    "code/process_inventory_motion.py": "42fd274abc9dea856fba9a2f450c2aa5aa31efebf57a2d062f15af8733bcf5ff",
+    "code/reunite_large_process_groups.py": "c0506ad3b0c6aa8d58c57a2e03de568f42de66ff4b6f016be2a28ca2e2260ddd",
+    "code/extend_approved_process_paths.py": "aa48d6bd4a30058c853e5e9406d9b764f0d3d336731bc8a57f568ecb6ccb67de",
+    "code/repeated_name_composition.py": "fc5c754b864926b22cd278272131a338fbf34fb52909c58c679f3264161751a9",
+    "code/recover_fragmented_repeated_soma_name.py": "3e5887139be54976533d5c59928d2792a7fefa938cc0bdb66ba0366499a46c19",
+    "code/recover_distinct_holder_lineages.py": "119fa9572c600106480537b7847560d0ec4f0d26a29bf923fffc6d7b99f4a9ce",
+    "code/recover_repeated_soma_renaming.py": "565fb26bcfc32d94696251faf7b8f021d1b2d9c07d4e2d8d8df2e3ff5e8dfd92",
+    "code/reunite_recurrent_weak_branch_paths.py": "75bd6c78aca573393e8240f5817058e2f812b8ca6e50475f1528cfce545dea93",
+    "code/extend_recurrent_weak_branch_paths.py": "d1673bb1b96bf94b7cd67f9c4c7b7a6935ad41754e9fb1fc504aefd506e99bde",
+    "code/duplicate_contact_composition.py": "b008871cc57fb9b55112ebb83da5c69caf1e78d19b0af7e616cebc436df311b8",
+    "code/recover_persistent_duplicate_soma_sites.py": "7a8d8df34533804b8e9481bd21b6bb87bf8adf1e093f0818d0e8dae752f1ea08",
+    "code/recover_terminal_emergent_name_theft.py": "da8208311d76c6c42165cfa0ad3a9788632899890ad8cffc827977fc6ebed769",
+    "code/recover_bookended_owner_with_small_remnants.py": "31f7e6cdc49e8e9f4c21bf3858997d2b500090877d884a9e7da60562ac30d52d",
+    "code/recover_detached_soma_shared_outline.py": "adb20317555d0005df7b806ede0b1bf813dfc13fdcc5efa3a5d919eddd28808a",
+    "code/recover_persistent_large_soma_satellites.py": "968b8fb561eda0da0d5138d29b9369d53ea37a053938bb7a58c3d46774d9b105",
+    "code/recover_short_bookended_soma_beside_transient_holders.py": "344d7b9ad3cd09fe10eee1a58c2207244d68a9cc59ccf2acaeb2429a982b0024",
+    "code/terminal_owner_composition.py": "3d2fc0b747fe6f0209e306fe1b270ddbd58f1db84364734bea10aa9efd63961a",
+    "code/recover_terminal_raw_soma_return.py": "6d59a9b120d5e5af136538d3a23a74f84b3eb5b0fef1de756b409f44cedb10a7",
+    "code/recover_soma_free_temporal_satellites.py": "8953290e2ef5ccdb5ab76b00896aab24ad435e23ec73204b7f088b71bc59e13c",
+    "code/recover_dormant_name_soma_basins.py": "96b3a0bf12c117d316b0900b002cefd2cb2d073d17389c3e737df1aca186ef2b",
+    "code/recover_large_bookended_owner_flickers.py": "684215c725ae3b8e5942839bbd9c76e59784664f2e1c191712c3b044e4cf96d4",
+    "code/recover_separable_bookended_soma_basins.py": "a26d0af1c760f6de9d71183646a62fb6268669c571c5949aba76f7c922b6b23f",
+    "code/recover_complete_short_soma_owner_excursions.py": "3b7520ef6810cde00bc32a6031fc3a28b47a80a03ef2b98d483cdc5480f975a8",
+    "code/handoff_contact_composition.py": "c55c4793b1470fb26ef3497befd15ebe720c2bb61f8ee3e287086e885ee0f934",
+    "code/recover_stable_soma_branch_handoffs.py": "a65979b631455454d63176aa5a002500d88f792edf579864f23669c2c7533934",
+    "code/recover_stable_branch_after_absent_contact.py": "a5edf1c4802a446e1faaf5f6be264ea4990c3fc107e79f28abeeb5a1667ac630",
+    "code/continue_displaced_soma_after_tracker_loss.py": "4a4b1e3ed13c52d6570d0d550f8f7b2bdbbc43b60c517db6a179bed75d778117",
+    "code/rejoin_raw_soma_after_tracker_handoff.py": "3438f0cae2c23d384b07d897e0067bed36866a8a5d8b60b75a5cc8e194694aac",
+    "code/restore_brief_name_in_raw_separable_contact.py": "ea9b9be0947d73b5b42ece34ff693e5bfe91dc0d4aae651d571b59e957971a15",
+    "code/restore_terminal_exclusive_soma_from_shared_name.py": "3701b823e12f2cb2aed2335e0f00a5fa918e7c389f7b0de7318bfe925794962e",
+    "code/restore_terminal_soma_after_recent_precontact.py": "2b10dcca651cf6776d638c15a9cf0094a25c739941195ce10be060d01015be76",
+    "code/dim_exchange_composition.py": "c3202f4f685ce702aee2137cae375e67945191ae5bcd5ff1524a49403c334481",
+    "code/restore_departing_soma_from_shared_outline.py": "50456ba20496eeba959673ca0c2872d306c7cfaa0a67735988c8830e8f99d7d1",
+    "code/recover_displaced_soma_from_dim_name_reuse.py": "1b955773f3e4c43737bfe52596b317d48df35c25891d1e2c08c04b73f9f538ec",
+    "code/recover_smaller_bookended_owner_flickers.py": "2553dbee016dae0e645a837fc3b9e80ed0affb7106de543fea267e1b0584fc8c",
+    "code/recover_nearby_dim_temporal_satellites.py": "3ae8c8503a9cc065a488a238929d8c18030fd378e7d0345e38f6c1036365ffa4",
+    "code/restore_spatial_reciprocal_soma_paths_a002.py": "7d5c2be48bde80f567f244a428c8b6d538f7076b79ad05315b4b4e50cfe9f6c4",
+    "code/restore_moving_one_frame_soma_names.py": "fd636f1beec9a70da0916e43b708526ef0517bd9fbc3327d954233ad873aaae5",
+    "code/anchored_memory_composition.py": "07e7aba04a0d7cd9b57cf766299ca0f68260e2c66f221d391e6a201b272a0b1c",
+    "code/stationary_reconciliation.py": "dc40f2e8b2bfedbe2ee2f24530ff3a31a39391b200dc6cdb407a3ee381fc20a2",
+    "code/anchored_soma_owner_recovery_a002_snapshot.py": "9bb8fb231c7875415d25d79ee764671e7dd79fb8fdef7885cc56264e826aace0",
+    "code/complete_stationary_soma_path.py": "b4323e8392ee2c2324f0439e158505f196c564df6d574593be4b50d1c0b7996d",
+    "code/recover_recurrent_soma_name_conflicts_a002.py": "cc64ec62cafcc1c61e7b7f6164a9ce824e2e416b8fb19f9ee3039e657423bec1",
+    "code/coupled_observed_name_return_a002.py": "3c4d7bc6d6ec9ed3ae0250155e74710f0effa9e9d48172b3633369eb382cd90b",
+    "code/observed_lineage_name_memory_a009.py": "f5235a3b09c6f75b3eea1647f9e512832aa686814f9ab2303532668a0f9191b4",
+    "code/predecessor_name_memory_a002.py": "f87be3abc8afb43c403407ab0fd947aae5a637406e05d21abbcdefb83a70173f",
+    "code/predecessor_suffix_area_continuity.py": "e7cb999ed0eccaefb2b85c636411276e5ef5b553523f58808a97b5946ad75e26",
+    "code/recording_area_continuity.py": "b2c93df60f00b59b27225a0dfe1e94857c597b92c769ab7c695828b274ce30e9",
+    "code/observations.py": "e42160a7b3466ab5370fba4e03a47d36656b26bd3562c34f69cd88adae7d9c18",
+    "code/recurrent_core_memory_a002.py": "043b4af314083c0be0acdd734110b5708b40d81def9bf2d4a946add0e48fb052",
+    "code/shared_birth_composition.py": "f2c30afd0834afd025bf434f01573146837121bd3593eed0aa07ec8895762aeb",
+    "code/shared_parent_soma_ownership_a003.py": "40f469a5b5aae11f0967fd8fd19c03698ab99649a6fc662eedc49502a04ccdfc",
+    "code/overlapping_detector_soma_memory_a003.py": "5a4c49e32a9109e6925c594da2868c32d844b700947913901ab8d9d76abd1259",
+    "code/shared_parent_soma_ownership_a002.py": "7a0d4351dc494bfd6e9cbb06cd7f36efff02e2972b227ef1363b79e7c9f00688",
+    "code/coobserved_bookended_soma_memory_a001.py": "dafc2cfecd65ef3b2462716bc77e79f9b7973cf367ff97b0c0a2f4edc3174b73",
+    "code/known_soma_birth_validation_a004.py": "238113d0779f32367316a45cc1d28297399f324087dc29b65c57bb0333e8bd2a",
+    "code/repeated_retired_owner_memory_a005.py": "c45b7348c7e8d56c98cc3eb7a57bd3f768f0db8e8652ab6d501e557bbd1c6973",
+    "code/repeated_retired_owner_memory_a002.py": "374dba3774a9dcdf17082753547501a83b82bc62ff0845e0243a18a4d7bdc0f3",
+    "code/detector_gap_composition.py": "6f19463e638684871be8555ca6f5b4466f3ad6b138c3d0491c7ab6a67b9a2bf7",
+    "code/successive_detector_soma_memory_a004.py": "7f91cef2a72860a36e789ca4e343ab846f16f34915190f63b7f78cc8dd088ef3",
+    "code/successive_detector_soma_memory_a001.py": "58de79bab104f0127770ab80c4c49073a2278f03488b3f94922f939136fca157",
+    "code/dual_soma_ancestry_memory_a001.py": "c8389fe09774a7d921100a431e4a094b28461296a56e701052076b4f6ecc3848",
+    "code/competing_soma_physical_memory.py": "610566b4c06f6a85acfa8bb63dc44e34e09edf99ed567c6b3a8a219402c7b676",
+    "code/observed_soma_gap_memory_a003.py": "60fc39ac189eef040b2873abada6feb948a4a1b931e9905c2f86909a586e2e70",
+    "code/observed_competing_soma_memory.py": "951571cec38606d366732e0443d0aafdd057a85d6434aadb893f4522362ef297",
+    "code/recording_start_soma_memory_a001.py": "da64621d87bb685fff1c99c043316fdf6c583197c14d07dd6806280cb2096d42",
+    "code/bookended_multi_owner_soma_a002.py": "4988776f24a92151f26329f97cb4ffefad613f2308640ffa171b7f46dc2d3385",
+    "code/recovery_sequence_composition.py": "52da3dacfdd8d94f15199d3123f7437bb8dbf8841d76bb52d07f20d56d62480f",
+    "code/current_path_sequence_composition.py": "ab528069c2fd630d2ea8191e8070cc27c465081c8e6222289a6103b4aedd41d3",
+    "code/contact_sequence_composition.py": "df371a14a7588237d2a109e4276554cf7c9f3046260b85f9914073d22f3a92dd",
+    "code/reviewed_ownership_composition.py": "3bb8482edb8b441d885ac9bb2111f04283e3162b7abff33e9b6b5f8b733d3b89",
+    "code/final_ownership_composition.py": "df8b4ceda288098f717a299c0fb97303ae166458dfc089586ee82675ea3f108a",
+    "frozen/recovery/r178_a020/recovery_detached_inference.py": "ea1e43f2299d10dcfdcd72d234fd0b63a9994d39e9484014641373b5d0af1022",
+    "frozen/recovery/r178_a020/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r179_a002/recovery_envelope_inference.py": "b2cf95b98cc20ffaab901308a0fef75e4f77c62c75efe48fa8c2f94ae289001a",
+    "frozen/recovery/r179_a002/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r180_a002/recovery_consistent_history.py": "d63c81965caa2d0ff8a75b10a9bb5271def2d343c0b40a7869010f9d7c600324",
+    "frozen/recovery/r180_a002/recovery_measured_history.py": "3dc280bd8df368e6a6c5d5dbad8dcd84a3442317b25f8157bbdae7a9cd467eb5",
+    "frozen/recovery/r180_a002/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r181_a001/recovery_consistent_continuous_history.py": "b13bcb63ab4d06b1f9bed74a6f6ea4411a80d8f9d97e758f3543232b4915f0d3",
+    "frozen/recovery/r181_a001/recovery_continuous_history.py": "c1889a5465b1c09635f34eeb19c40061d66a025e6b6e8ed652c2f86ec43fa034",
+    "frozen/recovery/r181_a001/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r182_a002/recovery_origin_evidence.py": "2d7103d27a7c69558b86a2c3cb50453751bd9629babafb0417d322f6405190a4",
+    "frozen/recovery/r182_a002/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r183_a004/recovery_raw_soma_footprint.py": "42c17adec5c34e2b0be9c39491919d2c8a52a95d90a7d397d7fc0a7aa6cd0a92",
+    "frozen/recovery/r183_a004/observed_soma_reservation.py": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a",
+    "frozen/recovery/r184_a001/recovery_destination_soma.py": "e432c71d9c38d60a1b2407e658d474c9b823cc4e9d9a5de37990410de1ebbaaa",
+    "frozen/recovery/r185_a002/recovery_temporal_soma_support.py": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+    "frozen/recovery/r185_a002/recovery_destination_soma.py": "e432c71d9c38d60a1b2407e658d474c9b823cc4e9d9a5de37990410de1ebbaaa",
+    "frozen/recovery/r185_a002/recovery_qualified_soma.py": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378",
+    "frozen/recovery/r186_a001/recovery_interior_anchor.py": "251b65ee4f3348a08802403c7647e044f5d3461eba4ac3a9a2ed1156399cea6d",
+    "frozen/recovery/r186_a001/recovery_destination_soma.py": "e6315a5243c4344926c684bebbb8fe02318341fc2a09d54642f71e9db1e0700b",
+    "frozen/recovery/r186_a001/recovery_temporal_soma_support.py": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+    "frozen/recovery/r186_a001/recovery_qualified_soma.py": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378",
+    "frozen/recovery/r187_a002/recovery_interior_neighbour.py": "eb109ccb848bbcb9beaf243ddea5ccf4dee2ce7abb48693ff27c0a05f0aedc62",
+    "frozen/recovery/r187_a002/recovery_destination_soma.py": "fbbf22c20518b6d0434d1052a9128025fe71881c3824cf69c69692849519ecd7",
+    "frozen/recovery/r187_a002/recovery_temporal_soma_support.py": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+    "frozen/recovery/r187_a002/recovery_qualified_soma.py": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378",
+    "frozen/recovery/r188_a001/recovery_raw_source_anchor.py": "e44d297812afe4162f2876404b45130bc93a306824ec93c8517ff5d1fe2e4011",
+    "frozen/recovery/r188_a001/recovery_destination_soma.py": "ed604f7753ee09f7ca8fd760860b17b83dc59ad600ea898aa7e4648c81db465d",
+    "frozen/recovery/r188_a001/recovery_temporal_soma_support.py": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+    "frozen/recovery/r188_a001/recovery_qualified_soma.py": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378",
+    "frozen/recovery/r189_a001/recovery_raw_adjacent.py": "55d37580490e787a545387f6fa904f8cb33dbc80b121f887be6d55044f47e15c",
+    "frozen/recovery/r189_a001/recovery_destination_soma.py": "2bb68c69e75a96c2ee739255b7dd3f2f2e18442f42c3836b797fe9eca441fb57",
+    "frozen/recovery/r189_a001/recovery_temporal_soma_support.py": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+    "frozen/recovery/r189_a001/recovery_qualified_soma.py": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378",
+    "frozen/recovery/r190_a002/recovery_centred_soma.py": "d5cec34d9352806115e3f54d886e6f87fefc64a26fec3f22941dc92a2dade668",
+    "frozen/recovery/r190_a002/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/recovery/r190_a002/recovery_temporal_soma_support.py": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+    "frozen/recovery/r190_a002/recovery_qualified_soma.py": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000",
+    "frozen/recovery/r191_a003/spatial_soma_paths.py": "d9b3e3139872778bc46e5b6c97e14a26d6bbdc6cc6e09c139f7ec441ecfa2800",
+    "frozen/recovery/r191_a003/recovery_temporal_soma_support.py": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+    "frozen/recovery/r191_a003/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/recovery/r191_a003/recovery_qualified_soma.py": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000",
+    "frozen/recovery/r192_a001/enclosed_soma_paths.py": "28e744b328b764e94e447a03b045b663bb57ba63ef1f393d5032e3936636c293",
+    "frozen/recovery/r192_a001/spatial_soma_paths.py": "5c4f3f290de794288d7f3324013a104844daee6f6614774a258e2a33cf3586af",
+    "frozen/recovery/r192_a001/recovery_temporal_soma_support.py": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+    "frozen/recovery/r192_a001/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/recovery/r192_a001/recovery_qualified_soma.py": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000",
+    "frozen/recovery/r193_a002/enclosed_measured_soma_paths.py": "e26ffc5f0b95529829079ff36e5d6431d90fc65a6ef3807c0f7223b206dbc09d",
+    "frozen/recovery/r193_a002/spatial_soma_paths.py": "be805a5aade28f9b0b4c24a48d72fcfa70821409f26236f32eca532bf4fce8ce",
+    "frozen/recovery/r193_a002/recovery_temporal_soma_support.py": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+    "frozen/recovery/r193_a002/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/recovery/r193_a002/recovery_qualified_soma.py": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000",
+    "frozen/recovery/r194_a003/quantised_peak_tracker_soma_paths.py": "62175a8baed6c9fa1994ca756867ae31fee6ea5b3b21dd0a643a164801f5973d",
+    "frozen/recovery/r194_a003/spatial_soma_paths.py": "640a0d220649c1e7b75ec684c42492d1259efb24bd77d239a65227a3359cc29e",
+    "frozen/recovery/r194_a003/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/recovery/r194_a003/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/recovery/r194_a003/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r195_a002/measured_current_spatial_soma_paths.py": "05cddf9f9cdb58e65bc80ca479b1db3d78d14b90180d005774a8d00145ff5f0d",
+    "frozen/current/r195_a002/current_spatial_soma_paths.py": "0e793f4da6e38a81c29e08a78d9e43cbb9735d723c8eac69350de2a484d56b16",
+    "frozen/current/r195_a002/spatial_soma_paths.py": "640a0d220649c1e7b75ec684c42492d1259efb24bd77d239a65227a3359cc29e",
+    "frozen/current/r195_a002/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r195_a002/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r195_a002/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r196_a001/reciprocal_measured_soma_paths.py": "fee80d08101eac53d40dd306e4b362381be82d2080a83335bfafb1f794b80daf",
+    "frozen/current/r196_a001/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r196_a001/spatial_soma_paths.py": "ce57e98b35ddbbe6d3b4a4bfb4e9121ed1b134be784e46f9914aa31bbde468ce",
+    "frozen/current/r196_a001/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r196_a001/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r196_a001/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r197_a002/owned_tracker_measured_soma_paths.py": "d99c3a0bc6755479ce592e415eede2bac0b5f68e9a3fa9ce5c3d05a9f7327ce0",
+    "frozen/current/r197_a002/tracker_core_ownership.py": "fcde2d1d8e18e599d4aee9a7f7ca7959c2842a236def13b500383cd9821cff49",
+    "frozen/current/r197_a002/reciprocal_measured_soma_paths.py": "bee81e0dbf485f9f961a7957bb2992f540a58ed87a45dd4265f5a5cf9ba89ec6",
+    "frozen/current/r197_a002/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r197_a002/spatial_soma_paths.py": "87c9144db28af324b86d26122c6f5701a3bec0d73cc19cd391bff8247c3e8bbb",
+    "frozen/current/r197_a002/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r197_a002/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r197_a002/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r198_a003/observed_signal_gap_soma_paths.py": "45777882aa5f46548497545b967a5885ae3ae94d3cfb0e713305fc77c74f7cd7",
+    "frozen/current/r198_a003/inferred_raw_soma_evidence.py": "0eaa71bea76fff3c538e87952bba17f8571956bc52b1a5ac63f629fed36239fc",
+    "frozen/current/r198_a003/tracker_core_ownership.py": "fcde2d1d8e18e599d4aee9a7f7ca7959c2842a236def13b500383cd9821cff49",
+    "frozen/current/r198_a003/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r198_a003/spatial_soma_paths.py": "4a51c2a7cda614bfad36b67ef7402417a308159c39a0485419bb7b6cd8ceb03a",
+    "code/soma_profile_evidence.py": "98f0a7781d68601ec266c1a7769236adc1933e7877f061905f1a30ba5b3a2dcd",
+    "frozen/current/r198_a003/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r198_a003/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r198_a003/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r199_a001/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/current/r199_a001/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r199_a001/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/current/r199_a001/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/current/r199_a001/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/current/r199_a001/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/current/r200_a004/inferred_owned_tracker_soma_paths.py": "2f205efbae395534d356ad62732742b460ca9b7009919ac2af05085c25e8120d",
+    "frozen/current/r200_a004/spatial_soma_paths.py": "53c11dbb37dd86dadf61533af7db25c5925eb59a4c3314dac140036fac2bb8dc",
+    "code/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "code/tracker_core_ownership.py": "06744282f097bb8965bb70443a02a7cb74d4925ca8c40925d2b053d5ce6e819c",
+    "code/inferred_raw_soma_evidence.py": "ed99b5ceaab48cea7b1b226f664643bea8187e0149af1f947dfcc463ba90ebc4",
+    "frozen/current/r200_a004/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r200_a004/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r200_a004/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r201_a002/repeated_thin_soma_paths.py": "4ee1a9f7bb7fe3fc57cb1a9141cc2ae845b82b17765c935f5d45ccd054f53421",
+    "frozen/current/r201_a002/spatial_soma_paths.py": "621bcecf4fda8f39bcf6e050a26c536b7baecb391f663568a9a49ea52afaf966",
+    "frozen/current/r201_a002/recovery_temporal_soma_support.py": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+    "frozen/current/r201_a002/recovery_destination_soma.py": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+    "frozen/current/r201_a002/recovery_qualified_soma.py": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6",
+    "frozen/current/r202_a007/complete_body_consensus_memory.py": "080f228969bddea0859f0406fb0951ae62c7b2c723e317b677d10f1750a56b8e",
+    "frozen/current/r202_a007/bracketed_consensus_memory.py": "5916ad335234b93b405a315ce1c8690ef9a3371ded633ff85e4bac63ab4bc5ea",
+    "frozen/current/r202_a007/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/current/r202_a007/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r202_a007/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/current/r202_a007/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/current/r202_a007/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/current/r202_a007/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/current/r203_a003/stable_birth_lineage.py": "ce044dd30b987f66225268b31fd3bddf2025db7137254fbbb46696f8b49570ba",
+    "frozen/current/r203_a003/measured_birth_lineage.py": "b71552c75ee1f2da2e6672f92330a4b4c50ce1f5fdcfca9e4619ee2de24c990c",
+    "frozen/current/r203_a003/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/current/r203_a003/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/current/r203_a003/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/current/r203_a003/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/current/r203_a003/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/current/r203_a003/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/contact/r204_a004/contact_identity_reservation.py": "37beef7673f4ca6951109ffedb0c10cd8cfe8775d30bdbb3d70800c13c1cdc58",
+    "frozen/contact/r204_a004/contact_core_continuity.py": "7ccc1c6433515f005edfd60a67b3394c911f35c296c3b5d28e0b114b23e3bb38",
+    "frozen/contact/r204_a004/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/contact/r204_a004/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/contact/r204_a004/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/contact/r204_a004/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/contact/r204_a004/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/contact/r204_a004/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/reviewed/R205-A007/precontact_soma_ownership.py": "ecfe963cddb20fcca990d242796070c1097bb73c4504a01f9b30f7ce62d2b1e6",
+    "frozen/reviewed/R205-A007/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/reviewed/R205-A007/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/reviewed/R205-A007/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/reviewed/R205-A007/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/reviewed/R205-A007/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/reviewed/R205-A007/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/reviewed/R206-A002/shared_birth_soma_ownership.py": "24d9ae21149114ce9f86d15c896660840b1269ed92259501586129199bba9d82",
+    "frozen/reviewed/R206-A002/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/reviewed/R206-A002/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/reviewed/R206-A002/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/reviewed/R206-A002/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/reviewed/R206-A002/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/reviewed/R206-A002/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/reviewed/R207-A003/silhouette_owner_continuity.py": "5f27548d7027c9e6017f20aa39697426160344b57ccc9bd7d29300d0d9b4862c",
+    "frozen/reviewed/R207-A003/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/reviewed/R207-A003/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/reviewed/R207-A003/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/reviewed/R207-A003/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/reviewed/R207-A003/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/reviewed/R207-A003/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/reviewed/R208-A005/core_replacement_ownership.py": "bc2f4e19a54ccaaa9a6b1263ef0af96af279f5a3b1282835906abfa4673f8235",
+    "frozen/reviewed/R208-A005/remove_optical_core_adjacent_pseudosomata.py": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+    "frozen/reviewed/R208-A005/remove_extreme_compact_overbright_sources.py": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+    "frozen/reviewed/R208-A005/remove_compact_stable_overbright_sources.py": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+    "frozen/reviewed/R208-A005/remove_persistent_overbright_sources.py": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+    "frozen/reviewed/R208-A005/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/reviewed/R208-A005/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "frozen/reviewed/R210-A011/closed_integration.py": "f0d51102e4895167978a2b26ffa0f620c7d000ad09b94d430e78d6d1b2bcc402",
+    "frozen/reviewed/R210-A011/touching_peak.py": "810b591578ba0bd9bbfd5268c03de6ee38d84c41d408013d8d82586ab29558e5",
+    "frozen/reviewed/R210-A011/local_fragment_reunion.py": "0e80070f4c64e06804ecc88fc09e21244cb77adf612e4b278dc9b1216b671c88",
+    "frozen/final/r213_a010/native_gap_owner_transport_a010.py": "208766a7f376fae2870592f657583c01c3014206e6def06af99afa45a1870bbb",
+    "frozen/final/r213_a010/measured_soma_gap_memory.py": "2535e5785260bbc345fb88fd092ffc0d4205699650b2e8f31c1df24edca92bb5",
+    "frozen/final/r214_a003/transport_restored_ownership_a003.py": "9eb7dff1b9deaac8d140e6bc0beab730698979a7660fbf4504f6e82210cc2d64",
+    "frozen/final/r214_a003/transport_restored_ownership_a002.py": "a25a2f21169bbab6936753413c9d83e701642802f69d59eda6b712461b2c725c",
+    "frozen/final/r214_a003/measured_restoration_continuity_a002.py": "7900b57c91732dfbac9b7b56c2541134aa61b5abadb123638da44d6988c153bf",
+    "frozen/final/r214_a003/measured_restoration_continuity.py": "65a64b86871171cc2f3161c60f81205ad70b8a012d6609acf3917c327fffb7e5",
+    "frozen/final/r215_a003/native_gap_owner_transport_a003.py": "81a7217a8ef0b56fc768522f1f797c0fd597e25235138f267526ef50ab212fa5",
+    "frozen/final/r215_a003/measured_soma_gap_memory.py": "e265acb11ed35dc5facc2e52798db0b90e9760ef5f4c21315e0c8e2b028c3f01",
+    "frozen/final/r217_a001/existing_owner_a001.py": "ef933402f45a679e08db726e3b7854f7dc4a15a66482e6ee0b2a8dae54b4628a",
+    "frozen/final/r218_a004/separated_body_ownership_a004.py": "56dfc4c72f1142b2e7144c190729921eb414563c4466a2c7546d17f571cc4741",
+    "frozen/final/r218_a004/optical_basin_soma_paths.py": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+    "frozen/final/r218_a004/reciprocal_soma_overlap.py": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+    "settings.json": "0fa8d52a0ae851583d483e892e8bef78ecc1cc6cbd46561e5e212d647cd06290"
+  },
+  "source_origins": {
+    "code/completed_feedback_sequence.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/completed_feedback_sequence.py",
+    "code/initial_completed_feedback_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/initial_completed_feedback_composition.py",
+    "code/density_reciprocal_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/density_reciprocal_overlap.py",
+    "code/recurrent_cyclic_alias.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recurrent_cyclic_alias.py",
+    "code/resident_takeover.py": "code/resident_takeover.py",
+    "code/events.py": "code/events.py",
+    "code/tracking.py": "code/tracking.py",
+    "code/observed_soma_reservation.py": "code/observed_soma_reservation.py",
+    "code/separating_outline_motion.py": "code/separating_outline_motion.py",
+    "code/shared_outline_motion.py": "code/shared_outline_motion.py",
+    "code/high_confidence_lineage_union.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/high_confidence_lineage_union.py",
+    "code/grouped_cell_geometry.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/grouped_cell_geometry.py",
+    "code/owner_sampling_speed.py": "code/owner_sampling_speed.py",
+    "code/resident_sampling_speed.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/resident_sampling_speed.py",
+    "code/overlap_pair_encoding.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/overlap_pair_encoding.py",
+    "code/fragment_contact_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/fragment_contact_composition.py",
+    "code/local_fragment_reunion.py": "code/local_fragment_reunion.py",
+    "code/episode_consistent_fusion.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/episode_consistent_fusion.py",
+    "code/owner_consensus.py": "code/owner_consensus.py",
+    "code/component_accounting.py": "code/component_accounting.py",
+    "code/ownership_spatial_units.py": "code/ownership_spatial_units.py",
+    "code/detector_spatial_units.py": "code/detector_spatial_units.py",
+    "code/recurrent_two_body_fusion.py": "code/recurrent_two_body_fusion.py",
+    "code/merge_partition_speed.py": "code/merge_partition_speed.py",
+    "code/array_bounds.py": "code/array_bounds.py",
+    "code/separable_merge_recovery.py": "code/separable_merge_recovery.py",
+    "code/bookended_remnant_partition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bookended_remnant_partition.py",
+    "code/owner_episode_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/owner_episode_composition.py",
+    "code/complete_owner_handoff_episodes_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/complete_owner_handoff_episodes_a003.py",
+    "code/complete_owner_handoff_episodes_r10_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/complete_owner_handoff_episodes_r10_a002.py",
+    "code/bridge_weak_soma_gaps.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bridge_weak_soma_gaps.py",
+    "code/bridge_strong_owner_flickers.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bridge_strong_owner_flickers.py",
+    "code/bridge_dormant_raw_soma_gaps.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bridge_dormant_raw_soma_gaps.py",
+    "code/bridge_two_frame_owner_gaps.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bridge_two_frame_owner_gaps.py",
+    "code/recover_stable_large_soma_contacts.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_stable_large_soma_contacts.py",
+    "code/recover_stable_dual_soma_contacts.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_stable_dual_soma_contacts.py",
+    "code/recover_persistent_resident_contacts.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_persistent_resident_contacts.py",
+    "code/recover_contact_edge_continuation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_contact_edge_continuation.py",
+    "code/ownerless_contact_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/ownerless_contact_composition.py",
+    "code/recover_ownerless_soma_runs.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_ownerless_soma_runs.py",
+    "code/recover_short_ownerless_soma_runs.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_short_ownerless_soma_runs.py",
+    "code/expand_short_dropout_soma_cores.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/expand_short_dropout_soma_cores.py",
+    "code/recover_leading_soma_from_future_run.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_leading_soma_from_future_run.py",
+    "code/recover_flanked_large_contact_interruptions.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_flanked_large_contact_interruptions.py",
+    "code/recover_sustained_weak_contact_splits.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_sustained_weak_contact_splits.py",
+    "code/recover_terminal_name_switch_contacts_lazy_areas.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_terminal_name_switch_contacts_lazy_areas.py",
+    "code/embedded_handoff_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/embedded_handoff_composition.py",
+    "code/recover_terminal_name_switch_contacts_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_terminal_name_switch_contacts_a002.py",
+    "code/recover_bounded_embedded_somata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_bounded_embedded_somata.py",
+    "code/recover_reciprocal_retired_name_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_reciprocal_retired_name_a002.py",
+    "code/extend_terminal_raw_soma_handoff_v2.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/extend_terminal_raw_soma_handoff_v2.py",
+    "code/recover_reciprocal_long_handoff.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_reciprocal_long_handoff.py",
+    "code/recover_dim_displaced_name_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_dim_displaced_name_paths.py",
+    "code/recover_multistage_reciprocal_handoff.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_multistage_reciprocal_handoff.py",
+    "code/review_union_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/review_union_composition.py",
+    "code/recover_emergent_reciprocal_late_handoff.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_emergent_reciprocal_late_handoff.py",
+    "code/recover_short_anchor_soma_name.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_short_anchor_soma_name.py",
+    "code/recover_fragmented_holder_terminal_name.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_fragmented_holder_terminal_name.py",
+    "code/recover_temporal_gap_owner_bridge.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_temporal_gap_owner_bridge.py",
+    "code/optical_source_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/optical_source_composition.py",
+    "code/recover_contact_bounded_soma_name.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_contact_bounded_soma_name.py",
+    "code/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/remove_persistent_overbright_sources.py",
+    "code/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/remove_compact_stable_overbright_sources.py",
+    "code/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/remove_extreme_compact_overbright_sources.py",
+    "code/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/remove_optical_core_adjacent_pseudosomata.py",
+    "code/remove_transient_weak_seats.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/remove_transient_weak_seats.py",
+    "code/recurrent_branch_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/recurrent_branch_composition.py",
+    "code/recurrent_branch_inventory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/recurrent_branch_inventory.py",
+    "code/reunite_recurrent_elongated_branches.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/reunite_recurrent_elongated_branches.py",
+    "code/process_group_composition_v2.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_group_composition_v2.py",
+    "code/process_inventory_tracked.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_tracked.py",
+    "code/process_inventory_temporal.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_temporal.py",
+    "code/process_inventory_owners.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_owners.py",
+    "code/process_inventory_intensity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_intensity.py",
+    "code/process_inventory_shape.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_shape.py",
+    "code/process_inventory_interface_v2.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_interface_v2.py",
+    "code/process_inventory_bridge.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_bridge.py",
+    "code/process_inventory_motion.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/process_inventory_motion.py",
+    "code/reunite_large_process_groups.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/reunite_large_process_groups.py",
+    "code/extend_approved_process_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/extend_approved_process_paths.py",
+    "code/repeated_name_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/repeated_name_composition.py",
+    "code/recover_fragmented_repeated_soma_name.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_fragmented_repeated_soma_name.py",
+    "code/recover_distinct_holder_lineages.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_distinct_holder_lineages.py",
+    "code/recover_repeated_soma_renaming.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_repeated_soma_renaming.py",
+    "code/reunite_recurrent_weak_branch_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/reunite_recurrent_weak_branch_paths.py",
+    "code/extend_recurrent_weak_branch_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/extend_recurrent_weak_branch_paths.py",
+    "code/duplicate_contact_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/duplicate_contact_composition.py",
+    "code/recover_persistent_duplicate_soma_sites.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_persistent_duplicate_soma_sites.py",
+    "code/recover_terminal_emergent_name_theft.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_terminal_emergent_name_theft.py",
+    "code/recover_bookended_owner_with_small_remnants.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_bookended_owner_with_small_remnants.py",
+    "code/recover_detached_soma_shared_outline.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_detached_soma_shared_outline.py",
+    "code/recover_persistent_large_soma_satellites.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_persistent_large_soma_satellites.py",
+    "code/recover_short_bookended_soma_beside_transient_holders.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_short_bookended_soma_beside_transient_holders.py",
+    "code/terminal_owner_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/terminal_owner_composition.py",
+    "code/recover_terminal_raw_soma_return.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_terminal_raw_soma_return.py",
+    "code/recover_soma_free_temporal_satellites.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_soma_free_temporal_satellites.py",
+    "code/recover_dormant_name_soma_basins.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_dormant_name_soma_basins.py",
+    "code/recover_large_bookended_owner_flickers.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_large_bookended_owner_flickers.py",
+    "code/recover_separable_bookended_soma_basins.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_separable_bookended_soma_basins.py",
+    "code/recover_complete_short_soma_owner_excursions.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_complete_short_soma_owner_excursions.py",
+    "code/handoff_contact_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/handoff_contact_composition.py",
+    "code/recover_stable_soma_branch_handoffs.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_stable_soma_branch_handoffs.py",
+    "code/recover_stable_branch_after_absent_contact.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_stable_branch_after_absent_contact.py",
+    "code/continue_displaced_soma_after_tracker_loss.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/continue_displaced_soma_after_tracker_loss.py",
+    "code/rejoin_raw_soma_after_tracker_handoff.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/rejoin_raw_soma_after_tracker_handoff.py",
+    "code/restore_brief_name_in_raw_separable_contact.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_brief_name_in_raw_separable_contact.py",
+    "code/restore_terminal_exclusive_soma_from_shared_name.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_terminal_exclusive_soma_from_shared_name.py",
+    "code/restore_terminal_soma_after_recent_precontact.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_terminal_soma_after_recent_precontact.py",
+    "code/dim_exchange_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/dim_exchange_composition.py",
+    "code/restore_departing_soma_from_shared_outline.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_departing_soma_from_shared_outline.py",
+    "code/recover_displaced_soma_from_dim_name_reuse.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_displaced_soma_from_dim_name_reuse.py",
+    "code/recover_smaller_bookended_owner_flickers.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_smaller_bookended_owner_flickers.py",
+    "code/recover_nearby_dim_temporal_satellites.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_nearby_dim_temporal_satellites.py",
+    "code/restore_spatial_reciprocal_soma_paths_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_spatial_reciprocal_soma_paths_a002.py",
+    "code/restore_moving_one_frame_soma_names.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/restore_moving_one_frame_soma_names.py",
+    "code/anchored_memory_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/anchored_memory_composition.py",
+    "code/stationary_reconciliation.py": "code/stationary_reconciliation.py",
+    "code/anchored_soma_owner_recovery_a002_snapshot.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/anchored_soma_owner_recovery_a002_snapshot.py",
+    "code/complete_stationary_soma_path.py": "code/complete_stationary_soma_path.py",
+    "code/recover_recurrent_soma_name_conflicts_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recover_recurrent_soma_name_conflicts_a002.py",
+    "code/coupled_observed_name_return_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/coupled_observed_name_return_a002.py",
+    "code/observed_lineage_name_memory_a009.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/observed_lineage_name_memory_a009.py",
+    "code/predecessor_name_memory_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/predecessor_name_memory_a002.py",
+    "code/predecessor_suffix_area_continuity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/predecessor_suffix_area_continuity.py",
+    "code/recording_area_continuity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recording_area_continuity.py",
+    "code/observations.py": "code/observations.py",
+    "code/recurrent_core_memory_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recurrent_core_memory_a002.py",
+    "code/shared_birth_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/shared_birth_composition.py",
+    "code/shared_parent_soma_ownership_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/shared_parent_soma_ownership_a003.py",
+    "code/overlapping_detector_soma_memory_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/overlapping_detector_soma_memory_a003.py",
+    "code/shared_parent_soma_ownership_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/shared_parent_soma_ownership_a002.py",
+    "code/coobserved_bookended_soma_memory_a001.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/coobserved_bookended_soma_memory_a001.py",
+    "code/known_soma_birth_validation_a004.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/known_soma_birth_validation_a004.py",
+    "code/repeated_retired_owner_memory_a005.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/repeated_retired_owner_memory_a005.py",
+    "code/repeated_retired_owner_memory_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/repeated_retired_owner_memory_a002.py",
+    "code/detector_gap_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/detector_gap_composition.py",
+    "code/successive_detector_soma_memory_a004.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/successive_detector_soma_memory_a004.py",
+    "code/successive_detector_soma_memory_a001.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/successive_detector_soma_memory_a001.py",
+    "code/dual_soma_ancestry_memory_a001.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/dual_soma_ancestry_memory_a001.py",
+    "code/competing_soma_physical_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/competing_soma_physical_memory.py",
+    "code/observed_soma_gap_memory_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/observed_soma_gap_memory_a003.py",
+    "code/observed_competing_soma_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/observed_competing_soma_memory.py",
+    "code/recording_start_soma_memory_a001.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/recording_start_soma_memory_a001.py",
+    "code/bookended_multi_owner_soma_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/code/bookended_multi_owner_soma_a002.py",
+    "code/recovery_sequence_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/recovery_sequence_composition.py",
+    "code/current_path_sequence_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/current_path_sequence_composition.py",
+    "code/contact_sequence_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/contact_sequence_composition.py",
+    "code/reviewed_ownership_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/reviewed_ownership_composition.py",
+    "code/final_ownership_composition.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/final_ownership_composition.py",
+    "frozen/recovery/r178_a020/recovery_detached_inference.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r178_a020/recovery_detached_inference.py",
+    "frozen/recovery/r178_a020/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r178_a020/observed_soma_reservation.py",
+    "frozen/recovery/r179_a002/recovery_envelope_inference.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r179_a002/recovery_envelope_inference.py",
+    "frozen/recovery/r179_a002/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r179_a002/observed_soma_reservation.py",
+    "frozen/recovery/r180_a002/recovery_consistent_history.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r180_a002/recovery_consistent_history.py",
+    "frozen/recovery/r180_a002/recovery_measured_history.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r180_a002/recovery_measured_history.py",
+    "frozen/recovery/r180_a002/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r180_a002/observed_soma_reservation.py",
+    "frozen/recovery/r181_a001/recovery_consistent_continuous_history.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r181_a001/recovery_consistent_continuous_history.py",
+    "frozen/recovery/r181_a001/recovery_continuous_history.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r181_a001/recovery_continuous_history.py",
+    "frozen/recovery/r181_a001/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r181_a001/observed_soma_reservation.py",
+    "frozen/recovery/r182_a002/recovery_origin_evidence.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r182_a002/recovery_origin_evidence.py",
+    "frozen/recovery/r182_a002/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r182_a002/observed_soma_reservation.py",
+    "frozen/recovery/r183_a004/recovery_raw_soma_footprint.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r183_a004/recovery_raw_soma_footprint.py",
+    "frozen/recovery/r183_a004/observed_soma_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r183_a004/observed_soma_reservation.py",
+    "frozen/recovery/r184_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r184_a001/recovery_destination_soma.py",
+    "frozen/recovery/r185_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r185_a002/recovery_temporal_soma_support.py",
+    "frozen/recovery/r185_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r185_a002/recovery_destination_soma.py",
+    "frozen/recovery/r185_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r185_a002/recovery_qualified_soma.py",
+    "frozen/recovery/r186_a001/recovery_interior_anchor.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r186_a001/recovery_interior_anchor.py",
+    "frozen/recovery/r186_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r186_a001/recovery_destination_soma.py",
+    "frozen/recovery/r186_a001/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r186_a001/recovery_temporal_soma_support.py",
+    "frozen/recovery/r186_a001/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r186_a001/recovery_qualified_soma.py",
+    "frozen/recovery/r187_a002/recovery_interior_neighbour.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r187_a002/recovery_interior_neighbour.py",
+    "frozen/recovery/r187_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r187_a002/recovery_destination_soma.py",
+    "frozen/recovery/r187_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r187_a002/recovery_temporal_soma_support.py",
+    "frozen/recovery/r187_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r187_a002/recovery_qualified_soma.py",
+    "frozen/recovery/r188_a001/recovery_raw_source_anchor.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r188_a001/recovery_raw_source_anchor.py",
+    "frozen/recovery/r188_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r188_a001/recovery_destination_soma.py",
+    "frozen/recovery/r188_a001/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r188_a001/recovery_temporal_soma_support.py",
+    "frozen/recovery/r188_a001/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r188_a001/recovery_qualified_soma.py",
+    "frozen/recovery/r189_a001/recovery_raw_adjacent.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r189_a001/recovery_raw_adjacent.py",
+    "frozen/recovery/r189_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r189_a001/recovery_destination_soma.py",
+    "frozen/recovery/r189_a001/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r189_a001/recovery_temporal_soma_support.py",
+    "frozen/recovery/r189_a001/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r189_a001/recovery_qualified_soma.py",
+    "frozen/recovery/r190_a002/recovery_centred_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r190_a002/recovery_centred_soma.py",
+    "frozen/recovery/r190_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r190_a002/recovery_destination_soma.py",
+    "frozen/recovery/r190_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r190_a002/recovery_temporal_soma_support.py",
+    "frozen/recovery/r190_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r190_a002/recovery_qualified_soma.py",
+    "frozen/recovery/r191_a003/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r191_a003/spatial_soma_paths.py",
+    "frozen/recovery/r191_a003/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r191_a003/recovery_temporal_soma_support.py",
+    "frozen/recovery/r191_a003/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r191_a003/recovery_destination_soma.py",
+    "frozen/recovery/r191_a003/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r191_a003/recovery_qualified_soma.py",
+    "frozen/recovery/r192_a001/enclosed_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r192_a001/enclosed_soma_paths.py",
+    "frozen/recovery/r192_a001/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r192_a001/spatial_soma_paths.py",
+    "frozen/recovery/r192_a001/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r192_a001/recovery_temporal_soma_support.py",
+    "frozen/recovery/r192_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r192_a001/recovery_destination_soma.py",
+    "frozen/recovery/r192_a001/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r192_a001/recovery_qualified_soma.py",
+    "frozen/recovery/r193_a002/enclosed_measured_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r193_a002/enclosed_measured_soma_paths.py",
+    "frozen/recovery/r193_a002/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r193_a002/spatial_soma_paths.py",
+    "frozen/recovery/r193_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r193_a002/recovery_temporal_soma_support.py",
+    "frozen/recovery/r193_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r193_a002/recovery_destination_soma.py",
+    "frozen/recovery/r193_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r193_a002/recovery_qualified_soma.py",
+    "frozen/recovery/r194_a003/quantised_peak_tracker_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r194_a003/quantised_peak_tracker_soma_paths.py",
+    "frozen/recovery/r194_a003/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r194_a003/spatial_soma_paths.py",
+    "frozen/recovery/r194_a003/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r194_a003/recovery_temporal_soma_support.py",
+    "frozen/recovery/r194_a003/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r194_a003/recovery_destination_soma.py",
+    "frozen/recovery/r194_a003/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/recovery_sequence_frozen_code/r194_a003/recovery_qualified_soma.py",
+    "frozen/current/r195_a002/measured_current_spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/measured_current_spatial_soma_paths.py",
+    "frozen/current/r195_a002/current_spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/current_spatial_soma_paths.py",
+    "frozen/current/r195_a002/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/spatial_soma_paths.py",
+    "frozen/current/r195_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/recovery_temporal_soma_support.py",
+    "frozen/current/r195_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/recovery_destination_soma.py",
+    "frozen/current/r195_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r195_a002/recovery_qualified_soma.py",
+    "frozen/current/r196_a001/reciprocal_measured_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/reciprocal_measured_soma_paths.py",
+    "frozen/current/r196_a001/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/reciprocal_soma_overlap.py",
+    "frozen/current/r196_a001/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/spatial_soma_paths.py",
+    "frozen/current/r196_a001/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/recovery_temporal_soma_support.py",
+    "frozen/current/r196_a001/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/recovery_destination_soma.py",
+    "frozen/current/r196_a001/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r196_a001/recovery_qualified_soma.py",
+    "frozen/current/r197_a002/owned_tracker_measured_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/owned_tracker_measured_soma_paths.py",
+    "frozen/current/r197_a002/tracker_core_ownership.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/tracker_core_ownership.py",
+    "frozen/current/r197_a002/reciprocal_measured_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/reciprocal_measured_soma_paths.py",
+    "frozen/current/r197_a002/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/reciprocal_soma_overlap.py",
+    "frozen/current/r197_a002/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/spatial_soma_paths.py",
+    "frozen/current/r197_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/recovery_temporal_soma_support.py",
+    "frozen/current/r197_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/recovery_destination_soma.py",
+    "frozen/current/r197_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r197_a002/recovery_qualified_soma.py",
+    "frozen/current/r198_a003/observed_signal_gap_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/observed_signal_gap_soma_paths.py",
+    "frozen/current/r198_a003/inferred_raw_soma_evidence.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/inferred_raw_soma_evidence.py",
+    "frozen/current/r198_a003/tracker_core_ownership.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/tracker_core_ownership.py",
+    "frozen/current/r198_a003/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/reciprocal_soma_overlap.py",
+    "frozen/current/r198_a003/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/spatial_soma_paths.py",
+    "code/soma_profile_evidence.py": "code/soma_profile_evidence.py",
+    "frozen/current/r198_a003/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/recovery_temporal_soma_support.py",
+    "frozen/current/r198_a003/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/recovery_destination_soma.py",
+    "frozen/current/r198_a003/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r198_a003/recovery_qualified_soma.py",
+    "frozen/current/r199_a001/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/optical_basin_soma_paths.py",
+    "frozen/current/r199_a001/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/reciprocal_soma_overlap.py",
+    "frozen/current/r199_a001/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/current/r199_a001/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/remove_extreme_compact_overbright_sources.py",
+    "frozen/current/r199_a001/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/remove_compact_stable_overbright_sources.py",
+    "frozen/current/r199_a001/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r199_a001/remove_persistent_overbright_sources.py",
+    "frozen/current/r200_a004/inferred_owned_tracker_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r200_a004/inferred_owned_tracker_soma_paths.py",
+    "frozen/current/r200_a004/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r200_a004/spatial_soma_paths.py",
+    "code/reciprocal_soma_overlap.py": "code/reciprocal_soma_overlap.py",
+    "code/tracker_core_ownership.py": "code/tracker_core_ownership.py",
+    "code/inferred_raw_soma_evidence.py": "code/inferred_raw_soma_evidence.py",
+    "frozen/current/r200_a004/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r200_a004/recovery_temporal_soma_support.py",
+    "frozen/current/r200_a004/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r200_a004/recovery_destination_soma.py",
+    "frozen/current/r200_a004/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r200_a004/recovery_qualified_soma.py",
+    "frozen/current/r201_a002/repeated_thin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r201_a002/repeated_thin_soma_paths.py",
+    "frozen/current/r201_a002/spatial_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r201_a002/spatial_soma_paths.py",
+    "frozen/current/r201_a002/recovery_temporal_soma_support.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r201_a002/recovery_temporal_soma_support.py",
+    "frozen/current/r201_a002/recovery_destination_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r201_a002/recovery_destination_soma.py",
+    "frozen/current/r201_a002/recovery_qualified_soma.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r201_a002/recovery_qualified_soma.py",
+    "frozen/current/r202_a007/complete_body_consensus_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/complete_body_consensus_memory.py",
+    "frozen/current/r202_a007/bracketed_consensus_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/bracketed_consensus_memory.py",
+    "frozen/current/r202_a007/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/optical_basin_soma_paths.py",
+    "frozen/current/r202_a007/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/reciprocal_soma_overlap.py",
+    "frozen/current/r202_a007/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/current/r202_a007/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/remove_extreme_compact_overbright_sources.py",
+    "frozen/current/r202_a007/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/remove_compact_stable_overbright_sources.py",
+    "frozen/current/r202_a007/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r202_a007/remove_persistent_overbright_sources.py",
+    "frozen/current/r203_a003/stable_birth_lineage.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/stable_birth_lineage.py",
+    "frozen/current/r203_a003/measured_birth_lineage.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/measured_birth_lineage.py",
+    "frozen/current/r203_a003/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/optical_basin_soma_paths.py",
+    "frozen/current/r203_a003/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/reciprocal_soma_overlap.py",
+    "frozen/current/r203_a003/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/current/r203_a003/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/remove_extreme_compact_overbright_sources.py",
+    "frozen/current/r203_a003/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/remove_compact_stable_overbright_sources.py",
+    "frozen/current/r203_a003/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/current_path_sequence_frozen_code/r203_a003/remove_persistent_overbright_sources.py",
+    "frozen/contact/r204_a004/contact_identity_reservation.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/contact_identity_reservation.py",
+    "frozen/contact/r204_a004/contact_core_continuity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/contact_core_continuity.py",
+    "frozen/contact/r204_a004/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/optical_basin_soma_paths.py",
+    "frozen/contact/r204_a004/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/reciprocal_soma_overlap.py",
+    "frozen/contact/r204_a004/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/contact/r204_a004/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/remove_extreme_compact_overbright_sources.py",
+    "frozen/contact/r204_a004/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/remove_compact_stable_overbright_sources.py",
+    "frozen/contact/r204_a004/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/contact_sequence_frozen_code/r204_a004/remove_persistent_overbright_sources.py",
+    "frozen/reviewed/R205-A007/precontact_soma_ownership.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/precontact_soma_ownership.py",
+    "frozen/reviewed/R205-A007/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/optical_basin_soma_paths.py",
+    "frozen/reviewed/R205-A007/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/reciprocal_soma_overlap.py",
+    "frozen/reviewed/R205-A007/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/reviewed/R205-A007/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/remove_extreme_compact_overbright_sources.py",
+    "frozen/reviewed/R205-A007/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/remove_compact_stable_overbright_sources.py",
+    "frozen/reviewed/R205-A007/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R205-A007/remove_persistent_overbright_sources.py",
+    "frozen/reviewed/R206-A002/shared_birth_soma_ownership.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/shared_birth_soma_ownership.py",
+    "frozen/reviewed/R206-A002/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/optical_basin_soma_paths.py",
+    "frozen/reviewed/R206-A002/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/reciprocal_soma_overlap.py",
+    "frozen/reviewed/R206-A002/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/reviewed/R206-A002/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/remove_extreme_compact_overbright_sources.py",
+    "frozen/reviewed/R206-A002/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/remove_compact_stable_overbright_sources.py",
+    "frozen/reviewed/R206-A002/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R206-A002/remove_persistent_overbright_sources.py",
+    "frozen/reviewed/R207-A003/silhouette_owner_continuity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/silhouette_owner_continuity.py",
+    "frozen/reviewed/R207-A003/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/optical_basin_soma_paths.py",
+    "frozen/reviewed/R207-A003/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/reciprocal_soma_overlap.py",
+    "frozen/reviewed/R207-A003/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/reviewed/R207-A003/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/remove_extreme_compact_overbright_sources.py",
+    "frozen/reviewed/R207-A003/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/remove_compact_stable_overbright_sources.py",
+    "frozen/reviewed/R207-A003/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R207-A003/remove_persistent_overbright_sources.py",
+    "frozen/reviewed/R208-A005/core_replacement_ownership.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/core_replacement_ownership.py",
+    "frozen/reviewed/R208-A005/remove_optical_core_adjacent_pseudosomata.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/remove_optical_core_adjacent_pseudosomata.py",
+    "frozen/reviewed/R208-A005/remove_extreme_compact_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/remove_extreme_compact_overbright_sources.py",
+    "frozen/reviewed/R208-A005/remove_compact_stable_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/remove_compact_stable_overbright_sources.py",
+    "frozen/reviewed/R208-A005/remove_persistent_overbright_sources.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/remove_persistent_overbright_sources.py",
+    "frozen/reviewed/R208-A005/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/optical_basin_soma_paths.py",
+    "frozen/reviewed/R208-A005/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R208-A005/reciprocal_soma_overlap.py",
+    "frozen/reviewed/R210-A011/closed_integration.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R210-A011/closed_integration.py",
+    "frozen/reviewed/R210-A011/touching_peak.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R210-A011/touching_peak.py",
+    "frozen/reviewed/R210-A011/local_fragment_reunion.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/reviewed_ownership_frozen_code/R210-A011/local_fragment_reunion.py",
+    "frozen/final/r213_a010/native_gap_owner_transport_a010.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r213_a010/native_gap_owner_transport_a010.py",
+    "frozen/final/r213_a010/measured_soma_gap_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r213_a010/measured_soma_gap_memory.py",
+    "frozen/final/r214_a003/transport_restored_ownership_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r214_a003/transport_restored_ownership_a003.py",
+    "frozen/final/r214_a003/transport_restored_ownership_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r214_a003/transport_restored_ownership_a002.py",
+    "frozen/final/r214_a003/measured_restoration_continuity_a002.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r214_a003/measured_restoration_continuity_a002.py",
+    "frozen/final/r214_a003/measured_restoration_continuity.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r214_a003/measured_restoration_continuity.py",
+    "frozen/final/r215_a003/native_gap_owner_transport_a003.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r215_a003/native_gap_owner_transport_a003.py",
+    "frozen/final/r215_a003/measured_soma_gap_memory.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r215_a003/measured_soma_gap_memory.py",
+    "frozen/final/r217_a001/existing_owner_a001.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r217_a001/existing_owner_a001.py",
+    "frozen/final/r218_a004/separated_body_ownership_a004.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r218_a004/separated_body_ownership_a004.py",
+    "frozen/final/r218_a004/optical_basin_soma_paths.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r218_a004/optical_basin_soma_paths.py",
+    "frozen/final/r218_a004/reciprocal_soma_overlap.py": "issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R222-joint-contact-correspondence/final_ownership_frozen_code/r218_a004/reciprocal_soma_overlap.py"
+  },
+  "packaging_adaptations": {
+    "code/recover_persistent_duplicate_soma_sites.py": {
+      "original_sha256": "740cbe2e341f7d8760bcc559233c91866d6ccd35ebba6caa0e7c50fb153b222b",
+      "change": "Allow import outside the development project; unused CLI root fallback only"
+    }
+  },
+  "storage_revision": {
+    "parent_archive_sha256": "ee9c55be040157fc547b80e7f66e66b058e7dbf9309d618d66e36d2baa643e0a",
+    "changed_source": "code/completed_feedback_sequence.py",
+    "reason": "Release consumed discovery snapshots; all frozen scientific operators and settings reused exactly"
+  },
+  "folded": [
+    {
+      "patch": "pymicroglia/tracking/events_host_boxes.py",
+      "into": "code/events.py",
+      "function": "resolve_events",
+      "batch": "fold16"
+    },
+    {
+      "patch": "pymicroglia/tracking/bounds_band.py",
+      "into": "code/array_bounds.py",
+      "function": "occupied_bounds",
+      "batch": "fold23"
+    },
+    {
+      "patch": "pymicroglia/tracking/cyclic_track_handoffs.py",
+      "into": "code/recurrent_cyclic_alias.py",
+      "function": "_track_handoffs",
+      "batch": "fold24"
+    },
+    {
+      "patch": "pymicroglia/tracking/observation_boxes.py",
+      "into": "code/observations.py",
+      "function": "build_observations",
+      "batch": "fold25"
+    },
+    {
+      "patch": "pymicroglia/tracking/empty_dropout_return.py",
+      "into": "code/expand_short_dropout_soma_cores.py",
+      "function": "correct",
+      "batch": "fold26"
+    },
+    {
+      "patch": "pymicroglia/tracking/detached_outline_groups.py",
+      "into": "code/recover_detached_soma_shared_outline.py",
+      "function": "discover",
+      "batch": "fold27"
+    },
+    {
+      "patch": "pymicroglia/tracking/detached_outline_groups.py",
+      "into": "code/recover_detached_soma_shared_outline.py",
+      "function": "correct",
+      "batch": "fold27"
+    },
+    {
+      "patch": "pymicroglia/tracking/measured_rows.py",
+      "into": "code/dual_soma_ancestry_memory_a001.py",
+      "function": "correct",
+      "batch": "fold28"
+    },
+    {
+      "patch": "pymicroglia/tracking/measured_rows.py",
+      "into": "code/observed_soma_gap_memory_a003.py",
+      "function": "correct",
+      "batch": "fold28"
+    },
+    {
+      "patch": "pymicroglia/tracking/measured_rows.py",
+      "into": "code/recording_start_soma_memory_a001.py",
+      "function": "correct",
+      "batch": "fold28"
+    },
+    {
+      "patch": "pymicroglia/tracking/measured_rows.py",
+      "into": "code/successive_detector_soma_memory_a004.py",
+      "function": "correct",
+      "batch": "fold28"
+    },
+    {
+      "patch": "pymicroglia/tracking/process_inventory_lookups.py",
+      "into": "code/process_inventory_owners.py",
+      "function": "scan",
+      "batch": "fold29"
+    },
+    {
+      "patch": "pymicroglia/tracking/process_inventory_lookups.py",
+      "into": "code/process_inventory_motion.py",
+      "function": "screen_well",
+      "batch": "fold29"
+    },
+    {
+      "patch": "pymicroglia/tracking/correction_geometry_storage.py",
+      "into": "code/grouped_cell_geometry.py",
+      "function": "grouped_geometry",
+      "batch": "fold30"
+    },
+    {
+      "patch": "pymicroglia/tracking/recording_step_memo.py",
+      "into": "code/anchored_soma_owner_recovery_a002_snapshot.py",
+      "function": "_recording_step_limit",
+      "batch": "fold30"
+    },
+    {
+      "patch": "pymicroglia/tracking/plain_component_frames.py",
+      "into": "code/component_accounting.py",
+      "function": "label_value_components",
+      "batch": "fold31"
+    },
+    {
+      "patch": "pymicroglia/tracking/component_table_memo.py",
+      "into": "code/component_accounting.py",
+      "function": "label_value_components",
+      "batch": "fold31"
+    },
+    {
+      "patch": "pymicroglia/tracking/component_accounting_view.py",
+      "into": "code/component_accounting.py",
+      "function": "label_value_components",
+      "batch": "fold31"
+    },
+    {
+      "patch": "pymicroglia/tracking/recurrent_branch_speed.py",
+      "into": "code/recurrent_branch_inventory.py",
+      "function": "scan",
+      "batch": "fold31"
+    },
+    {
+      "patch": "pymicroglia/tracking/two_body_fusion_index.py",
+      "into": "code/recurrent_two_body_fusion.py",
+      "function": "discover",
+      "batch": "fold32"
+    },
+    {
+      "patch": "pymicroglia/tracking/episode_fusion_events.py",
+      "into": "code/episode_consistent_fusion.py",
+      "function": "_fast_absorption_events",
+      "batch": "fold32"
+    },
+    {
+      "patch": "pymicroglia/tracking/stationary_component_window.py",
+      "into": "code/complete_stationary_soma_path.py",
+      "function": "_component",
+      "batch": "fold32"
+    },
+    {
+      "patch": "pymicroglia/tracking/strong_other_prefilter.py",
+      "into": "code/complete_stationary_soma_path.py",
+      "function": "_strong_other_somata",
+      "batch": "fold32"
+    },
+    {
+      "patch": "pymicroglia/tracking/short_ownerless_runs.py",
+      "into": "code/recover_short_ownerless_soma_runs.py",
+      "function": "correct",
+      "batch": "fold33"
+    },
+    {
+      "patch": "pymicroglia/tracking/boundary_frame_checks.py",
+      "into": "code/recover_ownerless_soma_runs.py",
+      "function": "correct",
+      "batch": "fold33"
+    },
+    {
+      "patch": "pymicroglia/tracking/boundary_frame_checks.py",
+      "into": "code/recover_leading_soma_from_future_run.py",
+      "function": "correct",
+      "batch": "fold33"
+    },
+    {
+      "patch": "pymicroglia/tracking/ownerless_run_slices.py",
+      "into": "code/recover_ownerless_soma_runs.py",
+      "function": "_consecutive_runs",
+      "batch": "fold33"
+    }
+  ]
+}

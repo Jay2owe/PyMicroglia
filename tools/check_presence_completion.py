@@ -30,7 +30,7 @@ def main():
     import presence
     import presence_area_table, presence_contrast_crop, presence_mask_boxes, presence_settle_boxes
     import presence_descriptor_medians
-    repair = history._issue_module(history.I017, 'm3_repair')
+    repair = history._issue_module(history.CONTINUITY_OPS, 'continuity_repair')
     labels_all = tifffile.imread(HISTORY / '10_blob_residency.tif')
     raw_all = tifffile.imread(HISTORY / '20_continuity_evidence_inputs/out/raw.tif')
     lag_all = tifffile.imread(HISTORY / '20_continuity_evidence_inputs/out/lag.tif')
@@ -38,6 +38,7 @@ def main():
     rng = np.random.default_rng(20261021)
     failures, cases, rows = [], 0, 0
     seconds = dict(original=0.0, adapted=0.0)
+    counters, installed = {}, []
     for start in (40, 200, 360):
         stop = min(len(labels_all), start + a.frames)
         labels = labels_all[start:stop]
@@ -62,8 +63,16 @@ def main():
                 with ExitStack() as stack:
                     for adapter in (presence_contrast_crop, presence_area_table, presence_mask_boxes, presence_settle_boxes,
                                     presence_descriptor_medians):
-                        assert stack.enter_context(adapter.install(presence))['supported'], adapter.__name__
+                        counter = stack.enter_context(adapter.install(presence))
+                        assert counter['supported'], adapter.__name__
+                        installed.append((adapter.__name__, counter))
                     actual = getattr(presence, function)(labels, raw, lag, params)
+                for name, counter in installed:
+                    total = counters.setdefault(name, {})
+                    for key, value in counter.items():
+                        if type(value) is int:
+                            total[key] = total.get(key, 0) + value
+                installed.clear()
                 t2 = time.perf_counter()
                 seconds['original'] += t1 - t0; seconds['adapted'] += t2 - t1
                 cases += 1
@@ -75,7 +84,7 @@ def main():
                 except AssertionError as error:
                     failures.append(dict(start=start, kind=kind, intervals=len(subset), error=str(error)[:300]))
     report = dict(status='pass' if not failures and rows else 'fail', cases=cases, attempt_rows=rows,
-                  seconds=seconds, failures=failures[:10])
+                  seconds=seconds, counters=counters, failures=failures[:10])
     a.output.write_text(json.dumps(report, indent=1), encoding='utf-8')
     print(json.dumps(report))
     return 0 if report['status'] == 'pass' else 1

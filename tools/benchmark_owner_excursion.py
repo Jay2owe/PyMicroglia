@@ -54,7 +54,7 @@ def main():
                 def call(*values,_fn=old,_name=name,**kwargs):
                     tick=time.perf_counter();result=_fn(*values,**kwargs);timings[_name]=time.perf_counter()-tick;return result
                 setattr(module,name,call);stack.callback(setattr,module,name,old)
-            result=ah._well_a2_issue003_bounded_owner_excursion(labels,ledger,raw,effective,a.output)
+            result=ah._bounded_owner_excursion(labels,ledger,raw,effective,a.output)
             holder['seconds']=time.perf_counter()-start
             for i,name in enumerate((after+'.tif',after+'_unclaimed.tif')):
                 comparison[name]=bool(np.array_equal(result[i],tifffile.imread(folder/name)))

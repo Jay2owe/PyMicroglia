@@ -71,3 +71,23 @@ def _the_mask_feeds_the_measurement(names: Sequence[str]) -> None:
                 "pipeline the mask is what finds the cells, so a measurement "
                 "made before it is a measurement of the previous run's labels "
                 "or of nothing at all.")
+
+
+def _the_cells_have_masks(masks: Mapping[str, Any], cell_masks: bool,
+                          record: Mapping[str, Any]) -> None:
+    """Measuring cells needs the labels the mask made; say why there are none."""
+    from pathlib import Path
+
+    if not masks and cell_masks:
+        failures = [f"{entry.get('stage')}: {Path(str(one.get('path', ''))).name}: {one.get('error')}"
+                    for entry in record.get("stages", ())
+                    for one in entry.get("failures") or () if isinstance(one, Mapping)]
+        raise ValueError(
+            "no recording reached the cell mask"
+            + (" -- " + "; ".join(failures[:5]) if failures else
+               "; the chain's run record says which stage dropped them"))
+    if not masks:
+        raise ValueError(
+            "cells=True needs the labels the mask produces, and "
+            "cell_masks=False turned it off. Pass cell_masks=True, or "
+            "cells=False to run the chain without measuring anything.")

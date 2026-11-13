@@ -2,12 +2,12 @@
 import importlib
 import json
 from pathlib import Path
-import shutil
 import subprocess
+import sys
 
 
 def test_parameter_access_does_not_load_scientific_actions():
-    result=subprocess.check_output([shutil.which('python'),'-c',
+    result=subprocess.check_output([sys.executable,'-c',
         "import sys,json,pymicroglia as p; from pymicroglia import ParamBlock; "
         "assert ParamBlock is p.params.ParamBlock; "
         "print(json.dumps(sorted(set(sys.modules)&{'numpy','matplotlib','scipy','pymicroglia.registry'})))"],

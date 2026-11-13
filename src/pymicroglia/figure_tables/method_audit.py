@@ -98,7 +98,7 @@ def analyse_traces(cell_frame: pd.DataFrame, *, identities: list[int], metrics: 
                         try:
                             compared = workbench.estimate_trace(hours, analysis_input, params, methods=estimators, detrend=detrend)
                             details = {entry['method']: entry for entry in compared['comparison']['estimates']}
-                            comparison_record = json.dumps(compared['run_record'], allow_nan=False)
+                            comparison_record = workbench.run_record_json(compared['run_record'])
                             estimate_cache = {row['method']: {**row, 'diagnostics': details[row['method']].get('diagnostics', {}), 'components': details[row['method']].get('components', []), 'workbench_run_record_json': comparison_record} for row in compared['rows']}
                             comparison_definition = json.dumps(compared['result'].plot().definition.as_dict(), allow_nan=False)
                         except (ValueError, RuntimeError):

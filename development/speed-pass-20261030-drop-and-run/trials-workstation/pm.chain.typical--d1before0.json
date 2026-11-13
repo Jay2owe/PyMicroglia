@@ -1,0 +1,200 @@
+{
+ "case": "pm.chain.typical",
+ "label": "d1before0",
+ "source": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before",
+ "imported": {
+  "pymicroglia": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 716.7087,
+ "setup_in_act_seconds": 0.0692,
+ "cpu_seconds": 404.6562,
+ "peak_wset_bytes": 1849651200,
+ "output_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+ "error": "Traceback (most recent call last):\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\benchmark_drop_and_run.py\", line 341, in run_case\n    result = _act(args.case, ctx, work)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\benchmark_drop_and_run.py\", line 192, in _act\n    result = auto_microglia.run(**params, on_progress=progress, claim=\"speed pass\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\pymicroglia\\pipelines\\auto_microglia.py\", line 630, in run\n    measured = _measure_every(recordings, masks, where.path, notes,\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\pymicroglia\\pipelines\\_auto_microglia_support.py\", line 601, in _measure_every\n    traced = _trace.run(str(path), labels=labels, **settings)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\auto_organotypic\\region_trace.py\", line 597, in run\n    _baselines.validate_baseline_windows(rolling, hours)\n  File \"<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before\\auto_organotypic\\baselines.py\", line 354, in validate_baseline_windows\n    raise ValueError(\nValueError: the analysis window is too short for the requested rolling baseline(s): 24 h needs 49 frames and leaves 1 valid, 48 h needs 97 frames and leaves -47 valid. Choose a wider time window, or ask for a shorter baseline.\n",
+ "stages": [
+  {
+   "stage": "index",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "recordings": 1,
+   "fields": [
+    "recording-6e5106e864b1"
+   ],
+   "incomplete": 0,
+   "rejected": [],
+   "manifest": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\pymicroglia_analysis\\local_inputs_manifest.json",
+   "wall": 10.607
+  },
+  {
+   "stage": "trim_before_crop",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "recordings": 1,
+   "trimmed": 0,
+   "skipped": 0,
+   "failed": 0,
+   "window": "",
+   "windows": [],
+   "frames_kept": [],
+   "wall": 2.057
+  },
+  {
+   "stage": "trim",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "recordings": 1,
+   "trimmed": 0,
+   "skipped": 0,
+   "failed": 0,
+   "window": "",
+   "windows": [],
+   "frames_kept": [],
+   "wall": 1.107
+  },
+  {
+   "stage": "register",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "registered": 1,
+   "failed": 0,
+   "failures": [],
+   "registrations": [
+    {
+     "field": "recording-6e5106e864b1",
+     "path": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\B4.tif",
+     "settled": true,
+     "leftover_max_px": 0.41,
+     "max_leftover_px": 5.0,
+     "attempts": [
+      {
+       "method": "ripr",
+       "registration_channel": 1,
+       "ripr_recipe": "bright_dim_dense",
+       "error": "Packaged RIPR registration failed; no alternative engine was substituted.\nException in thread \"main\" java.lang.OutOfMemoryError: Java heap space\n\tat ripr.core.OpenCvLongitudinalOps.read(OpenCvLongitudinalOps.java:207)\n\tat ripr.core.OpenCvLongitudinalOps.phase(OpenCvLongitudinalOps.java:65)\n\tat ripr.core.OpenCvLongitudinalOps.phase(OpenCvLongitudinalOps.java:40)\n\tat ripr.core.OpenCvLongitudinalTrajectory.fit(OpenCvLongitudinalTrajectory.java:105)\n\tat ripr.core.OpenCvLongitudinalTrajectory.lambda$estimate$0(OpenCvLongitudinalTrajectory.java:56)\n\tat ripr.core.OpenCvLongitudinalTrajectory$$Lambda/0x0000024181140980.accept(Unknown Source)\n\tat ripr.core.LongitudinalOrderedFrames.lambda$run$1(LongitudinalOrderedFrames.java:36)\n\tat ripr.core.LongitudinalOrderedFrames$$Lambda/0x000002418100fc28.run(Unknown Source)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)\n\tat java.base/java.util.concurrent.FutureTask.run(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)\n\tat java.base/java.lang.Thread.runWith(Unknown Source)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n"
+      },
+      {
+       "method": "ripr",
+       "registration_channel": 1,
+       "ripr_recipe": "moving_cells",
+       "leftover_max_px": 0.41,
+       "leftover_p95_px": 0.33,
+       "worst_frames": [
+        [
+         187,
+         0.41
+        ],
+        [
+         186,
+         0.38
+        ],
+        [
+         192,
+         0.38
+        ],
+        [
+         183,
+         0.37
+        ]
+       ],
+       "settled": true
+      }
+     ],
+     "chose": "channel 1 is named 'Green'",
+     "kept": {
+      "method": "ripr",
+      "registration_channel": 1,
+      "ripr_recipe": "moving_cells"
+     }
+    }
+   ],
+   "retried": 1,
+   "still_moving": [],
+   "wall": 484.459
+  },
+  {
+   "stage": "split",
+   "status": "not requested",
+   "owner": "Auto-Organotypic",
+   "recordings": 1,
+   "requested": false,
+   "reason": "No named periods requested; whole recordings retained",
+   "split": 0,
+   "segments": 0,
+   "skipped": 0,
+   "failed": 0,
+   "made": [],
+   "bytes_written": 0,
+   "wall": 8.403
+  },
+  {
+   "stage": "cell_masks",
+   "status": "ok",
+   "owner": "PyMicroglia",
+   "recordings": 1,
+   "reused": 0,
+   "warned": 1,
+   "masks": {
+    "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\AI_Exports\\B4_registered\\B4_registered_translation.tif": {
+     "outputs": {
+      "mask_probability": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_probability.tif",
+      "mask_cells": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_cells.tif",
+      "mask": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask.tif"
+     },
+     "still": {
+      "mask_cells_still": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.typical\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_cells_still.tif"
+     },
+     "settings": {
+      "cut": 0.8,
+      "grow_to": 0.6,
+      "um_per_px": null,
+      "min_area": 32,
+      "max_area": 0,
+      "grow_px": 8,
+      "split_distance": 6,
+      "window_hours": 3.8837575,
+      "window_frames": 7,
+      "frame_interval_h": 0.5,
+      "weights": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\model.pt",
+      "predictor": {
+       "method": "unet",
+       "options": {}
+      },
+      "pixel_range": [
+       2.0,
+       2.0
+      ],
+      "cells_found": 17583
+     },
+     "warning": "pixel size not recorded (the recording's own metadata), so nothing checked that this recording is the 2 um the weights were trained on."
+    }
+   },
+   "wall": 87.084
+  },
+  {
+   "stage": "grid",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "sheets": 2,
+   "failed": 0,
+   "failures": [],
+   "tiles": 12,
+   "skipped": 0,
+   "display_only": true,
+   "recordings": 1,
+   "wall": 119.355
+  },
+  {
+   "stage": "review",
+   "status": "ok",
+   "owner": "Auto-Organotypic",
+   "reviewed": 0,
+   "failed": 0,
+   "reason": "a review reads a whole run's output folder, and this run has no output root: pass -o/--output-root to put every stage under one folder.",
+   "display_only": true,
+   "recordings": 1,
+   "wall": 0.007
+  }
+ ],
+ "profiled": false
+}

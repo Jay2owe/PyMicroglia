@@ -25,6 +25,19 @@ def sha(path):
         return hashlib.file_digest(handle, "sha256").hexdigest()
 
 
+def engine_digest(source):
+    """The run marker's digest of a snapshot's engine: a folder now, a zip in older snapshots.
+
+    Loaded by file path, because importing pymicroglia.tracking here would fix
+    the implementation before the frozen one is chosen.
+    """
+    helper = Path(__file__).resolve().parents[1] / "src/pymicroglia/tracking/shipped_engines.py"
+    spec = importlib.util.spec_from_file_location("_resume_shipped_engines", helper)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.digest(source)
+
+
 def contained(root, relative):
     result = (root / relative).resolve()
     if not result.is_relative_to(root.resolve()):
@@ -51,8 +64,7 @@ def verify_native(root, run, config, snapshot):
     signature = state["signature"]
     if signature["config_sha256"] != sha(config):
         raise ValueError("Native parent configuration changed")
-    archive = snapshot / "pymicroglia/tracking/data/motion_engine.zip"
-    if sha(archive) != (root / "archive.sha256").read_text().strip():
+    if engine_digest(snapshot / "pymicroglia/tracking/data/motion_engine") != (root / "archive.sha256").read_text().strip():
         raise ValueError("Candidate changes the native engine archive")
     checks = {}
     for relative, expected in signature["code"].items():

@@ -70,7 +70,7 @@ def main():
     raw = tifffile.imread(folder / '07_trimmed_evidence/out/95_full_A1_registered_raw.tif')
     module_stats = None
     with adapter.install_loader(history) as loaded:
-        module = history._issue_module(history.I013, 'm1_seat_identity')
+        module = history._issue_module(history.SEAT_IDENTITY_OPS, 'seat_identity')
         assert loaded and loaded[0]['supported'], loaded
         module_stats = loaded[0]
         replaced_cores, replaced_shed = module.soma_cores, module.shed_crumbs
@@ -94,6 +94,31 @@ def main():
             f_labels, f_rows = replaced_shed(stack[t], body, piece)
             assert e_labels.dtype == f_labels.dtype and np.array_equal(e_labels, f_labels) and e_rows == f_rows
             shed_cases += 1
+    # Synthetic soma-core frames: thin and edge-touching shapes, ties at the
+    # threshold, cores off the assigned foreground, a zero minimum (whose
+    # empty cores raise), and disk-backed inputs; values or errors must match.
+    def core_outcome(function, *args):
+        try:
+            return ('ok', cores_key(function(*args)))
+        except Exception as error:
+            return ('error', type(error).__name__, str(error))
+    import tempfile
+    folder_tmp = Path(tempfile.mkdtemp())
+    for number in range(300):
+        shape = [(1, int(rng.integers(1, 30))), (int(rng.integers(1, 30)), 1),
+                 (int(rng.integers(2, 60)), int(rng.integers(2, 60)))][number % 3]
+        frame_raw = rng.integers(0, 6, shape).astype([np.uint16, np.float32, np.int32][number % 3])
+        assigned = rng.random(shape) < [1.0, .7, .3][number % 3]
+        if number % 5 == 0:
+            disk_raw = np.memmap(folder_tmp / f'r{number}.dat', frame_raw.dtype, 'w+', shape=shape)
+            disk_raw[:] = frame_raw
+            disk_assigned = np.memmap(folder_tmp / f'a{number}.dat', bool, 'w+', shape=shape)
+            disk_assigned[:] = assigned
+            frame_raw, assigned = disk_raw, disk_assigned
+        for percentile, minimum in ((50.0, 1), (80.0, 2), (30.0, 0)):
+            assert core_outcome(original_cores, frame_raw, assigned, percentile, minimum) == \
+                core_outcome(replaced_cores, frame_raw, assigned, percentile, minimum), number
+            core_cases += 1
     # Frames with crumbs: real frames with each cell's pixels scattered as
     # small pieces near it and inside neighbours, and dense random frames, so
     # pieces are handed on (also to identities labelled later).

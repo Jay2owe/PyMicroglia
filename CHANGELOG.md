@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- Saved Workbench run records (`workbench_run_record_json`,
+  `significance_run_record_json`) store `cwd` as `.` when they name no input
+  files, so tables and figures carry no machine folder and drawing no longer
+  fails for analyses run outside the home folder.
+- Tests: the rhythm-derived spatial and tissue map checks, the measured-run
+  comparison and the saved rhythm figures (`cd68_reporter_rhythm`,
+  `metric_rhythm_matrix`, `all_cell_trace_grid`, `radial_occupancy_rhythms`)
+  pin Motion's settings and reporter and compare Workbench outputs with a
+  baseline re-recorded on Circadian Workbench 0.15.0
+  (`tests/fixtures/motion_parity/workbench/`); all other columns still match
+  Motion, and the `integrated_density_mean3` measurement added since is left
+  out. The trace-grid checks expect the `asymmetric_least_squares` default
+  detrend, and the JTK facade check keeps 85 points so its 2 h steps can name
+  a 24 h period. The module and table counts include `expanded_intensity`.
+  `tests/__init__.py` stops an installed third-party `tests` package from
+  hiding the suite's helpers.
 - Reduce complete-correction audit memory with reusable snapshots, streaming
   hashes and frame-wise provenance, and release consumed evidence before later
   tracking passes. Scientific correction archives and precision are unchanged.

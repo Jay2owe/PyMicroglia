@@ -10,7 +10,8 @@ manifest lists is frozen, every figure has a plotted-data hash or a recorded
 refusal, every pipeline demo verified, and the fixture is small enough to
 commit.
 
-Numbers compare at nine significant figures, the precision Motion writes.
+Numbers compare at nine significant figures, the precision Motion writes;
+two values both within 1e-12 of zero count as equal.
 Column order is free; row order is not, because every Motion table is
 written sorted on its grain.
 """
@@ -32,6 +33,8 @@ EXPECTED = FIXTURE / "expected.json"
 FROZEN_RUN = FIXTURE / "run"
 
 SIGNIFICANT_FIGURES = 9
+#: Values this close to zero are rounding residue, whose digits differ by processor.
+ZERO_TOLERANCE = 1e-12
 #: A committed fixture has to stay small enough that nobody minds it.
 SIZE_LIMIT_BYTES = 20 * 1024 * 1024
 
@@ -56,6 +59,20 @@ EVIDENCE_COUNTS = {"relative_links", "verified_links", "verified_source_artifact
 @functools.lru_cache(maxsize=1)
 def expected() -> dict:
     return json.loads(EXPECTED.read_text(encoding="utf-8"))
+
+
+@functools.lru_cache(maxsize=1)
+def workbench_baseline():
+    """``freeze_workbench.py``, the re-recorded Workbench baseline, as a module.
+
+    Loaded by path: ``tests.fixtures`` is ``tests/fixtures.py``, so the
+    fixture folder cannot be imported as a package.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("freeze_workbench", FIXTURE / "freeze_workbench.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def sha256(path: Path) -> str:
@@ -114,7 +131,7 @@ def _same_value(left: str, right: str) -> bool:
         return _same_document(left, right)
     if math.isnan(a) and math.isnan(b):
         return True
-    if a == b:
+    if a == b or abs(a) < ZERO_TOLERANCE and abs(b) < ZERO_TOLERANCE:
         return True
     return f"{a:.{SIGNIFICANT_FIGURES}g}" == f"{b:.{SIGNIFICANT_FIGURES}g}"
 
@@ -314,31 +331,7 @@ NOT_YET_PORTED = ()
 @pytest.fixture(scope="module")
 def ported_run(tmp_path_factory):
     """The fixture measured by the ported modules, then pooled. Once per module."""
-    import os
-
-    from measure_stubs import fixture_copy
-    from pymicroglia.measure import load_config
-    from pymicroglia.measure.pool import pool
-    from pymicroglia.measure.run import run
-
-    folder = tmp_path_factory.mktemp("ported")
-    previous = {k: os.environ.get(k) for k in ("PYMICROGLIA_STORE", "PYMICROGLIA_INDEX")}
-    os.environ["PYMICROGLIA_STORE"] = str(folder / "cache")
-    os.environ["PYMICROGLIA_INDEX"] = str(folder / "index")
-    try:
-        config = load_config(fixture_copy(folder, keep_module_blocks=True))
-        manifest = run(config, folder / "outputs", run_label="parity",
-                       claim="the stage-01 fixture measured by the ported modules")
-        pool(manifest["run"]["folder"])
-        from pymicroglia.measure.contrasts import contrasts
-        contrasts(manifest["run"]["folder"])
-    finally:
-        for key, value in previous.items():
-            if value is None:
-                os.environ.pop(key, None)
-            else:
-                os.environ[key] = value
-    return Path(manifest["run"]["folder"]), manifest
+    return workbench_baseline().measured_run(tmp_path_factory.mktemp("ported"))
 
 
 def test_ported_measure_run_matches_the_frozen_record(ported_run):
@@ -346,12 +339,12 @@ def test_ported_measure_run_matches_the_frozen_record(ported_run):
 
     Byte-identical where the writers agree, and equal at nine significant
     figures where they do not (the store's CSV writer spells a float or a
-    blank differently from Motion's). The Workbench run record embedded in
-    ``rhythm_methods.csv`` is compared with its ``cwd`` dropped.
+    blank differently from Motion's). Columns a Workbench fit or detrend
+    writes meet the re-recorded Workbench baseline instead, and the
+    ``integrated_density_mean3`` measurement added since Motion is left out.
     """
     folder, _ = ported_run
-    problems = compare_run(folder, section="measure", layout="ported",
-                           ignore=NOT_YET_PORTED)
+    problems = workbench_baseline().measured_differences(folder, ignore=NOT_YET_PORTED)
     assert problems == [], "\n".join(problems[:40])
 
 

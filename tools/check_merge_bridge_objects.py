@@ -40,7 +40,7 @@ def main():
     sys.path[:0] = [str(a.adapter.resolve()), str((a.engine / 'code').resolve())]
     import accepted_history as history
     import merge_bridge_objects as adapter
-    module = history._issue_module(history.I008, 'm8_general_merge_bridge')
+    module = history._issue_module(history.OWNERSHIP_QUARANTINE_OPS, 'general_merge_bridge')
     folder = a.engine / 'm22_accepted_history' / a.run / 'mid/accepted_history'
     labels = tifffile.imread(folder / '08_global_quarantine/out' / f'{a.stem}.tif')
     lag = tifffile.imread(folder / '07_trimmed_evidence/out' / f'{a.stem}_lag01_float.tif')

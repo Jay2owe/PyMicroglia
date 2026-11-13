@@ -57,11 +57,11 @@ def main():
     original_green=persistence.green_evidence_for_fixed_objects
     original_physical=ledger.physical_soma_tracking_evidence
     original_conflicts=ledger.substantial_identity_conflicts
-    quarantine=history._issue_module(history.I009,'m2_ordered_quarantine')
+    quarantine=history._issue_module(history.HIERARCHY_OPS,'ordered_quarantine')
     original_cleanup=quarantine.clean_duplicates
-    early_quarantine=history._issue_module(history.I008,'m7_global_quarantine')
+    early_quarantine=history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'global_quarantine')
     original_early_detect=early_quarantine.detect_events
-    early_duplicates=history._issue_module(history.I008,'m9_duplicate_cleanup')
+    early_duplicates=history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'duplicate_cleanup')
     original_early_cleanup=early_duplicates.clean_duplicates
     sampler=importlib.import_module('separable_merge_recovery')
     original_sampler=sampler.attach_owners
@@ -70,7 +70,7 @@ def main():
     stationary=importlib.import_module('stationary_reconciliation')
     original_stationary=stationary.discover_stationary_takeovers
     original_history_stationary=history.discover_stationary_takeovers
-    hierarchy=history._issue_module(history.I009,'m6_hierarchy_reconcile')
+    hierarchy=history._issue_module(history.HIERARCHY_OPS,'hierarchy_reconcile')
     original_ordered=hierarchy.apply_ordered
     territory_memory=importlib.import_module('territory_memory')
     original_peak=territory_memory._centre_surround_peak
@@ -114,21 +114,21 @@ def main():
         assert ledger.green_evidence_for_fixed_objects is pipeline.green_evidence_for_fixed_objects
         assert ledger.physical_soma_tracking_evidence is not original_physical
         assert ledger.substantial_identity_conflicts is not original_conflicts
-        checked_quarantine=history._issue_module(history.I009,'m2_ordered_quarantine')
+        checked_quarantine=history._issue_module(history.HIERARCHY_OPS,'ordered_quarantine')
         assert checked_quarantine.clean_duplicates is not original_cleanup
-        assert history._issue_module(history.I008,'m7_global_quarantine').detect_events is not original_early_detect
-        assert history._issue_module(history.I008,'m9_duplicate_cleanup').clean_duplicates is not original_early_cleanup
-        checked_profile=history._issue_module(history.I010,'m1_profile_persistence')
-        checked_reclaimer=history._issue_module(history.I010,'m3_reclaim_gaps')
+        assert history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'global_quarantine').detect_events is not original_early_detect
+        assert history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'duplicate_cleanup').clean_duplicates is not original_early_cleanup
+        checked_profile=history._issue_module(history.SHORT_LIVED_OPS,'profile_persistence')
+        checked_reclaimer=history._issue_module(history.SHORT_LIVED_OPS,'reclaim_gaps')
         assert Path(checked_profile.profile.__code__.co_filename).name=='persistence_profile_reuse.py'
         assert Path(checked_reclaimer.reclaim.__code__.co_filename).name=='persistence_profile_reuse.py'
-        checked_tenure=history._issue_module(history.I008,'m16_persistent_quarantine')
+        checked_tenure=history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'persistent_quarantine')
         assert Path(checked_tenure.physical_chain_backward.__code__.co_filename).name=='tenure_geometry_reuse.py'
         assert sampler.attach_owners is not original_sampler
         assert resident.attach_owners is not original_resident
         assert stationary.discover_stationary_takeovers is not original_stationary
         assert history.discover_stationary_takeovers is stationary.discover_stationary_takeovers
-        assert history._issue_module(history.I009,'m6_hierarchy_reconcile').apply_ordered is not original_ordered
+        assert history._issue_module(history.HIERARCHY_OPS,'hierarchy_reconcile').apply_ordered is not original_ordered
         assert territory_memory._centre_surround_peak is not original_peak
         probe=np.arange(400,dtype=np.float32).reshape(20,20)
         assert territory_memory._centre_surround_peak(probe,9.,9.,2,2,3,5)==original_peak(probe,9.,9.,2,2,3,5)
@@ -137,18 +137,18 @@ def main():
         before_index,after_index=original_frames(labels),oscillatory._frames(labels)
         assert list(before_index)==list(after_index)
         for identity in before_index:np.testing.assert_array_equal(before_index[identity],after_index[identity])
-        restorer=history._issue_module(history.I012,'m9_reconcile_dormant_releases')
+        restorer=history._issue_module(history.DOMAIN_OWNERSHIP_OPS,'reconcile_dormant_releases')
         assert hasattr(restorer.reconcile,'__wrapped__')
         assert excursion.discover is not original_excursion
         assert excursion._marker is not original_marker
         assert tracking.link_features is not original_features
         assert tracking._assign is not original_assign
-        detector=history._issue_module(history.I012,'m8_detect_dormant_releases')
+        detector=history._issue_module(history.DOMAIN_OWNERSHIP_OPS,'detect_dormant_releases')
         assert getattr(detector.detect,'_compact_dormant_cache',False)
         assert history.cached_dormant_detect(detector) is detector.detect
         detector.detect(labels,np.ones_like(labels,dtype=float),np.zeros_like(labels,dtype=float),
             pd.DataFrame([dict(action='dormancy_started',source_imagej_frame=3,prior_identity=1,host_identity=2)]),0,{})
-        ownership=history._issue_module(history.I012,'m1_reconcile_domain_ownership')
+        ownership=history._issue_module(history.DOMAIN_OWNERSHIP_OPS,'reconcile_domain_ownership')
         assert ownership.apply_dormancy.__code__.co_filename=='<reused-ownership-observations>'
         assert flip.discover is not discover
         assert flip.component_accounting.label_value_components is not components
@@ -187,9 +187,9 @@ def main():
     assert resident.attach_owners is original_resident
     assert stationary.discover_stationary_takeovers is original_stationary
     assert history.discover_stationary_takeovers is original_history_stationary
-    assert Path(checked_profile.profile.__code__.co_filename).name=='m1_profile_persistence.py'
-    assert Path(checked_reclaimer.reclaim.__code__.co_filename).name=='m3_reclaim_gaps.py'
-    assert Path(checked_tenure.physical_chain_backward.__code__.co_filename).name=='m16_persistent_quarantine.py'
+    assert Path(checked_profile.profile.__code__.co_filename).name=='profile_persistence.py'
+    assert Path(checked_reclaimer.reclaim.__code__.co_filename).name=='reclaim_gaps.py'
+    assert Path(checked_tenure.physical_chain_backward.__code__.co_filename).name=='persistent_quarantine.py'
     assert hierarchy.apply_ordered is original_ordered
     assert territory_memory._centre_surround_peak is original_peak
     if a.native_only:

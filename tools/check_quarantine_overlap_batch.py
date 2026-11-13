@@ -17,7 +17,7 @@ def main():
     sys.path[:0]=[str(a.adapter.resolve()),str((a.engine/'code').resolve())]
     import accepted_history as history
     import quarantine_overlap_batch as reuse
-    module=history._issue_module(history.I008,'m7_global_quarantine')
+    module=history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'global_quarantine')
     cfg=history._params('issue008','global_quarantine')['quarantine']
     def equal(first,second):
         assert len(first)==len(second),(len(first),len(second))

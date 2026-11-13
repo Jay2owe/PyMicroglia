@@ -69,7 +69,7 @@ def test_the_check_covers_every_registered_module() -> None:
     """No allow-list: a new module is checked the moment it is registered."""
     registered = {module.name for module in (*list_modules(), *list_derived())}
     assert set(all_tables()) == registered == set(modules.MODULE_NAMES)
-    assert len(registered) == 24
+    assert len(registered) == 25
 
 
 def test_the_only_unchecked_tables_are_ones_with_a_written_reason() -> None:

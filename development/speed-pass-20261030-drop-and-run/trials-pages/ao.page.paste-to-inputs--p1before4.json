@@ -1,0 +1,17 @@
+{
+ "case": "ao.page.paste-to-inputs",
+ "label": "p1before4",
+ "source": "<session>/scratch\\drop-speed\\baseline-restored",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\baseline-restored\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\baseline-restored\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.297,
+ "segments": {
+  "paste_to_inputs": 0.297
+ },
+ "server_start_seconds": 7.952,
+ "output_sha256": "af681bb3c97eaec08e4391deb403b0758b0b864a90bcf1b84405baf0f262e2e0",
+ "error": null,
+ "browser": "http://127.0.0.1:9333"
+}

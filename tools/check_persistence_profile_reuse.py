@@ -22,7 +22,7 @@ def main():
     import accepted_history as history
     import persistence_profile_reuse as reuse
     if a.edge_only:
-        reclaimer=history._issue_module(history.I010,'m3_reclaim_gaps');old_reclaim=reclaimer.reclaim
+        reclaimer=history._issue_module(history.SHORT_LIVED_OPS,'reclaim_gaps');old_reclaim=reclaimer.reclaim
         parameters=history._params('issue010','reclaim_gaps',0)
         parameters['persistent_minimum_frames']=2
         parameters['reclaim']['minimum_donor_area_px']=1
@@ -47,7 +47,7 @@ def main():
         a.output.write_text(json.dumps(dict(status='pass',edge_cases=30,actions=actions,counters=counters,
             sources={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in [Path(__file__),Path(reuse.__file__),Path(reclaimer.__file__)]}),indent=2)+'\n')
         print(json.dumps(dict(status='pass',edge_cases=30,actions=actions,counters=counters)));return
-    module=history._issue_module(history.I010,'m1_profile_persistence')
+    module=history._issue_module(history.SHORT_LIVED_OPS,'profile_persistence')
     original=module.profile;params=history._params('issue010','persistence_profile',0)
     source=a.engine/'m22_accepted_history'/a.run/'mid/accepted_history'
     labels=tifffile.imread(source/'05_issue009.tif')
@@ -73,7 +73,7 @@ def main():
         profile_rows=len(old[0]),deficit_rows=len(old[1])),indent=2)+'\n')
     from concurrent.futures import ThreadPoolExecutor
     with reuse.install_loader(history,LabelMask),ThreadPoolExecutor(max_workers=1) as executor:
-        tick=time.perf_counter();result=executor.submit(history._issue010,labels,authority,lag,0).result();stage=time.perf_counter()-tick
+        tick=time.perf_counter();result=executor.submit(history._short_lived_reclaim,labels,authority,lag,0).result();stage=time.perf_counter()-tick
     checks={}
     for index,name in [(0,'06_issue010.tif'),(1,'06_issue010_unclaimed.tif')]:
         checks[name]=bool(np.array_equal(result[index],tifffile.imread(source/name)))

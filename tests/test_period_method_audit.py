@@ -152,7 +152,7 @@ def test_common_comparison_is_the_completed_workbench_builder_not_a_refit(monkey
     completed = captured[0]['result']
     definition = json.loads(raw.iloc[0]['workbench_comparison_json'])
     assert definition == completed.plot().definition.as_dict()
-    assert json.loads(raw.iloc[0]['workbench_run_record_json']) == completed.run_record
+    assert raw.iloc[0]['workbench_run_record_json'] == workbench.run_record_json(completed.run_record)
     hours, values = (frame['hours'].to_numpy(), frame['corrected_mean'].to_numpy())
     for row in raw.to_dict('records'):
         old = workbench.estimate_one(hours, values, params, row['estimator'], detrend='linear')

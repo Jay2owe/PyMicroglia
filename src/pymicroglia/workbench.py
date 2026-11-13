@@ -28,6 +28,22 @@ _test_components = cw.component_significance.test_components
 
 WORKBENCH_VERSION = cw.__version__
 
+
+def run_record_json(record):
+    """A completed run record as a table cell, without the folder it ran from.
+
+    Replay resolves only recorded input files against ``cwd``; a record that
+    names none keeps ``.``, so saved tables and the figures drawn from them
+    carry no machine path.
+    """
+    def portable(item):
+        item = dict(item)
+        item["children"] = [portable(child) for child in item.get("children", [])]
+        if not item.get("sources"):
+            item["cwd"] = "."
+        return item
+    return json.dumps(portable(record), allow_nan=False)
+
 # New uniform entrance: exactly Workbench's arguments, defaults, units, caller
 # and completed-result/figure contract. No Motion preset or history lookup.
 trace = cw.trace

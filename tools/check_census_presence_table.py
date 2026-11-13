@@ -36,7 +36,7 @@ def main():
     sys.path[:0] = [str(a.adapter.resolve()), str((a.engine / 'code').resolve())]
     import accepted_history as history
     import census_presence_table as table
-    module = history._issue_module(history.I017, 'm1_census')
+    module = history._issue_module(history.CONTINUITY_OPS, 'continuity_census')
     folder = a.engine / 'm22_accepted_history' / a.run / 'mid/accepted_history'
     rng = np.random.default_rng(17)
     cases = []

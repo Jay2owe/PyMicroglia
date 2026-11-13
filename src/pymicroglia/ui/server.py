@@ -38,9 +38,13 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
 
     @app.get("/api/config")
     def config() -> dict:
-        configured = os.environ.get("PYMICROGLIA_MASK_WEIGHTS", "")
+        from ..learned_mask import apply as masking
+        try:
+            configured = masking.weights().is_file()
+        except FileNotFoundError:
+            configured = False
         return {"auto_url": app.state.auto_url, "motion_url": app.state.motion_url,
-                "mask_weights_configured": bool(configured and Path(configured).is_file())}
+                "mask_weights_configured": configured}
 
     @app.get("/api/catalogue")
     def catalogue() -> dict:
@@ -668,12 +672,118 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
             raise HTTPException(503, f"Motion service did not respond: {error.reason}") from None
         return Response(content=content, status_code=status, media_type=media)
 
+    def review_call(function, *args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except (ValueError, OSError, KeyError) as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.get("/api/trace-review")
+    def trace_review(home: str) -> dict:
+        from .trace_review import list_variants
+        return review_call(list_variants, home)
+
+    @app.post("/api/trace-review/create")
+    def trace_review_create(payload: dict[str, Any]) -> dict:
+        from .trace_review import create_review, default_home, review_for_run
+        run, stems = payload.get("run"), payload.get("stems")
+        if not isinstance(run, str):
+            raise HTTPException(422, "Choose a saved measurement run")
+        if stems:
+            home = payload.get("home") or str(review_call(default_home, run))
+            review = review_call(create_review, home, [{"run": run, "stem": s} for s in stems], title=payload.get("title"))
+        else:
+            home, review = review_call(review_for_run, run, title=payload.get("title"))
+            if payload.get("home"):
+                home = payload["home"]
+                review = review_call(create_review, home, review["recordings"], title=payload.get("title"))
+        return {"home": str(Path(home).resolve()), "review": review}
+
+    @app.get("/api/trace-review/grid")
+    def trace_review_grid(home: str, variants: str, metrics: str | None = None) -> dict:
+        from .trace_review import load_grid
+        return review_call(load_grid, home, [v for v in variants.split(",") if v], metrics)
+
+    @app.get("/api/trace-review/decisions")
+    def trace_review_decisions(home: str) -> dict:
+        from .trace_review import load_decisions
+        return review_call(load_decisions, home)
+
+    @app.put("/api/trace-review/decisions")
+    def trace_review_save(payload: dict[str, Any]) -> dict:
+        from .trace_review import save_decisions
+        extra = {"preferred_variant": payload["preferred_variant"]} if "preferred_variant" in payload else {}
+        result = review_call(save_decisions, str(payload.get("home") or ""), payload.get("changes") or [],
+                             revision=payload.get("revision"), **extra)
+        return result
+
+    @app.post("/api/trace-review/handoff")
+    def trace_review_handoff(payload: dict[str, Any]) -> dict:
+        from .trace_review import handoff
+        record = review_call(handoff, str(payload.get("home") or ""), note=str(payload.get("note") or ""),
+                             variant=payload.get("variant"), metric=payload.get("metric"))
+        return {key: record[key] for key in ("created_at", "counts", "variant", "decisions_revision")}
+
+    @app.post("/api/trace-review/import")
+    def trace_review_import(payload: dict[str, Any]) -> dict:
+        from .trace_review import import_legacy
+        return review_call(import_legacy, str(payload.get("home") or ""), str(payload.get("folder") or ""),
+                           label=payload.get("label"))
+
+    @app.get("/api/trace-review/crop")
+    def trace_review_crop(run: str, stem: str, identity: int, frame: int, size: int = 72) -> dict:
+        from .trace_review import cell_crop
+        return review_call(cell_crop, run, stem, identity, frame, size=size)
+
+    def intake_call(function, *args):
+        try:
+            return function(*args)
+        except (OSError, ValueError, KeyError) as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.post("/api/intake/inspect")
+    def intake_inspect(payload: dict[str, Any]) -> dict:
+        from .intake import inspect
+        paths = payload.get("paths")
+        if not isinstance(paths, list) or not all(isinstance(path, str) for path in paths):
+            raise HTTPException(422, "Give the dropped file or folder paths")
+        return intake_call(inspect, paths)
+
+    @app.post("/api/intake/labels")
+    def intake_labels(payload: dict[str, Any]) -> dict:
+        from .intake import save_labels
+        return intake_call(save_labels, str(payload.get("folder") or ""), payload.get("labels"))
+
+    @app.post("/api/intake/run", status_code=202)
+    def intake_run(payload: dict[str, Any]) -> dict:
+        recordings = payload.get("recordings")
+        if not isinstance(recordings, list):
+            raise HTTPException(422, "Choose the recordings to analyse")
+        return intake_call(manager.submit_intake, str(payload.get("folder") or ""),
+                           str(payload.get("mode") or ""), recordings)
+
+    @app.get("/api/intake/results")
+    def intake_results(folder: str) -> dict:
+        from .intake import results
+        return {"results": intake_call(results, folder)}
+
+    @app.post("/api/jobs/{identifier}/stop")
+    def stop_job(identifier: str) -> dict:
+        try:
+            return manager.stop(identifier)
+        except KeyError:
+            raise HTTPException(404, "Unknown job") from None
+
     if STATIC.is_dir():
         app.mount("/assets", StaticFiles(directory=STATIC), name="assets")
 
         @app.get("/")
         def index():
             return FileResponse(STATIC / "index.html")
+
+        @app.get("/review")
+        def review_page():
+            return FileResponse(STATIC / "trace-review.html")
 
     # Optional dependency stays out of the scientific package and is mounted only
     # after the app's routes, middleware and live job manager exist.

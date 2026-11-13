@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from importlib import resources
 from pathlib import Path
 
 import numpy as np
@@ -84,11 +83,8 @@ def build(stem: str, photons: np.ndarray, cells_path: str | Path,
                else "relative_to_motion_input_dir")
         pins[role] = {key: name, "sha256": sha256(path)}
 
-    with resources.files("pymicroglia.tracking").joinpath(
-            "data/motion_engine.zip").open("rb") as handle:
-        import zipfile
-        with zipfile.ZipFile(handle) as archive:
-            config = json.loads(archive.read("config.json"))
+    from . import shipped_engines
+    config = json.loads((shipped_engines.folder(shipped_engines.MOTION) / "config.json").read_bytes())
     config.update({
         "dataset": dataset, "stems": [stem],
         "frame_interval_min": float(frame_interval_min),

@@ -2,10 +2,11 @@
 
 Pairs of real cell masks from consecutive accepted frames, synthetic masks
 (both empty, one empty, single pixels at the borders, dense noise) and
+lazy cell masks (frozen_io.LabelMask) beside Boolean or lazy partners, and
 disk-backed copies are scored with real-valued transition images containing
 NaN. Result dictionaries must be equal in keys, values and types.
 """
-import argparse, importlib, json, sys, time, types
+import argparse, importlib, importlib.util, json, sys, time, types
 from contextlib import ExitStack
 from pathlib import Path
 
@@ -27,6 +28,8 @@ def main():
     parser.add_argument('--adapters', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--scratch', type=Path, required=True)
+    parser.add_argument('--frozen-io', type=Path, default=ROOT / 'validation/completed_base_20261012/memory'
+                        '/snapshots/speed_candidate/pymicroglia/tracking/frozen_io.py')
     a = parser.parse_args()
     sys.path[:0] = [str(ENGINE / 'code'), str(a.adapters.resolve())]
     import tracking
@@ -50,6 +53,16 @@ def main():
     for t in rng.choice(len(stack) - 1, 25, replace=False):
         for identity in rng.choice(np.unique(stack[int(t)])[1:], 15):
             pairs.append((stack[int(t)] == identity, stack[int(t) + 1] == identity))
+    spec = importlib.util.spec_from_file_location('frozen_io_check', a.frozen_io)
+    frozen_io = importlib.util.module_from_spec(spec); spec.loader.exec_module(frozen_io)
+    lazy = []
+    for t in rng.choice(len(stack) - 1, 15, replace=False):
+        earlier_frame, later_frame = stack[int(t)].copy(), stack[int(t) + 1].copy()
+        earlier_frame.flags.writeable = False
+        for identity in rng.choice(np.unique(earlier_frame)[1:], 10):
+            lazy.append((frozen_io.LabelMask(earlier_frame, identity), later_frame == identity))
+            lazy.append((frozen_io.LabelMask(earlier_frame, identity), frozen_io.LabelMask(later_frame, identity)))
+    lazy.append((frozen_io.LabelMask(stack[0], 65535), np.zeros(stack[0].shape, bool)))
     failures, cases = [], 0
     times = dict(original=0.0, adapted=0.0)
     for storage in ('plain', 'working'):
@@ -57,10 +70,10 @@ def main():
             if storage == 'working':
                 pool = array_storage.Pool(a.scratch, minimum_bytes=1 << 10, temporary_ram_bytes=0)
                 scope.enter_context(array_storage.install(pool))
-            for number, (earlier, later) in enumerate(pairs):
+            for number, (earlier, later) in enumerate(pairs + (lazy if storage == 'plain' else [])):
                 lag = rng.normal(0, 2, earlier.shape).astype(np.float32)
                 lag[rng.random(earlier.shape) < .03] = np.nan
-                if storage == 'working':
+                if storage == 'working' and number < len(pairs):
                     earlier, later, lag = np.array(earlier), np.array(later), np.array(lag)
                 t0 = time.perf_counter(); expected = original(earlier, later, lag)
                 t1 = time.perf_counter(); actual = replacement(earlier, later, lag)

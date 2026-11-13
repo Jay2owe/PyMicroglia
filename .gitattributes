@@ -1,2 +1,6 @@
 # Frozen synthetic fixture hashes cover the exact committed bytes on every OS.
 tests/fixtures/motion_parity/** -text
+# The shipped engines are checked by exact file digests (source_hashes.json and
+# the speed patches); some files keep Windows line endings.
+src/pymicroglia/tracking/data/motion_engine/** -text
+src/pymicroglia/tracking/data/completed_feedback_engine/** -text

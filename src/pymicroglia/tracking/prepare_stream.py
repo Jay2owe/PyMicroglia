@@ -1,7 +1,6 @@
 """Bounded-memory IO for the unchanged six-array Motion input arithmetic."""
 from __future__ import annotations
-import contextlib,gc, hashlib, json, shutil, tempfile, zipfile
-from importlib import resources
+import contextlib,gc, hashlib, json, shutil, tempfile
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -20,15 +19,18 @@ def _masked_median(photons,cells,path):
         for frame,mask in zip(photons,cells):
             part=np.clip(frame[mask>0].astype(np.float32),0,None)
             values[start:start+len(part)]=part;start+=len(part)
-            values.flush()
         assert start==count
-        result=float(np.median(values,overwrite_input=True));values.flush();return result
+        return float(np.median(values,overwrite_input=True))
     finally:
         values._mmap.close();Path(path).unlink(missing_ok=True)
 
 def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset, scratch_dir=None,
           save_measurement_raw=True, native_signal=False, progress=None, registered_raw_path=None):
-    """Reuse per-transition arithmetic and on-disk arrays; preserve native photons."""
+    """Reuse per-transition arithmetic and on-disk arrays; preserve native photons.
+
+    Mappings are private scratch consumed in this process. Durable TIFF writes
+    complete before scratch closes; scratch itself needs no forced flushes.
+    """
     photons = np.asarray(photons)
     if photons.ndim != 3 or len(photons) < 2:
         raise ValueError('Motion requires at least two (T,Y,X) frames')
@@ -63,7 +65,7 @@ def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset, scr
             with tifffile.TiffFile(cells_path) as opened:
                 cells=opened.series[0].asarray(out=str(scratch/'cells.dat'))
             mappings.callback(release,cells)
-            arrays['cells']=cells;cells.flush()
+            arrays['cells']=cells
             median=_masked_median(photons,cells,scratch/'median.dat')
             if median<=0:raise ValueError("median masked photon rate is zero")
             scale=TARGET_MEDIAN/median
@@ -88,7 +90,6 @@ def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset, scr
                 values[~inside] = 0
                 raw[t] = np.rint(np.clip(values, 0, 65535)).astype(np.uint16)
                 raw[t][inside & (raw[t] == 0)] = 1
-            if (t+1)%16==0:raw.flush()
         previous_rows = []; flat = []; next_track = 1
         for t in range(shape[0]):
             ratio[t] = evidence.lag_ratio(raw[t:t+2])[0]
@@ -113,17 +114,14 @@ def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset, scr
                 flat.append({"imagej_from":t+1,"imagej_to":t+2,**row})
             gain[t] = gained; loss[t] = lost
             previous_rows = rows
-            if (t+1)%16==0:
-                for buffer in (ratio,components,gain,loss):buffer.flush()
             if progress is not None:
                 progress('Motion evidence',t+1,shape[0])
         columns=("t","imagej_from","imagej_to","component","track","y","x","area_px","mean_intensity","gain_px_near","loss_px_near","motion_qualified")
         table=pd.DataFrame(flat,columns=columns)
-        evidence.rolling_trails(components,table,params["trail_window"],output_arrays=(trails,ages))
+        evidence.rolling_trails(components,table,params["trail_window"],output_arrays=(trails,ages),flush_outputs=False)
         for t in range(shape[0]):
             channels,_,_=evidence.composite_channels(raw[t:t+2],ratio[t:t+1],gain[t:t+1],loss[t:t+1],components[t:t+1],ages[t:t+1],params)
             composite[t]=np.stack(channels,axis=1)[0]
-            if (t+1)%16==0:composite.flush()
         names={"registered_raw":f"{stem}.tif","lag_float":f"{stem}_lag01_float.tif","neutral_tracks":f"{stem}_neutral_tracks.tif","trail_labels":f"{stem}_trail_labels.tif","trail_ages":f"{stem}_trail_ages.tif","motion_composite":f"{stem}_motion_evidence.tif"}
         pins={}
         for role,name in names.items():
@@ -147,12 +145,12 @@ def build(stem, photons, cells_path, folder, *, frame_interval_min, dataset, scr
             tifffile.imwrite(measurement_raw,(frame.astype(np.float32) for frame in photons),shape=photons.shape,
                 dtype=np.float32,photometric="minisblack",compression="zlib",compressionargs={"level":1},metadata={"axes":"TYX"})
         # Windows cannot remove mapped scratch files until every view is closed.
-        for array in arrays.values():array.flush();array._mmap.close()
+        for array in arrays.values():array._mmap.close()
         arrays.clear()
         del raw,ratio,components,trails,ages,composite,gain,loss,array,cells
         gc.collect()
-    with resources.files("pymicroglia.tracking").joinpath("data/motion_engine.zip").open("rb") as handle:
-        with zipfile.ZipFile(handle) as archive:config=json.loads(archive.read("config.json"))
+    from . import shipped_engines
+    config=json.loads((shipped_engines.folder(shipped_engines.MOTION)/"config.json").read_bytes())
     config.update(dataset=dataset,stems=[stem],frame_interval_min=float(frame_interval_min),registered_input_dir=".",motion_input_dir=".",pinned_files={stem:pins})
     if native_signal:
         config['source_frame_offset'] = 0

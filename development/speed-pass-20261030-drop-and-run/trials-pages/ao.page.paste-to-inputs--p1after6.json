@@ -1,0 +1,17 @@
+{
+ "case": "ao.page.paste-to-inputs",
+ "label": "p1after6",
+ "source": "<session>/scratch\\drop-speed\\final",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\final\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\final\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.286,
+ "segments": {
+  "paste_to_inputs": 0.286
+ },
+ "server_start_seconds": 6.029,
+ "output_sha256": "af681bb3c97eaec08e4391deb403b0758b0b864a90bcf1b84405baf0f262e2e0",
+ "error": null,
+ "browser": "http://127.0.0.1:9333"
+}

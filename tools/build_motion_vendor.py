@@ -1,20 +1,21 @@
 """Freeze the accepted Motion engine without changing its numerical code.
 
-Build-time only: the resulting archive is packaged with PyMicroglia. Runtime
+Build-time only: the resulting engine folder is packaged with PyMicroglia. Runtime
 never needs the sibling checkouts. Run from the PyMicroglia repository root.
 """
 from __future__ import annotations
 
 import hashlib
 import json
-import zipfile
 from pathlib import Path
+
+from pymicroglia.tracking import shipped_engines
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT.parent
 MOTION = PROJECT / "Motion"
 SOURCE = MOTION / "code"
-OUTPUT = ROOT / "src/pymicroglia/tracking/data/motion_engine.zip"
+OUTPUT = ROOT / "src/pymicroglia/tracking/data/motion_engine"
 
 
 def build() -> Path:
@@ -45,16 +46,7 @@ def build() -> Path:
                          for name, data in entries.items()},
     }
     entries["source_hashes.json"] = (json.dumps(provenance, indent=2) + "\n").encode()
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(OUTPUT, "w", compression=zipfile.ZIP_DEFLATED,
-                         compresslevel=9) as archive:
-        for name, data in sorted(entries.items()):
-            info = zipfile.ZipInfo(name, (2026, 9, 22, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o644 << 16
-            archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED,
-                             compresslevel=9)
-    return OUTPUT
+    return shipped_engines.write(OUTPUT, entries)
 
 
 if __name__ == "__main__":

@@ -216,3 +216,21 @@ def test_pipeline_gap_stage_exposes_combined_signal_trace(tmp_path):
     assert [row["measurement_kind"] for row in combined] == [
         "tracked_mask", "measurement_only", "measurement_only",
         "measurement_only", "tracked_mask"]
+
+
+def test_cell_missed_by_refined_object_keeps_motion_outline():
+    from pymicroglia.tracking.post_refine import transfer_frame
+    baseline = np.zeros((3, 10), np.uint16)
+    baseline[:, :] = 1
+    tracked = np.full((3, 10), 5, np.uint16)
+    tracked[0, 9] = 6  # one pixel: its refined share rounds to nothing
+    gated = np.zeros_like(baseline)
+    gated[:, :5] = 1
+    result, row = transfer_frame(baseline, gated, tracked)
+    assert set(np.unique(result)) - {0} == {5, 6}
+    assert result[0, 9] == 6 and row["motion_outlines_kept"] == 1
+    assert not np.any((tracked > 0) & (result > 0) & (tracked != result))
+    whole = np.zeros((3, 10), np.uint16)
+    whole[:, :] = 5
+    _, plain = transfer_frame(baseline, gated, whole)
+    assert "motion_outlines_kept" not in plain

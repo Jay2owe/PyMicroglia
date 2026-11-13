@@ -1,0 +1,17 @@
+{
+ "case": "pm.inspect.separate95",
+ "label": "f1after1",
+ "source": "<session>/scratch/drop-speed/final",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\final\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\final\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 1.9192,
+ "setup_in_act_seconds": 0.0,
+ "cpu_seconds": 1.7188,
+ "peak_wset_bytes": 174415872,
+ "output_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+ "error": "Traceback (most recent call last):\n  File \"<PyMicroglia>/tools\\benchmark_drop_and_run.py\", line 342, in run_case\n    result = _act(args.case, ctx, work)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<PyMicroglia>/tools\\benchmark_drop_and_run.py\", line 168, in _act\n    return intake.inspect([str(ctx.get(\"file\") or folder)])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\final\\pymicroglia\\ui\\intake.py\", line 159, in inspect\n    raise ValueError(\nValueError: This folder holds 15,708 single images, one per well, channel and time point, not time stacks. Export it again as a time-and-channel stack (PyIncucyte layout 'time_channel_stack') and drop that folder.\n",
+ "stages": null,
+ "profiled": false
+}

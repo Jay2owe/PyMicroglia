@@ -17,7 +17,7 @@ def main():
     sys.path[:0] = [str(args.engine.resolve()/'code'), str(args.adapter.resolve())]
     import accepted_history as history
     import hierarchy_metric_reuse as reuse
-    module = history._issue_module(history.I009, 'm6_hierarchy_reconcile')
+    module = history._issue_module(history.HIERARCHY_OPS, 'hierarchy_reconcile')
     geometry = module.geometry
     original, original_run, original_overlap = module.metrics, module.run, geometry.overlap
     rng = np.random.default_rng(903)

@@ -4,7 +4,6 @@ import json
 import linecache
 from pathlib import Path
 from types import ModuleType
-import zipfile
 
 import numpy as np
 import pytest
@@ -14,11 +13,10 @@ from pymicroglia.tracking.detector_acceleration import install
 
 @pytest.fixture
 def detector():
-    archive=Path(__file__).parents[1]/'src/pymicroglia/tracking/data/motion_engine.zip'
+    engine=Path(__file__).parents[1]/'src/pymicroglia/tracking/data/motion_engine'
     cached=[]
     def load(name):
-        with zipfile.ZipFile(archive) as z:
-            source=z.read(f'code/{name}.py').decode()
+        source=(engine/f'code/{name}.py').read_bytes().decode()
         filename=f'<bundled_detector_test>/{name}.py'
         linecache.cache[filename]=(len(source),None,source.splitlines(True),filename)
         cached.append(filename)
@@ -96,27 +94,27 @@ def test_restores_original_after_error(detector):
     assert detector.detect_frame is original
 
 
-def test_engine_installs_and_restores_acceleration(detector,tmp_path,monkeypatch):
+def test_engine_installs_and_restores_acceleration(tmp_path,monkeypatch):
     import sys
-    from types import SimpleNamespace
     from pymicroglia.tracking import engine
-    (tmp_path/'code').mkdir()
-    original=detector.detect_frame
-    monkeypatch.setitem(sys.modules,'raw_physical_hypotheses',detector)
-    monkeypatch.setitem(sys.modules,'pipeline',SimpleNamespace())
-    monkeypatch.setitem(sys.modules,'optimized_pipeline',SimpleNamespace(
-        main=lambda args,runner:runner()))
-    called=[]
+    root=engine._engine(tmp_path)
+    config=tmp_path/'recording.json'
+    config.write_bytes((Path(engine.__file__).parent/'data/motion_engine/config.json').read_bytes())
+    called,seen=[],[]
     def native(*args,**kwargs):
-        assert detector.detect_frame is not original
+        module=sys.modules['raw_physical_hypotheses']
+        seen.append((module,module.detect_frame))
         called.append('native')
     def corrections(*args,**kwargs):called.append('complete corrections')
     monkeypatch.setattr(engine,'_execute_pipeline',native)
     monkeypatch.setattr(engine,'_execute_corrections',corrections)
-    engine._run_frozen(tmp_path,'sample','run',tmp_path/'config.json',tmp_path/'run.log')
+    engine._run_frozen(root,'sample','run',config,tmp_path/'run.log')
     assert called==['native','complete corrections']
-    assert detector.detect_frame is original
-    recipe=json.loads((tmp_path/'detector_acceleration.json').read_text())
+    (module,during),=seen
+    # The accelerated detector ran inside, and the run left the native function in place.
+    assert Path(during.__code__.co_filename)==Path(install.__wrapped__.__code__.co_filename)
+    assert Path(module.detect_frame.__code__.co_filename)!=Path(install.__wrapped__.__code__.co_filename)
+    recipe=json.loads((root/'detector_acceleration.json').read_text())
     assert recipe['backend']=='cpu'
     assert len(recipe['source_sha256'])==64
 
@@ -136,5 +134,7 @@ def test_checkpoint_rejects_changed_detector_implementation(tmp_path,monkeypatch
     original=checkpoints.sha
     monkeypatch.setattr(checkpoints,'sha',lambda path:
         'changed' if Path(path).name=='detector_acceleration.py' else original(path))
-    with pytest.raises(ValueError,match='code changed'):
-        checkpoints.Stages(pipeline,cfg,'sample','run',lambda path:None)
+    # A changed implementation recomputes every stage and keeps the earlier state beside it.
+    second=checkpoints.Stages(pipeline,cfg,'sample','run',lambda path:None)
+    assert second.fresh and second.signature!=saved.signature
+    assert len(list(second.state_path.parent.glob('tracking_resume_superseded_*.json')))==1

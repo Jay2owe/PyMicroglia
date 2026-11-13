@@ -70,10 +70,10 @@ def main():
             if profiler:profiler.enable()
             try:
                 if a.group=='hierarchy':
-                    candidate, _ = history._issue009(labels, None, None, a.stem, root, cfg.source_frame_offset,
+                    candidate, _ = history._hierarchy_reconcile(labels, None, None, a.stem, root, cfg.source_frame_offset,
                                                      frame_interval_min=cfg.values['frame_interval_min'])
                 else:
-                    candidate = history._issue008(labels, raw, lag, a.stem, root, cfg.source_frame_offset,
+                    candidate = history._ownership_quarantine(labels, raw, lag, a.stem, root, cfg.source_frame_offset,
                                                      frame_interval_min=cfg.values['frame_interval_min'])
             finally:
                 if profiler:

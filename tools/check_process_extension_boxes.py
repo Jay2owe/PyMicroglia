@@ -89,6 +89,11 @@ def main():
                 report['applications'] += len(expected[3])
             report['runs'] += 1
     report['stats'] = stats
+    # Component and largest-part coordinates come from the boxed np.nonzero;
+    # the module's own _largest_centre is left as it was.
+    assert stats['coordinates']['boxed'] > 0, stats
+    assert not hasattr(module._largest_centre, '__wrapped__')
+    assert rewritten.__globals__['_largest_centre'].__wrapped__ is module._largest_centre
     a.output.write_text(json.dumps(report, indent=1) + '\n', encoding='utf-8')
     print(json.dumps(report))
 

@@ -106,6 +106,36 @@ def main():
             validations.append((output, window, recovered))
         validations.append((window.copy(), window, np.zeros(window.shape, bool)))
         validations.append((window.copy(), window, np.zeros(window.shape, np.uint8)))
+        # Several errors in different frames: the first test's error must come
+        # first whichever frame holds it, and frames with and without claims.
+        for late_unclaimed in (True, False):
+            output = window.copy(); recovered = np.zeros(window.shape, bool)
+            ids = np.unique(output[5])[1:]
+            pick = output[5] == ids[0]
+            recovered[5][pick] = True
+            output[5][np.argwhere(pick)[0][0], np.argwhere(pick)[0][1]] = 0
+            if late_unclaimed:
+                output[50][3, 3] += 1
+            else:
+                spot = np.argwhere(~pick)[0]
+                output[5][tuple(spot)] += 1
+            validations.append((output, window, recovered))
+        # Carved names in two frames, and mixed integer types.
+        output = window.copy(); recovered = np.zeros(window.shape, bool)
+        for t in (7, 30):
+            ids = np.unique(output[t])[1:]
+            pick = output[t] == ids[-1]
+            output[t][pick] = ids[0]; recovered[t][pick] = True
+        validations.append((output, window, recovered))
+        validations.append((output.astype(np.uint16), window.astype(np.int32), recovered))
+        # Disk-backed movies.
+        folder = Path(tempfile.mkdtemp())
+        disk = []
+        for name, value in (('out', output), ('lab', window), ('rec', recovered)):
+            held = np.memmap(folder / f'{name}.dat', value.dtype, 'w+', shape=value.shape)
+            held[:] = value
+            disk.append(held)
+        validations.append(tuple(disk))
         for number, case in enumerate(validations):
             t0 = time.perf_counter(); e = outcome(original_validate, *case)
             t1 = time.perf_counter(); f = outcome(boxed_validate, *case)
@@ -114,6 +144,8 @@ def main():
             if e != f:
                 failures.append(dict(kind='validate', number=number, expected=str(e)[:200], actual=str(f)[:200]))
         counters = dict(stats)
+        if 'validate_planes' in counters:
+            assert counters['validate_planes'] > 0
     assert module._settle_carves is original_settle and module._validate is original_validate
     report = dict(status='pass' if not failures else 'fail', settle_cases=len(cases),
                   validate_cases=len(validations), seconds=seconds, counters=counters, failures=failures[:10])

@@ -345,6 +345,66 @@ class JobManager:
         self.pool.submit(self._pipeline, identifier, name, supplied)
         return self.get(identifier)
 
+    def submit_intake(self, folder: str, mode: str, recordings: list) -> dict:
+        """The full automated chain over dropped recordings, with stage progress."""
+        from .intake import run_params
+        from pymicroglia.pipelines.auto_microglia import AO_STAGES
+
+        params = run_params(folder, mode, recordings)
+        identifier = uuid4().hex
+        row = {"id": identifier, "kind": "intake", "action": "auto_microglia",
+               "state": "queued", "submitted_at": _now(), "params": params,
+               "source": folder, "error": None, "outputs": [], "stop": False,
+               "progress": {"stage": "queued", "completed": 0, "total": len(AO_STAGES) + 1,  # the chain reports; cells follow
+                            "stages": []}}
+        with self.lock:
+            self.jobs[identifier] = row
+        self.pool.submit(self._intake, identifier, params)
+        return self.get(identifier)
+
+    def stop(self, identifier: str) -> dict:
+        with self.lock:
+            row = self.jobs[identifier]
+            if row["state"] in {"queued", "running"}:
+                row["stop"] = True
+        return self.get(identifier)
+
+    def _intake(self, identifier: str, params: dict) -> None:
+        from pymicroglia.pipelines import auto_microglia
+        from .intake import results
+
+        with self.lock:
+            row = self.jobs[identifier]
+            if row["stop"]:
+                row.update(state="failed", error="Stopped before it started", finished_at=_now())
+                return
+            row.update(state="running", started_at=_now())
+            # The chain reports a stage when it finishes, so until then the page
+            # would still say "queued" about a run that has started.
+            row["progress"]["stage"] = "starting"
+
+        def progress(entry):
+            with self.lock:
+                done = row["progress"]
+                done["stages"].append({"stage": str(entry.get("stage")),
+                                       "status": str(entry.get("status"))})
+                done.update(stage=f"finished {entry.get('stage')}", completed=len(done["stages"]))
+                stop = row["stop"]
+            if stop:  # the chain's own way to end a run between stages
+                raise RuntimeError("Stopped by request after the current stage")
+
+        try:
+            result = auto_microglia.run(**params, on_progress=progress,
+                                        claim="Started from the workbench drop page")
+            with self.lock:
+                row.update(state="completed", finished_at=_now(),
+                           run=str(result.get("folder", "")),
+                           results=results(row["source"]))
+                row["progress"]["stage"] = "completed"
+        except Exception as exc:
+            with self.lock:
+                row.update(state="failed", error=f"{type(exc).__name__}: {exc}", finished_at=_now())
+
     def _pipeline(self, identifier: str, name: str, params: dict) -> None:
         from pymicroglia.pipelines import get
 

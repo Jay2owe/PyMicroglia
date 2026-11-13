@@ -84,7 +84,7 @@ def main():
                 setattr(ah,name,call);stack.callback(setattr,ah,name,original)
             def calculate():
                 holder['numeric_context']=getattr(np,'_get_promotion_state',lambda:None)()
-                tick=time.perf_counter();result=ah._issue023_tail(labels,unclaimed,raw,lag,cfg.source_frame_offset)
+                tick=time.perf_counter();result=ah._generalised_repairs(labels,unclaimed,raw,lag,cfg.source_frame_offset)
                 holder['stage_seconds']=time.perf_counter()-tick
                 holder['labels_equal']=array_sha256(result[0])==array_sha256(read(source/'12_issue023_generalized.tif'))
                 holder['ledger_equal']=array_sha256(result[1])==array_sha256(read(source/'12_issue023_generalized_unclaimed.tif'))

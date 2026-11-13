@@ -1,14 +1,14 @@
 """Refuse a full accepted-base claim when movie or correction coverage is partial."""
 from pathlib import Path
 import argparse
-import hashlib
 import json
-import zipfile
+
+from pymicroglia.tracking import shipped_engines
 
 
 def verify(recipe, reports, archive):
     reference=json.loads(Path(recipe).read_text())
-    digest=hashlib.sha256(Path(archive).read_bytes()).hexdigest()
+    digest=shipped_engines.digest(archive)
     by_movie={}
     for report in reports:
         row=json.loads(Path(report).read_text())
@@ -28,8 +28,7 @@ def verify(recipe, reports, archive):
         if set(row.get('inventories',[]))!=set(reference['inventories']):
             raise ValueError('Incomplete process evidence: '+movie)
         count+=len(actual)
-    with zipfile.ZipFile(archive) as z:
-        manifest=json.loads(z.read('source_hashes.json'))
+    manifest=json.loads(shipped_engines.read(archive,'source_hashes.json'))
     return dict(status='pass',accepted_attempt=manifest['accepted_attempt'],
         movies=len(by_movie),correction_boundaries=count,
         saved_feedback=manifest['saved_feedback'],correction_archive_sha256=digest,
@@ -44,7 +43,7 @@ The report explicitly separates reused evidence from fresh execution.
 """
     validation=Path(validation)
     reference=json.loads(Path(recipe).read_text())
-    digest=hashlib.sha256(Path(archive).read_bytes()).hexdigest()
+    digest=shipped_engines.digest(archive)
     coverage=json.loads((validation/'source_coverage.json').read_text())
     required=sum(len(stages) for movie in reference['movies'].values() for stages in movie['expected'].values())
     if (coverage['status']!='pass' or coverage['archive_sha256']!=digest

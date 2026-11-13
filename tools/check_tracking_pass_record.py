@@ -53,7 +53,7 @@ def main():
         pool = storage.Pool(a.output / 'scratch2', minimum_bytes=1024**2, temporary_ram_bytes=32 * 1024**2)
         with storage.install(pool), frozen_io.install(common, a.engine / 'code', a.output / 'scratch3', array_pool=pool):
             # The native adapters installed the recorder around Issue 005.
-            assert 'tracking_pass_record' in ah._issue005.__code__.co_filename
+            assert 'tracking_pass_record' in ah._confidence_layered_retracking.__code__.co_filename
             sources = pipeline._pinned_paths(cfg, a.stem)
 
             def read(path):
@@ -77,7 +77,7 @@ def main():
             token = record._output_root.set(work)
             tick = time.perf_counter()
             try:
-                labels = ah._issue005(cfg, physical, reservation, raw_full, lag_full, observations,
+                labels = ah._confidence_layered_retracking(cfg, physical, reservation, raw_full, lag_full, observations,
                                       observation_table, anchor_t, motion_reserved)
             finally:
                 record._output_root.reset(token)

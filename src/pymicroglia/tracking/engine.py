@@ -3,7 +3,8 @@
 The engine is imported from an isolated per-run folder. Its historical flat
 module names are restored after a run, so they do not stay in PyMicroglia's
 import namespace.
-No tracking threshold, assignment rule, or calibration is changed here.
+Versioned runtime repairs are recorded in the affected stage's provenance;
+the frozen engine and its calibration remain unchanged.
 """
 from __future__ import annotations
 
@@ -12,10 +13,8 @@ import importlib
 import json
 import sys
 import threading
-import zipfile
 from dataclasses import replace
 from contextlib import redirect_stderr, redirect_stdout
-from importlib import resources
 from pathlib import Path
 
 import tifffile
@@ -62,13 +61,22 @@ def _run_frozen(root: Path, stem: str, run_name: str, config: Path,
                         }, indent=2) + '\n')
                         with detector_acceleration.install(detector):
                             pipeline = importlib.import_module("pipeline")
-                            from . import checkpoints, residency_frames
+                            from . import checkpoints, residency_frames, repair_composition, lineage_overlaps, owner_consensus_conflicts, reciprocal_overlaps, owner_identity_accounting, stage_fallbacks, pipeline_fallbacks
                             history = importlib.import_module("accepted_history")
-                            with residency_frames.install(history, checkpoints, root):
+                            with residency_frames.install(history, checkpoints, root), \
+                                    repair_composition.install(history, checkpoints, root), \
+                                    lineage_overlaps.install(history, checkpoints, root), \
+                                    owner_consensus_conflicts.install(history, checkpoints, root), \
+                                    reciprocal_overlaps.install(history, checkpoints, root), \
+                                    owner_identity_accounting.install(history, checkpoints, root), \
+                                    stage_fallbacks.install(history, checkpoints, root), \
+                                    pipeline_fallbacks.install(pipeline, importlib.import_module("common"), root):
                                 _execute_pipeline(pipeline, code, root, run_name, stem, config,
                                                   bounded_memory, working_array_min_bytes, resume=resume)
-                            _execute_corrections(root,stem,run_name,config,root.parent,resume=resume,
-                                bounded_memory=bounded_memory,working_array_min_bytes=working_array_min_bytes)
+                            # The final stage replays tracking, so it needs the same anchor policy.
+                            with stage_fallbacks.anchor_names(stage_fallbacks.writer(root/('final_'+stage_fallbacks.AUDIT))):
+                                _execute_corrections(root,stem,run_name,config,root.parent,resume=resume,
+                                    bounded_memory=bounded_memory,working_array_min_bytes=working_array_min_bytes)
                     optimized = importlib.import_module("optimized_pipeline")
                     optimized.main(["--no-evidence-cache", "--stage-timings",
                                     str(root / "accepted_stage_timings.jsonl")], runner=execute)
@@ -83,11 +91,15 @@ def _run_frozen(root: Path, stem: str, run_name: str, config: Path,
 def _execute_corrections(root, stem, run_name, config, folder, *, resume=False,
                          bounded_memory=False,working_array_min_bytes=32*1024**2):
     from .completed_feedback import run_current
+    from .pipeline_fallbacks import final_corrections
+    cfg = importlib.import_module('common').Config.load(Path(config))
     if bounded_memory:
         from .correction_storage import bounded_corrections
-        with bounded_corrections(root,minimum_bytes=working_array_min_bytes):
-            return run_current(root,stem,run_name,config,folder,resume=resume)
-    return run_current(root,stem,run_name,config,folder,resume=resume)
+        with bounded_corrections(root,minimum_bytes=working_array_min_bytes) as pool:
+            return final_corrections(lambda: run_current(root,stem,run_name,config,folder,resume=resume,array_pool=pool),
+                                     root,stem,run_name,cfg,resume=resume)
+    return final_corrections(lambda: run_current(root,stem,run_name,config,folder,resume=resume),
+                             root,stem,run_name,cfg,resume=resume)
 
 
 def _execute_pipeline(pipeline, code, root, run_name, stem, config,
@@ -99,7 +111,7 @@ def _execute_pipeline(pipeline, code, root, run_name, stem, config,
         common = importlib.import_module("common")
         with tempfile.TemporaryDirectory(prefix="motion-display-") as scratch:
             from auto_organotypic.array_storage import Pool,install as install_arrays
-            pool=Pool(Path(scratch)/'working_arrays',minimum_bytes=working_array_min_bytes)
+            pool=Pool(Path(scratch)/'working_arrays',minimum_bytes=working_array_min_bytes,temporary_ram_bytes=32*1024**2,released_bytes=1073741824)
             import inspect
             storage_record=dict(minimum_bytes=working_array_min_bytes,temporary_directory=scratch,
                 code_sha256={str(Path(path).resolve()):hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -118,18 +130,19 @@ def _execute_pipeline(pipeline, code, root, run_name, stem, config,
         # arrays or changing the scientific operations.
         import tempfile
         from .frozen_io import install
+        from .engine_bounded import run as run_staged
         common = importlib.import_module('common')
         with tempfile.TemporaryDirectory(prefix='motion-native-storage-') as scratch:
             with install(common, code, Path(scratch)):
-                pipeline.run_base(run_name, stem, config)
+                run_staged(pipeline, common, run_name, stem, config, native_review=True)
 
 
 def _engine(folder: Path) -> Path:
-    archive_resource = resources.files("pymicroglia.tracking").joinpath(
-        "data/motion_engine.zip")
-    content = archive_resource.read_bytes()
-    digest = hashlib.sha256(content).hexdigest()
+    from . import shipped_engines
+    source = shipped_engines.folder(shipped_engines.MOTION)
+    digest = shipped_engines.fingerprint(source)
     target = folder / "engine"
+    # The marker keeps its name so run folders keep their layout; it now holds the folder's fingerprint.
     marker = target / "archive.sha256"
     if marker.is_file():
         if marker.read_text(encoding="ascii").strip() != digest:
@@ -138,16 +151,73 @@ def _engine(folder: Path) -> Path:
             raise FileNotFoundError(target / "code/pipeline.py")
         return target
     if target.exists():
-        raise FileExistsError(f"unverified Motion engine folder: {target}")
+        # Unpacking stopped before its marker: keep that copy and unpack again.
+        from .checkpoints import set_aside
+        set_aside(target, "incomplete")
     target.mkdir(parents=True)
-    with zipfile.ZipFile(archive_resource.open("rb")) as archive:
-        names = archive.namelist()
-        if any(name.startswith("/") or ".." in Path(name).parts
-               for name in names):
-            raise ValueError("Motion engine archive has unsafe paths")
-        archive.extractall(target)
+    shipped_engines.copy(source, target)
     marker.write_text(digest + "\n", encoding="ascii")
     return target
+
+
+#: Waits before each retry of a run stopped by memory, disk or a held file.
+RETRY_WAITS = (60, 300)
+
+
+def _transient(error: BaseException) -> bool:
+    """Memory, disk and file-lock failures may clear; a retry resumes from saved stages."""
+    return isinstance(error, (MemoryError, PermissionError, FileExistsError)) or (
+        isinstance(error, OSError) and not isinstance(error, FileNotFoundError))
+
+
+def _run_with_retries(root, stem, run_name, config, config_values, log, *, bounded_memory,
+                      working_array_min_bytes, resume):
+    """Run Motion; retry transient stops, then publish the last finished labels.
+
+    Data problems inside a stage are handled by the stage fallbacks. Here a
+    run stopped by memory, disk or a held file is retried in the bounded
+    route, which uses less memory and resumes from verified stage
+    checkpoints. If every attempt stops, the deepest finished stage's labels
+    are published, marked degraded; only a run with no finished identity
+    stage (inputs, motion or first tracking failed) still raises.
+    """
+    import gc
+    import time
+    attempt_bounded, attempt_resume = bounded_memory, resume
+    for attempt in range(len(RETRY_WAITS) + 1):
+        try:
+            if attempt_bounded:
+                storage_options={} if working_array_min_bytes==32*1024**2 else dict(working_array_min_bytes=working_array_min_bytes)
+                if attempt_resume:storage_options['resume']=True
+                _run_frozen(root, stem, run_name, config, log, bounded_memory=True,**storage_options)
+            else:
+                _run_frozen(root, stem, run_name, config, log)
+            return
+        except Exception as exc:
+            error = exc
+            if attempt < len(RETRY_WAITS) and _transient(exc):
+                with log.open("a", encoding="utf-8") as handle:
+                    handle.write(f"\nRETRY {attempt + 1}: {type(exc).__name__}: {exc}; "
+                                 f"resuming in the bounded route after {RETRY_WAITS[attempt]} s\n")
+                gc.collect()
+                time.sleep(RETRY_WAITS[attempt])
+                attempt_bounded = attempt_resume = True
+                continue
+            break
+    from .pipeline_fallbacks import publish_without_corrections
+    tail = "\n".join(log.read_text(encoding="utf-8", errors="replace")
+                     .splitlines()[-25:]) if log.is_file() else ""
+    try:
+        publish_without_corrections(
+            root, stem, run_name, f"run stopped: {type(error).__name__}: {error}"[:2000],
+            source_frame_offset=config_values.get("source_frame_offset", 0),
+            frame_interval_min=config_values.get("frame_interval_min", 30.0),
+            resume=attempt_resume)
+    except RuntimeError:
+        if isinstance(error, (ValueError, FileNotFoundError)):
+            raise error  # input or settings problem: report it as itself
+        raise RuntimeError(f"Motion failed for {stem} before any identity stage finished; "
+                           f"see {log}\n{tail}") from error
 
 
 def run(inputs, folder, *, stem: str | None = None,
@@ -182,21 +252,11 @@ def run(inputs, folder, *, stem: str | None = None,
     if accepted.exists() and not resume:
         raise FileExistsError(f"immutable Motion run already exists: {accepted}")
     log = Path(folder) / f"{stem}_motion.log"
-    try:
-        if bounded_memory:
-            if working_array_min_bytes<=0:raise ValueError('Working-array storage threshold must be positive')
-            storage_options={} if working_array_min_bytes==32*1024**2 else dict(working_array_min_bytes=working_array_min_bytes)
-            if resume:storage_options['resume']=True
-            _run_frozen(root, stem, run_name, config, log, bounded_memory=True,**storage_options)
-        else:
-            _run_frozen(root, stem, run_name, config, log)
-    except (ValueError, FileNotFoundError):
-        raise
-    except Exception as exc:
-        tail = "\n".join(log.read_text(encoding="utf-8", errors="replace")
-                         .splitlines()[-25:]) if log.is_file() else ""
-        raise RuntimeError(f"Motion failed for {stem}; see {log}\n{tail}") from exc
+    if bounded_memory and working_array_min_bytes<=0:
+        raise ValueError('Working-array storage threshold must be positive')
     config_values = json.loads(config.read_text(encoding="utf-8"))
+    _run_with_retries(root, stem, run_name, config, config_values, log, bounded_memory=bounded_memory,
+                      working_array_min_bytes=working_array_min_bytes, resume=resume)
     registered_directory = (config.parent / config_values["registered_input_dir"]).resolve()
     motion_directory = (config.parent / config_values["motion_input_dir"]).resolve()
     raw = registered_directory / prepared["pins"]["registered_raw"][

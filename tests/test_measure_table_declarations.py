@@ -81,7 +81,7 @@ def test_a_grain_is_made_of_columns_something_produces() -> None:
 def test_the_package_declares_every_table_it_writes() -> None:
     """A count, so a module cannot quietly stop declaring one.
 
-    Thirty from the fifteen measurement modules, nineteen from regimes,
+    Thirty-one from the sixteen measurement modules, nineteen from regimes,
     rhythms, coupling, territory_shape, walk, recurrence, sequence_distance
     and trend, twenty-one from history -- sixteen of which are the tracker's
     own tables copied through. If this number changes it should change
@@ -89,10 +89,10 @@ def test_the_package_declares_every_table_it_writes() -> None:
     note should say which.
     """
     declared = declared_tables()
-    assert len(declared) == 70, sorted(declared)
-    assert len({m.name for m in list_modules() for o in m.writes}) == 15
+    assert len(declared) == 71, sorted(declared)
+    assert len({m.name for m in list_modules() for o in m.writes}) == 16
     assert sum(1 for o in declared.values() if o.origin == "tracker") == 16
-    assert len(modules.MODULE_NAMES) == 24
+    assert len(modules.MODULE_NAMES) == 25
 
 
 def test_the_check_covers_every_registered_module() -> None:

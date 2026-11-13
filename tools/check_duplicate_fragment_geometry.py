@@ -19,7 +19,7 @@ def main():
     from scipy import ndimage as ndi
     import accepted_history as history
     import duplicate_fragment_geometry as reuse
-    module=history._issue_module(getattr(history,'I'+a.issue),'m9_duplicate_cleanup')
+    module=history._issue_module(getattr(history,'I'+a.issue),'duplicate_cleanup')
     original=module.clean_duplicates
     rng=np.random.default_rng(395)
     before=after=0.;events=0;edge_events=0;checks=0

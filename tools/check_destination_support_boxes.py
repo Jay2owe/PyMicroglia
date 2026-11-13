@@ -72,6 +72,16 @@ def main():
         if len(observed_frames) and rng.random() < .3:
             # Remove the observation so the origin search uses neighbouring frames.
             pass
+    # Records whose name is absent from the proposal frame, and a zero name,
+    # which the record boxes leave to the whole-frame statements.
+    every = np.unique(observed)[1:]
+    for _ in range(40):
+        t = int(rng.integers(1, a.frames - 1))
+        name = int(rng.choice(every))
+        if (name, t + 1) not in used and not np.any(proposals[t] == name):
+            used.add((name, t + 1))
+            rows.append(dict(identity=name, imagej_frame=t + 1, direction='forward', outcome='recovered'))
+    rows.append(dict(identity=0, imagej_frame=2, direction='backward', outcome='recovered'))
     history = pd.DataFrame(rows)
     versions = {}
     for path in sorted(a.frozen.glob('*/*/recovery_destination_soma.py')):
@@ -115,7 +125,13 @@ def main():
             compared += 1
             withdrawn += len(expected[1])
         assert stats['fallback'] == 0
-        report['versions'][digest[:16]] = dict(path=str(path), option_sets=compared, audit_rows=withdrawn, stats=stats)
+        text = adapter.rewrite(inspect.getsource(original), adapter.VERSIONS[digest])
+        edits = dict(source_box='_destination_source_box(source)' in text,
+                     lattice='lattice = _destination_lattice' in text)
+        # Every version that boxes a recovery source takes the row and column box.
+        assert edits['source_box'] == ('np.nonzero(source)' in inspect.getsource(original)), path
+        report['versions'][digest[:16]] = dict(path=str(path), option_sets=compared, audit_rows=withdrawn,
+                                               stats=stats, edits=edits)
     a.output.write_text(json.dumps(report, indent=1) + '\n', encoding='utf-8')
     print(json.dumps(report))
 

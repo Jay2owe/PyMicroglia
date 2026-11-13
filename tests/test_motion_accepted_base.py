@@ -4,34 +4,31 @@ import json
 from pathlib import Path
 import sys
 from types import SimpleNamespace
-import zipfile
 
 import numpy as np
 import pytest
 import tifffile
 from pymicroglia.tracking import engine
 
-ARCHIVE = Path(engine.__file__).parent / 'data/motion_engine.zip'
+ENGINE = Path(engine.__file__).parent / 'data/motion_engine'
 
 def test_all_packaged_sources_match_manifest():
-    with zipfile.ZipFile(ARCHIVE) as archive:
-        manifest = json.loads(archive.read('source_hashes.json'))
-        assert manifest['accepted_engine'] == engine.NATIVE_METHOD_VERSION
-        for name, digest in manifest['files_sha256'].items():
-            assert hashlib.sha256(archive.read(name)).hexdigest() == digest, name
+    manifest = json.loads((ENGINE / 'source_hashes.json').read_bytes())
+    assert manifest['accepted_engine'] == engine.NATIVE_METHOD_VERSION
+    for name, digest in manifest['files_sha256'].items():
+        assert hashlib.sha256((ENGINE / name).read_bytes()).hexdigest() == digest, name
 
 
 @pytest.mark.parametrize('bounded', [False, True])
 def test_both_runner_modes_install_accepted_execution_contexts(tmp_path, monkeypatch, bounded):
     root = engine._engine(tmp_path)
     config = tmp_path / 'recording.json'
-    with zipfile.ZipFile(ARCHIVE) as archive:
-        values = json.loads(archive.read('config.json'))
+    values = json.loads((ENGINE / 'config.json').read_bytes())
     values.update(frame_interval_min=7.5, source_frame_offset=3)
     config.write_text(json.dumps(values))
     previous_argv = sys.argv
     observed = []
-    def execute(pipeline, code, passed_root, run_name, stem, passed_config, bounded_memory, minimum_bytes):
+    def execute(pipeline, code, passed_root, run_name, stem, passed_config, bounded_memory, minimum_bytes, resume=False):
         common = sys.modules['common']
         assert common.Config.load(config).source_frame_offset == 3
         assert common.Config.load(config).values['frame_interval_min'] == 7.5
@@ -42,7 +39,7 @@ def test_both_runner_modes_install_accepted_execution_contexts(tmp_path, monkeyp
         assert passed_root == root and passed_config == config
         observed.append(True)
     monkeypatch.setattr(engine, '_execute_pipeline', execute)
-    monkeypatch.setattr(engine, '_execute_corrections', lambda *args: None)
+    monkeypatch.setattr(engine, '_execute_corrections', lambda *args, **kwargs: None)
     engine._run_frozen(root, 'fixture', 'test', config, tmp_path/'run.log', bounded_memory=bounded)
     assert observed == [True]
     assert sys.argv is previous_argv

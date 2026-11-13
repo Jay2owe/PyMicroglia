@@ -36,7 +36,20 @@ def _restoration_context(memory, ownership, points, measurements, offset):
         ownership, points, measurements, source_offset=offset)
 
 
-def generate(root, stem, run_name, config_path, folder):
+def generate(root, stem, run_name, config_path, folder, *, array_pool=None):
+    """Build evidence with shared immutable frame masks, as in native tracking."""
+    import common
+    import tempfile
+    from .frozen_io import install
+    # The native storage context has ended before correction evidence begins.
+    # Reinstall its exact lazy-mask representation for the repeated tracker
+    # passes here, rather than retaining one full-frame mask per cell.
+    with tempfile.TemporaryDirectory(prefix='motion-evidence-') as scratch:
+        with install(common,Path(root)/'code',Path(scratch),array_pool=array_pool):
+            return _generate(root,stem,run_name,config_path,folder)
+
+
+def _generate(root, stem, run_name, config_path, folder):
     """Return inputs for one movie, including newly computed tracker variants."""
     import accepted_history as ah
     import pipeline
@@ -88,8 +101,14 @@ def generate(root, stem, run_name, config_path, folder):
     native_points['frame'] += offset
     cache = {}
     tick = time.perf_counter()
-    before, _, stages = collect_tracking_prefix(cfg,physical,reservation,raw,lag,
-        observations,observation_table,anchor,reserved,points=native_points,prepared_cache=cache)
+    from .tracking_pass_record import load as recorded_passes
+    recorded = recorded_passes(history,ah,cfg,physical,reservation,raw,lag,
+        observations,observation_table,anchor,reserved)
+    if recorded is not None:
+        before, stages = recorded
+    else:
+        before, _, stages = collect_tracking_prefix(cfg,physical,reservation,raw,lag,
+            observations,observation_table,anchor,reserved,points=native_points,prepared_cache=cache)
     timings.append(dict(stage='gap_reference',seconds=time.perf_counter()-tick,operations=stages))
     with methods(corrections,preserve_native=True):
         from recovery_sequence_composition import frozen_method
@@ -99,9 +118,13 @@ def generate(root, stem, run_name, config_path, folder):
             with frozen_method(spec):
                 if spec['kind'] == 'gap':
                     memory = importlib.import_module('measured_soma_gap_memory')
-                    after, events, stages = collect_tracking_prefix(cfg,physical,reservation,raw,lag,
-                        observations,observation_table,anchor,reserved,points=native_points,
-                        rule_context=memory.measured_soma_gap_memory,prepared_cache=cache)
+                    from .measured_gap_path_reuse import install as reuse_paths
+                    # Only the labels and the stage's seconds are kept from this prefix.
+                    from .sparse_pair_table import gap_events_discarded
+                    with reuse_paths(memory), gap_events_discarded():
+                        after, events, stages = collect_tracking_prefix(cfg,physical,reservation,raw,lag,
+                            observations,observation_table,anchor,reserved,points=native_points,
+                            rule_context=memory.measured_soma_gap_memory,prepared_cache=cache)
                     values['traces'] = [(old[0],new[0],_csv_boundary(new[1]))
                         for old,new in zip(before,after)]
                     before = after
@@ -111,9 +134,9 @@ def generate(root, stem, run_name, config_path, folder):
                     old_ledger = read(history/'07_issue011_unclaimed.tif')
                     protected = read(history/'06_issue010.tif')
                     aligned_lag = ah.align_transition_stack(lag,len(old),offset)
-                    ownership = ah._issue_module(ah.I012,'m1_reconcile_domain_ownership')
-                    detector = ah._issue_module(ah.I012,'m8_detect_dormant_releases')
-                    reconciler = ah._issue_module(ah.I012,'m9_reconcile_dormant_releases')
+                    ownership = ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'reconcile_domain_ownership')
+                    detector = ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'detect_dormant_releases')
+                    reconciler = ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'reconcile_dormant_releases')
                     params = ah._params('issue012','domain_ownership')
                     measurements = []
                     with _restoration_context(memory,ownership,points,measurements,offset):

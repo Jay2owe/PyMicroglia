@@ -18,7 +18,7 @@ def main():
     import pandas as pd
     import accepted_history as history
     import hierarchy_candidate_filter as reuse
-    module=history._issue_module(history.I009,'m6_hierarchy_reconcile')
+    module=history._issue_module(history.HIERARCHY_OPS,'hierarchy_reconcile')
     original=module.apply_ordered;metrics=module.metrics
     base=history._params('issue009','hierarchy_reconcile')['ordered']
     rng=np.random.default_rng(844);counts=[0,0];elapsed=[0.,0.];actions_total=0;disjoint_pairs=[0,0]

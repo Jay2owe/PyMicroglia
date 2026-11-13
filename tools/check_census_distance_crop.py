@@ -20,7 +20,7 @@ def main():
     import accepted_history as history
     from array_bounds import occupied_bounds
     import census_distance_crop as crop
-    module = history._issue_module(history.I017, 'm1_census')
+    module = history._issue_module(history.CONTINUITY_OPS, 'continuity_census')
     stack = tifffile.imread(a.engine / 'm22_accepted_history' / a.run / 'mid/accepted_history' / a.stack)
     rng = np.random.default_rng(17)
     cases = []

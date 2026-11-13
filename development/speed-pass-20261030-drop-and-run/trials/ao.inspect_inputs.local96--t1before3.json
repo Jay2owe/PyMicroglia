@@ -1,0 +1,17 @@
+{
+ "case": "ao.inspect_inputs.local96",
+ "label": "t1before3",
+ "source": "<session>/scratch/drop-speed/baseline",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\baseline\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\baseline\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.6274,
+ "setup_in_act_seconds": 0.0,
+ "cpu_seconds": 0.625,
+ "peak_wset_bytes": 105517056,
+ "output_sha256": "3e6fe456d21ef4e1665a1326786f3d7d2ee2ad9526084d58b6bc50080c855c7a",
+ "error": null,
+ "stages": null,
+ "profiled": false
+}

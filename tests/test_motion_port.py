@@ -5,7 +5,6 @@ import hashlib
 import json
 import subprocess
 import sys
-import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -21,9 +20,9 @@ HANDOFF = ROOT / "development/single_frame_mask_unet/mask_to_motion_handoff"
 def test_frozen_motion_archive_imports_without_sibling_project(tmp_path):
     root = engine._engine(tmp_path)
     assert (root / "code/pipeline.py").is_file()
-    with zipfile.ZipFile(ROOT / "src/pymicroglia/tracking/data/motion_engine.zip") as archive:
-        hashes = json.loads(archive.read("source_hashes.json"))["files_sha256"]
-        config = json.loads(archive.read("config.json"))
+    shipped = ROOT / "src/pymicroglia/tracking/data/motion_engine"
+    hashes = json.loads((shipped / "source_hashes.json").read_bytes())["files_sha256"]
+    config = json.loads((shipped / "config.json").read_bytes())
     scientific = {key: config[key] for key in
                   ("input_space", "observation", "anchor", "tracking",
                    "events", "accepted_postprocessing")}

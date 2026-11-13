@@ -1,6 +1,8 @@
 """Compare _recording_step_limit with its remembered form, exactly.
 
-Real accepted tracker points with owner and other columns changed (the
+Real accepted tracker points with owner and other columns changed, missing
+track names and frames, integer, unsigned and boolean columns, 60 random
+subsets with moved positions, negative radii and shifted frames, (the
 remembered value must equal a fresh original call), rows reordered, frames
 tied within tracks, radii made non-finite, strong as objects and a missing
 column. Every call of the wrapper must return the original's value (NaN where
@@ -37,7 +39,7 @@ def main():
     points = pd.read_csv(history / '26_latent_body_tracks/out/latent_track_points.csv', low_memory=False)
     points['physically_visible'] = points.visibility.gt(0)
     rng = np.random.default_rng(125)
-    stats = {key: 0 for key in ('calls', 'reused', 'measured', 'fallback')}
+    stats = {key: 0 for key in ('calls', 'reused', 'measured', 'vectorised', 'original', 'fallback')}
     original, wrapper = adapter.adapt(module, stats, {})
     cases = []
     base = points.copy()
@@ -70,6 +72,33 @@ def main():
     float_frame = base.copy()
     float_frame['frame'] = float_frame.frame.astype(float)
     cases.append(('float frames', float_frame, 'measured'))
+    nan_track = base.copy()
+    nan_track['track_id'] = nan_track.track_id.astype(float)
+    nan_track.loc[nan_track.index[:40], 'track_id'] = np.nan
+    cases.append(('missing track names', nan_track, 'measured'))
+    nan_frame = float_frame.copy()
+    nan_frame.loc[nan_frame.index[5:30], 'frame'] = np.nan
+    cases.append(('missing frames', nan_frame, 'measured'))
+    integer_xy = base.copy()
+    integer_xy['x'] = integer_xy.x.round().astype(np.int32)
+    integer_xy['radius_px'] = integer_xy.radius_px.round().astype(np.int64)
+    cases.append(('integer positions and radii', integer_xy, 'measured'))
+    unsigned = base.copy()
+    unsigned['track_id'] = unsigned.track_id.astype(np.uint32)
+    unsigned['strong'] = unsigned.strong.astype(np.int8)
+    cases.append(('unsigned tracks, integer flags', unsigned, 'measured'))
+    boolean_x = base.copy()
+    boolean_x['x'] = boolean_x.x > boolean_x.x.median()
+    cases.append(('boolean positions', boolean_x, 'measured'))
+    for trial in range(60):
+        table = base.sample(frac=float(rng.uniform(.05, 1)), random_state=trial)
+        table = table.copy()
+        table['x'] = table.x + rng.normal(0, 3, len(table))
+        if trial % 3 == 0:
+            table.loc[table.index[rng.choice(len(table), max(1, len(table) // 50), replace=False)], 'radius_px'] = -1.0
+        if trial % 5 == 0:
+            table['frame'] = table.frame + rng.integers(0, 2, len(table))
+        cases.append((f'random {trial}', table, 'measured'))
     report = dict(status='pass', rows=len(points), cases=[], seconds=dict(original=0.0, wrapper=0.0))
     for name, table, expected_route in cases:
         before = dict(stats)
@@ -95,6 +124,7 @@ def main():
             raise AssertionError('missing column accepted')
     report['cases'].append(dict(case='missing column', route='fallback', error=message))
     report['stats'] = stats
+    assert stats['vectorised'] > 0 and stats['original'] > 0, stats
     a.output.write_text(json.dumps(report, indent=1) + '\n', encoding='utf-8')
     print(json.dumps(report))
 

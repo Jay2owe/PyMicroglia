@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/assets/events.css?v=20261002-3">
   <link rel="stylesheet" href="/assets/rhythm-audit.css?v=20261003-4">
   <link rel="stylesheet" href="/assets/cell-grid.css">
+  <link rel="stylesheet" href="/assets/intake.css?v=20261029-1">
   <script src="/assets/quicklook.js" defer></script>
   <script src="/assets/exploration-core.js?v=20261002-3" defer></script>
   <script src="/assets/exploration-filters.js?v=20261006-outline-filter-1" defer></script>
@@ -20,7 +21,8 @@
   <script src="/assets/exploration.js?v=20261011-progressive-1" defer></script>
   <script src="/assets/events.js?v=20261003-1" defer></script>
   <script src="/assets/rhythm-audit.js?v=20261003-4" defer></script>
-  <script src="/assets/app.js?v=20261006-outline-filter-1" defer></script>
+  <script src="/assets/intake.js?v=20261029-1" defer></script>
+  <script src="/assets/app.js?v=20261029-intake-1" defer></script>
 <script src="/assets/assistant-controls.js" defer></script>
 </head>
 <body>
@@ -70,6 +72,7 @@
           <button id="open-results" class="button secondary">Review saved files</button>
           <span id="run-context" class="muted">No run selected</span>
         </div>
+        <section id="intake-host" hidden aria-label="Analyse recordings"></section>
         <div id="exploration-host"></div>
         <div id="micro-content" class="content"></div>
       <section id="events-workspace" class="events-page" hidden>
@@ -96,6 +99,7 @@
       </section>
     </main>
     <aside id="job-tray" class="job-tray" hidden><div class="tray-heading"><strong>Analysis jobs</strong><button id="close-jobs" aria-label="Close jobs">Ã—</button></div><div id="job-list"></div></aside>
+    <div id="drop-overlay" class="drop-overlay" hidden>Drop to analyse</div>
     <button id="job-toggle" class="job-toggle">Jobs <span id="job-count">0</span></button>
     <dialog id="action-dialog"><form method="dialog" id="action-form"><div class="dialog-head"><div><span class="eyebrow">LIVE PYTHON ACTION</span><h2 id="action-title"></h2><p id="action-summary"></p></div><button type="button" id="close-action" aria-label="Close">Ã—</button></div><div id="action-fields"></div><div id="action-message" role="status"></div><div class="dialog-actions"><button type="button" id="validate-action" class="button secondary">Check settings</button><button type="submit" class="button primary">Run analysis</button></div></form></dialog>
     <dialog id="motion-dialog"><form method="dialog" id="motion-form"><div class="dialog-head"><div><span class="eyebrow">MOTION SESSION ACTION</span><h2 id="motion-action-title"></h2><p id="motion-action-summary"></p></div><button type="button" id="close-motion-action" aria-label="Close">Ã—</button></div><div id="motion-fields" class="field-list"></div><div id="motion-action-message" role="status"></div><div class="dialog-actions"><button type="submit" class="button primary">Apply to new session</button></div></form></dialog>

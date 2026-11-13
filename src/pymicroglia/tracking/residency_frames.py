@@ -9,6 +9,7 @@ import ast
 import hashlib
 import json
 from pathlib import Path
+from .checkpoints import reconcile_repair
 
 VERSION = "2026-10-21-residency-source-frames"
 FUNCTION = "_general_blob_residency"
@@ -52,11 +53,7 @@ def install(history, checkpoints, root):
                      patched_function_sha256=digest(patched.encode()))
     root = Path(root)
     record = root / "residency_frame_repair.json"
-    if not record.is_file() and any((root / 'm22_accepted_history').glob(
-            '*/mid/accepted_history/11_issue017_rebase.tif')):
-        raise ValueError("Unrepaired downstream history exists; retain it and resume from pre-residency inputs")
-    if record.is_file() and json.loads(record.read_text()) != signature:
-        raise ValueError("Residency repair changed; cannot reuse repaired history")
+    reconcile_repair(root, record, signature, 'mid/accepted_history/11_issue017_rebase.tif', 'residency repair')
     record.write_text(json.dumps(signature, indent=2), encoding="utf8")
     namespace = {}
     exec(compile(patched, str(Path(__file__)), "exec"), history.__dict__, namespace)

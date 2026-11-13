@@ -1,7 +1,6 @@
 """Input and result translations; science is called through workbench."""
 from __future__ import annotations
 from copy import deepcopy
-import json
 from typing import Any, Sequence
 import numpy as np
 import pandas as pd
@@ -45,7 +44,7 @@ def estimate_one(hours: Sequence[float], values: Sequence[float], params: dict, 
     significant = returned.get('significant') if tests_significance else None
     status = str(returned.get('status') or 'failed')
     rhythmic = bool(significant) if status == 'ok' and significant is not None else None
-    result = {**returned, 'components': payload['estimate'].get('components', []), 'diagnostics': payload['estimate'].get('diagnostics', {}), 'method_label': wb.PERIOD_METHODS[method]['label'], 'is_significance_test': tests_significance, 'alpha': (float(config['jtk_alpha']) if method in ('jtk', 'ejtk') else float(config['periodogram_alpha'])) if tests_significance else None, 'rhythmic': rhythmic, 'rhythm_status': 'unknown' if rhythmic is None else 'rhythmic' if rhythmic else 'arrhythmic', 'primary': method == str(params['primary_rhythm_test']), 'workbench_version': wb.WORKBENCH_VERSION, 'workbench_run_record_json': json.dumps(completed.run_record, allow_nan=False)}
+    result = {**returned, 'components': payload['estimate'].get('components', []), 'diagnostics': payload['estimate'].get('diagnostics', {}), 'method_label': wb.PERIOD_METHODS[method]['label'], 'is_significance_test': tests_significance, 'alpha': (float(config['jtk_alpha']) if method in ('jtk', 'ejtk') else float(config['periodogram_alpha'])) if tests_significance else None, 'rhythmic': rhythmic, 'rhythm_status': 'unknown' if rhythmic is None else 'rhythmic' if rhythmic else 'arrhythmic', 'primary': method == str(params['primary_rhythm_test']), 'workbench_version': wb.WORKBENCH_VERSION, 'workbench_run_record_json': wb.run_record_json(completed.run_record)}
     if capture_details:
         result['native_result'] = deepcopy(payload)
         result['native_series'] = {name: series.as_dict() for name, series in completed.series.items()}

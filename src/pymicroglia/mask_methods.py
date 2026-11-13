@@ -21,8 +21,13 @@ from .tracking.contract import sha256_of
 
 def model_reference(weights, *, default=False) -> dict:
     """Fingerprint a chosen model without loading the network."""
-    chosen = weights if weights is not None else (
-        os.environ.get("PYMICROGLIA_MASK_WEIGHTS") if default else None)
+    chosen = weights
+    if chosen is None and default:
+        from .learned_mask import apply as masking
+        try:
+            chosen = masking.weights()
+        except FileNotFoundError:
+            chosen = None
     result = {"weights": str(chosen) if chosen is not None else None}
     if chosen is not None and Path(chosen).is_file():
         result["weights_sha256"] = sha256_of(chosen)

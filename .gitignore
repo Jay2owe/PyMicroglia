@@ -54,3 +54,6 @@ site/
 
 # Rebuilt from the code by a commit hook; never read from the repository.
 graphify-out/
+
+# Lab-workstation test recipe: names this machine's folders.
+.background-checks.json

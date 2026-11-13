@@ -56,7 +56,7 @@ def observation_reader(original,copy_labels=None):
         return result
     return frame
 
-def overlay_renderer(common,scratch):
+def overlay_renderer(common,scratch,*,block_bytes=8*1024**2):
     from .display_scale import positive_display_high
     original=common.outline_overlay
     original_display=common.display_raw
@@ -76,12 +76,17 @@ def overlay_renderer(common,scratch):
         with lock:
             common.display_raw=display
             try:
-                for t in range(len(raw)):
-                    lo,hi=max(0,t-halo),min(len(raw),t+halo+1)
+                # Keep a bounded run of output frames, with the same temporal
+                # halo. This avoids recomputing neighbours for every frame.
+                frame_bytes=max(1,int(np.prod(raw.shape[1:]))*16)
+                frames=max(1,int(block_bytes)//frame_bytes)
+                for t in range(0,len(raw),frames):
+                    stop=min(len(raw),t+frames)
+                    lo,hi=max(0,t-halo),min(len(raw),stop+halo)
                     chunk=original(raw[lo:hi],labels[lo:hi],thick=thick,
                         inferred=None if inferred is None else inferred[lo:hi],
                         unresolved=None if unresolved is None else unresolved[lo:hi])
-                    output[t]=chunk[t-lo]
+                    output[t:stop]=chunk[t-lo:stop-lo]
             finally:common.display_raw=original_display
         return output
     return render
@@ -93,13 +98,18 @@ def install(common,code_root,scratch,*,array_pool=None):
     tracking=importlib.import_module('tracking')
     old_observation=tracking.frame_observations
     old_overlay=common.outline_overlay
-    copy_labels=None if array_pool is None else lambda labels:array_pool.array(labels,copy=True,force=True)
+    copy_labels=None if array_pool is None else array_pool.snapshot
+    from .display_block_residency import render_with_budget
+    from .display_lookup import lookup_renderer
     replacements={old_observation:observation_reader(old_observation,copy_labels),
-                  old_overlay:overlay_renderer(common,scratch)}
+                  old_overlay:render_with_budget(lookup_renderer(common,scratch),array_pool)}
     aliases=[]
     for module in list(sys.modules.values()):
         location=getattr(module,'__file__',None)
         if location is None:continue
+        names=getattr(module,'__dict__',None)
+        if (names is not None and '__getattr__' not in names and not any(
+                names.get(name) is old for name in ('frame_observations','outline_overlay') for old in replacements)):continue
         try:inside=Path(location).resolve().is_relative_to(code_root.resolve())
         except (ValueError,OSError):inside=False
         if not inside:continue
@@ -107,6 +117,9 @@ def install(common,code_root,scratch,*,array_pool=None):
             old=getattr(module,name,None)
             if old in replacements:
                 aliases.append((module,name,old));setattr(module,name,replacements[old])
-    try:yield
+    try:
+        from .identity_performance import native
+        with native(code_root,scratch):
+            yield
     finally:
         for module,name,old in reversed(aliases):setattr(module,name,old)

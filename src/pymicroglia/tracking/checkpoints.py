@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import sys
 import time
 from contextlib import contextmanager
@@ -37,36 +38,88 @@ def sha(path):
         return hashlib.file_digest(handle, 'sha256').hexdigest()
 
 
-def write(path, value):
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, indent=2), encoding='utf8')
-    deadline = time.monotonic() + 10
+def retry(function, *args, seconds=60):
+    """Repeat a file move or write while Windows, Dropbox or a virus scanner holds it."""
+    deadline = time.monotonic() + seconds
     while True:
         try:
-            os.replace(temporary, path)
-            return
+            return function(*args)
         except PermissionError:
             if time.monotonic() >= deadline:
                 raise
-            time.sleep(.2)
+            time.sleep(.5)
+
+
+def write(path, value):
+    temporary = path.with_suffix('.tmp')
+    retry(temporary.write_text, json.dumps(value, indent=2), 'utf8')
+    retry(os.replace, temporary, path)
+
+
+def set_aside(directory, reason):
+    """Rename an unusable stage folder beside itself; its evidence is kept, never deleted."""
+    target = directory.with_name(f'{directory.name}_{reason}_{time.time_ns()}')
+    retry(directory.rename, target)
+    return target
+
+
+def history_runs(root):
+    """Accepted-history run folders still in use; set-aside copies are kept evidence only."""
+    folder = Path(root) / 'm22_accepted_history'
+    if not folder.is_dir():
+        return []
+    return [run for run in sorted(folder.iterdir())
+            if run.is_dir() and not re.search(r'_[a-z]+_\d{15,}$', run.name)]
+
+
+def reconcile_repair(root, record, signature, produced, name):
+    """Recompute, rather than refuse, accepted history made without this repair.
+
+    History made under a different version of the repair, or before it existed
+    (``produced`` names a file inside a run folder written after the repaired
+    step), is set aside and recomputed. Returns whether anything was set aside.
+    """
+    record = Path(record)
+    try:
+        stale = json.loads(record.read_text()) != signature
+    except FileNotFoundError:
+        stale = any(any(run.glob(produced)) for run in history_runs(root))
+    except (OSError, ValueError):
+        stale = True
+    if stale:
+        for run in history_runs(root):
+            kept = set_aside(run, 'superseded')
+            print(f'CHECKPOINTS superseded {kept.name}: the {name} changed, so accepted history is recomputed',
+                  flush=True)
+    return stale
 
 
 @contextmanager
-def exclusive(path):
-    """Do not let two processes resume or preserve the same tracking stage."""
+def exclusive(path, *, seconds=120):
+    """Do not let two processes resume or preserve the same tracking stage.
+
+    A brief hold by a sync client or scanner is waited out; a second tracking
+    process still holding the run after ``seconds`` is refused.
+    """
     with Path(path).open('a+b') as handle:
         if handle.seek(0, 2) == 0:
             handle.write(b'0'); handle.flush()
         handle.seek(0)
-        try:
-            if os.name == 'nt':
-                import msvcrt
-                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
-            else:
-                import fcntl
-                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError as error:
-            raise FileExistsError('Another process is using this tracking run') from error
+        deadline = time.monotonic() + seconds
+        while True:
+            handle.seek(0)
+            try:
+                if os.name == 'nt':
+                    import msvcrt
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except OSError as error:
+                if time.monotonic() >= deadline:
+                    raise FileExistsError('Another process is using this tracking run') from error
+                time.sleep(2)
         try:
             yield
         finally:
@@ -88,14 +141,17 @@ class Stages:
                 for p in sorted((self.root / 'code').rglob('*.py'))}
         package = {p.name: sha(p) for p in (
             Path(__file__), *(Path(__file__).with_name(name) for name in (
-                'engine.py', 'engine_bounded.py', 'frozen_io.py', 'detector_acceleration.py',
+                'engine.py', 'engine_bounded.py', 'frozen_io.py', 'identity_reuse.py', 'frame_component_reuse.py', 'terminal_feature_reuse.py', 'lazy_flip_components.py', 'compact_components.py', 'ownership_observation_reuse.py', 'tracking_feature_batch.py', 'companion_lookup_reuse.py', 'host_partition_reuse.py', 'diagnostic_shortlist.py', 'lazy_motion_counts.py', 'confidence_geometry_reuse.py', 'hierarchy_component_batch.py', 'motion_history_reuse.py', 'motion_overlap_batch.py', 'motion_lobe_batch.py', 'tracking_plain_batch.py', 'fixed_object_overlap.py', 'relay_transition_geometry.py', 'conflict_core_batch.py', 'measured_gap_path_reuse.py', 'perimeter_shifts.py', 'mask_centre_counts.py', 'correction_owner_sampling.py', 'tenure_geometry_reuse.py', 'display_block_residency.py', 'point_disk_votes.py', 'bounded_morphology_loader.py', 'convex_hull_image_fast.py', 'tracking_matrix_batch.py', 'identity_name_batch.py', 'ledger_reference_boxes.py', 'relay_pair_reuse.py', 'relay_metric_reuse.py', 'ownership_region_rows.py', 'sparse_pair_table.py', 'display_lookup.py', 'flip_boundary_crop.py', 'nested_alias_reuse.py', 'post_split_reuse.py', 'bracketed_handoff_reuse.py', 'owner_consensus_presence.py', 'terminal_companion_reuse.py', 'observation_cache.py', 'soma_separation_boxes.py', 'motion_union_bounds.py', 'two_core_audit_boxes.py', 'physical_core_boxes.py', 'one_core_union_boxes.py', 'handoff_runs.py', 'module_scan.py', 'resident_run_rows.py', 'gap_trace_walk.py', 'process_track_features.py', 'start_duplicate_excess.py', 'censored_area_boxes.py', 'raw_support_memo.py', 'reference_area_boxes.py', 'core_replacement_index.py', 'destination_support_boxes.py', 'birth_lineage_index.py', 'process_extension_boxes.py', 'predecessor_starts_map.py', 'run_blocks.py', 'point_disks.py', 'measured_cores.py', 'track_row_index.py', 'bracketed_consensus_tracks.py', 'track_sort_skips.py', 'sparse_nonzero.py', 'core_stable_memo.py', 'reciprocal_centroid_sums.py', 'smoothed_frame_memo.py', 'gap_component_boxes.py', 'bounded_label.py', 'origin_footprint_boxes.py', 'guard_scan.py', 'tracking_pass_record.py', 'fragment_pair_scan.py', 'link_paint_boxes.py', 'bounded_morphology.py', 'occupancy_overlap_boxes.py', 'spatial_path_views.py', 'optical_physical_paths.py', 'gap_owner_source_memo.py', 'core_intersects_window.py', 'coupled_peer_memo.py', 'flicker_component_boxes.py', 'handoff_component_box.py', 'movie_label_counts.py', 'row_tuples.py', 'density_overlap_reuse.py', 'process_inventory_speed.py', 'resolved_paths.py', 'narrow_labels.py', 'threaded_evidence_images.py', 'seat_projection_boxes.py', 'disk_owner_batch.py', 'residency_component_boxes.py', 'csv_joined_rows.py', 'batched_detection_cores.py', 'invasion_donor_rows.py', 'bracketed_seat_rows.py', 'identity_performance.py', 'display_scale.py', 'detector_acceleration.py',
                 'completed_feedback.py', 'completed_evidence.py')))}
-        from importlib import resources
-        correction = resources.files('pymicroglia.tracking').joinpath('data/completed_feedback_engine.zip')
-        package['completed_feedback_engine.zip'] = sha(correction)
+        from . import shipped_engines
+        # The key keeps its earlier name so saved signatures stay comparable; it holds the folder's fingerprint.
+        package['completed_feedback_engine.zip'] = shipped_engines.fingerprint(
+            shipped_engines.folder(shipped_engines.COMPLETED_FEEDBACK))
         import inspect
         from auto_organotypic.array_storage import Pool
         package['array_storage.py'] = sha(inspect.getfile(Pool))
+        from auto_organotypic.array_selection import select_into
+        package['array_selection.py'] = sha(inspect.getfile(select_into))
         runtime = {}
         for name in ('r12_runtime', 'r13_cache_runtime', 'r13_copy_runtime'):
             source = getattr(sys.modules.get(name), '__file__', None)
@@ -106,10 +162,21 @@ class Stages:
             numpy=np.__version__, pandas=pd.__version__, scipy=scipy.__version__,
             skimage=skimage.__version__, tifffile=tifffile.__version__))
         self.state_path = self.root / 'tracking_resume.json'
+        # A changed input, setting or program recomputes every stage: no saved
+        # stage or partial accepted-history work is reused, and the old state
+        # is kept beside the new one.
+        self.fresh = False
         if self.state_path.is_file():
-            previous = json.loads(self.state_path.read_text())
-            if previous['signature'] != self.signature:
-                raise ValueError('Tracking checkpoint inputs, settings, software or code changed; use a fresh folder')
+            try:
+                previous = json.loads(self.state_path.read_text())
+            except ValueError:
+                previous = {}
+            if previous.get('signature') != self.signature:
+                self.fresh = True
+                retry(self.state_path.rename, self.state_path.with_name(
+                    f'tracking_resume_superseded_{time.time_ns()}.json'))
+                print('CHECKPOINTS superseded: inputs, settings, software or code changed; '
+                      'every stage is recomputed', flush=True)
         self.state = dict(signature=self.signature, run=run_name, reused=[], status='running')
         write(self.state_path, self.state)
 
@@ -218,17 +285,27 @@ class Stages:
         marker = directory / 'checkpoint.json'
         history = kwargs.get('history_inputs')
         if marker.is_file():
-            receipt = json.loads(marker.read_text())
-            if receipt['signature'] != self.signature:
-                raise ValueError('Tracking stage checkpoint has different inputs, settings or code')
-            self._verify(receipt['files'])
-            for name, value in receipt['history'].items():
-                setattr(history, name, self._load(value))
-            self.reused.append(STAGES[method])
-            self.state.update(reused=self.reused, current_stage=STAGES[method], status='resuming')
-            write(self.state_path, self.state)
-            print('CHECKPOINT reused', STAGES[method], flush=True)
-            return self._load(receipt['result'])
+            try:
+                receipt = json.loads(marker.read_text())
+                if receipt['signature'] != self.signature:
+                    raise ValueError('Tracking stage checkpoint has different inputs, settings or code')
+                self._verify(receipt['files'])
+                restored = {name: self._load(value) for name, value in receipt['history'].items()}
+                result = self._load(receipt['result'])
+            except (ValueError, KeyError, OSError) as error:
+                # Recompute the stage rather than stop: its old folder is kept.
+                print(f'CHECKPOINT not reusable for {STAGES[method]}: {error}; recomputing', flush=True)
+                set_aside(directory, 'superseded')
+            else:
+                for name, value in restored.items():
+                    setattr(history, name, value)
+                self.reused.append(STAGES[method])
+                self.state.update(reused=self.reused, current_stage=STAGES[method], status='resuming')
+                write(self.state_path, self.state)
+                print('CHECKPOINT reused', STAGES[method], flush=True)
+                return result
+        if directory.exists() and self.fresh:
+            set_aside(directory, 'superseded')
         if directory.exists():
             try:
                 old = json.loads((directory / 'run.json').read_text())
@@ -239,13 +316,15 @@ class Stages:
             if method in ('stage_m0', 'stage_m1') and old.get('status') == 'done':
                 sources = self.pipeline._pinned_paths(self.cfg, self.stem)
                 source_record = self.root / 'm0_inputs' / self.run_name / 'out' / f'{self.stem}_sources.json'
-                if json.loads(source_record.read_text())['config_sha256'] != self.signature['config_sha256']:
-                    raise ValueError('Earlier Motion input settings differ')
-                result = sources if method == 'stage_m0' else None
-                self._capture(directory, old, result, None, method)
-                return self.call(method, *args, **kwargs)
-            archived = directory.with_name(directory.name + '_interrupted_' + str(time.time_ns()))
-            directory.rename(archived)
+                try:
+                    same = json.loads(source_record.read_text())['config_sha256'] == self.signature['config_sha256']
+                except (OSError, ValueError, KeyError):
+                    same = False
+                if same:
+                    result = sources if method == 'stage_m0' else None
+                    self._capture(directory, old, result, None, method)
+                    return self.call(method, *args, **kwargs)
+            archived = set_aside(directory, 'interrupted')
             if method == 'stage_m22_accepted_history' and (archived / 'mid/accepted_history').is_dir():
                 kwargs['checkpoint_run_name'] = archived.name
         self.state.update(current_stage=STAGES[method], status='running')

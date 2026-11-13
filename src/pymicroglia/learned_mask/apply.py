@@ -35,6 +35,10 @@ GROW_BELOW = 0.20            # how far under the cut a seed may claim pixels
 SPLIT_ABOVE = 0              # 0 leaves a merged lobe merged; see refine.refine
 
 WEIGHTS_VARIABLE = "PYMICROGLIA_MASK_WEIGHTS"
+#: The accepted base the MCG_mask_model README names, in the source checkout
+#: beside that record. An installed package has no copy of it.
+ACCEPTED_RUN = (Path(__file__).resolve().parents[3] / "development" / "single_frame_mask_unet"
+                / "MCG_mask_model" / "runs" / "stage3_disguise" / "model.pt")
 
 
 def weights() -> Path:
@@ -44,7 +48,9 @@ def weights() -> Path:
     result with a provenance -- which recording, which cut, which round -- and
     burying a copy in an installed package is how a stale set outlives the
     record that explains it. Point ``PYMICROGLIA_MASK_WEIGHTS`` at the
-    ``model.pt`` of the run you mean.
+    ``model.pt`` of the run you mean. Unset, a source checkout uses the
+    accepted base in place, so a dropped folder runs without the variable;
+    the run record names the file and its digest either way.
     """
     named = os.environ.get(WEIGHTS_VARIABLE)
     if named:
@@ -55,6 +61,8 @@ def weights() -> Path:
             raise FileNotFoundError(f"{WEIGHTS_VARIABLE} points at {path}, "
                                     "which does not exist")
         return path
+    if ACCEPTED_RUN.is_file():
+        return ACCEPTED_RUN
     raise FileNotFoundError(
         f"no weights given. Set {WEIGHTS_VARIABLE} to a trained run's model.pt "
         "-- development/single_frame_mask_unet/MCG_mask_model/runs/<run>/model.pt "

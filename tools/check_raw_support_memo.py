@@ -13,6 +13,10 @@ With --labels, tracker_support_frames also runs with ownership labels (the
 accepted label movie, whole and cropped, and a copy with some frames relabelled
 in the changed round) for every ownership option of each version; frame masks
 must equal the original's.
+
+temporally_supported_points of each version runs on the same movies, views
+and tables for its flag sets; kept rows (index, values, dtypes, order) must
+equal the original's, and repeated calls are answered from memory.
 """
 import argparse
 import hashlib
@@ -40,6 +44,11 @@ OWNED = {'current/r197_a002': [{}, dict(internal_peak=True, peak_quantisation=Tr
          'current/r201_a002': [dict(retain_named_centre=True, prefer_centred_owner=True),
                                dict(internal_peak=True, peak_quantisation=True, prefer_centred_owner=True,
                                     require_foreground_majority=True)]}
+# recovery_temporal_soma_support versions and flag sets, called directly.
+TEMPORAL = {'recovery/r189_a001': [{}],
+            'recovery/r191_a003': [{}, dict(centre_connected=True)],
+            'current/r195_a002': [{}, dict(centre_connected=True), dict(internal_peak=True),
+                                  dict(centre_connected=True, internal_peak=True, peak_quantisation=True)]}
 STAGE_MODULES = ('spatial_soma_paths', 'recovery_temporal_soma_support', 'recovery_qualified_soma',
                  'recovery_destination_soma', 'tracker_core_ownership')
 
@@ -132,6 +141,24 @@ def main():
                     assert expected.index.equals(actual.index) and expected.equals(actual), (movie_name, relative, view, kwargs)
                     report['cases'].append(dict(movie=movie_name, version=relative, view=view, flags=kwargs,
                                                 kept=len(actual), rejected=len(table) - len(actual)))
+        for relative, combos in TEMPORAL.items():
+            module = load(a.frozen / relative, 'recovery_temporal_soma_support')
+            for view, table in ((('whole', moved),) if movie_name == 'moved-point' else (('whole', points), ('crop', shifted))):
+                stack = movie if view == 'whole' else movie[crop]
+                for kwargs in combos:
+                    tick = time.perf_counter()
+                    expected = module.temporally_supported_points(stack, table, **kwargs)
+                    middle = time.perf_counter()
+                    with adapter.install(memo):
+                        assert module.temporally_supported_points.__wrapped__
+                        actual = module.temporally_supported_points(stack, table, **kwargs)
+                    timing['original'] += middle - tick
+                    timing['adapted'] += time.perf_counter() - middle
+                    assert getattr(module.temporally_supported_points, '__wrapped__', None) is None
+                    assert expected.index.equals(actual.index) and expected.equals(actual), ('temporal', movie_name, relative, view, kwargs)
+                    assert list(expected.dtypes) == list(actual.dtypes)
+                    report['cases'].append(dict(movie=movie_name, temporal_version=relative, view=view, flags=kwargs,
+                                                kept=len(actual)))
         for relative, combos in FRAMES.items():
             module = load(a.frozen / relative, 'spatial_soma_paths')
             for view, table in ((('whole', moved),) if movie_name == 'moved-point' else (('whole', points), ('crop', shifted))):
@@ -171,7 +198,10 @@ def main():
     report.update(status='pass', points=len(points), frames=a.frames, seconds=timing, stats=dict(memo.stats),
                   retained_bytes=memo.bytes)
     assert memo.stats['reused'] > 0 and memo.stats['fallback'] == 0 and memo.stats['calls_reused'] > 0
+    assert memo.stats.get('batched', 0) > 0 and memo.stats.get('cores_batched', 0) > 0
+    assert memo.stats.get('cores_batch_skipped', 0) == 0 and memo.stats.get('temporal_in_order', 0) > 0
     assert memo.stats['frames_reused'] > 0 and memo.stats['frames_fallback'] == 0
+    assert memo.stats.get('temporal_reused', 0) > 0 and memo.stats.get('temporal_measured', 0) > 0
     assert memo.stats['cores_reused'] > 0 and memo.stats['cores_measured'] > 0
     if owned is not None:
         assert memo.stats['frames_ownership'] > 0 and memo.stats['owners_reused'] > 0

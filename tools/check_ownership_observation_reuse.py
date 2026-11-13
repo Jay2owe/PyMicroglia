@@ -19,7 +19,7 @@ def main():
     import pandas as pd
     import accepted_history as ah
     import ownership_observation_reuse as adapter
-    module=ah._issue_module(ah.I012,'m1_reconcile_domain_ownership')
+    module=ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'reconcile_domain_ownership')
     cfg=ah._params('issue012','domain_ownership')['ownership']
     def equal(left,right):
         if isinstance(left,np.ndarray):assert np.array_equal(left,right,equal_nan=True)
@@ -48,7 +48,7 @@ def main():
         old=module.apply_dormancy(labels[0],labels[1],ledger[1],lag[0],cfg,states,2,rows,{})
         with adapter.install(module) as stats:
             new=module.apply_dormancy(labels[0],labels[1],ledger[1],lag[0],cfg,state2,2,rows2,{})
-        assert len(stats['supported'])==2
+        assert set(stats['supported'])=={'apply_dormancy','add_reciprocal_dormant_swaps','substantial_duplicate'}
         equal((old,states,rows),(new,state2,rows2))
         old=module.reconcile(labels,ledger,lag,{'O','R','M','U'},cfg,0)
         with adapter.install(module):new=module.reconcile(labels,ledger,lag,{'O','R','M','U'},cfg,0)

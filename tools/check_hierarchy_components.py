@@ -41,8 +41,38 @@ def main():
                     assert np.float64(old.x).tobytes()==np.float64(new.x).tobytes()
                     assert np.float64(old.y).tobytes()==np.float64(new.y).tobytes()
                     compared+=1
+        # Remembered results: repeats, copies, edits in place, other frame
+        # numbers and minimums, more frames than are held, and a caller that
+        # writes into a returned component.
+        def same(expected,actual):
+            assert len(expected)==len(actual)
+            for old,new in zip(expected,actual):
+                assert (old.frame,old.identity,old.number,old.area)==(new.frame,new.identity,new.number,new.area)
+                assert old.pixels.tobytes()==new.pixels.tobytes() and old.pixels.dtype==new.pixels.dtype
+                assert np.float64(old.x).tobytes()==np.float64(new.x).tobytes()
+                assert np.float64(old.y).tobytes()==np.float64(new.y).tobytes()
+        remembered_cases=0
+        work=labels[10].copy()
+        sequence=[(work,5,1),(work,5,1),(work.copy(),5,1),(work,6,1),(work,5,8),(labels[11],5,1),
+                  (labels[12],7,1),(labels[13],8,1),(labels[14],9,1),(work,5,1)]
+        for frame,number,minimum in sequence:
+            same(original(frame,number,minimum,component_type),
+                 history._cropped_frame_components(frame,number,minimum,component_type))
+            remembered_cases+=1
+        returned=history._cropped_frame_components(work,5,1,component_type)
+        if returned:
+            returned[0].pixels[:]=0; returned[0].identity=-1
+        same(original(work,5,1,component_type),history._cropped_frame_components(work,5,1,component_type))
+        ids=np.unique(work)[1:]
+        work[work==ids[0]]=ids[-1]
+        same(original(work,5,1,component_type),history._cropped_frame_components(work,5,1,component_type))
+        same(original(work.astype(np.int32),5,1,component_type),
+             history._cropped_frame_components(work.astype(np.int32),5,1,component_type))
+        remembered_cases+=3
+        assert stats['remembered']>0
     assert history._cropped_frame_components is original
     report=dict(status='pass',frames=len(labels),extra_cases=len(cases),components=compared,
+                remembered_cases=remembered_cases,
                 before_seconds=before,after_seconds=after,counters=stats,
                 scope='Both component size settings on every full recording frame, plus sparse shapes/transposes; exact local numbering, pixels and floating centroids')
     a.output.write_text(json.dumps(report,indent=2)+'\n')

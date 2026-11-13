@@ -153,6 +153,41 @@ Recorded as the expected outcome, not dropped:
   and source tables) are frozen by hash and scrubbed sample rows; a port
   that runs them in a new folder will need to scrub before comparing.
 
+## Rhythm tables after the Workbench moved on
+
+Circadian Workbench releases after 0.8.2 changed the rhythm arithmetic on
+purpose (the Lomb-Scargle peak is refined between grid frequencies; power,
+phase, amplitude and fit quality moved with it). The spatial and tissue maps
+built from rhythm fits therefore no longer reproduce Motion's numbers. Their
+tests run Motion's settings (`robust_linear` detrending, `corrected_mean`
+reporter), still require every non-Workbench column to equal Motion, and
+compare the Workbench outputs with `workbench/`, written by
+`freeze_workbench.py` (the Workbench version is in `workbench/record.json`).
+That comparison reads embedded run records field by field: numbers to nine
+significant figures, the machine and code-hash fields ignored, and settings a
+later Workbench adds allowed, while every recorded setting must still match.
+
+The measured run follows the same rule. `freeze_workbench.py` builds it with
+Motion's module settings (`MOTION_MODULE_SETTINGS`: the `corrected_mean`
+reporter and `robust_linear` detrending where later defaults moved), records
+the columns a Workbench fit or detrend writes (`MEASURED`: rhythms, coupling,
+lag profiles, recurrence) as `workbench/measured_*.gz`, and requires every
+other column to equal Motion. The `integrated_density_mean3` measurement added
+after Motion is left out of the comparison.
+
+Four saved figures drawn from the frozen run pass through a Workbench fit or
+detrend (`FIGURES`: `cd68_reporter_rhythm`, `metric_rhythm_matrix`,
+`all_cell_trace_grid`, `radial_occupancy_rhythms`) and follow the same rule,
+recorded as `workbench/figure_*.gz`. Motion froze only a hash of
+`radial_occupancy_rhythms`, so its whole plotted table meets the baseline.
+Figure defaults that name `integrated_density_mean3` are drawn with Motion's
+`corrected_mean`.
+
+Re-run that script only after confirming a Workbench change is intended. It
+takes the groups to record (`spatial`, `tissue`, `figure`, `measured`; all
+four when none is named), so one group can be added without re-recording the
+others.
+
 ## Original source retirement
 
 On 2026-09-22 the original `Motion/analysis` source folder was retired locally

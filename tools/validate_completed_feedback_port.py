@@ -21,7 +21,7 @@ sys.path.insert(0,str(PACKAGE/'src'))
 import numpy as np
 import pandas as pd
 import tifffile
-from pymicroglia.tracking import engine
+from pymicroglia.tracking import engine, shipped_engines
 from pymicroglia.tracking.completed_evidence import generate
 from pymicroglia.tracking.completed_feedback import apply
 
@@ -46,8 +46,8 @@ def evidence_dependencies(root,movie,run_name,config_path,sources):
     paths=[Path(sources['raw']),Path(sources['lag']),config_path,
         PACKAGE/'src/pymicroglia/tracking/completed_evidence.py',
         PACKAGE/'src/pymicroglia/tracking/completed_feedback.py',
-        PACKAGE/'src/pymicroglia/tracking/data/motion_engine.zip',
-        PACKAGE/'src/pymicroglia/tracking/data/completed_feedback_engine.zip',
+        *[shipped_engines.folder(name)/file for name in (shipped_engines.MOTION,shipped_engines.COMPLETED_FEEDBACK)
+          for file in shipped_engines.names(shipped_engines.folder(name))],
         native/'out'/f'{movie}.tif',native/'out'/f'{movie}_unclaimed_original_ids.tif',
         lineage/'mid'/f'{movie}_physical_somas.tif',lineage/'mid'/f'{movie}_attempt005_comparison.tif',
         lineage/'mid/comparison_evidence.csv',lineage/'out/comparison_links.csv',

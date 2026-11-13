@@ -112,7 +112,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 pymicroglia = ["aiify_map.md", "aiify_prepared/*", "data/*.json", "guide/*.md", "pymicroglia_context.json",
-               "tracking/data/*.zip", "visualisation/review_assets/*.html",
+               "tracking/data/motion_engine/**/*", "tracking/data/completed_feedback_engine/**/*", "visualisation/review_assets/*.html",
                "visualisation/review_assets/*.css", "visualisation/review_assets/*.js",
                "ui/*.json", "ui/static/*.html", "ui/static/*.css", "ui/static/*.js"]
 
@@ -121,7 +121,10 @@ version = { attr = "pymicroglia.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+# The shipped engines are data copied into each run, not packages of PyMicroglia.
+exclude = ["pymicroglia.tracking.data*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+# "tests" serves the bare helper imports (fixtures, measure_stubs, conftest).
+pythonpath = ["src", "tests"]

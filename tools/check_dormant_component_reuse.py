@@ -20,7 +20,7 @@ def main():
     sys.path.insert(0,str(a.adapter.resolve()))
     import accepted_history as ah
     import dormant_component_reuse as reuse
-    module=ah._issue_module(ah.I012,'m8_detect_dormant_releases')
+    module=ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'detect_dormant_releases')
     original_components=module.components
     original_detect=module.detect
     rng=np.random.default_rng(942)
@@ -72,7 +72,7 @@ def main():
             pd.testing.assert_frame_equal(old,new,check_exact=True)
             assert old.to_csv(index=False)==new.to_csv(index=False)
         with reuse.install_loader(ah):
-            native=ah._issue_module(ah.I012,'m8_detect_dormant_releases')
+            native=ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS,'detect_dormant_releases')
             native_result=ah.cached_dormant_detect(native)(labels,raw,lag,actions,0,cfg)
             for old,new in zip(expected,native_result):
                 pd.testing.assert_frame_equal(old,new,check_exact=True)

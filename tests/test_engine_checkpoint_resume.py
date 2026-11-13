@@ -32,6 +32,17 @@ def fixture(folder, fail=None):
     pipeline = SimpleNamespace(ROOT=folder/'engine',
         _pinned_paths=lambda *_: {'registered_raw': raw},
         AcceptedHistoryInputs=lambda: SimpleNamespace())
+    pipeline._align_review_stack=lambda values,length:values[-length:]
+    def review(*args,**kwargs):
+        directory=pipeline.ROOT/'m6_review/run'
+        directory.mkdir(parents=True)
+        path=directory/'event_index.csv'
+        args[5].to_csv(path,index=False)
+        np.testing.assert_array_equal(args[4],labels)
+        np.testing.assert_array_equal(args[6],flag)
+        (directory/'run.json').write_text(json.dumps(dict(status='done',outputs={
+            'events':dict(path=str(path.resolve()),sha256=sha(path))})))
+    pipeline.stage_m6=review
 
     def verify(*_):
         if sha(raw) != json.loads(cfg_path.read_text())['raw_sha256']:
@@ -109,6 +120,7 @@ def fixture(folder, fail=None):
                 np.testing.assert_array_equal(history.physical_somas, labels + 2)
                 np.testing.assert_array_equal(kwargs['upstream_inferred'], flag)
                 np.testing.assert_array_equal(kwargs['unresolved'], ~flag)
+                kwargs['m20_result_future'].result()
                 assert kwargs['m20_result_future'].done()
                 if fail == method:
                     upstream = pipeline.ROOT/STAGES[method]/kwargs['checkpoint_run_name']/'mid/accepted_history'
@@ -160,18 +172,22 @@ def test_resume_at_each_completed_boundary_matches_cold_outputs(tmp_path, interr
     assert state['reused'] == list(STAGES.values())[:list(STAGES).index(interrupted)]
 
 
-def test_resume_rejects_changed_input_settings_and_stage_bytes(tmp_path):
-    pipeline, common, cfg, _ = fixture(tmp_path)
+def test_resume_recomputes_after_changed_settings_or_stage_bytes(tmp_path):
+    pipeline, common, cfg, calls = fixture(tmp_path)
     run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    cold = list(calls)
     original = cfg.path.read_text()
     cfg.path.write_text(original + ' ')
-    with pytest.raises(ValueError, match='settings.*changed'):
-        run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
-    cfg.path.write_text(original)
+    calls.clear()
+    run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    assert calls == cold, 'changed settings recompute every stage instead of stopping'
+    assert list(pipeline.ROOT.glob('tracking_resume_superseded_*.json'))
+    assert list((pipeline.ROOT/'m2_anchor').glob('run_superseded_*'))
     stage = pipeline.ROOT/'m2_anchor/run/out/observations.tif'
     stage.write_bytes(b'corrupt')
-    with pytest.raises(ValueError, match='checkpoint file changed'):
-        run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    calls.clear()
+    run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    assert calls == ['stage_m2'], 'only the damaged stage is recomputed'
     # A changed input is refused before any cache is used.
     (tmp_path/'raw.tif').write_bytes(b'changed input')
     with pytest.raises(ValueError, match='Input changed'):
@@ -203,18 +219,18 @@ def test_legacy_metadata_stages_can_be_reused_without_old_numeric_tables(tmp_pat
     assert calls.count('stage_m2') == 2
 
 
-def test_complete_checkpoint_skips_all_stages_and_rejects_library_change(tmp_path, monkeypatch):
+def test_complete_checkpoint_skips_all_stages_and_recomputes_after_library_change(tmp_path, monkeypatch):
     pipeline, common, cfg, calls = fixture(tmp_path)
     run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
     calls.clear()
     run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
     assert calls == []
     monkeypatch.setattr(pd, '__version__', 'different-version')
-    with pytest.raises(ValueError, match='software or code changed'):
-        run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    assert 'stage_m2' in calls, 'a library change recomputes rather than stops'
 
 
-def test_corrupt_table_is_rejected_before_unpickling(tmp_path, monkeypatch):
+def test_corrupt_table_is_recomputed_without_unpickling(tmp_path, monkeypatch):
     pipeline, common, cfg, _ = fixture(tmp_path, fail='stage_m3')
     with pytest.raises(RuntimeError, match='simulated interruption'):
         run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
@@ -223,8 +239,8 @@ def test_corrupt_table_is_rejected_before_unpickling(tmp_path, monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError('Unverified table must not be loaded')
     monkeypatch.setattr(pd, 'read_pickle', forbidden)
-    with pytest.raises(ValueError, match='checkpoint file changed'):
-        run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    run(pipeline, common, 'run', 'sample', cfg.path, resume=True)
+    assert list((pipeline.ROOT/'m2_anchor').glob('run_superseded_*')), 'damaged stage set aside and recomputed'
 
 
 def test_tracking_lock_releases_after_failure(tmp_path):
@@ -232,7 +248,7 @@ def test_tracking_lock_releases_after_failure(tmp_path):
     with pytest.raises(RuntimeError, match='interrupted'):
         with exclusive(path):
             with pytest.raises(FileExistsError, match='Another process'):
-                with exclusive(path):
+                with exclusive(path, seconds=0):
                     pytest.fail('Two trackers acquired the same run')
             raise RuntimeError('interrupted')
     with exclusive(path):

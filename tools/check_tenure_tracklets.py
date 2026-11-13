@@ -30,8 +30,8 @@ def main():
     sys.path[:0] = [str(a.adapter.resolve()), str((a.engine / 'code').resolve())]
     import accepted_history as history
     import tenure_geometry_reuse as reuse
-    history._issue_module(history.I008, 'm16_persistent_quarantine')
-    helper = sys.modules['m12_component_tenure_audit']
+    history._issue_module(history.OWNERSHIP_QUARANTINE_OPS, 'persistent_quarantine')
+    helper = sys.modules['component_tenure_audit']
     frozen = helper.build_tracklets
     reference = a.engine / 'm22_accepted_history' / a.run / 'mid/accepted_history'
     results = {}

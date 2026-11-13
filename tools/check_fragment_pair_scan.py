@@ -65,6 +65,14 @@ def main():
         y, x = rng.integers(0, 58, 2); blobs[y:y + 2, x:x + 3] = rng.integers(1, 6)
     edge += [blobs, blobs.astype(np.int64), blobs[::2, ::-1].copy(), blobs > 0]
     cases += [(f'edge:{i}', f, empty) for i, f in enumerate(edge)]
+    # Disk-backed frames (the pipeline's working arrays are np.memmap subclasses).
+    import tempfile
+    scratch = tempfile.TemporaryDirectory()
+    disk = [frame for _, frame, _ in cases[:40:4]] + [edge[2], edge[4], edge[-1]]
+    for i, frame in enumerate(disk):
+        stored = np.memmap(Path(scratch.name) / f'{i}.dat', dtype=frame.dtype, mode='w+', shape=(2,) + frame.shape)
+        stored[1] = frame
+        cases.append((f'memmap:{i}', stored[1], groups.get(i, empty)))
     seconds = dict(original=0.0, adapted=0.0)
     for where, frame, group in cases:
         t0 = time.perf_counter(); expected = run(frame, group)
@@ -75,7 +83,13 @@ def main():
         t2 = time.perf_counter()
         seconds['original'] += t1 - t0; seconds['adapted'] += t2 - t1
         same(expected, actual, where)
-    report = dict(status='pass', frames=len(cases), seconds=seconds,
+    count = len(cases)
+    # Windows keeps a mapped file open until its arrays are gone.
+    del cases, disk, stored, expected, actual, frame
+    import gc
+    gc.collect()
+    scratch.cleanup()
+    report = dict(status='pass', frames=count, seconds=seconds,
                   sources={str(f): hashlib.sha256(Path(f).read_bytes()).hexdigest()
                            for f in (Path(__file__), Path(module.__file__), Path(adapter.__file__))})
     a.output.write_text(json.dumps(report, indent=1) + '\n', encoding='utf-8')

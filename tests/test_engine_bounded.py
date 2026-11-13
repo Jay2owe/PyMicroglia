@@ -6,7 +6,8 @@ import numpy as np
 import tifffile
 from pymicroglia.tracking.engine_bounded import run
 
-def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
+
+def _fixture(tmp_path):
     path=tmp_path/'raw.tif';data=np.arange(72,dtype=np.uint16).reshape(2,6,6)
     tifffile.imwrite(path,data,compression='zlib',photometric='minisblack')
     config=SimpleNamespace(stems=['sample'])
@@ -14,6 +15,7 @@ def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
     calls=[];threads={};base=np.zeros((4,6,6),np.uint16);base[:,2:4,2:4]=1
     flag=base>0
     pipeline=SimpleNamespace(ROOT=tmp_path/'engine',AcceptedHistoryInputs=lambda:object(),_pinned_paths=lambda *_:{'raw':path})
+    pipeline._align_review_stack=lambda values,length:values[-length:]
     def stage(name,result):
         def call(*args,**kwargs):
             calls.append(name)
@@ -22,10 +24,15 @@ def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
             assert not a.flags.writeable
             if name=='m22':
                 np.testing.assert_array_equal(args[4],base)
+                kwargs['m20_result_future'].result()
                 assert kwargs['m20_result_future'].done()
                 np.testing.assert_array_equal(kwargs['upstream_inferred'],flag)
                 folder=pipeline.ROOT/'m22_accepted_history'/'run'
                 folder.mkdir(parents=True)
+            if name=='m6':
+                np.testing.assert_array_equal(args[4],base)
+                np.testing.assert_array_equal(args[6],flag)
+                assert kwargs['upstream_stage']=='m22_accepted_history'
             return result
         return call
     functions={'stage_m0':('m0',{'raw':path}), 'stage_m1':('m1',None),
@@ -38,8 +45,16 @@ def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
         'stage_m12_accepted':('m12',(base.copy(),flag.copy(),None)),
         'stage_m19_accepted':('m19',(base.copy(),flag.copy(),None)),
         'stage_m20_accepted':('m20',(base.copy(),flag.copy(),None)),
-        'stage_m22_accepted_history':('m22',None)}
+        'stage_m22_accepted_history':('m22',(base.copy(),base*0,flag.copy(),None)),
+        'stage_m6':('m6',None)}
     for method,(name,result) in functions.items():setattr(pipeline,method,stage(name,result))
+    return pipeline,common,calls,threads
+
+
+def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
+    # Bounded route: the live contract. m22 stays on the calling thread, whose
+    # NumPy 2.1 scalar-promotion state differs from a fresh worker thread's.
+    pipeline,common,calls,threads=_fixture(tmp_path)
     original=tifffile.imread
     run(pipeline,common,'run','sample',tmp_path/'config.json')
     assert calls==['m0','m1','m2','m3','m4','m5','m7','m8','m9','m12','m19','m20','m22']
@@ -47,3 +62,15 @@ def test_numerical_stages_and_read_only_pinned_arrays(tmp_path):
     assert tifffile.imread is original
     assert not list(tmp_path.glob('motion-read-*'))
     assert (pipeline.ROOT/'m22_accepted_history/run/review_pending.json').is_file()
+
+
+def test_native_route_keeps_worker_threads_and_review(tmp_path):
+    # Ordinary route: the frozen runner's worker-thread contexts and native review.
+    pipeline,common,calls,threads=_fixture(tmp_path)
+    original=tifffile.imread
+    run(pipeline,common,'run','sample',tmp_path/'config.json',native_review=True)
+    assert calls[:12]==['m0','m1','m2','m3','m4','m5','m7','m8','m9','m12','m19','m20']
+    assert calls[12:]==['m22','m6']
+    assert threads['m20']!=threads['m19'] and threads['m22']!=threads['m19']
+    assert tifffile.imread is original
+    assert not (pipeline.ROOT/'m22_accepted_history/run/review_pending.json').exists()

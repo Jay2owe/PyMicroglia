@@ -61,7 +61,7 @@ def main():
             post_mask[-1, -1] = True
         cases.append((movie, 0, int(rng.integers(0, shape[0])), pre_mask, post_mask, float(rng.choice([0.0, 0.5, 2.0]))))
     with boxes.install_loader(history) as loaded:
-        module = history._issue_module(history.I017, 'm2_classify_evidence')
+        module = history._issue_module(history.CONTINUITY_OPS, 'classify_continuity_evidence')
         assert loaded and loaded[0]['supported'], loaded
         original = module._classify_disc_original
         replaced = module.raw_line_support

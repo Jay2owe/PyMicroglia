@@ -7,24 +7,24 @@ from pathlib import Path
 import ast
 import hashlib
 import json
-import zipfile
+
+from pymicroglia.tracking import shipped_engines
 
 ROOT = Path(__file__).resolve().parents[1]
 MOTION = ROOT.parent / 'Motion'
 TUNING = MOTION / 'issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning'
 RECIPE = TUNING / 'rounds/R223-speed-and-normalisation/a162_settings.json'
-OUTPUT = ROOT / 'src/pymicroglia/tracking/data/completed_feedback_engine.zip'
+OUTPUT = ROOT / 'src/pymicroglia/tracking/data/completed_feedback_engine'
 
 
 def rebuild_sequence(verified_archive):
     """Reuse verified frozen operators when only orchestration lifetime changes.
 
-An explicit source archive pins every unchanged entry. This route does not
+An explicit source engine (a folder, or an older zip) pins every unchanged entry. This route does not
 silently substitute current development sources for historical operators.
 """
     source = Path(verified_archive)
-    with zipfile.ZipFile(source) as archive:
-        entries = {name: archive.read(name) for name in archive.namelist()}
+    entries = shipped_engines.files(source)
     manifest = json.loads(entries['source_hashes.json'])
     for name, digest in manifest['files_sha256'].items():
         assert hashlib.sha256(entries[name]).hexdigest() == digest, name
@@ -33,15 +33,12 @@ silently substitute current development sources for historical operators.
     entries[key] = data
     manifest['files_sha256'][key] = hashlib.sha256(data).hexdigest()
     manifest['storage_revision'] = dict(
-        parent_archive_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+        parent_archive_sha256=shipped_engines.digest(source),
         changed_source=key,
         reason='Release consumed discovery snapshots; all frozen scientific operators and settings reused exactly')
     entries['source_hashes.json'] = (json.dumps(manifest,indent=2)+'\n').encode()
-    with zipfile.ZipFile(OUTPUT,'w',compression=zipfile.ZIP_DEFLATED) as archive:
-        for name,data in sorted(entries.items()):
-            archive.writestr(zipfile.ZipInfo(name,(2026,10,12,0,0,0)),data,
-                             compress_type=zipfile.ZIP_DEFLATED)
-    print(json.dumps(dict(archive=str(OUTPUT),entries=len(entries),changed_source=key)))
+    shipped_engines.write(OUTPUT, entries)
+    print(json.dumps(dict(engine=str(OUTPUT),entries=len(entries),changed_source=key)))
     return OUTPUT
 
 
@@ -120,12 +117,8 @@ def build():
         files_sha256={name:hashlib.sha256(data).hexdigest() for name,data in entries.items()},
         source_origins=origins, packaging_adaptations=adaptations)
     entries['source_hashes.json'] = (json.dumps(manifest,indent=2)+'\n').encode()
-    OUTPUT.parent.mkdir(parents=True,exist_ok=True)
-    with zipfile.ZipFile(OUTPUT,'w',compression=zipfile.ZIP_DEFLATED) as archive:
-        for name,data in sorted(entries.items()):
-            info=zipfile.ZipInfo(name,(2026,10,12,0,0,0))
-            archive.writestr(info,data,compress_type=zipfile.ZIP_DEFLATED)
-    print(json.dumps(dict(archive=str(OUTPUT),modules=len(seen),entries=len(entries))))
+    shipped_engines.write(OUTPUT, entries)
+    print(json.dumps(dict(engine=str(OUTPUT),modules=len(seen),entries=len(entries))))
     return OUTPUT
 
 

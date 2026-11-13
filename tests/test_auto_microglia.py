@@ -153,6 +153,15 @@ def fake_post_tracking(monkeypatch):
     monkeypatch.setattr(auto_microglia, "_measure_gaps", gaps)
 
 
+def _native(manifest, stem, drawn):
+    """The native eligibility view a display output was renumbered from."""
+    for view in (manifest["outputs"].get("identity_numbers", {})
+                 .get(stem, {}).get("views", {}).values()):
+        if view["labels"] == drawn:
+            return view["motion_labels"]
+    return drawn
+
+
 # ── a chain that is not the chain ───────────────────────────────────────────
 @pytest.fixture
 def fake_chain(monkeypatch, tmp_path):
@@ -255,14 +264,14 @@ def test_eligibility_defaults_filter_analysis_but_leave_review_visuals_complete(
     assert result["views"]["analysis"]["filtered"] is True
     assert result["views"]["videos"]["filtered"] is False
     assert result["views"]["images"]["filtered"] is False
-    assert (manifest["outputs"]["tracked_video"][stem]
-            ["eligibility_labels"] == result["views"]["videos"]["labels"])
-    assert (manifest["outputs"]["tracked_image"][stem]
-            ["eligibility_labels"] == result["views"]["images"]["labels"])
-    assert (manifest["outputs"]["tracked_cell_grid"][stem]
-            ["eligibility_labels"] == result["views"]["images"]["labels"])
-    assert (manifest["outputs"]["tracked_cell_video_grid"][stem]
-            ["eligibility_labels"] == result["views"]["videos"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_video"][stem]
+            ["eligibility_labels"]) == result["views"]["videos"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_image"][stem]
+            ["eligibility_labels"]) == result["views"]["images"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_cell_grid"][stem]
+            ["eligibility_labels"]) == result["views"]["images"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_cell_video_grid"][stem]
+            ["eligibility_labels"]) == result["views"]["videos"]["labels"])
 
 
 def test_user_can_filter_analysis_video_and_image_independently(
@@ -274,14 +283,14 @@ def test_user_can_filter_analysis_video_and_image_independently(
 
     assert all(result["views"][name]["filtered"]
                for name in ("analysis", "videos", "images"))
-    assert (manifest["outputs"]["tracked_video"][stem]
-            ["eligibility_labels"] == result["views"]["videos"]["labels"])
-    assert (manifest["outputs"]["tracked_image"][stem]
-            ["eligibility_labels"] == result["views"]["images"]["labels"])
-    assert (manifest["outputs"]["tracked_cell_grid"][stem]
-            ["eligibility_labels"] == result["views"]["images"]["labels"])
-    assert (manifest["outputs"]["tracked_cell_video_grid"][stem]
-            ["eligibility_labels"] == result["views"]["videos"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_video"][stem]
+            ["eligibility_labels"]) == result["views"]["videos"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_image"][stem]
+            ["eligibility_labels"]) == result["views"]["images"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_cell_grid"][stem]
+            ["eligibility_labels"]) == result["views"]["images"]["labels"])
+    assert (_native(manifest, stem, manifest["outputs"]["tracked_cell_video_grid"][stem]
+            ["eligibility_labels"]) == result["views"]["videos"]["labels"])
 
 
 def test_accepted_gap_trace_is_exposed_with_tracked_measurement(
@@ -300,6 +309,80 @@ def test_accepted_gap_trace_is_exposed_with_tracked_measurement(
         "accepted_signal_trace"]["path"] == "accepted_signal_trace.csv"
     assert result["outputs"]["motion"]["tracking"][stem]["labels"].endswith(
         "tracked.tif")
+
+
+@pytest.fixture
+def gapped_identities(monkeypatch):
+    """Motion output whose native identities (4 and 9) have gaps."""
+    import tifffile
+
+    class Result:
+        def __init__(self, labels):
+            self.labels = labels
+
+        def as_dict(self):
+            return {"stem": "fake", "labels": str(self.labels),
+                    "source_frame_offset": 2, "sha256": {}}
+
+    def track(inputs, folder, **options):
+        folder = Path(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+        labels = np.zeros((3, 16, 16), np.uint16)
+        labels[:, 3:7, 3:7] = 9
+        labels[:, 10:13, 10:13] = 4
+        path = folder / "tracked.tif"
+        tifffile.imwrite(path, labels, photometric="minisblack")
+        return Result(path)
+
+    monkeypatch.setattr(motion_handoff._tracking, "run", track)
+    from pymicroglia import measure as measure_module
+    measured = []
+    monkeypatch.setattr(
+        measure_module, "measure",
+        lambda movies, *, output_dir, **_options: (
+            measured.append(movies[0]["labels"]) or
+            {"run": {"folder": str(output_dir), "run_label": "fake"}}))
+    return measured
+
+
+@pytest.mark.parametrize("numbered", [True, False])
+def test_sequential_cell_numbers_change_display_labels_only(
+        fake_chain, fake_mask, fake_measurement, gapped_identities, tmp_path,
+        numbered):
+    import tifffile
+
+    manifest = auto_microglia.run(
+        str(tmp_path / "source"), output_dir=tmp_path / "out",
+        eligibility=False, sequential_cell_numbers=numbered)
+    stem = fake_chain["stack"].stem
+    motion = manifest["outputs"]["motion"]["tracking"][stem]["labels"]
+    native = set(np.unique(tifffile.imread(motion)))
+    assert native == {0, 4, 9}
+    assert set(np.unique(tifffile.imread(gapped_identities[0]))) == native
+    drawn = {name: manifest["outputs"][name][stem]["eligibility_labels"]
+             for name in ("tracked_video", "tracked_image",
+                          "tracked_cell_grid", "tracked_cell_video_grid")}
+    stages = [entry["stage"] for entry in manifest["stages"]]
+    if numbered:
+        record = manifest["outputs"]["identity_numbers"][stem]
+        assert record["cells"] == 2 and "identity_numbers" in stages
+        assert Path(record["map"]).read_text(encoding="utf-8").splitlines() == [
+            "motion_identity,cell_number", "4,1", "9,2"]
+        for path in drawn.values():
+            assert path != motion
+            assert set(np.unique(tifffile.imread(path))) == {0, 1, 2}
+        assert manifest["summary"]["sequential_cell_numbers"] is True
+    else:
+        assert "identity_numbers" not in manifest["outputs"]
+        assert "identity_numbers" not in stages
+        assert "sequential_cell_numbers" not in manifest["summary"]
+        assert set(drawn.values()) == {motion}
+        assert not (Path(manifest["folder"]) / "identity_numbers").exists()
+
+
+def test_sequential_cell_numbers_must_be_a_switch(tmp_path):
+    with pytest.raises(ValueError, match="sequential_cell_numbers"):
+        auto_microglia.run(str(tmp_path), sequential_cell_numbers="yes")
 
 
 def test_new_analysis_refines_only_downstream_and_can_be_turned_off(
@@ -361,8 +444,8 @@ def test_new_analysis_refines_only_downstream_and_can_be_turned_off(
     assert [set(np.unique(f)) for f in refined] == [set(np.unique(f)) for f in original]
     assert np.array_equal(tifffile.imread(measured_labels[0]), refined)
     assert np.array_equal(tifffile.imread(measured_labels[1]), tifffile.imread(original_off))
-    assert on["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"] == refined_path
-    assert on["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"] == refined_path
+    assert _native(on, stem, on["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"]) == refined_path
+    assert _native(on, stem, on["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"]) == refined_path
     assert "tracked_outline_refinement" not in off["outputs"]
     refiner_calls = [s for s in calls if Path(s["weights"]) == refine_model]
     assert len(refiner_calls) == 2 and all(s["cut"] == 0.7 for s in refiner_calls)
@@ -375,8 +458,8 @@ def test_new_analysis_refines_only_downstream_and_can_be_turned_off(
     assert np.array_equal(cropped, tifffile.imread(measured_labels[2]))
     assert np.array_equal(original, tifffile.imread(
         intersection["outputs"]["motion"]["tracking"][stem]["labels"]))
-    assert intersection["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"] == cropped_path
-    assert intersection["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"] == cropped_path
+    assert _native(intersection, stem, intersection["outputs"]["tracked_cell_grid"][stem]["eligibility_labels"]) == cropped_path
+    assert _native(intersection, stem, intersection["outputs"]["tracked_cell_video_grid"][stem]["eligibility_labels"]) == cropped_path
 
 
 def test_refiner_never_inherits_base_weights_or_threshold(
@@ -562,7 +645,7 @@ def test_the_pipelines_own_keywords_are_not_passed_down_as_the_chains(
                        motion=False, decoy_count=9, mask_threads=3)
     passed = fake_chain["options"]
     for ours in ("cell_masks", "cells", "motion", "decoy_count",
-                 "mask_threads", "mask_cut", "region_traces", "outline",
+                 "mask_threads", "mask_cut", "region_traces",
                  "if_exists", "run_label", "claim"):
         assert ours not in passed, f"{ours} was handed to the chain"
 
@@ -604,8 +687,9 @@ def test_asking_for_the_outline_back_gives_the_whole_scn_half(
     an outline with nothing reading it.
     """
     auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
-                       if_exists="error", outline=True)
+                       if_exists="error", outline=True, channel="red")
     assert fake_chain["options"]["skip"] == ()
+    assert fake_chain["options"]["outline"] is True
     assert fake_chain["options"]["spatial"] is True
 
 
@@ -613,7 +697,7 @@ def test_a_rider_can_be_narrowed_without_giving_up_the_outline(
         tmp_path, fake_chain, fake_mask, fake_measurement):
     """Given explicitly, a rider means what it says: outline, traces, no grid."""
     auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
-                       if_exists="error", outline=True, spatial=False)
+                       if_exists="error", outline=True, channel="red", spatial=False)
     assert set(fake_chain["options"]["skip"]) == {"spatial"}
     assert fake_chain["options"]["spatial"] is False
 
@@ -631,7 +715,7 @@ def test_the_unmodified_chain_is_reachable_without_leaving_this_package(
     from auto_organotypic import pipeline as chain
 
     auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
-                       if_exists="error", outline=True,
+                       if_exists="error", outline=True, channel="red",
                        cell_masks=False, cells=False, motion=False)
     assert fake_chain["options"]["skip"] == ()
     assert "cell_masks_options" not in fake_chain["options"], (
@@ -663,7 +747,7 @@ def test_every_opt_in_stage_of_the_chain_is_still_opt_in_from_here(
               - {"acquire"} - set(chain.registered_stages()))
     asked = {auto_microglia.CLAIMED.get(name) or name: True for name in extras}
     auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
-                       if_exists="error", outline=True,
+                       if_exists="error", channel="red",
                        cell_masks=False, cells=False, motion=False, **asked)
     for name in extras:
         assert fake_chain["options"][name] is True, name
@@ -753,7 +837,7 @@ def test_the_chains_review_stage_is_reachable_under_its_new_name(
     """And asking for it does not cost the run its own Review."""
     manifest = auto_microglia.run(
         str(tmp_path / "source"), output_dir=tmp_path / "out",
-        if_exists="error", outline=True, chain_review=True,
+        if_exists="error", outline=True, channel="red", chain_review=True,
         cell_masks=False, cells=False, motion=False)
     assert fake_chain["options"]["review"] is True
     assert isinstance(manifest["review"], list)
@@ -774,6 +858,14 @@ def test_a_rider_without_the_outline_is_refused_at_the_keyword(tmp_path, asked):
                            output_dir=tmp_path / "out", if_exists="error",
                            **asked)
     assert "outline=True" in str(caught.value)
+
+
+@pytest.mark.parametrize("named", [{}, {"channel": ""}, {"outline_channel": None}])
+def test_outlining_without_a_named_channel_is_refused(tmp_path, named):
+    """Outlining is asked for by naming the channel; it is never guessed."""
+    with pytest.raises(ValueError, match="never guessed"):
+        auto_microglia.run(str(tmp_path / "source"), output_dir=tmp_path / "out",
+                           if_exists="error", outline=True, **named)
 
 
 def test_a_skip_the_caller_asked_for_is_added_to_and_never_replaced(

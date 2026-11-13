@@ -47,6 +47,7 @@ def _recordings(run):
     from ..measure.conditions import ConditionSet
     from ..visualisation.panels import resolve_colour
     declared = ConditionSet.from_config(data.get('settings', {}).get('conditions'))
+    live = _live_labels(root, [movie['stem'] for movie in data['movies']])
     rows, conditions = [], []
     for movie in data['movies']:
         spec = movie.get('spec', {})
@@ -55,9 +56,14 @@ def _recordings(run):
         label = factors.get('condition', '') if factors else condition or ''
         if not isinstance(label, str):
             label = str(label)
+        labels = live.get(movie['stem'], {})
+        # Labels edited after the run win over the ones it measured with.
+        label = labels.get('condition', label)
+        factors = {**factors, **({'treatment': labels['treatment']} if labels.get('treatment') else {})}
         cid = 'condition-' + sha256(label.encode()).hexdigest()[:12] if label else ''
         rows.append(dict(id=_id(root, movie['stem']), run=str(root), stem=movie['stem'],
-                         include=True, condition=cid, subject=movie.get('subject') or spec.get('subject') or '',
+                         name=labels.get('name', ''),
+                         include=True, condition=cid, subject=labels.get('sample_id') or movie.get('subject') or spec.get('subject') or '',
                          slice='', pair='', factors={k: str(v) for k, v in factors.items() if k != 'condition'},
                          analysis_ids={}, cell_conditions={}))
         if cid and cid not in {row['id'] for row in conditions}:
@@ -66,6 +72,14 @@ def _recordings(run):
                 colour=resolve_colour(definition.colour) if definition and definition.colour else _colour(len(conditions)),
                 control=bool(definition and definition.control)))
     return rows, conditions
+
+
+def _live_labels(root, stems):
+    from auto_organotypic import recording_labels
+    try:
+        return recording_labels.by_stem(root, stems)
+    except (OSError, ValueError):
+        return {}
 
 
 def _colour(index):

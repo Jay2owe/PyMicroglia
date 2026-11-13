@@ -18,8 +18,8 @@ def main():
     sys.path[:0]=[str(a.adapter.resolve()),str((a.engine/'code').resolve())]
     import accepted_history as history
     import tenure_geometry_reuse as reuse
-    module=history._issue_module(history.I008,'m16_persistent_quarantine')
-    helper=sys.modules['m12_component_tenure_audit']
+    module=history._issue_module(history.OWNERSHIP_QUARANTINE_OPS,'persistent_quarantine')
+    helper=sys.modules['component_tenure_audit']
     old_components,old_overlap=helper.frame_components,helper.overlap_pixels
     old_chain=module.physical_chain_backward
     rng=np.random.default_rng(65);components=0;frames=[];before=after=0.

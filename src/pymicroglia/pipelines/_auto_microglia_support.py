@@ -108,6 +108,105 @@ def _cell_grids(kind: str, tracking: Mapping[str, Any],
     return out
 
 
+def _sequential_numbers(motion_tracking: Mapping[str, Any],
+                        eligibility: Mapping[str, Any], folder: Path, *,
+                        destinations: Sequence[str]
+                        ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict]]:
+    """Map native identities to 1..N and renumber display label views only.
+
+    The map comes from the complete Motion label stack, so a filtered or
+    refined view (a subset) gives each cell the same number as every other
+    view. Measurement keeps reading the native views in ``eligibility``.
+    """
+    from .. import identity_numbers
+
+    destination = folder / "identity_numbers"
+    records: dict[str, Any] = {}
+    display: dict[str, Any] = {}
+    maps: dict[str, dict] = {}
+    for stem, result in motion_tracking.items():
+        mapping = identity_numbers.numbering(result["labels"])
+        map_path = identity_numbers.save_map(
+            mapping, destination / f"{stem}_identity_numbers.csv")
+        maps[stem] = mapping
+        original = eligibility[stem]
+        views = dict(original["views"])
+        written: dict[str, tuple[str, str]] = {}
+        for name in destinations:
+            view = views[name]
+            source = str(view["labels"])
+            if source not in written:
+                path, digest = identity_numbers.renumber_labels(
+                    source, mapping, destination / stem / f"{name}_labels.tif")
+                written[source] = (str(path), digest)
+            path, digest = written[source]
+            views[name] = {**view, "labels": path, "sha256": digest,
+                           "motion_labels": source,
+                           "motion_labels_sha256": view.get("sha256"),
+                           "identity_numbers": str(map_path)}
+        display[stem] = {**original, "views": views}
+        records[stem] = {"map": str(map_path), "cells": len(mapping),
+                         "views": {name: views[name] for name in destinations}}
+    return records, display, maps
+
+
+def _numbered_periods(period_results: Mapping[str, Any],
+                      maps: Mapping[str, Mapping[int, int]] | None
+                      ) -> Mapping[str, Any]:
+    """Period verdicts keyed by cell number, so grids select the same cells.
+
+    ``maps=None`` (sequential numbering off) returns the verdicts unchanged.
+    """
+    if maps is None:
+        return period_results
+    out: dict[str, Any] = {}
+    for stem, result in period_results.items():
+        mapping = maps[stem]
+        missing = sorted(int(key) for key in result["decisions"]
+                         if int(key) not in mapping)
+        if missing:
+            raise ValueError(f"{stem}: period decisions name identities absent "
+                             "from Motion's labels: " + ", ".join(map(str, missing)))
+        out[stem] = {**result, "decisions": {
+            mapping[int(key)]: decision
+            for key, decision in result["decisions"].items()}}
+    return out
+
+
+def _numbered_gap_tables(gap_results: Mapping[str, Any],
+                         maps: Mapping[str, Mapping[int, int]]) -> dict[str, Any]:
+    """Add ``cell_number`` to the gap tables after every join has read them.
+
+    The accepted signal trace's recorded sha256 is updated in place, so the
+    run manifest describes the file as it now is.
+    """
+    from .. import identity_numbers
+
+    out: dict[str, Any] = {}
+    for stem, result in gap_results.items():
+        mapping = maps.get(stem)
+        if mapping is None:
+            continue
+        tables = [Path(path) for key, path in
+                  (result.get("outputs") or {}).items()
+                  if key in ("gap_audit", "measurement_additions")]
+        trace = result.get("accepted_signal_trace")
+        if isinstance(trace, dict) and trace.get("path"):
+            tables.append(Path(trace["path"]))
+        added = {}
+        for path in tables:
+            if not path.is_file():
+                continue
+            report = identity_numbers.add_cell_numbers(path, mapping)
+            added[path.name] = report
+            if (isinstance(trace, dict) and report.get("added")
+                    and Path(trace["path"]) == path):
+                trace["sha256"] = report["sha256"]
+        if added:
+            out[stem] = added
+    return out
+
+
 def _shared_cell_periods(tracking: Mapping[str, Any],
                          handoff: Mapping[str, Any], folder: Path, *,
                          recipe: Mapping[str, Any], trace_channel: int = 1
@@ -144,8 +243,14 @@ def _shared_cell_periods(tracking: Mapping[str, Any],
 
 def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
                      folder: Path, *, modules: Sequence[str],
-                     eligibility: Mapping[str, Any] | None = None) -> dict[str, Any]:
-    """Measure accepted labels against original photons, never Motion counts."""
+                     eligibility: Mapping[str, Any] | None = None,
+                     labels: Mapping[str, Mapping[str, str]] | None = None) -> dict[str, Any]:
+    """Measure accepted labels against original photons, never Motion counts.
+
+    ``labels`` are a person's recording labels by stem: the condition and
+    sample become the ``condition`` and ``subject`` columns, so grouped
+    analyses read them from every table. They never change a measurement.
+    """
     import json
 
     from .. import measure as _measurement
@@ -175,6 +280,7 @@ def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
                        "labels": label_sha,
                        "raw": prepared["measurement_raw_sha256"]},
         }
+        movie.update(_movie_labels((labels or {}).get(stem, {})))
         measured = _measurement.measure(
             [movie], output_dir=folder / "tracked_measurement" / stem,
             frame_interval_min=prepared["frame_interval_min"],
@@ -182,6 +288,20 @@ def _measure_tracked(tracking: Mapping[str, Any], handoff: Mapping[str, Any],
         run_record = measured["run"]
         out[stem] = {"folder": run_record["folder"],
                      "run_label": run_record["run_label"]}
+    return out
+
+
+def _movie_labels(values: Mapping[str, str]) -> dict[str, str]:
+    """A recording's labels in the movie entry's own words."""
+    out = {}
+    if values.get("condition"):
+        out["condition"] = values["condition"]
+    if values.get("sample_id"):
+        out["subject"] = values["sample_id"]
+    notes = "; ".join(f"{key}: {values[key]}" for key in ("name", "treatment", "notes")
+                      if values.get(key))
+    if notes:
+        out["notes"] = notes
     return out
 
 

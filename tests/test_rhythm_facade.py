@@ -49,7 +49,9 @@ def test_legacy_address_reaches_every_period_method(method):
             "mfourfit_step_hours": 0.2, "sr_iterations": 25,
             "sr_grid_points": 64, "sr_seed": 19,
             "jtk_periods": [20.0, 24.0, 28.0], "ejtk_permutations": 25,
-            "jtk_correction": "none", "jtk_seed": 19, "jtk_max_points": 48,
+            # Classic JTK reports whole steps of the thinned series: 85 points
+            # are 2 h apart, so a 24 h period is one of the periods it can name.
+            "jtk_correction": "none", "jtk_seed": 19, "jtk_max_points": 85,
         })
 
     assert result["method"] == method

@@ -28,6 +28,8 @@ def main():
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--run', default='pymicroglia_95_full_A1')
     p.add_argument('--frames', type=int, default=500)
+    p.add_argument('--stacks', nargs='+', default=['07_issue011.tif', '08_issue012.tif', '10_blob_residency.tif'],
+                   help='accepted-history stacks to sample (fewer use less memory)')
     a = p.parse_args()
     import numpy as np
     import tifffile
@@ -35,7 +37,7 @@ def main():
     import accepted_history as history
     import ownership_region_rows as rows
     folder = a.engine / 'm22_accepted_history' / a.run / 'mid/accepted_history'
-    stacks = [tifffile.imread(folder / name) for name in ('07_issue011.tif', '08_issue012.tif', '10_blob_residency.tif')]
+    stacks = [tifffile.imread(folder / name) for name in a.stacks]
     rng = np.random.default_rng(12)
     cases = []
     for _ in range(a.frames):
@@ -48,12 +50,33 @@ def main():
         cases.append((frame, bool(number % 3)))
     cases.append((np.zeros((10, 10), np.uint16), True))
     with rows.install_loader(history) as loaded:
-        module = history._issue_module(history.I012, 'm1_reconcile_domain_ownership')
+        module = history._issue_module(history.DOMAIN_OWNERSHIP_OPS, 'reconcile_domain_ownership')
         assert loaded and loaded[0]['supported'], loaded
         replaced = module.observations
         original = module._ownership_region_original
         tick = time.perf_counter(); expected = [flatten(original(f, m)) for f, m in cases]; before = time.perf_counter() - tick
         tick = time.perf_counter(); actual = [flatten(replaced(f, m)) for f, m in cases]; after = time.perf_counter() - tick
+        # Remembered rows: the same frame asked again (as reconcile asks it up
+        # to four times), the frame edited in place, frames alternating, the
+        # same bytes under another dtype, and a mask request in between.
+        memo_cases = 0
+        for _ in range(max(a.frames // 5, 20)):
+            stack = stacks[int(rng.integers(len(stacks)))]
+            first = np.array(stack[int(rng.integers(len(stack)))])
+            second = np.array(stack[int(rng.integers(len(stack)))])
+            sequence = [first, first, first.copy(), second, first]
+            edited = first.copy()
+            ys, xs = np.nonzero(edited)
+            if len(ys):
+                k = int(rng.integers(len(ys)))
+                edited[ys[k], xs[k]] = 0
+            sequence += [edited, edited]
+            if first.dtype == np.uint16:
+                sequence.append(first.view(np.int16))
+            for frame in sequence:
+                for masks in (False, False, True, False):
+                    assert flatten(replaced(frame, masks)) == flatten(original(frame, masks)), memo_cases
+                    memo_cases += 1
         # Source metrics as dormancy detection asks them (dilation 1), and the
         # other dilations that keep the original: real consecutive frames, every
         # observation against every identity under it plus absent identities,
@@ -82,10 +105,11 @@ def main():
                     assert e == f and (e is None or all(type(e[k]) is type(f[k]) for k in e)), (t, identity, dilation)
                     metric_cases += 1
     assert module.observations is original
+    assert loaded[0].get('remembered', 0) > 0, loaded[0]
     for number, (e, f) in enumerate(zip(expected, actual)):
         assert e == f, number
     report = dict(status='pass', frames=len(cases), observations=sum(len(e) for e in expected),
-                  before_seconds=before, after_seconds=after, counters=loaded[0],
+                  before_seconds=before, after_seconds=after, counters=loaded[0], remembered_cases=memo_cases,
                   source_metric_cases=metric_cases, source_metric_seconds=metric_seconds)
     print(report)
     a.output.write_text(json.dumps(report, indent=2) + '\n')

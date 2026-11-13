@@ -1,0 +1,780 @@
+{
+ "tag": "w1",
+ "snapshots": {
+  "before": {
+   "folder": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\before",
+   "identity": {
+    "pymicroglia": "f2d7dbd210f666bfde7d2b9d26fb983adeb9cabba45cd537286dfc861975d24c",
+    "auto_organotypic": "3d001329895c18468ac956f3cb1a0a40f1db6a8a5d58046ab9d7e2c801ea2bf5"
+   }
+  },
+  "after": {
+   "folder": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\snapshots\\after",
+   "identity": {
+    "pymicroglia": "e946433ca885b06597229fdebf94975bf74dfd1237f364fbca564bd7181a610e",
+    "auto_organotypic": "1888c665b7348f238208117048b0b2cf3188ce77341dd5301cfb3c4cf6af81d0"
+   }
+  }
+ },
+ "cases": {
+  "pm.chain.small": {
+   "after": {
+    "seconds": [
+     466.1916,
+     396.3153
+    ],
+    "median_seconds": 431.25345,
+    "peak_wset_bytes": 1754460160,
+    "output_sha256": [
+     "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    ],
+    "errors": [
+     "w1after1",
+     "w1after2"
+    ],
+    "stages": [
+     [
+      {
+       "stage": "index",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "fields": [
+        "recording-73b4a5a5a153"
+       ],
+       "incomplete": 0,
+       "rejected": [],
+       "manifest": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\local_inputs_manifest.json",
+       "wall": 6.738
+      },
+      {
+       "stage": "trim_before_crop",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 0.939
+      },
+      {
+       "stage": "trim",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 0.084
+      },
+      {
+       "stage": "register",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "registered": 1,
+       "failed": 0,
+       "failures": [],
+       "registrations": [
+        {
+         "field": "recording-73b4a5a5a153",
+         "path": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\B4.tif",
+         "settled": true,
+         "leftover_max_px": 0.11,
+         "max_leftover_px": 5.0,
+         "attempts": [
+          {
+           "method": "ripr",
+           "registration_channel": 1,
+           "ripr_recipe": "bright_dim_dense",
+           "leftover_max_px": 0.11,
+           "leftover_p95_px": 0.08,
+           "worst_frames": [
+            [
+             22,
+             0.11
+            ],
+            [
+             20,
+             0.08
+            ],
+            [
+             21,
+             0.08
+            ],
+            [
+             23,
+             0.08
+            ]
+           ],
+           "settled": true
+          }
+         ],
+         "chose": "channel 1 is named 'Green'",
+         "kept": {
+          "method": "ripr",
+          "registration_channel": 1,
+          "ripr_recipe": "bright_dim_dense"
+         }
+        }
+       ],
+       "retried": 0,
+       "still_moving": [],
+       "wall": 384.476
+      },
+      {
+       "stage": "split",
+       "status": "not requested",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "requested": false,
+       "reason": "No named periods requested; whole recordings retained",
+       "split": 0,
+       "segments": 0,
+       "skipped": 0,
+       "failed": 0,
+       "made": [],
+       "bytes_written": 0,
+       "wall": 3.176
+      },
+      {
+       "stage": "cell_masks",
+       "status": "ok",
+       "owner": "PyMicroglia",
+       "recordings": 1,
+       "reused": 0,
+       "warned": 1,
+       "masks": {
+        "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\AI_Exports\\B4_registered\\B4_registered_translation.tif": {
+         "outputs": {
+          "mask_probability": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_probability.tif",
+          "mask_cells": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_cells.tif",
+          "mask": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask.tif"
+         },
+         "still": {
+          "mask_cells_still": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_cells_still.tif"
+         },
+         "settings": {
+          "cut": 0.8,
+          "grow_to": 0.6,
+          "um_per_px": null,
+          "min_area": 32,
+          "max_area": 0,
+          "grow_px": 8,
+          "split_distance": 6,
+          "window_hours": 3.8837575,
+          "window_frames": 7,
+          "frame_interval_h": 0.5,
+          "weights": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\model.pt",
+          "predictor": {
+           "method": "unet",
+           "options": {}
+          },
+          "pixel_range": [
+           2.0,
+           2.0
+          ],
+          "cells_found": 4377
+         },
+         "warning": "pixel size not recorded (the recording's own metadata), so nothing checked that this recording is the 2 um the weights were trained on."
+        }
+       },
+       "wall": 23.046
+      },
+      {
+       "stage": "grid",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "sheets": 2,
+       "failed": 0,
+       "failures": [],
+       "tiles": 12,
+       "skipped": 0,
+       "display_only": true,
+       "recordings": 1,
+       "wall": 45.314
+      },
+      {
+       "stage": "review",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "reviewed": 0,
+       "failed": 0,
+       "reason": "a review reads a whole run's output folder, and this run has no output root: pass -o/--output-root to put every stage under one folder.",
+       "display_only": true,
+       "recordings": 1,
+       "wall": 0.005
+      }
+     ],
+     [
+      {
+       "stage": "index",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "fields": [
+        "recording-73b4a5a5a153"
+       ],
+       "incomplete": 0,
+       "rejected": [],
+       "manifest": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\local_inputs_manifest.json",
+       "wall": 3.606
+      },
+      {
+       "stage": "trim_before_crop",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 0.596
+      },
+      {
+       "stage": "trim",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 0.082
+      },
+      {
+       "stage": "register",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "registered": 1,
+       "failed": 0,
+       "failures": [],
+       "registrations": [
+        {
+         "field": "recording-73b4a5a5a153",
+         "path": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\B4.tif",
+         "settled": true,
+         "leftover_max_px": 0.11,
+         "max_leftover_px": 5.0,
+         "attempts": [
+          {
+           "method": "ripr",
+           "registration_channel": 1,
+           "ripr_recipe": "bright_dim_dense",
+           "leftover_max_px": 0.11,
+           "leftover_p95_px": 0.08,
+           "worst_frames": [
+            [
+             22,
+             0.11
+            ],
+            [
+             20,
+             0.08
+            ],
+            [
+             21,
+             0.08
+            ],
+            [
+             23,
+             0.08
+            ]
+           ],
+           "settled": true
+          }
+         ],
+         "chose": "channel 1 is named 'Green'",
+         "kept": {
+          "method": "ripr",
+          "registration_channel": 1,
+          "ripr_recipe": "bright_dim_dense"
+         }
+        }
+       ],
+       "retried": 0,
+       "still_moving": [],
+       "wall": 312.556
+      },
+      {
+       "stage": "split",
+       "status": "not requested",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "requested": false,
+       "reason": "No named periods requested; whole recordings retained",
+       "split": 0,
+       "segments": 0,
+       "skipped": 0,
+       "failed": 0,
+       "made": [],
+       "bytes_written": 0,
+       "wall": 2.795
+      },
+      {
+       "stage": "cell_masks",
+       "status": "ok",
+       "owner": "PyMicroglia",
+       "recordings": 1,
+       "reused": 0,
+       "warned": 1,
+       "masks": {
+        "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\AI_Exports\\B4_registered\\B4_registered_translation.tif": {
+         "outputs": {
+          "mask_probability": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_probability.tif",
+          "mask_cells": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_cells.tif",
+          "mask": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask.tif"
+         },
+         "still": {
+          "mask_cells_still": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_cells_still.tif"
+         },
+         "settings": {
+          "cut": 0.8,
+          "grow_to": 0.6,
+          "um_per_px": null,
+          "min_area": 32,
+          "max_area": 0,
+          "grow_px": 8,
+          "split_distance": 6,
+          "window_hours": 3.8837575,
+          "window_frames": 7,
+          "frame_interval_h": 0.5,
+          "weights": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\model.pt",
+          "predictor": {
+           "method": "unet",
+           "options": {}
+          },
+          "pixel_range": [
+           2.0,
+           2.0
+          ],
+          "cells_found": 4377
+         },
+         "warning": "pixel size not recorded (the recording's own metadata), so nothing checked that this recording is the 2 um the weights were trained on."
+        }
+       },
+       "wall": 23.706
+      },
+      {
+       "stage": "grid",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "sheets": 2,
+       "failed": 0,
+       "failures": [],
+       "tiles": 12,
+       "skipped": 0,
+       "display_only": true,
+       "recordings": 1,
+       "wall": 48.442
+      },
+      {
+       "stage": "review",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "reviewed": 0,
+       "failed": 0,
+       "reason": "a review reads a whole run's output folder, and this run has no output root: pass -o/--output-root to put every stage under one folder.",
+       "display_only": true,
+       "recordings": 1,
+       "wall": 0.006
+      }
+     ]
+    ]
+   },
+   "before": {
+    "seconds": [
+     508.9119,
+     396.7508
+    ],
+    "median_seconds": 452.83135000000004,
+    "peak_wset_bytes": 1735421952,
+    "output_sha256": [
+     "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    ],
+    "errors": [
+     "w1before0",
+     "w1before3"
+    ],
+    "stages": [
+     [
+      {
+       "stage": "index",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "fields": [
+        "recording-73b4a5a5a153"
+       ],
+       "incomplete": 0,
+       "rejected": [],
+       "manifest": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\local_inputs_manifest.json",
+       "wall": 16.435
+      },
+      {
+       "stage": "trim_before_crop",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 1.784
+      },
+      {
+       "stage": "trim",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 1.189
+      },
+      {
+       "stage": "register",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "registered": 1,
+       "failed": 0,
+       "failures": [],
+       "registrations": [
+        {
+         "field": "recording-73b4a5a5a153",
+         "path": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\B4.tif",
+         "settled": true,
+         "leftover_max_px": 0.11,
+         "max_leftover_px": 5.0,
+         "attempts": [
+          {
+           "method": "ripr",
+           "registration_channel": 1,
+           "ripr_recipe": "bright_dim_dense",
+           "leftover_max_px": 0.11,
+           "leftover_p95_px": 0.08,
+           "worst_frames": [
+            [
+             22,
+             0.11
+            ],
+            [
+             20,
+             0.08
+            ],
+            [
+             21,
+             0.08
+            ],
+            [
+             23,
+             0.08
+            ]
+           ],
+           "settled": true
+          }
+         ],
+         "chose": "channel 1 is named 'Green'",
+         "kept": {
+          "method": "ripr",
+          "registration_channel": 1,
+          "ripr_recipe": "bright_dim_dense"
+         }
+        }
+       ],
+       "retried": 0,
+       "still_moving": [],
+       "wall": 378.968
+      },
+      {
+       "stage": "split",
+       "status": "not requested",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "requested": false,
+       "reason": "No named periods requested; whole recordings retained",
+       "split": 0,
+       "segments": 0,
+       "skipped": 0,
+       "failed": 0,
+       "made": [],
+       "bytes_written": 0,
+       "wall": 9.296
+      },
+      {
+       "stage": "cell_masks",
+       "status": "ok",
+       "owner": "PyMicroglia",
+       "recordings": 1,
+       "reused": 0,
+       "warned": 1,
+       "masks": {
+        "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\AI_Exports\\B4_registered\\B4_registered_translation.tif": {
+         "outputs": {
+          "mask_probability": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_probability.tif",
+          "mask_cells": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_cells.tif",
+          "mask": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask.tif"
+         },
+         "still": {
+          "mask_cells_still": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_cells_still.tif"
+         },
+         "settings": {
+          "cut": 0.8,
+          "grow_to": 0.6,
+          "um_per_px": null,
+          "min_area": 32,
+          "max_area": 0,
+          "grow_px": 8,
+          "split_distance": 6,
+          "window_hours": 3.8837575,
+          "window_frames": 7,
+          "frame_interval_h": 0.5,
+          "weights": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\model.pt",
+          "predictor": {
+           "method": "unet",
+           "options": {}
+          },
+          "pixel_range": [
+           2.0,
+           2.0
+          ],
+          "cells_found": 4377
+         },
+         "warning": "pixel size not recorded (the recording's own metadata), so nothing checked that this recording is the 2 um the weights were trained on."
+        }
+       },
+       "wall": 30.809
+      },
+      {
+       "stage": "grid",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "sheets": 2,
+       "failed": 0,
+       "failures": [],
+       "tiles": 12,
+       "skipped": 0,
+       "display_only": true,
+       "recordings": 1,
+       "wall": 64.051
+      },
+      {
+       "stage": "review",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "reviewed": 0,
+       "failed": 0,
+       "reason": "a review reads a whole run's output folder, and this run has no output root: pass -o/--output-root to put every stage under one folder.",
+       "display_only": true,
+       "recordings": 1,
+       "wall": 0.016
+      }
+     ],
+     [
+      {
+       "stage": "index",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "fields": [
+        "recording-73b4a5a5a153"
+       ],
+       "incomplete": 0,
+       "rejected": [],
+       "manifest": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\local_inputs_manifest.json",
+       "wall": 8.823
+      },
+      {
+       "stage": "trim_before_crop",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 1.384
+      },
+      {
+       "stage": "trim",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "trimmed": 0,
+       "skipped": 0,
+       "failed": 0,
+       "window": "",
+       "windows": [],
+       "frames_kept": [],
+       "wall": 0.824
+      },
+      {
+       "stage": "register",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "registered": 1,
+       "failed": 0,
+       "failures": [],
+       "registrations": [
+        {
+         "field": "recording-73b4a5a5a153",
+         "path": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\B4.tif",
+         "settled": true,
+         "leftover_max_px": 0.11,
+         "max_leftover_px": 5.0,
+         "attempts": [
+          {
+           "method": "ripr",
+           "registration_channel": 1,
+           "ripr_recipe": "bright_dim_dense",
+           "leftover_max_px": 0.11,
+           "leftover_p95_px": 0.08,
+           "worst_frames": [
+            [
+             22,
+             0.11
+            ],
+            [
+             20,
+             0.08
+            ],
+            [
+             21,
+             0.08
+            ],
+            [
+             23,
+             0.08
+            ]
+           ],
+           "settled": true
+          }
+         ],
+         "chose": "channel 1 is named 'Green'",
+         "kept": {
+          "method": "ripr",
+          "registration_channel": 1,
+          "ripr_recipe": "bright_dim_dense"
+         }
+        }
+       ],
+       "retried": 0,
+       "still_moving": [],
+       "wall": 311.835
+      },
+      {
+       "stage": "split",
+       "status": "not requested",
+       "owner": "Auto-Organotypic",
+       "recordings": 1,
+       "requested": false,
+       "reason": "No named periods requested; whole recordings retained",
+       "split": 0,
+       "segments": 0,
+       "skipped": 0,
+       "failed": 0,
+       "made": [],
+       "bytes_written": 0,
+       "wall": 5.439
+      },
+      {
+       "stage": "cell_masks",
+       "status": "ok",
+       "owner": "PyMicroglia",
+       "recordings": 1,
+       "reused": 0,
+       "warned": 1,
+       "masks": {
+        "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\AI_Exports\\B4_registered\\B4_registered_translation.tif": {
+         "outputs": {
+          "mask_probability": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_probability.tif",
+          "mask_cells": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask_cells.tif",
+          "mask": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_mask.tif"
+         },
+         "still": {
+          "mask_cells_still": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\run\\scratch\\work\\pm.chain.small\\drop\\pymicroglia_analysis\\auto_microglia\\pymicroglia_analysis_5a02a6\\cell_masks\\cell_masks\\B4_registered_translation_learned_cells_still.tif"
+         },
+         "settings": {
+          "cut": 0.8,
+          "grow_to": 0.6,
+          "um_per_px": null,
+          "min_area": 32,
+          "max_area": 0,
+          "grow_px": 8,
+          "split_distance": 6,
+          "window_hours": 3.8837575,
+          "window_frames": 7,
+          "frame_interval_h": 0.5,
+          "weights": "<workstation>/sent\\f3887080-328b-4008-9469-1361c3a0d2b8\\drop-speed-w1\\model.pt",
+          "predictor": {
+           "method": "unet",
+           "options": {}
+          },
+          "pixel_range": [
+           2.0,
+           2.0
+          ],
+          "cells_found": 4377
+         },
+         "warning": "pixel size not recorded (the recording's own metadata), so nothing checked that this recording is the 2 um the weights were trained on."
+        }
+       },
+       "wall": 23.18
+      },
+      {
+       "stage": "grid",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "sheets": 2,
+       "failed": 0,
+       "failures": [],
+       "tiles": 12,
+       "skipped": 0,
+       "display_only": true,
+       "recordings": 1,
+       "wall": 42.661
+      },
+      {
+       "stage": "review",
+       "status": "ok",
+       "owner": "Auto-Organotypic",
+       "reviewed": 0,
+       "failed": 0,
+       "reason": "a review reads a whole run's output folder, and this run has no output root: pass -o/--output-root to put every stage under one folder.",
+       "display_only": true,
+       "recordings": 1,
+       "wall": 0.003
+      }
+     ]
+    ]
+   },
+   "parity": true
+  }
+ },
+ "checks": {
+  "java": "openjdk version \"21.0.11\" 2026-04-21 LTS",
+  "python": "3.12.1 (tags/v3.12.1:2305ca5, Dec  7 2023, 22:03:25) [MSC v.1937 64 bit (AMD64)]",
+  "torch": "2.13.0+cpu",
+  "numpy": "2.1.0",
+  "stacks": [
+   "B4_d1"
+  ]
+ },
+ "exit_code": 1
+}

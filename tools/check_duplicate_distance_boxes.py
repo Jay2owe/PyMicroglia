@@ -25,7 +25,7 @@ def main():
     import tifffile
     import accepted_history as ah
     import ownership_observation_reuse as adapter
-    module = ah._issue_module(ah.I012, 'm1_reconcile_domain_ownership')
+    module = ah._issue_module(ah.DOMAIN_OWNERSHIP_OPS, 'reconcile_domain_ownership')
     cfg = ah._params('issue012', 'domain_ownership')['ownership']
     original = module.substantial_duplicate
     stats = dict(duplicate_boxed=0, duplicate_fallback=0)

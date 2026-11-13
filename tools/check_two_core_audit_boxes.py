@@ -30,7 +30,11 @@ def main():
     settings = [module.TwoCoreParams(),
                 replace(module.TwoCoreParams(), minimum_object_px=20, minimum_core_px=4,
                         minimum_core_fraction=0.02, minimum_core_separation_px=3.0,
-                        minimum_core_intensity_ratio=0.1, erosion_iterations=2)]
+                        minimum_core_intensity_ratio=0.1, erosion_iterations=2),
+                # Floors at or below one pixel: the size gates must never skip.
+                replace(module.TwoCoreParams(), minimum_object_px=1, minimum_core_px=1,
+                        minimum_core_fraction=0.0, minimum_core_separation_px=0.0,
+                        minimum_core_intensity_ratio=0.0)]
     results, failures = [], []
     for path in a.labels:
         labels = tifffile.imread(path)
@@ -46,7 +50,8 @@ def main():
             except AssertionError:
                 same = False
             row = dict(labels=path.name, settings=number, equal=same, objects=len(expected),
-                       original_s=round(t1 - t0, 1), boxed_s=round(t2 - t1, 1))
+                       original_s=round(t1 - t0, 1), boxed_s=round(t2 - t1, 1),
+                       skipped={k: v for k, v in stats.items() if k.endswith('_skipped')})
             print(row, flush=True)
             results.append(row)
             if not same:

@@ -17,3 +17,12 @@ site/
 # An unpacked source distribution: a second copy of the package, which would
 # double every symbol in it.
 pymicroglia-0.1.0/
+
+# Frozen copies of earlier engines and their run records, kept to prove an
+# optimisation changed nothing (about 64,000 copied code files). Untracked,
+# and nothing in src/ imports them; including them timed the refresh out
+# (2026-11-06).
+validation/
+
+# Scratch output.
+tmp/

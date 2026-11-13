@@ -5,15 +5,21 @@ import pandas as pd
 import pytest
 from pymicroglia.figure_tables.saved import Tables
 from pymicroglia.visualisation.figures import load
-from tests.test_motion_parity import FROZEN_RUN,expected
+from tests.test_motion_parity import FROZEN_RUN,expected,workbench_baseline as load_baseline
+workbench_baseline=load_baseline()
 
 CASES=[('regime_ribbon','ribbon'),('regime_transitions','matrix'),('contrast_forest','effects'),
        ('cell_lifecycle_summary',None),('phase_compass','profile'),('sholl_kymograph','kymograph'),('regime_programmes','similarity'),('patch_ledger','coverage'),('regime_reporter_bridge','paired'),('breakout_triggered_average','triggered'),('upheaval_events','raster'),('radial_occupancy_rhythms','matrix'),('recurrence_wall','rate'),('pixel_fate_flow','flow'),('identity_trajectories','map'),('cells_on_screen','counts')]
 
 @pytest.mark.parametrize('key,view',CASES)
 def test_original_plotted_data(key,view):
+    # Motion's settings and reporter, where later package defaults moved.
+    if key in workbench_baseline.FIGURES:
+        # Every plotted value passes through a Workbench fit, which moved after 0.8.2.
+        assert not workbench_baseline.differences(f'figure_{key}.csv',workbench_baseline.figure_table(key))
+        return
     spec=load()[key];module,name=spec.prepare.split(':')
-    data,_=getattr(importlib.import_module(module),name)(Tables(FROZEN_RUN,'parity_A1'),{o.name:o.default for o in spec.options})
+    data,_=getattr(importlib.import_module(module),name)(Tables(FROZEN_RUN,'parity_A1'),workbench_baseline.options(key))
     table=data[view]['table'] if view else pd.concat([d['table'].assign(panel=k) for k,d in data.items() if not d['table'].empty],ignore_index=True,sort=False)
     actual=hashlib.sha256(table.to_csv(index=False,lineterminator='\r\n').encode()).hexdigest()
     assert actual==expected()['figures'][spec.slug]['plotted_sha256']['data/der/figure_data.csv']
@@ -42,7 +48,7 @@ def test_breath_negative_cell_count_is_rejected():
 @pytest.mark.parametrize('key', ['patch_ledger','regime_reporter_bridge','breakout_triggered_average','upheaval_events','pixel_fate_flow'])
 def test_original_supporting_tables(key):
     spec=load()[key];module,name=spec.prepare.split(':')
-    data,_=getattr(importlib.import_module(module),name)(Tables(FROZEN_RUN,'parity_A1'),{o.name:o.default for o in spec.options})
+    data,_=getattr(importlib.import_module(module),name)(Tables(FROZEN_RUN,'parity_A1'),workbench_baseline.options(key))
     hashes=expected()['figures'][spec.slug]['plotted_sha256']
     matched=0
     for name,table in data.auxiliary.items():

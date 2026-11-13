@@ -122,10 +122,10 @@ def main():
             if a.operation == 'duplicate':
                 timed(duplicate, 'duplicate_projection_seconds')
                 timed(history.complete_duplicate_lineage, 'lineage_allocation_seconds')
-                holder['result'] = history._issue092_complete_duplicate_lineage(
+                holder['result'] = history._complete_duplicate_lineage(
                     labels, unclaimed, raw, effective_config, a.output)
             else:
-                holder['result'] = history._well_a5_issue003_complete_flip_recovery(
+                holder['result'] = history._complete_flip_recovery(
                     labels, unclaimed, effective_config, a.output)
     optimized = importlib.import_module('optimized_pipeline')
     optimized.main(['--no-evidence-cache'], runner=execute)

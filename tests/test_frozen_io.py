@@ -102,13 +102,41 @@ def test_frozen_reader_keeps_lazy_masks_before_the_storage_wrapper_returns(tmp_p
     assert not list((tmp_path/'working').iterdir())
 
 @pytest.mark.parametrize('thick',[1,2,3])
-def test_buffered_rgb_matches_global_contrast_and_temporal_dilation(tmp_path,thick):
+@pytest.mark.parametrize('block_bytes',[1,2*48*64*16,4*48*64*16,8*1024**2])
+def test_buffered_rgb_matches_global_contrast_and_temporal_dilation(tmp_path,thick,block_bytes):
     raw,labels=pictures()
     inferred=np.zeros_like(labels,bool);inferred[4:7,10:17,12:19]=True
     unresolved=np.zeros_like(labels,bool);unresolved[2:5,27:33,35:41]=True
     with modules(tmp_path) as (common,_):
         old=common.outline_overlay(raw,labels,thick=thick,inferred=inferred,unresolved=unresolved)
-        new=overlay_renderer(common,tmp_path)(raw,labels,thick=thick,inferred=inferred,unresolved=unresolved)
+        new=overlay_renderer(common,tmp_path,block_bytes=block_bytes)(raw,labels,thick=thick,inferred=inferred,unresolved=unresolved)
         np.testing.assert_array_equal(old,new)
         del new;gc.collect()
     assert not list(tmp_path.glob('rgb-*.dat'))
+
+
+def test_correction_evidence_bounds_retained_frame_snapshots(tmp_path, monkeypatch):
+    from auto_organotypic.array_storage import Pool
+    from pymicroglia.tracking import completed_evidence
+    raw, labels = pictures()
+    expected = labels.copy()
+    pool = Pool(tmp_path/'evidence-snapshots', minimum_bytes=labels[0].nbytes)
+    with modules(tmp_path) as (common, tracking):
+        root = __import__('pathlib').Path(common.__file__).parent.parent
+        def collect(*args):
+            rows = [tracking.frame_observations(labels[t], raw[t], include_shape=False)
+                    for t in range(len(labels))]
+            labels[:] = 0
+            for t, frame in enumerate(rows):
+                for identity, item in frame.items():
+                    np.testing.assert_array_equal(item['mask'], expected[t] == identity)
+            assert pool.snapshot_peak_bytes <= pool.minimum_bytes
+            assert pool.allocations >= len(expected)-1
+            return 'verified'
+        monkeypatch.setattr(completed_evidence, '_generate', collect)
+        try:
+            assert completed_evidence.generate(root, 'sample', 'run', tmp_path/'config',
+                tmp_path, array_pool=pool) == 'verified'
+        finally:
+            pool.close()
+    assert not list((tmp_path/'evidence-snapshots').iterdir())

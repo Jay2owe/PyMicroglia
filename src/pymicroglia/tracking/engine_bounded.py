@@ -1,8 +1,7 @@
-"""Run the frozen numerical stages sequentially, without keeping obsolete movies.
+"""Run frozen numerical stages without keeping obsolete movies.
 
 Input pixels and stages are unchanged. Compressed pinned inputs are decoded once
-to temporary file-backed arrays. The engine's whole-movie RGB review is deferred
-to the streaming PyMicroglia renderer; this function returns tracking files only.
+to temporary file-backed arrays. All native review tables and pixels are retained.
 """
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
@@ -10,7 +9,7 @@ import gc, json, tempfile, weakref
 from pathlib import Path
 import tifffile
 
-def run(pipeline, common, run_name, stem, config_path,*,array_pool=None,resume=False):
+def run(pipeline, common, run_name, stem, config_path,*,array_pool=None,resume=False,native_review=False):
     cfg=common.Config.load(config_path)
     stages=("m0_inputs","m1_motion","m2_anchor","m3_track","m4_events","m5_reconcile","m7_persistence","m8_merge","m9_alias","m12_identity_reservation","m19_layered_lineage","m20_oscillatory_lineage","m22_accepted_history","m6_review")
     if stem not in cfg.stems:
@@ -71,20 +70,52 @@ def run(pipeline, common, run_name, stem, config_path,*,array_pool=None,resume=F
             history_inputs=pipeline.AcceptedHistoryInputs()
             reserved,reservation_inferred,_=call('stage_m12_accepted',cfg,stem,run_name,sources,aliased,observations,table,anchor,history_inputs=history_inputs)
             del aliased;gc.collect()
-            final,lineage_inferred,_=call('stage_m19_accepted',cfg,stem,run_name,sources,reserved,observations,table,anchor,history_inputs=history_inputs)
+            final,lineage_inferred,tracks=call('stage_m19_accepted',cfg,stem,run_name,sources,reserved,observations,table,anchor,history_inputs=history_inputs)
             del reserved;gc.collect()
             pre_inferred=inferred|merge_inferred|alias_inferred|reservation_inferred|lineage_inferred
             del inferred,merge_inferred,alias_inferred,reservation_inferred,lineage_inferred;gc.collect()
-            # Match the frozen runner's worker-thread numeric context. NumPy
-            # 2.1 initialises scalar promotion differently in a fresh thread.
-            # Wait here so the bounded runner still runs one heavy stage at a time.
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            if not native_review:
+                # Match the frozen runner's worker-thread numeric context. NumPy
+                # 2.1 initialises scalar promotion differently in a fresh thread.
+                # Wait here so the bounded runner still runs one heavy stage at a time.
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    future=executor.submit(call,'stage_m20_accepted',cfg,stem,run_name,sources,final.copy())
+                    future.result()
+                call('stage_m22_accepted_history',cfg,stem,run_name,sources,final.copy(),observations,table,anchor,history_inputs=history_inputs,m20_result_future=future,upstream_inferred=pre_inferred,unresolved=unresolved)
+                # New data have not been approved by a human; don't write inherited approval text.
+                (pipeline.ROOT/"m22_accepted_history"/run_name/"review_pending.json").write_text(json.dumps(dict(status="pending",reason="Full-duration new-input tracking requires a source-linked review; full-field RGB preparation deferred to PyMicroglia."),indent=2))
+                print(f"DONE {stem}: accepted engine stages completed; new-input review pending",flush=True)
+                return
+            # Keep both branches in worker-thread numerical contexts. Ordinary
+            # execution keeps the original overlap; disk-bounded execution
+            # queues the dependent branch behind m20 to limit concurrent memory.
+            with ThreadPoolExecutor(max_workers=1 if array_pool is not None or resume else 2) as executor:
                 future=executor.submit(call,'stage_m20_accepted',cfg,stem,run_name,sources,final.copy())
-                future.result()
-            call('stage_m22_accepted_history',cfg,stem,run_name,sources,final.copy(),observations,table,anchor,history_inputs=history_inputs,m20_result_future=future,upstream_inferred=pre_inferred,unresolved=unresolved)
-            # New data have not been approved by a human; don't write inherited approval text.
-            (pipeline.ROOT/"m22_accepted_history"/run_name/"review_pending.json").write_text(json.dumps(dict(status="pending",reason="Full-duration new-input tracking requires a source-linked review; full-field RGB preparation deferred to PyMicroglia."),indent=2))
-            print(f"DONE {stem}: accepted engine stages completed; new-input review pending",flush=True)
+                if array_pool is not None or resume:future.result()
+                history_future=executor.submit(call,'stage_m22_accepted_history',cfg,stem,run_name,sources,final.copy(),observations,table,anchor,history_inputs=history_inputs,m20_result_future=future,upstream_inferred=pre_inferred,unresolved=unresolved)
+                del final
+                final,_,history_inferred,tracks=history_future.result()
+            _,oscillatory_inferred,_=future.result()
+            final_inferred=(pipeline._align_review_stack(pre_inferred|oscillatory_inferred,len(final))|history_inferred)
+            del observations,table,history_inputs,future,history_future,pre_inferred
+            del oscillatory_inferred,history_inferred,_
+            gc.collect()
+            review=pipeline.ROOT/'m6_review'/run_name
+            review_complete=False
+            if resume and (review/'run.json').is_file():
+                from .checkpoints import sha
+                manifest=json.loads((review/'run.json').read_text())
+                outputs=manifest.get('outputs',{})
+                review_complete=(manifest.get('status')=='done' and bool(outputs) and
+                    all(Path(item['path']).is_file() and sha(item['path'])==item['sha256'] for item in outputs.values()))
+            if not review_complete:
+                if review.exists():
+                    import time
+                    review.rename(review.with_name(review.name+'_interrupted_'+str(time.time_ns())))
+                pipeline.stage_m6(cfg,stem,run_name,sources,final,events,final_inferred,
+                    pipeline._align_review_stack(unresolved,len(final)),anchor,tracks,
+                    upstream_run=run_name,upstream_stage='m22_accepted_history',accepted_base=True)
+            print(f"DONE {stem}: complete engine stages and full-field review",flush=True)
         finally:
             tifffile.imread=original_read
             # Any aliases held by engine helpers are read-only and no longer used.

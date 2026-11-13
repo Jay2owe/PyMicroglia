@@ -1,0 +1,32 @@
+{
+  "circadian_workbench": "0.15.0",
+  "settings": {
+    "detrend": "robust_linear",
+    "reference_metric": "corrected_mean",
+    "reporter_metric": "corrected_mean"
+  },
+  "tables": [
+    "figure_all_cell_trace_grid.csv.gz",
+    "figure_cd68_reporter_rhythm.csv.gz",
+    "figure_metric_rhythm_matrix.csv.gz",
+    "figure_radial_occupancy_rhythms.csv.gz",
+    "measured_coupling.csv.gz",
+    "measured_lag_profiles.csv.gz",
+    "measured_recurrence.csv.gz",
+    "measured_recurrence_quantification.csv.gz",
+    "measured_rhythm_methods.csv.gz",
+    "measured_rhythm_traces.csv.gz",
+    "measured_rhythms.csv.gz",
+    "measured_rhythms_population.csv.gz",
+    "reporter_shape_timing.csv.gz",
+    "spatial_rhythm_maps.csv.gz",
+    "spatial_rhythm_progression.csv.gz",
+    "tissue_expansion_sequence.csv.gz",
+    "tissue_figure_data.csv.gz",
+    "tissue_rhythm_map_fits.csv.gz",
+    "tissue_significant_period_cells.csv.gz",
+    "tissue_significant_period_pixels.csv.gz",
+    "tissue_statistics.csv.gz"
+  ],
+  "why": "Motion was frozen with Circadian Workbench 0.8.2. Later Workbench releases deliberately changed the rhythm arithmetic (the Lomb-Scargle peak is refined between grid frequencies, and periodogram power, phase, amplitude and fit quality moved with it), so the tables built from rhythm fits can no longer reproduce Motion's numbers. Every column the Workbench does not compute is still compared with Motion; the Workbench outputs are compared with the tables this script writes, run with Motion's settings rather than today's defaults."
+}

@@ -3,8 +3,8 @@
 Every name of real accepted label frames and their foreground (two movies),
 synthetic corner pixels, borders, sparse to full noise, with no structure, a
 cross and full 3x3 structures as bool and integer arrays. Values, dtype, type
-and count must match. Integer inputs, 3-D movies, explicit outputs, empty
-masks and scalars keep the original. Under the correction working-array pool
+and count must match. Integer inputs, 3-D movies, explicit outputs and scalars
+keep the original; empty masks match for every structure, or raise the same error. Under the correction working-array pool
 a frame large enough for disk storage must give the same array type. Names
 bound by `from scipy.ndimage import label` are swapped and restored.
 """
@@ -37,7 +37,7 @@ def main():
               tifffile.imread(history / '08_issue012.tif', key=range(a.frames))]
     cross = scipy.ndimage.generate_binary_structure(2, 1)
     structures = (None, cross, np.ones((3, 3), bool), np.ones((3, 3), np.uint8), cross.astype(int))
-    stats = dict(boxed=0, whole=0, fallback=0)
+    stats = dict(boxed=0, whole=0, empty=0, fallback=0)
     labeller = bounded_label.bounded(original, stats)
     report = dict(status='pass', masks=0, seconds=dict(original=0.0, bounded=0.0))
 
@@ -88,10 +88,25 @@ def main():
     out2 = np.empty(shape, np.int32)
     assert labeller(movies[0][0] == movies[0][0, 200, 200], None, out2) == expected_count and np.array_equal(out, out2)
     compare(np.array(True), None)
-    assert stats['fallback'] - before == 5, stats
+    assert stats['fallback'] - before == 4 and stats['empty'] == 1, stats
+    # Empty masks: every structure, and structures scipy rejects (same error).
+    for empty in (np.zeros(shape, bool), np.zeros((1, 1), bool), np.zeros((3, 40), bool)[:, ::3]):
+        for structure in structures + (np.zeros((3, 3), bool), np.ones((3, 3), float)):
+            compare(empty, structure)
+        for structure in (np.ones((3, 3, 3), bool), np.ones((2, 2), bool), np.ones(3, bool), [[1, 1, 1]] * 3):
+            def outcome(function):
+                try:
+                    value = function(empty, structure)
+                    return ('value', type(value[0]), value[0].dtype, value[0].tobytes(), value[1])
+                except Exception as error:
+                    return ('error', type(error).__name__, str(error))
+            assert outcome(original) == outcome(labeller), structure
+            report['masks'] += 1
     # Same storage type as the original under the correction pool.
-    with tempfile.TemporaryDirectory() as folder:
-        pool = array_storage.Pool(folder, minimum_bytes=1024**2, temporary_ram_bytes=32 * 1024**2)
+    # A RAM allowance of 0 puts large arrays on disk, where np.zeros skips the fill.
+    for ram, key in ((32 * 1024**2, ''), (0, '_disk')):
+      with tempfile.TemporaryDirectory() as folder:
+        pool = array_storage.Pool(folder, minimum_bytes=1024**2, temporary_ram_bytes=ram)
         with array_storage.install(pool):
             big = np.zeros((1300, 1300), bool)
             big[400:430, 700:760] = True
@@ -100,7 +115,13 @@ def main():
             actual = labeller(big, None)
             assert type(actual[0]) is type(expected[0]) and actual[1] == expected[1]
             assert np.array_equal(np.asarray(actual[0]), np.asarray(expected[0]))
-            report['pool_type'] = type(actual[0]).__name__
+            report['pool_type' + key] = type(actual[0]).__name__
+            empty = np.zeros((1300, 1300), bool)
+            expected = original(empty, None)
+            actual = labeller(empty, None)
+            assert type(actual[0]) is type(expected[0]) and actual[1] == expected[1] and type(actual[1]) is type(expected[1])
+            assert actual[0].dtype == expected[0].dtype and np.array_equal(np.asarray(actual[0]), np.asarray(expected[0]))
+            report['pool_empty_type' + key] = type(actual[0]).__name__
             del expected, actual
         pool.close()
     # Alias swap and restoration.

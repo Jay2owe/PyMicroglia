@@ -1,0 +1,386 @@
+kind,old,new,note
+function,code/accepted_history.py:_install_issue009_component_extractor,_install_cropped_component_extractor,proposed: Swap in the cropped connected-component extractor
+function,code/accepted_history.py:_issue005,_confidence_layered_retracking,"proposed: Re-track by confidence layer, then optimise lineage, host-merge and territory graphs"
+function,code/accepted_history.py:_issue006,_contact_tenure,proposed: Keep a static territory and its mobile neighbour through contact
+function,code/accepted_history.py:_issue007,_host_capture_correction,proposed: Undo forced host carries that compete with independent destinations
+function,code/accepted_history.py:_issue008,_ownership_quarantine,"proposed: Global and tenure quarantine, merge bridging and duplicate cleanup"
+function,code/accepted_history.py:_issue009,_hierarchy_reconcile,proposed: Hierarchy-ordered quarantine reconciled with movie-wide identity authority
+function,code/accepted_history.py:_issue010,_short_lived_reclaim,proposed: Drop short-lived identities and reclaim their gaps for persistent lineages
+function,code/accepted_history.py:_issue011,_merge_split_reconcile,proposed: Reassign identities across bracketed merge-and-separate events
+function,code/accepted_history.py:_issue012,_domain_ownership_reconcile,"proposed: Domain ownership rules, then restore names after dormant releases"
+function,code/accepted_history.py:_issue023_tail,_generalised_repairs,"proposed: Territory memory, unclaimed bodies, local and reciprocal lineages, stationary gaps"
+function,code/accepted_history.py:_issue027_short_blank_recovery,_short_blank_recovery,number dropped
+function,code/accepted_history.py:_issue029_small_cell_blank_recovery,_small_cell_blank_recovery,number dropped
+function,code/accepted_history.py:_issue030_moderate_gap_recovery,_moderate_gap_recovery,number dropped
+function,code/accepted_history.py:_issue032_owner_consensus,_owner_consensus,number dropped
+function,code/accepted_history.py:_issue033_separable_merge_recovery,_separable_merge_recovery,number dropped
+function,code/accepted_history.py:_issue034_recording_start_split,_recording_start_split,number dropped
+function,code/accepted_history.py:_issue035_merge_residency,_merge_residency,number dropped
+function,code/accepted_history.py:_issue036_persistent_body_identity,_persistent_body_identity,number dropped
+function,code/accepted_history.py:_issue037_resident_takeover,_resident_takeover,number dropped
+function,code/accepted_history.py:_issue038_ownerless_body_recovery,_ownerless_body_recovery,number dropped
+function,code/accepted_history.py:_issue039_ownerless_cohort_recovery,_ownerless_cohort_recovery,number dropped
+function,code/accepted_history.py:_issue041_bracketed_encounter_recovery,_bracketed_encounter_recovery,number dropped
+function,code/accepted_history.py:_issue042_recurrent_exclusive_owner_relay,_recurrent_exclusive_owner_relay,number dropped
+function,code/accepted_history.py:_issue043_isolated_owner_blip_recovery,_isolated_owner_blip_recovery,number dropped
+function,code/accepted_history.py:_issue045_atomic_two_seat_recovery,_atomic_two_seat_recovery,number dropped
+function,code/accepted_history.py:_issue046_recording_start_duplicate_release,_recording_start_duplicate_release,number dropped
+function,code/accepted_history.py:_issue048_late_owner_backfill,_late_owner_backfill,number dropped
+function,code/accepted_history.py:_issue051_bracketed_handoff_recovery,_bracketed_handoff_recovery,number dropped
+function,code/accepted_history.py:_issue055_post_split_backfill,_post_split_backfill,number dropped
+function,code/accepted_history.py:_issue056_concurrent_duplicate_invasion,_concurrent_duplicate_invasion,number dropped
+function,code/accepted_history.py:_issue063_post_split_excursion_recovery,_post_split_excursion_recovery,number dropped
+function,code/accepted_history.py:_issue066_transient_misownership_recovery,_transient_misownership_recovery,number dropped
+function,code/accepted_history.py:_issue070_isolated_unowned_lifetime_recovery,_isolated_unowned_lifetime_recovery,number dropped
+function,code/accepted_history.py:_issue071_boundary_owner_blip_recovery,_boundary_owner_blip_recovery,number dropped
+function,code/accepted_history.py:_issue078_foreign_owner_terminal_convergence,_foreign_owner_terminal_convergence,number dropped
+function,code/accepted_history.py:_issue080_terminal_companion_assimilation,_terminal_companion_assimilation,number dropped
+function,code/accepted_history.py:_issue089_cross_reference_owner_relay,_cross_reference_owner_relay,number dropped
+function,code/accepted_history.py:_issue091_recording_boundary_owner_cycle,_recording_boundary_owner_cycle,number dropped
+function,code/accepted_history.py:_issue092_complete_duplicate_lineage,_complete_duplicate_lineage,number dropped
+function,code/accepted_history.py:_well_issue001_isolated_pair_encounter_recovery,_isolated_pair_encounter_recovery,number dropped
+function,code/accepted_history.py:_well_issue004_recurrent_two_body_fusion_recovery,_recurrent_two_body_fusion_recovery,number dropped
+function,code/accepted_history.py:_well_a2_issue001_exclusive_pair_seat_recovery,_exclusive_pair_seat_recovery,number dropped
+function,code/accepted_history.py:_well_a2_issue002_reciprocal_two_seat_exchange,_reciprocal_two_seat_exchange,number dropped
+function,code/accepted_history.py:_well_a2_issue003_bounded_owner_excursion,_bounded_owner_excursion,number dropped
+function,code/accepted_history.py:_well_a2_issue004_recurrent_isolated_alias,_recurrent_isolated_alias,number dropped
+function,code/accepted_history.py:_well_a5_issue002_distinct_history_core_preservation,_distinct_history_core_preservation,number dropped
+function,code/accepted_history.py:_well_a5_issue003_branched_motion_lineage_recovery,_branched_motion_lineage_recovery,number dropped
+function,code/accepted_history.py:_well_a5_issue003_complete_flip_recovery,_complete_flip_recovery,number dropped
+function,code/accepted_history.py:_well_a5_issue005_projection_tolerant_seat_preservation,_projection_tolerant_seat_preservation,number dropped
+function,code/accepted_history.py:_well_a5_issue006_retroactive_successor_separation,_retroactive_successor_separation,number dropped
+function,code/accepted_history.py:_well_a5_issue004_terminal_two_core_split_inheritance,_terminal_two_core_split_inheritance,number dropped
+function,code/accepted_history.py:_well_b1_issue001_bracketed_established_owner_invasion,_bracketed_established_owner_invasion,number dropped
+function,code/accepted_history.py:_well_b2_issue001_terminal_projection_diversion,_terminal_projection_diversion,number dropped
+function,code/accepted_history.py:_well_b2_issue002_delayed_projection_reclaim,_delayed_projection_reclaim,number dropped
+function,code/accepted_history.py:_well_b2_issue003_boundary_owner_excursion,_boundary_owner_excursion,number dropped
+function,code/accepted_history.py:_well_b2_issue004_terminal_two_seat_assimilation,_terminal_two_seat_assimilation,number dropped
+function,code/accepted_history.py:_well_b2_issue005_bracketed_mixed_owner_flash,_bracketed_mixed_owner_flash,number dropped
+function,code/accepted_history.py:_well_b2_issue006_dominant_seat_projection_diversion,_dominant_seat_projection_diversion,number dropped
+function,code/accepted_history.py:_well_b2_issue007_subresolution_point_artifact_calibration,_subresolution_point_artifact_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue008_short_owned_companion_projection_calibration,_short_owned_companion_projection_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue009_ownerless_cohort_latent_gap_completion,_ownerless_cohort_latent_gap_completion,number dropped
+function,code/accepted_history.py:_well_b2_issue011_recurrent_same_owner_branch_swarm_calibration,_recurrent_same_owner_branch_swarm_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue012_aggregate_shared_core_calibration,_aggregate_shared_core_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue013_weak_terminal_reference_relay_calibration,_weak_terminal_reference_relay_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue014_single_owner_multireference_relay_calibration,_single_owner_multireference_relay_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue015_event_local_subresolution_artifact_calibration,_event_local_subresolution_artifact_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue016_short_ownerless_subcellular_reference_calibration,_short_ownerless_subcellular_reference_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue018_recording_start_two_seat_inheritance,_recording_start_two_seat_inheritance,number dropped
+function,code/accepted_history.py:_well_b2_issue026_detached_projection_owner_relay_calibration,_detached_projection_owner_relay_calibration,number dropped
+function,code/accepted_history.py:_well_b2_issue028_right_censored_novel_body_calibration,_right_censored_novel_body_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue010_detached_fading_projection_calibration,_detached_fading_projection_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue012_explained_projection_event_calibration,_explained_projection_event_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue002_gap_tolerant_reciprocal_seat_exchange,_gap_tolerant_reciprocal_seat_exchange,number dropped
+function,code/accepted_history.py:_well_b3_issue004_reconnected_companion_merge_partition,_reconnected_companion_merge_partition,number dropped
+function,code/accepted_history.py:_well_b3_issue005_component_continuity_duplicate_takeover,_component_continuity_duplicate_takeover,number dropped
+function,code/accepted_history.py:_well_b3_issue006_right_censored_seat_partition,_right_censored_seat_partition,number dropped
+function,code/accepted_history.py:_well_b3_issue007_right_censored_reciprocal_exchange,_right_censored_reciprocal_exchange,number dropped
+function,code/accepted_history.py:_well_b3_issue008_persistent_single_owner_flash,_persistent_single_owner_flash,number dropped
+function,code/accepted_history.py:_well_b3_issue012_delayed_owner_projection_flash,_delayed_owner_projection_flash,number dropped
+function,code/accepted_history.py:_well_b3_issue013_anchored_projection_owner_relay,_anchored_projection_owner_relay,number dropped
+function,code/accepted_history.py:_well_b3_issue013_ephemeral_speckle_alias_retirement,_ephemeral_speckle_alias_retirement,number dropped
+function,code/accepted_history.py:_well_b3_issue013_anchored_projection_raw_gap_completion,_anchored_projection_raw_gap_completion,number dropped
+function,code/accepted_history.py:_well_b3_issue014_terminal_projection_chain_completion,_terminal_projection_chain_completion,number dropped
+function,code/accepted_history.py:_well_b3_issue015_conserved_multi_anchor_projection_calibration,_conserved_multi_anchor_projection_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue016_body_scale_ownerless_allocation,_body_scale_ownerless_allocation,number dropped
+function,code/accepted_history.py:_well_b3_issue017_terminal_boundary_vanished_seat,_terminal_boundary_vanished_seat,number dropped
+function,code/accepted_history.py:_well_b3_issue017_terminal_boundary_event_calibration,_terminal_boundary_event_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue018_fragmented_subcellular_episode_calibration,_fragmented_subcellular_episode_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue019_bracketed_ownerless_seat_completion,_bracketed_ownerless_seat_completion,number dropped
+function,code/accepted_history.py:_well_b3_issue020_fragmented_encounter_lineage_calibration,_fragmented_encounter_lineage_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue021_temporal_core_path_lineage,_temporal_core_path_lineage,number dropped
+function,code/accepted_history.py:_well_b3_issue022_ownerless_reference_handoff_calibration,_ownerless_reference_handoff_calibration,number dropped
+function,code/accepted_history.py:_well_b3_issue023_asymmetric_fusion_area_flip_recovery,_asymmetric_fusion_area_flip_recovery,number dropped
+function,code/accepted_history.py:_well_b3_issue024_recurrent_dominant_body_relay,_recurrent_dominant_body_relay,number dropped
+function,code/accepted_history.py:_well_b3_issue025_established_seat_cycle_recovery,_established_seat_cycle_recovery,number dropped
+function,code/accepted_history.py:_well_b3_issue026_dormant_seat_successor_recovery,_dormant_seat_successor_recovery,number dropped
+function,code/accepted_history.py:_well_b3_issue027_staggered_fusion_exchange_recovery,_staggered_fusion_exchange_recovery,number dropped
+function,code/accepted_history.py:_well_b4_issue001_large_persistent_reference_relay,_large_persistent_reference_relay,number dropped
+function,code/accepted_history.py:_well_b4_issue002_dormant_owner_reciprocal_partition,_dormant_owner_reciprocal_partition,number dropped
+function,code/accepted_history.py:_well_b4_issue003_conservative_episode_ownership,_conservative_episode_ownership,number dropped
+function,code/accepted_history.py:_well_b4_issue004_original_body_continuity,_original_body_continuity,number dropped
+function,code/accepted_history.py:_well_b4_issue005_inferred_excursion_recovery,_inferred_excursion_recovery,number dropped
+file,code/accepted_history_ops/issue006/project_paths.py,corrections/contact_tenure/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue006/s1_detect_contacts.py,corrections/contact_tenure/detect_contacts.py,step number dropped
+file,code/accepted_history_ops/issue006/s2_apply_tenure.py,corrections/contact_tenure/apply_tenure.py,step number dropped
+file,code/accepted_history_ops/issue007/m1_detect_hypotheses.py,corrections/host_capture/detect_host_capture.py,step number dropped
+file,code/accepted_history_ops/issue007/m2_reconcile.py,corrections/host_capture/reconcile_host_capture.py,step number dropped
+file,code/accepted_history_ops/issue007/project_paths.py,corrections/host_capture/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue008/m12_component_tenure_audit.py,corrections/ownership_quarantine/component_tenure_audit.py,step number dropped
+file,code/accepted_history_ops/issue008/m13_tenure_quarantine.py,corrections/ownership_quarantine/tenure_quarantine.py,step number dropped
+file,code/accepted_history_ops/issue008/m16_persistent_quarantine.py,corrections/ownership_quarantine/persistent_quarantine.py,step number dropped
+file,code/accepted_history_ops/issue008/m3_bridge_merges.py,corrections/ownership_quarantine/bridge_merges.py,step number dropped
+file,code/accepted_history_ops/issue008/m7_global_quarantine.py,corrections/ownership_quarantine/global_quarantine.py,step number dropped
+file,code/accepted_history_ops/issue008/m8_general_merge_bridge.py,corrections/ownership_quarantine/general_merge_bridge.py,step number dropped
+file,code/accepted_history_ops/issue008/m9_duplicate_cleanup.py,corrections/ownership_quarantine/duplicate_cleanup.py,step number dropped
+file,code/accepted_history_ops/issue008/project_paths.py,corrections/ownership_quarantine/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue009/m1_lineage_hierarchy.py,corrections/hierarchy/lineage_hierarchy.py,step number dropped
+file,code/accepted_history_ops/issue009/m2_ordered_quarantine.py,corrections/hierarchy/ordered_quarantine.py,step number dropped
+file,code/accepted_history_ops/issue009/m5_movie_authority.py,corrections/hierarchy/movie_authority.py,step number dropped
+file,code/accepted_history_ops/issue009/m6_hierarchy_reconcile.py,corrections/hierarchy/hierarchy_reconcile.py,step number dropped
+file,code/accepted_history_ops/issue009/m9_duplicate_cleanup.py,corrections/hierarchy/duplicate_cleanup.py,step number dropped
+file,code/accepted_history_ops/issue009/project_paths.py,corrections/hierarchy/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue010/m1_profile_persistence.py,corrections/short_lived/profile_persistence.py,step number dropped
+file,code/accepted_history_ops/issue010/m2_drop_short_lived.py,corrections/short_lived/drop_short_lived.py,step number dropped
+file,code/accepted_history_ops/issue010/m3_reclaim_gaps.py,corrections/short_lived/reclaim_gaps.py,step number dropped
+file,code/accepted_history_ops/issue010/project_paths.py,corrections/short_lived/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue011/m1_profile_merge_splits.py,corrections/merge_splits/profile_merge_splits.py,step number dropped
+file,code/accepted_history_ops/issue011/m2_reconcile_merge_splits.py,corrections/merge_splits/reconcile_merge_splits.py,step number dropped
+file,code/accepted_history_ops/issue011/project_paths.py,corrections/merge_splits/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py,corrections/domain_ownership/reconcile_domain_ownership.py,step number dropped
+file,code/accepted_history_ops/issue012/m8_detect_dormant_releases.py,corrections/domain_ownership/detect_dormant_releases.py,step number dropped
+file,code/accepted_history_ops/issue012/m9_reconcile_dormant_releases.py,corrections/domain_ownership/reconcile_dormant_releases.py,step number dropped
+file,code/accepted_history_ops/issue012/project_paths.py,corrections/domain_ownership/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue013/m1_seat_identity.py,corrections/seat_identity/seat_identity.py,step number dropped
+file,code/accepted_history_ops/issue013/project_paths.py,corrections/seat_identity/project_paths.py,step number dropped
+file,code/accepted_history_ops/issue015/m5_blob_residency.py,corrections/blob_residency/blob_residency.py,step number dropped
+file,code/accepted_history_ops/issue017/m1_census.py,corrections/continuity/continuity_census.py,step number dropped
+file,code/accepted_history_ops/issue017/m2_classify_evidence.py,corrections/continuity/classify_continuity_evidence.py,step number dropped
+file,code/accepted_history_ops/issue017/m3_repair.py,corrections/continuity/continuity_repair.py,step number dropped
+pair,code/aggregate_shared_core_calibration_integration.py,code/aggregate_shared_core_calibration.py,merged into one module
+pair,code/anchored_projection_owner_relay_integration.py,code/anchored_projection_owner_relay.py,merged into one module
+pair,code/anchored_projection_raw_gap_completion_integration.py,code/anchored_projection_raw_gap_completion.py,merged into one module
+pair,code/body_scale_ownerless_allocation_integration.py,code/body_scale_ownerless_allocation.py,merged into one module
+pair,code/boundary_owner_excursion_integration.py,code/boundary_owner_excursion.py,merged into one module
+pair,code/bracketed_established_owner_invasion_integration.py,code/bracketed_established_owner_invasion.py,merged into one module
+pair,code/bracketed_mixed_owner_flash_integration.py,code/bracketed_mixed_owner_flash.py,merged into one module
+pair,code/bracketed_ownerless_seat_completion_integration.py,code/bracketed_ownerless_seat_completion.py,merged into one module
+pair,code/complete_flip_recovery_integration.py,code/complete_flip_recovery.py,merged into one module
+pair,code/component_continuity_duplicate_takeover_integration.py,code/component_continuity_duplicate_takeover.py,merged into one module
+pair,code/conservative_episode_ownership_integration.py,code/conservative_episode_ownership.py,merged into one module
+pair,code/conserved_multi_anchor_projection_calibration_integration.py,code/conserved_multi_anchor_projection_calibration.py,merged into one module
+pair,code/delayed_owner_projection_flash_integration.py,code/delayed_owner_projection_flash.py,merged into one module
+pair,code/delayed_projection_reclaim_integration.py,code/delayed_projection_reclaim.py,merged into one module
+pair,code/detached_fading_projection_calibration_integration.py,code/detached_fading_projection_calibration.py,merged into one module
+pair,code/detached_projection_owner_relay_calibration_integration.py,code/detached_projection_owner_relay_calibration.py,merged into one module
+pair,code/dominant_seat_projection_diversion_integration.py,code/dominant_seat_projection_diversion.py,merged into one module
+pair,code/dormant_owner_reciprocal_partition_integration.py,code/dormant_owner_reciprocal_partition.py,merged into one module
+pair,code/dormant_seat_successor_recovery_integration.py,code/dormant_seat_successor_recovery.py,merged into one module
+pair,code/ephemeral_speckle_alias_retirement_integration.py,code/ephemeral_speckle_alias_retirement.py,merged into one module
+pair,code/established_seat_cycle_recovery_integration.py,code/established_seat_cycle_recovery.py,merged into one module
+pair,code/event_local_subresolution_artifact_calibration_integration.py,code/event_local_subresolution_artifact_calibration.py,merged into one module
+pair,code/explained_projection_event_calibration_integration.py,code/explained_projection_event_calibration.py,merged into one module
+pair,code/fragmented_encounter_lineage_calibration_integration.py,code/fragmented_encounter_lineage_calibration.py,merged into one module
+pair,code/fragmented_subcellular_episode_calibration_integration.py,code/fragmented_subcellular_episode_calibration.py,merged into one module
+pair,code/gap_tolerant_reciprocal_seat_exchange_integration.py,code/gap_tolerant_reciprocal_seat_exchange.py,merged into one module
+pair,code/inferred_excursion_recovery_integration.py,code/inferred_excursion_recovery.py,merged into one module
+pair,code/large_persistent_reference_relay_integration.py,code/large_persistent_reference_relay.py,merged into one module
+pair,code/original_body_continuity_integration.py,code/original_body_continuity.py,merged into one module
+pair,code/ownerless_cohort_latent_gap_completion_integration.py,code/ownerless_cohort_latent_gap_completion.py,merged into one module
+pair,code/ownerless_reference_handoff_calibration_integration.py,code/ownerless_reference_handoff_calibration.py,merged into one module
+pair,code/reconnected_companion_merge_partition_integration.py,code/reconnected_companion_merge_partition.py,merged into one module
+pair,code/recording_start_two_seat_inheritance_integration.py,code/recording_start_two_seat_inheritance.py,merged into one module
+pair,code/recurrent_dominant_body_relay_integration.py,code/recurrent_dominant_body_relay.py,merged into one module
+pair,code/recurrent_same_owner_branch_swarm_calibration_integration.py,code/recurrent_same_owner_branch_swarm_calibration.py,merged into one module
+pair,code/retirement_aware_persistence_integration.py,code/retirement_aware_persistence.py,merged into one module
+pair,code/right_censored_novel_body_calibration_integration.py,code/right_censored_novel_body_calibration.py,merged into one module
+pair,code/right_censored_reciprocal_exchange_integration.py,code/right_censored_reciprocal_exchange.py,merged into one module
+pair,code/right_censored_seat_partition_integration.py,code/right_censored_seat_partition.py,merged into one module
+pair,code/short_owned_companion_projection_calibration_integration.py,code/short_owned_companion_projection_calibration.py,merged into one module
+pair,code/short_ownerless_subcellular_reference_calibration_integration.py,code/short_ownerless_subcellular_reference_calibration.py,merged into one module
+pair,code/single_owner_multireference_relay_calibration_integration.py,code/single_owner_multireference_relay_calibration.py,merged into one module
+pair,code/staggered_fusion_exchange_recovery_integration.py,code/staggered_fusion_exchange_recovery.py,merged into one module
+pair,code/subresolution_point_artifact_calibration_integration.py,code/subresolution_point_artifact_calibration.py,merged into one module
+pair,code/temporal_core_path_lineage_integration.py,code/temporal_core_path_lineage.py,merged into one module
+pair,code/terminal_boundary_event_calibration_integration.py,code/terminal_boundary_event_calibration.py,merged into one module
+pair,code/terminal_boundary_vanished_seat_integration.py,code/terminal_boundary_vanished_seat.py,merged into one module
+pair,code/terminal_projection_chain_completion_integration.py,code/terminal_projection_chain_completion.py,merged into one module
+pair,code/terminal_projection_diversion_integration.py,code/terminal_projection_diversion.py,merged into one module
+pair,code/terminal_two_seat_assimilation_integration.py,code/terminal_two_seat_assimilation.py,merged into one module
+pair,code/weak_terminal_reference_relay_calibration_integration.py,code/weak_terminal_reference_relay_calibration.py,merged into one module
+speed,tracking/alias_host_boxes.py,folded into motion_engine.zip:code/identity_aliases.py,Alias host evidence measured inside each observation's box.
+speed,tracking/batched_detection_cores.py,folded into motion_engine.zip:code/fractional_raw_peaks.py,"The physical detector's per-peak core measurements, taken for all of a frame's peaks at once."
+speed,tracking/birth_lineage_index.py,"folded into completed_feedback_engine.zip:frozen/current/r203_a003/measured_birth_lineage.py, motion_engine.zip:code/measured_birth_lineage.py",Measured birth lineage: first native frames and per-frame nodes in one pass.
+behaviour,tracking/boundary_frame_checks.py,"folded into completed_feedback_engine.zip:code/recover_leading_soma_from_future_run.py, completed_feedback_engine.zip:code/recover_ownerless_soma_runs.py",Correction boundary checks on the frames a correction wrote.
+speed,tracking/bounded_label.py,folded into target found at fold time (no static fingerprint match),"scipy.ndimage.label of a two-dimensional boolean mask, labelled inside its bounding rectangle."
+speed,tracking/bounded_marker_geometry.py,folded into motion_engine.zip:code/bounded_owner_excursion.py,Search only pixels that can pass the original marker-distance test.
+speed,tracking/bounded_morphology.py,folded into target found at fold time (no static fingerprint match),"scipy.ndimage binary erosion and dilation of a 2-D Boolean mask, inside its padded rectangle."
+speed,tracking/bounds_band.py,"folded into completed_feedback_engine.zip:code/array_bounds.py, motion_engine.zip:code/array_bounds.py",Occupied bounds with the column scan limited to the occupied row band.
+speed,tracking/bracketed_consensus_tracks.py,"folded into completed_feedback_engine.zip:frozen/current/r202_a007/bracketed_consensus_memory.py, motion_engine.zip:code/bracketed_consensus_memory.py",Bracketed consensus memory takes each track's named rows from one sort.
+speed,tracking/bracketed_handoff_reuse.py,folded into motion_engine.zip:code/bracketed_handoff_recovery.py,Bracketed-handoff discovery with per-track last frames and owner runs formed once.
+speed,tracking/bracketed_seat_rows.py,folded into motion_engine.zip:code/bracketed_ownerless_seat_completion.py,"Bracketed ownerless seat completion: visible ownerless rows per gap frame, once cast."
+speed,tracking/branched_lineage_reuse.py,folded into motion_engine.zip:code/branched_motion_lineage_recovery.py,Branched-lineage proposals with per-track rows and frame sets formed once.
+speed,tracking/censored_area_boxes.py,folded into motion_engine.zip:code/right_censored_seat_partition.py,"Right-censored seat partition: expected areas from owner components labelled once, in the owner's box."
+speed,tracking/census_distance_crop.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m1_census.py,Measure Issue 017 gap mask distances inside the two masks' joint box.
+speed,tracking/census_presence_table.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m1_census.py,Answer census presence and areas from one per-frame label count table.
+speed,tracking/classify_disc_boxes.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m2_classify_evidence.py,Probe Issue 017 raw line support inside each disc's bounding box.
+speed,tracking/compact_components.py,folded into target found at fold time (no static fingerprint match),Store exact read-only component maps as their nonzero bounding rectangles.
+speed,tracking/companion_lookup_reuse.py,folded into target found at fold time (no static fingerprint match),Index immutable companion evidence once per excursion discovery.
+speed,tracking/component_accounting_view.py,folded into target found at fold time (no static fingerprint match),Equal-value component accounting reads disk-backed frames through a plain view.
+speed,tracking/component_marker_prefilter.py,folded into motion_engine.zip:code/bracketed_mixed_owner_flash.py,Skip physical points that cannot mark a component in bracketed_mixed_owner_flash.
+speed,tracking/component_table_memo.py,folded into target found at fold time (no static fingerprint match),"Equal-value component tables reused for label frames seen before, in any stage."
+speed,tracking/confidence_geometry_reuse.py,folded into motion_engine.zip:code/lineage_confidence.py,Measure the same confidence samples inside each occupied bounding box.
+speed,tracking/conflict_core_batch.py,folded into motion_engine.zip:code/global_soma_ledger.py,Count substantial disconnected bodies with two multivalue labellings.
+speed,tracking/connected_core_window.py,folded into motion_engine.zip:code/ownerless_body_recovery.py,Ownerless body recovery: a point's connected core from the evidence of its window's neighbourhood.
+speed,tracking/continuity_repair_frames.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m3_repair.py,Issue 017 locked-identity restoration and foreground accounting one frame at a time.
+speed,tracking/convex_hull_image_fast.py,folded into target found at fold time (no static fingerprint match),skimage convex_hull_image without a qhull call per object.
+speed,tracking/core_intersects_window.py,folded into target found at fold time (no static fingerprint match),A soma-core test returns False at once when the mask is empty inside the core's window.
+speed,tracking/core_stable_memo.py,"folded into completed_feedback_engine.zip:code/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:code/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:code/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/contact/r204_a004/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/contact/r204_a004/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/contact/r204_a004/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r199_a001/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r199_a001/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r199_a001/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r202_a007/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r202_a007/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r202_a007/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r203_a003/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r203_a003/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/current/r203_a003/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R205-A007/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R205-A007/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R205-A007/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R206-A002/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R206-A002/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R206-A002/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R207-A003/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R207-A003/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R207-A003/remove_persistent_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R208-A005/remove_compact_stable_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R208-A005/remove_extreme_compact_overbright_sources.py, completed_feedback_engine.zip:frozen/reviewed/R208-A005/remove_persistent_overbright_sources.py",Stable overbright cores measured once per raw movie for the three overbright-source corrections.
+speed,tracking/correction_geometry_storage.py,folded into completed_feedback_engine.zip:code/grouped_cell_geometry.py,Share immutable frame snapshots between read-only correction masks.
+speed,tracking/correction_owner_sampling.py,"folded into completed_feedback_engine.zip:code/owner_consensus.py, completed_feedback_engine.zip:code/resident_takeover.py, completed_feedback_engine.zip:code/separable_merge_recovery.py, motion_engine.zip:code/owner_consensus.py, motion_engine.zip:code/resident_takeover.py, motion_engine.zip:code/separable_merge_recovery.py",Batch exact local owner votes used by accepted correction methods.
+speed,tracking/coupled_peer_memo.py,folded into target found at fold time (no static fingerprint match),Coupled observed name return asks once whether each observation's own outline holds a peer.
+speed,tracking/csv_joined_rows.py,folded into target found at fold time (no static fingerprint match),Large CSV bodies written as joined lines instead of one csv.writer row at a time.
+speed,tracking/cyclic_track_handoffs.py,"folded into completed_feedback_engine.zip:code/recurrent_cyclic_alias.py, motion_engine.zip:code/recurrent_cyclic_alias.py",Track handoffs of the recurrent cyclic alias rule from one sorted pass.
+speed,tracking/density_overlap_reuse.py,folded into target found at fold time (no static fingerprint match),Density reciprocal overlap measures each frame's objects once and counts neighbours as arrays.
+speed,tracking/destination_support_boxes.py,"folded into completed_feedback_engine.zip:frozen/current/r195_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/current/r196_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/current/r197_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/current/r198_a003/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/current/r200_a004/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/current/r201_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r184_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r185_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r186_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r187_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r188_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r189_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r190_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r191_a003/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r192_a001/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r193_a002/recovery_destination_soma.py, completed_feedback_engine.zip:frozen/recovery/r194_a003/recovery_destination_soma.py, motion_engine.zip:code/recovery_destination_soma.py",Destination soma support: identity boxes from one find_objects pass per frame.
+speed,tracking/detached_outline_groups.py,folded into completed_feedback_engine.zip:code/recover_detached_soma_shared_outline.py,Detached shared-outline discovery groups only the anchored tracks it reads.
+speed,tracking/detector_acceleration.py,folded into target found at fold time (no static fingerprint match),Batch independent soma-core windows while preserving the accepted detector.
+speed,tracking/disk_owner_batch.py,"folded into motion_engine.zip:code/merge_residency.py, motion_engine.zip:code/persistent_body_identity.py",Merge residency and persistent body identity: every point's disk owner voted in one batch.
+speed,tracking/diversion_track_rows.py,folded into motion_engine.zip:code/terminal_projection_diversion.py,"Terminal projection diversion: each track's birth frame and frame rows, once."
+speed,tracking/dormant_component_reuse.py,folded into motion_engine.zip:code/accepted_history_ops/issue012/m8_detect_dormant_releases.py,Reuse immutable dormant-release measurements with compact boolean masks.
+speed,tracking/dormant_path_reuse.py,folded into motion_engine.zip:code/accepted_history_ops/issue012/m9_reconcile_dormant_releases.py,Reuse immutable input components during complete dormant-path restoration.
+speed,tracking/duplicate_fragment_geometry.py,"folded into motion_engine.zip:code/accepted_history_ops/issue008/m9_duplicate_cleanup.py, motion_engine.zip:code/accepted_history_ops/issue009/m9_duplicate_cleanup.py",Share immutable frame components and query exact nearest pixel distances.
+speed,tracking/empty_dropout_return.py,folded into completed_feedback_engine.zip:code/expand_short_dropout_soma_cores.py,Short-dropout core expansion returns its inputs when there is nothing to expand.
+speed,tracking/end_path_counts.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m3_repair.py,Issue 017 contiguous end-path truncation from per-frame count tables.
+speed,tracking/episode_fusion_events.py,folded into completed_feedback_engine.zip:code/episode_consistent_fusion.py,Episode-consistent fusion reads its absorption events from the indexed frames.
+speed,tracking/events_host_boxes.py,"folded into completed_feedback_engine.zip:code/events.py, motion_engine.zip:code/events.py","Merge-event host geometry formed when first read, inside each host's box."
+speed,tracking/exclusive_pair_index.py,folded into motion_engine.zip:code/exclusive_pair_seat_recovery.py,"Exclusive-pair discovery with its point index, track supports and frame neighbours built once."
+speed,tracking/fixed_object_overlap.py,"folded into motion_engine.zip:code/global_soma_ledger.py, motion_engine.zip:code/persistence.py",Transfer unchanged evidence and validate identity maps in one frame pass.
+speed,tracking/flash_owner_runs.py,"folded into motion_engine.zip:code/bracketed_mixed_owner_flash.py, motion_engine.zip:code/bracketed_mixed_owner_flash.py:_owner_runs",Mixed-owner flash: a track's owner runs read from its column arrays.
+speed,tracking/flicker_component_boxes.py,folded into target found at fold time (no static fingerprint match),Bookended owner flickers read each candidate outline inside its own bounding box.
+speed,tracking/flip_boundary_crop.py,folded into target found at fold time (no static fingerprint match),Complete-flip boundary steps measured inside the two masks' joint box.
+speed,tracking/fragment_observations.py,folded into target found at fold time (no static fingerprint match),"Count a parent/fragment observation once, independent of parent fragmentation."
+speed,tracking/fragment_pair_scan.py,"folded into completed_feedback_engine.zip:code/local_fragment_reunion.py, completed_feedback_engine.zip:frozen/reviewed/R210-A011/local_fragment_reunion.py, motion_engine.zip:code/local_fragment_reunion.py",Local fragment reunion's adjacent component pairs read from foreground pixels.
+speed,tracking/frame_component_reuse.py,folded into target found at fold time (no static fingerprint match),Reuse immutable frame components only during one identity discovery call.
+speed,tracking/frozen_io.py,folded into target found at fold time (no static fingerprint match),Lazy boolean masks and frame-buffered review IO for the frozen engine.
+speed,tracking/gap_bracket_memo.py,folded into motion_engine.zip:code/gap_tolerant_reciprocal_seat_exchange.py,Remember each point's validity and owner for gap-tolerant bracket searches.
+speed,tracking/gap_component_boxes.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/native_gap_owner_transport_a010.py, completed_feedback_engine.zip:frozen/final/r215_a003/native_gap_owner_transport_a003.py",Native gap owner transport: each name's components labelled inside its bounding box.
+speed,tracking/gap_owner_source_memo.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/native_gap_owner_transport_a010.py, completed_feedback_engine.zip:frozen/final/r215_a003/native_gap_owner_transport_a003.py",Native gap owner transport reuses each pass's accepted-source answers and counts support once.
+speed,tracking/gap_trace_walk.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/native_gap_owner_transport_a010.py, completed_feedback_engine.zip:frozen/final/r215_a003/native_gap_owner_transport_a003.py",Correction gap transport walks measured cores with the evidence stage's exact walk.
+speed,tracking/guard_scan.py,folded into target found at fold time (no static fingerprint match),"Stage-boundary guards of the composition files: the same answers, one block of frames at a time."
+speed,tracking/handoff_component_box.py,folded into target found at fold time (no static fingerprint match),Owner handoffs label the owner's outlines inside the owner's bounding box.
+speed,tracking/handoff_runs.py,"folded into completed_feedback_engine.zip:code/complete_owner_handoff_episodes_a003.py, completed_feedback_engine.zip:code/complete_owner_handoff_episodes_r10_a002.py",Owner runs of the handoff-episode modules from frame and owner arrays.
+speed,tracking/hierarchy_candidate_filter.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m6_hierarchy_reconcile.py,Apply existing unconditional eligibility checks before expensive metrics.
+speed,tracking/hierarchy_component_batch.py,folded into target found at fold time (no static fingerprint match),Extract all identity components in one pass with original local numbering.
+speed,tracking/hierarchy_metric_reuse.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m6_hierarchy_reconcile.py,Reuse per-component motion fractions and reject disjoint pixel ranges.
+speed,tracking/hierarchy_overlap_reuse.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m1_lineage_hierarchy.py,Count exact overlap without joining and sorting two pixel lists each time.
+speed,tracking/hierarchy_partial_hoist.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m6_hierarchy_reconcile.py,Issue 009 partial-transfer reclaim with its two overlap maxima remembered.
+speed,tracking/host_partition_reuse.py,folded into motion_engine.zip:code/oscillatory_reconciliation.py,Index presence by frame and retain only consumed host-partition frames.
+speed,tracking/identity_name_batch.py,"folded into motion_engine.zip:code/global_soma_ledger.py, motion_engine.zip:code/lineage_confidence.py",Count name overlaps with one lookup pass per frame and measure objects in their boxes.
+speed,tracking/identity_reuse.py,folded into target found at fold time (no static fingerprint match),"Exact, operation-local reuse for the frozen duplicate-soma recovery."
+speed,tracking/invasion_donor_rows.py,folded into motion_engine.zip:code/concurrent_duplicate_invasion.py,"Concurrent duplicate invasion: donor rows over the invasion, by position."
+speed,tracking/lazy_flip_components.py,folded into target found at fold time (no static fingerprint match),Build immutable application maps only for frames used by accepted proposals.
+speed,tracking/lazy_motion_counts.py,folded into target found at fold time (no static fingerprint match),Use the existing exact bounded motion counts for immutable lazy masks.
+speed,tracking/ledger_reference_boxes.py,"folded into motion_engine.zip:code/global_soma_ledger.py, motion_engine.zip:code/model_review.py","Substantial identity references of the soma ledger, measured inside each name's box."
+speed,tracking/lineage_frame_components.py,folded into motion_engine.zip:code/local_lineage_reservations.py,Local-lineage frame components without building region objects.
+behaviour,tracking/lineage_overlaps.py,folded into target found at fold time (no static fingerprint match),Allow repeated same-owner traces; audit conflicting connected event groups.
+speed,tracking/link_paint_boxes.py,folded into target found at fold time (no static fingerprint match),Paint each linked or new observation inside its mask's known box.
+speed,tracking/mask_centre_counts.py,folded into motion_engine.zip:code/physical_lineage_aliases.py,Centres of 2-D Boolean masks from integer coordinate sums.
+speed,tracking/measured_cores.py,folded into target found at fold time (no static fingerprint match),Measured soma cores per frame from column arrays instead of per-frame tables.
+speed,tracking/measured_gap_path_reuse.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/measured_soma_gap_memory.py, completed_feedback_engine.zip:frozen/final/r215_a003/measured_soma_gap_memory.py",Reuse exact prefixes of measured-core walks within one tracking frame.
+speed,tracking/measured_rows.py,"folded into completed_feedback_engine.zip:code/dual_soma_ancestry_memory_a001.py, completed_feedback_engine.zip:code/observed_soma_gap_memory_a003.py, completed_feedback_engine.zip:code/recording_start_soma_memory_a001.py, completed_feedback_engine.zip:code/successive_detector_soma_memory_a004.py",Each track's measured rows from NumPy column tests in four soma-memory corrections.
+speed,tracking/merge_bridge_objects.py,folded into motion_engine.zip:code/accepted_history_ops/issue008/m8_general_merge_bridge.py,Label merge-bridge identity components in their boxes; skip pairs whose boxes are too far apart.
+speed,tracking/merge_continuation_frames.py,folded into motion_engine.zip:code/accepted_history_ops/issue017/m3_repair.py,Snapshot only the gap frames that Issue 017 merge-continuation audits read.
+behaviour,tracking/merge_foreground_scope.py,folded into motion_engine.zip:code/persistent_merges.py,Check unchanged foreground over every frame a merge proposal can edit.
+speed,tracking/merge_geometry_reuse.py,folded into motion_engine.zip:code/persistent_merges.py,Exact merge geometry with one immutable frame shared by its masks.
+speed,tracking/merge_mask_counts.py,folded into motion_engine.zip:code/persistent_merges.py,Persistent-merge scoring counts Boolean masks with count_nonzero.
+speed,tracking/merge_partition_boxes.py,folded into motion_engine.zip:code/persistent_merges.py,Persistent-merge partition scores measured inside the host's box.
+speed,tracking/merge_proposal_storage.py,folded into motion_engine.zip:code/persistent_merges.py,Defer complete-movie copies until a merge proposal has succeeded.
+speed,tracking/merge_split_feature_boxes.py,"folded into motion_engine.zip:code/accepted_history_ops/issue011/m1_profile_merge_splits.py, motion_engine.zip:code/component_feature_speed.py",Issue 011 frame features measured inside each identity's box.
+speed,tracking/merge_split_feature_index.py,folded into motion_engine.zip:code/accepted_history_ops/issue011/m2_reconcile_merge_splits.py,Index Issue 011 frame features by identity instead of re-filtering per call.
+speed,tracking/midpoint_bookend_reuse.py,folded into motion_engine.zip:code/midpoint_reconciliation.py,Measure midpoint bookend frames on demand and box each pair from its endpoints.
+speed,tracking/motion_history_reuse.py,folded into motion_engine.zip:code/motion_handoffs.py,Measure recent motion history directly and index consecutive name presence.
+speed,tracking/motion_lobe_batch.py,folded into motion_engine.zip:code/motion_handoffs.py,Batch the original motion-outline geometry without changing its formulae.
+speed,tracking/motion_overlap_batch.py,folded into motion_engine.zip:code/motion_handoffs.py,Count all cell/motion-region intersections in one frame traversal.
+speed,tracking/motion_support_scalars.py,folded into motion_engine.zip:code/motion_sampling_speed.py,The linker's cached motion support sampled with Python floats.
+speed,tracking/motion_union_bounds.py,folded into target found at fold time (no static fingerprint match),Unbounded motion support finds the union's box from the two masks' boxes.
+speed,tracking/movie_label_counts.py,folded into target found at fold time (no static fingerprint match),Whole-movie name counts are summed frame by frame instead of through an int64 copy of the movie.
+speed,tracking/nested_alias_reuse.py,folded into target found at fold time (no static fingerprint match),Complete-flip nested-alias search with per-source support and plain frames.
+speed,tracking/observation_boxes.py,"folded into completed_feedback_engine.zip:code/observations.py, motion_engine.zip:code/observations.py",Build observations with every candidate mask held inside its bounding box.
+speed,tracking/observation_cache.py,folded into target found at fold time (no static fingerprint match),Per-frame cell measurements reused for frames with identical content.
+speed,tracking/occupancy_overlap_boxes.py,folded into target found at fold time (no static fingerprint match),Occupancy reservation visits only the observations whose box meets the state's box.
+speed,tracking/one_core_union_boxes.py,folded into motion_engine.zip:code/physical_lineage_aliases.py,One-core interaction discovery tests each pair's union inside the masks' boxes.
+speed,tracking/optical_physical_paths.py,folded into target found at fold time (no static fingerprint match),Optical physical paths collect per-component statistics from one pass over foreground pixels.
+speed,tracking/origin_footprint_boxes.py,"folded into completed_feedback_engine.zip:frozen/recovery/r182_a002/recovery_origin_evidence.py, completed_feedback_engine.zip:frozen/recovery/r183_a004/recovery_raw_soma_footprint.py, motion_engine.zip:code/recovery_origin_evidence.py, motion_engine.zip:code/recovery_raw_soma_footprint.py",Recovery origin and raw-footprint certificates: name boxes from one find_objects pass per frame.
+speed,tracking/owner_body_border.py,folded into motion_engine.zip:code/local_lineage_reservations.py,Local-lineage owner bodies: the border grows with the body instead of being redrawn.
+behaviour,tracking/owner_consensus_conflicts.py,folded into target found at fold time (no static fingerprint match),Keep zero-core attachments with their recipient through simultaneous renames.
+speed,tracking/owner_consensus_presence.py,"folded into completed_feedback_engine.zip:code/owner_consensus.py, motion_engine.zip:code/owner_consensus.py",Owner-consensus application with one per-frame label census.
+behaviour,tracking/owner_identity_accounting.py,folded into target found at fold time (no static fingerprint match),Audit identity retirement instead of forbidding combined owner corrections.
+speed,tracking/owner_lookup.py,folded into target found at fold time (no static fingerprint match),Index repeated companion-track lookups without changing Motion decisions.
+speed,tracking/owner_pixel_boxes.py,folded into motion_engine.zip:code/recording_boundary_owner_cycle.py,Owner pixels read inside their bounding box instead of the whole frame.
+speed,tracking/owner_presence_frames.py,"folded into motion_engine.zip:code/right_censored_reciprocal_exchange.py, motion_engine.zip:code/terminal_boundary_vanished_seat.py","Which frames each owner occupies, without a whole-movie comparison per owner."
+speed,tracking/ownerless_coverage_batch.py,folded into motion_engine.zip:code/ownerless_body_recovery.py,Batch ownerless_body_recovery.attach_coverage with exact disk votes.
+speed,tracking/ownerless_run_slices.py,folded into completed_feedback_engine.zip:code/recover_ownerless_soma_runs.py,Ownerless soma runs: each consecutive-frame run sliced by position from the frame-sorted rows.
+speed,tracking/ownership_observation_reuse.py,"folded into motion_engine.zip:code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py:add_reciprocal_dormant_swaps, motion_engine.zip:code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py:apply_dormancy, motion_engine.zip:code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py:substantial_duplicate",Hoist immutable outline measurements out of dormant-identity loops.
+speed,tracking/ownership_region_rows.py,folded into motion_engine.zip:code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py,Read Issue 012 ownership observations from find_objects without region objects.
+speed,tracking/perimeter_shifts.py,folded into target found at fold time (no static fingerprint match),regionprops perimeter from shifted views instead of an erosion and convolution.
+speed,tracking/persistence_profile_reuse.py,"folded into motion_engine.zip:code/accepted_history_ops/issue010/m1_profile_persistence.py, motion_engine.zip:code/accepted_history_ops/issue010/m3_reclaim_gaps.py","Count every identity's per-frame area in one pass, reusing exact centroids."
+speed,tracking/physical_core_boxes.py,folded into motion_engine.zip:code/physical_lineage_aliases.py,Physical-lineage core measurements inside the mask's box.
+behaviour,tracking/pipeline_fallbacks.py,folded into target found at fold time (no static fingerprint match),Keep a recording's tracking going when a whole stage cannot handle it.
+speed,tracking/plain_component_frames.py,folded into target found at fold time (no static fingerprint match),Give component tables a plain view of disk-backed integer frames.
+speed,tracking/point_index_lookup.py,"folded into motion_engine.zip:code/gap_tolerant_reciprocal_seat_exchange.py, motion_engine.zip:code/reciprocal_two_seat_exchange.py","Track points found by position in the reciprocal exchanges' (track, frame) index."
+speed,tracking/post_split_reuse.py,folded into motion_engine.zip:code/post_split_backfill.py,Post-split backfill discovery with per-track values formed once.
+speed,tracking/predecessor_starts_map.py,folded into completed_feedback_engine.zip:code/predecessor_name_memory_a002.py,Predecessor name memory looks up track starts through one Series per call.
+speed,tracking/presence_area_table.py,folded into motion_engine.zip:code/presence.py,Presence identity frames and area medians from one count table per frame.
+speed,tracking/presence_contrast_crop.py,folded into motion_engine.zip:code/presence.py,Measure presence recovery contrast inside the proposal's box plus the ring width.
+speed,tracking/presence_descriptor_medians.py,folded into motion_engine.zip:code/presence.py,Presence descriptors keep the median of their area and mean lists until the lists change.
+speed,tracking/presence_mask_boxes.py,folded into motion_engine.zip:code/presence.py,Presence completion reads single-cell masks inside their bounding box.
+speed,tracking/presence_settle_boxes.py,folded into motion_engine.zip:code/presence.py,Presence carve settlement inside each host's box; validation of changed frames only.
+speed,tracking/process_extension_boxes.py,folded into completed_feedback_engine.zip:code/extend_approved_process_paths.py,Approved process extension gaps measured inside each component's widened box.
+speed,tracking/process_inventory_lookups.py,"folded into completed_feedback_engine.zip:code/process_inventory_motion.py, completed_feedback_engine.zip:code/process_inventory_owners.py",Process inventory owner windows and motion point lookups from plain columns.
+speed,tracking/process_inventory_speed.py,folded into target found at fold time (no static fingerprint match),Process inventories find outline edges inside the outline's box and sample occupancy in one gather.
+behaviour,tracking/process_proposals.py,folded into target found at fold time (no static fingerprint match),Resolve competing process-fragment proposals before any label is changed.
+speed,tracking/process_track_features.py,folded into completed_feedback_engine.zip:code/process_inventory_tracked.py,Process inventory track features from one pass over the scored table.
+speed,tracking/projection_chain_rows.py,folded into motion_engine.zip:code/terminal_projection_chain_completion.py,"Terminal projection-chain track rows, filtered once per track and call."
+speed,tracking/quarantine_assign_pixels.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m2_ordered_quarantine.py,Issue 009 ordered-quarantine assignment through the component's own pixels.
+speed,tracking/quarantine_overlap_batch.py,folded into motion_engine.zip:code/accepted_history_ops/issue008/m7_global_quarantine.py,Count unchanged ownership-overlap evidence once per adjacent frame pair.
+speed,tracking/raw_support_memo.py,"folded into completed_feedback_engine.zip:frozen/current/r195_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r195_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/current/r196_a001/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r196_a001/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/current/r197_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r197_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/current/r198_a003/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r198_a003/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/current/r200_a004/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r200_a004/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/current/r201_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/current/r201_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r185_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r185_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r186_a001/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r186_a001/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r187_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r187_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r188_a001/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r188_a001/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r189_a001/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r189_a001/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r190_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r190_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r191_a003/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r191_a003/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r192_a001/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r192_a001/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r193_a002/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r193_a002/recovery_temporal_soma_support.py, completed_feedback_engine.zip:frozen/recovery/r194_a003/recovery_qualified_soma.py, completed_feedback_engine.zip:frozen/recovery/r194_a003/recovery_temporal_soma_support.py, motion_engine.zip:code/recovery_qualified_soma.py, motion_engine.zip:code/recovery_temporal_soma_support.py",Raw-supported tracker points: each point's decision remembered across correction stages.
+speed,tracking/reciprocal_centroid_sums.py,folded into completed_feedback_engine.zip:code/restore_spatial_reciprocal_soma_paths_a002.py,Component coordinate sums of restore_spatial_reciprocal_soma_paths_a002 over named pixels only.
+speed,tracking/reciprocal_component_crop.py,folded into motion_engine.zip:code/reciprocal_lineages.py,Label one identity pair inside its occupied box instead of the whole frame.
+behaviour,tracking/reciprocal_overlaps.py,folded into target found at fold time (no static fingerprint match),Compose reciprocal pair proposals before writing any identity pixels.
+speed,tracking/reclaim_track_summaries.py,folded into motion_engine.zip:code/delayed_projection_reclaim.py,Per-track facts in the delayed projection reclaim kept for one discover call.
+speed,tracking/reconnection_area_reuse.py,folded into motion_engine.zip:code/reconnected_companion_merge_partition.py,Reuse scalar soma areas within one immutable reconnection discovery pass.
+speed,tracking/reconnection_candidate_index.py,folded into motion_engine.zip:code/reconnected_companion_merge_partition.py:discover,Index the exact resident nomination query before full reconnection audits.
+speed,tracking/recording_step_memo.py,"folded into completed_feedback_engine.zip:code/anchored_soma_owner_recovery_a002_snapshot.py, motion_engine.zip:code/anchored_soma_owner_recovery.py",Recording motion envelope remembered across correction stages.
+speed,tracking/recurrent_branch_speed.py,folded into target found at fold time (no static fingerprint match),"Recurrent branch inventory keeps each frame's edge trees and gaps, and reads absorption in one block."
+speed,tracking/reference_area_boxes.py,"folded into completed_feedback_engine.zip:code/complete_owner_handoff_episodes_r10_a002.py, completed_feedback_engine.zip:code/recover_flanked_large_contact_interruptions.py, completed_feedback_engine.zip:code/recover_persistent_resident_contacts.py, completed_feedback_engine.zip:code/recover_stable_dual_soma_contacts.py, completed_feedback_engine.zip:code/recover_terminal_name_switch_contacts_a002.py, completed_feedback_engine.zip:code/separable_merge_recovery.py, motion_engine.zip:code/separable_merge_recovery.py","Stable dual-soma reference areas from owner components labelled once, in the owner's box."
+speed,tracking/relay_metric_reuse.py,folded into motion_engine.zip:code/oscillatory_reconciliation.py,Relay-pair metrics count and reuse each frame's union mask.
+speed,tracking/relay_pair_batch.py,"folded into motion_engine.zip:code/cross_reference_owner_relay.py, motion_engine.zip:code/relay_pair_speed.py",Score every later partner of one reference track together in owner-relay discovery.
+speed,tracking/relay_pair_reuse.py,folded into motion_engine.zip:code/oscillatory_reconciliation.py,Skip relay frame-set membership once the solo test has failed; reuse transition points.
+speed,tracking/relay_transition_geometry.py,folded into motion_engine.zip:code/oscillatory_reconciliation.py,Reuse each transition's occupied coordinates for bounds and motion means.
+behaviour,tracking/repair_composition.py,folded into target found at fold time (no static fingerprint match),Compose parallel identity repairs without inventing a winner on disagreement.
+speed,tracking/residency_component_boxes.py,folded into motion_engine.zip:code/merge_residency.py,"Merge residency: owner components labelled once per (frame, owner), in the owner's box."
+behaviour,tracking/residency_frames.py,folded into target found at fold time (no static fingerprint match),Versioned frame-coordinate repair for already-frozen native archives.
+speed,tracking/resident_run_rows.py,"folded into completed_feedback_engine.zip:code/resident_takeover.py, motion_engine.zip:code/resident_takeover.py",Resident-takeover runs from column lists instead of DataFrame.itertuples.
+speed,tracking/retroactive_separation_reuse.py,folded into motion_engine.zip:code/retroactive_successor_separation.py,Retroactive successor separation with per-track frame lists and boxed labels.
+speed,tracking/row_tuples.py,folded into target found at fold time (no static fingerprint match),DataFrame.itertuples without rebuilding its row class and column views on every call.
+speed,tracking/run_blocks.py,"folded into completed_feedback_engine.zip:code/coobserved_bookended_soma_memory_a001.py, completed_feedback_engine.zip:code/recurrent_core_memory_a002.py",Owner runs sliced from the sorted rows instead of grouped by their run number.
+speed,tracking/seat_overlap_counts.py,folded into motion_engine.zip:code/accepted_history_ops/issue013/m1_seat_identity.py,Seat-identity component overlaps and areas from one count per mask.
+speed,tracking/seat_pair_paths.py,folded into motion_engine.zip:code/accepted_history_ops/issue013/m1_seat_identity.py,"Seat-identity saddle depths, seat claims and freed bodies without whole-frame repeats."
+speed,tracking/seat_projection_boxes.py,folded into motion_engine.zip:code/projection_tolerant_seat_preservation.py,"Projection-tolerant seat preservation: expected areas from owner components labelled once, in the owner's box."
+speed,tracking/seat_watershed_crop.py,folded into motion_engine.zip:code/accepted_history_ops/issue013/m1_seat_identity.py,Seat-identity watersheds flooded inside the mask's bounding box.
+speed,tracking/short_ownerless_runs.py,folded into completed_feedback_engine.zip:code/recover_short_ownerless_soma_runs.py,Short ownerless-soma recovery without building every run's table.
+speed,tracking/smoothed_frame_memo.py,"folded into completed_feedback_engine.zip:code/overlapping_detector_soma_memory_a003.py, completed_feedback_engine.zip:code/successive_detector_soma_memory_a001.py","The smoothed raw frame of _shared_body_basin, measured once per frame and sigma."
+speed,tracking/soma_separation_boxes.py,folded into motion_engine.zip:code/global_soma_ledger.py,Substantial-soma separation with each identity labelled inside its box.
+speed,tracking/sparse_nonzero.py,"folded into completed_feedback_engine.zip:code/extend_approved_process_paths.py, completed_feedback_engine.zip:code/process_inventory_intensity.py, completed_feedback_engine.zip:code/process_inventory_shape.py, completed_feedback_engine.zip:code/process_inventory_temporal.py, completed_feedback_engine.zip:code/recover_bookended_owner_with_small_remnants.py, completed_feedback_engine.zip:code/recover_dormant_name_soma_basins.py, completed_feedback_engine.zip:code/recurrent_core_memory_a002.py, completed_feedback_engine.zip:code/separable_merge_recovery.py, completed_feedback_engine.zip:frozen/recovery/r178_a020/recovery_detached_inference.py, completed_feedback_engine.zip:frozen/recovery/r179_a002/recovery_envelope_inference.py, completed_feedback_engine.zip:frozen/recovery/r180_a002/recovery_measured_history.py, completed_feedback_engine.zip:frozen/recovery/r181_a001/recovery_continuous_history.py, motion_engine.zip:code/accepted_history_ops/issue012/m1_reconcile_domain_ownership.py, motion_engine.zip:code/recovery_continuous_history.py, motion_engine.zip:code/recovery_detached_inference.py, motion_engine.zip:code/recovery_envelope_inference.py, motion_engine.zip:code/recovery_measured_history.py, motion_engine.zip:code/separable_merge_recovery.py","Pixel coordinates of a small component in a whole-frame mask, from its bounding box."
+speed,tracking/sparse_pair_table.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/measured_soma_gap_memory.py, completed_feedback_engine.zip:frozen/final/r215_a003/measured_soma_gap_memory.py","Skip link-feature work for pairs proven too far to link, exactly."
+speed,tracking/spatial_path_views.py,folded into target found at fold time (no static fingerprint match),Spatial soma-path validation reads its movies through plain views of the same memory.
+speed,tracking/speckle_alias_presence.py,folded into motion_engine.zip:code/ephemeral_speckle_alias_retirement.py,Ephemeral speckle alias discovery: identity frames from one per-frame value pass; empty frames remembered.
+behaviour,tracking/stage_fallbacks.py,folded into target found at fold time (no static fingerprint match),Keep a recording's run going when one correction stage cannot handle it.
+speed,tracking/start_duplicate_excess.py,folded into motion_engine.zip:code/recording_start_duplicate_release.py,"Recording-start duplicate summary: component excess over changed frames, inside identity boxes."
+speed,tracking/stationary_candidate_filter.py,"folded into completed_feedback_engine.zip:code/stationary_reconciliation.py, motion_engine.zip:code/stationary_reconciliation.py",Apply unchanged distance/area eligibility before shape and raw-pixel reads.
+speed,tracking/stationary_component_window.py,"folded into completed_feedback_engine.zip:code/complete_stationary_soma_path.py, motion_engine.zip:code/complete_stationary_soma_path.py","Whole-soma component of a tracker point, labelled in a window around it."
+speed,tracking/stationary_gap_masks.py,folded into motion_engine.zip:code/stationary_gap_recovery.py,Stationary gap recovery's component masks and predecessor vote inside boxes.
+speed,tracking/stationary_pair_median.py,"folded into completed_feedback_engine.zip:code/stationary_reconciliation.py, motion_engine.zip:code/stationary_reconciliation.py",Stationary run linking with the two-diameter median formed directly.
+speed,tracking/strong_other_prefilter.py,"folded into completed_feedback_engine.zip:code/complete_stationary_soma_path.py, motion_engine.zip:code/complete_stationary_soma_path.py",Strong other somata with the component test applied before rows are made.
+speed,tracking/structural_reference_boxes.py,folded into motion_engine.zip:code/partial_body_transfers.py,Structural-run reference cores measured inside each identity's box.
+speed,tracking/takeover_prior_counts.py,folded into motion_engine.zip:code/complete_flip_recovery.py,Complete-flip takeover proposals with counted prior lineage frames.
+speed,tracking/tenure_observation_boxes.py,folded into motion_engine.zip:code/accepted_history_ops/issue006/s2_apply_tenure.py,Issue 006 tenure: label observations from each identity's box instead of the whole frame.
+speed,tracking/terminal_companion_reuse.py,folded into motion_engine.zip:code/terminal_companion_assimilation.py,Terminal-companion recovery with indexed track points and frame-local excess.
+speed,tracking/terminal_feature_reuse.py,folded into target found at fold time (no static fingerprint match),"Reuse immutable terminal-tail measurements, retaining original decision code."
+speed,tracking/territory_audit_skip.py,folded into motion_engine.zip:code/territory_reconciliation.py,Issue 005 territory steps without the occupancy audit the history discards.
+speed,tracking/territory_observation_reuse.py,folded into motion_engine.zip:code/territory_reconciliation.py,Reuse exact frame geometry across territory propagation and its audits.
+speed,tracking/territory_overlap_index.py,folded into motion_engine.zip:code/territory_reconciliation.py,Measure territory overlaps only for cell pairs whose boxes overlap.
+speed,tracking/territory_peak_geometry.py,folded into motion_engine.zip:code/territory_memory.py,Evaluate unchanged centre/surround means from ordered local coordinates.
+speed,tracking/threaded_evidence_images.py,folded into target found at fold time (no static fingerprint match),"Latent-track evidence images computed on several threads, handed out in frame order."
+speed,tracking/track_frame_lookups.py,"folded into motion_engine.zip:code/anchored_projection_owner_relay.py, motion_engine.zip:code/bracketed_mixed_owner_flash.py","Frame lookups in mixed-owner flash and owner-relay discovery, indexed once per call."
+speed,tracking/track_row_index.py,"folded into completed_feedback_engine.zip:code/recover_persistent_duplicate_soma_sites.py, completed_feedback_engine.zip:code/remove_transient_weak_seats.py",Transient weak seats and persistent duplicate sites: per-track and per-owner rows from one grouping.
+speed,tracking/track_sort_skips.py,"folded into completed_feedback_engine.zip:code/bookended_multi_owner_soma_a002.py, completed_feedback_engine.zip:code/bridge_dormant_raw_soma_gaps.py, completed_feedback_engine.zip:code/complete_owner_handoff_episodes_r10_a002.py, completed_feedback_engine.zip:code/coobserved_bookended_soma_memory_a001.py, completed_feedback_engine.zip:code/overlapping_detector_soma_memory_a003.py, completed_feedback_engine.zip:code/process_inventory_tracked.py, completed_feedback_engine.zip:code/recover_bookended_owner_with_small_remnants.py, completed_feedback_engine.zip:code/recover_dim_displaced_name_paths.py, completed_feedback_engine.zip:code/recover_displaced_soma_from_dim_name_reuse.py, completed_feedback_engine.zip:code/recover_dormant_name_soma_basins.py, completed_feedback_engine.zip:code/recover_emergent_reciprocal_late_handoff.py, completed_feedback_engine.zip:code/recover_flanked_large_contact_interruptions.py, completed_feedback_engine.zip:code/recover_multistage_reciprocal_handoff.py, completed_feedback_engine.zip:code/recover_persistent_resident_contacts.py, completed_feedback_engine.zip:code/recover_reciprocal_retired_name_a002.py, completed_feedback_engine.zip:code/recover_repeated_soma_renaming.py, completed_feedback_engine.zip:code/recover_short_bookended_soma_beside_transient_holders.py, completed_feedback_engine.zip:code/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:code/restore_brief_name_in_raw_separable_contact.py, completed_feedback_engine.zip:code/restore_spatial_reciprocal_soma_paths_a002.py, completed_feedback_engine.zip:code/restore_terminal_exclusive_soma_from_shared_name.py, completed_feedback_engine.zip:code/shared_parent_soma_ownership_a003.py, completed_feedback_engine.zip:frozen/contact/r204_a004/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/current/r199_a001/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/current/r202_a007/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/current/r203_a003/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/reviewed/R205-A007/precontact_soma_ownership.py, completed_feedback_engine.zip:frozen/reviewed/R205-A007/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/reviewed/R206-A002/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/reviewed/R206-A002/shared_birth_soma_ownership.py, completed_feedback_engine.zip:frozen/reviewed/R207-A003/remove_optical_core_adjacent_pseudosomata.py, completed_feedback_engine.zip:frozen/reviewed/R207-A003/silhouette_owner_continuity.py, completed_feedback_engine.zip:frozen/reviewed/R208-A005/remove_optical_core_adjacent_pseudosomata.py, motion_engine.zip:code/precontact_soma_ownership.py, motion_engine.zip:code/shared_birth_soma_ownership.py, motion_engine.zip:code/silhouette_owner_continuity.py",Per-track sorts that are skipped or done once in three corrections.
+speed,tracking/tracking_feature_batch.py,"folded into completed_feedback_engine.zip:frozen/final/r213_a010/measured_soma_gap_memory.py, completed_feedback_engine.zip:frozen/final/r215_a003/measured_soma_gap_memory.py",Batch unchanged numerical link measurements within one assignment.
+behaviour,tracking/tracking_pass_record.py,folded into target found at fold time (no static fingerprint match),Keep the accepted history's first two Issue 005 tracking passes for correction evidence.
+speed,tracking/tracklet_identity_buckets.py,folded into motion_engine.zip:code/accepted_history_ops/issue009/m1_lineage_hierarchy.py,Issue 009 tracklets built from per-identity lists.
+speed,tracking/two_body_fusion_index.py,"folded into completed_feedback_engine.zip:code/recurrent_two_body_fusion.py, motion_engine.zip:code/recurrent_two_body_fusion.py",Index frames once for Issue 004 recurrent two-body fusion discovery.
+speed,tracking/two_core_audit_boxes.py,folded into motion_engine.zip:code/model_review.py,Two-core object audit measured inside each identity's box.
+speed,tracking/unclaimed_body_boxes.py,folded into motion_engine.zip:code/unclaimed_body_identity.py,Measure each unclaimed-body component inside its box.
+speed,tracking/unclaimed_frame_domains.py,folded into motion_engine.zip:code/unclaimed_body_identity.py,Discover unclaimed bodies one occupied frame at a time.

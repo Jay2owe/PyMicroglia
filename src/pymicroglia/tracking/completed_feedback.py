@@ -7,34 +7,41 @@ in the packaged recipe.
 from contextlib import contextmanager
 import hashlib
 import importlib
-from importlib import resources
 import json
 from pathlib import Path
 import sys
-import zipfile
 
 METHOD_VERSION = 'R218-A004-complete-corrections'
 
 
 def extract(folder):
-    archive = resources.files('pymicroglia.tracking').joinpath('data/completed_feedback_engine.zip')
-    data = archive.read_bytes()
-    digest = hashlib.sha256(data).hexdigest()
+    from . import shipped_engines
+    source = shipped_engines.folder(shipped_engines.COMPLETED_FEEDBACK)
+    digest = shipped_engines.fingerprint(source)
     root = Path(folder) / 'completed_feedback_engine'
+    if root.exists() and not (root/'archive.sha256').is_file():
+        # Unpacking stopped before its marker; keep that copy and unpack again.
+        from .checkpoints import set_aside
+        set_aside(root, 'incomplete')
+    unpacked = not root.exists()
     if root.exists():
         if (root/'archive.sha256').read_text().strip() != digest:
             raise ValueError('Correction engine differs from this immutable run')
     else:
         root.mkdir(parents=True)
-        with zipfile.ZipFile(archive.open('rb')) as z:
-            for name in z.namelist():
-                if name.startswith('/') or '..' in Path(name).parts:
-                    raise ValueError('Unsafe correction engine archive path')
-            z.extractall(root)
+        shipped_engines.copy(source, root)
+        # The marker keeps its name so run folders keep their layout; it holds the folder's fingerprint.
         (root/'archive.sha256').write_text(digest+'\n')
     manifest = json.loads((root/'source_hashes.json').read_text())
     for name, expected in manifest['files_sha256'].items():
-        if hashlib.sha256((root/name).read_bytes()).hexdigest() != expected:
+        path = root/name
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            if not unpacked:
+                # A copy from an earlier run was edited or partly synced: unpack
+                # the packaged engine again rather than stop.
+                from .checkpoints import set_aside
+                set_aside(root, 'changed')
+                return extract(folder)
             raise ValueError('Correction source changed: '+name)
     return root
 
@@ -78,13 +85,21 @@ def recipe(root):
 def apply(movies, folder, *, source_frame_offset, callback, inventory_callback):
     root = extract(folder)
     settings = recipe(root)
+    from .identity_performance import corrections
     from .process_proposals import activate
-    with activate(sys.modules[__name__], folder), methods(root) as sequence:
+    from .fragment_observations import activate as unique_observations
+    from .core_replacement_evidence import activate as typed_evidence
+    from .stage_fallbacks import feedback_blocks
+    with activate(sys.modules[__name__], folder), \
+            unique_observations(sys.modules[__name__], folder), \
+            typed_evidence(sys.modules[__name__], folder), \
+            feedback_blocks(sys.modules[__name__], folder), \
+            methods(root) as sequence, corrections(sequence.final):
         return sequence.apply(movies,settings['density_parameters'],settings['operations'],
             source_frame_offset,settings['revise_isolated_prior_reassignment'],callback,inventory_callback)
 
 
-def run_current(root, stem, run_name, config_path, folder, *, resume=False):
+def run_current(root, stem, run_name, config_path, folder, *, resume=False, array_pool=None):
     """Finish a fresh native run and publish the corrected file contract."""
     import time
     import numpy as np
@@ -109,11 +124,13 @@ def run_current(root, stem, run_name, config_path, folder, *, resume=False):
                 raise ValueError('Correction checkpoint is incomplete')
             print('CHECKPOINT reused m23_completed_feedback',flush=True)
             return output
-        output.rename(output.with_name(output.name+'_interrupted_'+str(time.time_ns())))
+        from .checkpoints import set_aside
+        set_aside(output, 'interrupted')
     (output/'out').mkdir(parents=True)
     started = time.perf_counter()
     cfg = Config.load(Path(config_path))
-    data = generate(root,stem,run_name,config_path,folder)
+    evidence_options = {} if array_pool is None else dict(array_pool=array_pool)
+    data = generate(root,stem,run_name,config_path,folder,**evidence_options)
     records = []
     inventories = []
     last = time.perf_counter()
@@ -125,7 +142,7 @@ def run_current(root, stem, run_name, config_path, folder, *, resume=False):
         nonlocal last
         statistics = audit.record(labels, ledger)
         directory = output/'mid/completed_feedback'/family/stage
-        directory.mkdir(parents=True)
+        directory.mkdir(parents=True, exist_ok=True)
         for name,table in tables.items():
             if isinstance(table,dict):
                 (directory/(name+'.json')).write_text(json.dumps(table,indent=2)+'\n')

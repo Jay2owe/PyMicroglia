@@ -1,0 +1,25 @@
+{
+  "machine": "WBNN-MBRANCAC2",
+  "dataset": "outputs",
+  "source_relative_path": "sent/f3887080-328b-4008-9469-1361c3a0d2b8/drop-speed-g1b/run/trials/summary-g1.json",
+  "destination": "<PyMicroglia>/development\\speed-pass-20261030-drop-and-run\\trials-workstation\\summary-g1.json",
+  "bytes": 60724,
+  "sha256": "02e239eb67079086f1c80ec904ddd4053e66f68f1a7c5152e1d46a6fbfc01292",
+  "source_metadata_before": {
+    "Path": "summary-g1.json",
+    "Name": "summary-g1.json",
+    "Size": 60724,
+    "MimeType": "application/json",
+    "ModTime": "2026-11-06T18:10:03Z",
+    "IsDir": false
+  },
+  "source_metadata_after": {
+    "Path": "summary-g1.json",
+    "Name": "summary-g1.json",
+    "Size": 60724,
+    "MimeType": "application/json",
+    "ModTime": "2026-11-06T18:10:03Z",
+    "IsDir": false
+  },
+  "verification": "SSH host pinned; source size/time stable; local SHA256. No source SHA256 attestation."
+}

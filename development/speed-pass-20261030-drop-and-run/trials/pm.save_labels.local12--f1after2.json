@@ -1,0 +1,17 @@
+{
+ "case": "pm.save_labels.local12",
+ "label": "f1after2",
+ "source": "<session>/scratch/drop-speed/final",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\final\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\final\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.0173,
+ "setup_in_act_seconds": 0.1925,
+ "cpu_seconds": 0.2031,
+ "peak_wset_bytes": 105160704,
+ "output_sha256": "76ea6f0ceff24d67ec5fe948d2bc582b39f9e6a88d17d0faf0ab720d5bc447d4",
+ "error": null,
+ "stages": null,
+ "profiled": false
+}

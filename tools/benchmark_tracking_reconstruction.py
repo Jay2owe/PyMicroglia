@@ -120,7 +120,7 @@ def main():
                 setattr(ah,name,call);stack.callback(setattr,ah,name,original)
             profiler=cProfile.Profile() if a.profile else None
             if profiler:profiler.enable()
-            try:holder['labels']=ah._issue005(config,physical,reservation,raw,lag,observations,table,anchor,reserved)
+            try:holder['labels']=ah._confidence_layered_retracking(config,physical,reservation,raw,lag,observations,table,anchor,reserved)
             finally:
                 if profiler:
                     profiler.disable();profiler.dump_stats(a.output/'profile.pstats')

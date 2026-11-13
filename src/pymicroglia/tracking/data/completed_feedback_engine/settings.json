@@ -1,0 +1,690 @@
+{
+  "density_parameters": {
+    "minimum_overlap_px": 6,
+    "minimum_cross_coverage": 0.45,
+    "minimum_margin_fraction": 0.2,
+    "maximum_neighbour_sum_radii": 4.0,
+    "minimum_local_neighbours": 1,
+    "minimum_recurrent_exchanges": 2,
+    "maximum_recurrence_gap_movie_fraction": 0.03
+  },
+  "revise_isolated_prior_reassignment": true,
+  "operations": {
+    "recovery": [
+      {
+        "stage": "r178_a020",
+        "module": "recovery_detached_inference",
+        "function": "constrain_detached_inference",
+        "uses_history": false,
+        "code_dir": "frozen/recovery/r178_a020",
+        "code_sha256": {
+          "recovery_detached_inference": "ea1e43f2299d10dcfdcd72d234fd0b63a9994d39e9484014641373b5d0af1022",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R178-native-soma-evidence-assignment/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r178_a020",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R178-native-soma-evidence-assignment",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r178_a020.py",
+        "suffix": "a020"
+      },
+      {
+        "stage": "r179_a002",
+        "module": "recovery_envelope_inference",
+        "function": "constrain_envelope_inference",
+        "uses_history": false,
+        "code_dir": "frozen/recovery/r179_a002",
+        "code_sha256": {
+          "recovery_envelope_inference": "b2cf95b98cc20ffaab901308a0fef75e4f77c62c75efe48fa8c2f94ae289001a",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R179-image-supported-inference-residence/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r179_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R179-image-supported-inference-residence",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r179_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r180_a002",
+        "module": "recovery_consistent_history",
+        "function": "constrain_consistent_history",
+        "uses_history": false,
+        "code_dir": "frozen/recovery/r180_a002",
+        "code_sha256": {
+          "recovery_consistent_history": "d63c81965caa2d0ff8a75b10a9bb5271def2d343c0b40a7869010f9d7c600324",
+          "recovery_measured_history": "3dc280bd8df368e6a6c5d5dbad8dcd84a3442317b25f8157bbdae7a9cd467eb5",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R180-measured-history-before-inferred-motion/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r180_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R180-measured-history-before-inferred-motion",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r180_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r181_a001",
+        "module": "recovery_consistent_continuous_history",
+        "function": "constrain_consistent_continuous_history",
+        "uses_history": false,
+        "code_dir": "frozen/recovery/r181_a001",
+        "code_sha256": {
+          "recovery_consistent_continuous_history": "b13bcb63ab4d06b1f9bed74a6f6ea4411a80d8f9d97e758f3543232b4915f0d3",
+          "recovery_continuous_history": "c1889a5465b1c09635f34eeb19c40061d66a025e6b6e8ed652c2f86ec43fa034",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R181-continuous-source-through-detection-gaps/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r181_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R181-continuous-source-through-detection-gaps",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r181_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r182_a002",
+        "module": "recovery_origin_evidence",
+        "function": "certify_recovery_origins",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r182_a002",
+        "code_sha256": {
+          "recovery_origin_evidence": "2d7103d27a7c69558b86a2c3cb50453751bd9629babafb0417d322f6405190a4",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R182-measured-source-before-recovery-propagation/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r182_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R182-measured-source-before-recovery-propagation",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r182_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r183_a004",
+        "module": "recovery_raw_soma_footprint",
+        "function": "certify_raw_soma_footprints",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r183_a004",
+        "code_sha256": {
+          "recovery_raw_soma_footprint": "42c17adec5c34e2b0be9c39491919d2c8a52a95d90a7d397d7fc0a7aa6cd0a92",
+          "observed_soma_reservation": "8079ea45265a8f1a865dca64eff32c17b5d223b3e2648b82daf29fcfd41e690a"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R183-raw-source-before-inferred-motion/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r183_a004",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R183-raw-source-before-inferred-motion",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r183_a004.py",
+        "suffix": "a004"
+      },
+      {
+        "stage": "r184_a001",
+        "module": "recovery_destination_soma",
+        "function": "constrain_destination_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r184_a001",
+        "code_sha256": {
+          "recovery_destination_soma": "e432c71d9c38d60a1b2407e658d474c9b823cc4e9d9a5de37990410de1ebbaaa"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R184-spatial-signal-before-detached-recovery/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r184_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R184-spatial-signal-before-detached-recovery",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r184_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r185_a002",
+        "module": "recovery_temporal_soma_support",
+        "function": "constrain_temporally_qualified_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r185_a002",
+        "code_sha256": {
+          "recovery_temporal_soma_support": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+          "recovery_destination_soma": "e432c71d9c38d60a1b2407e658d474c9b823cc4e9d9a5de37990410de1ebbaaa",
+          "recovery_qualified_soma": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R185-raw-support-before-tracker-protection/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r185_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R185-raw-support-before-tracker-protection",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r185_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r186_a001",
+        "module": "recovery_interior_anchor",
+        "function": "constrain_interior_anchored_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r186_a001",
+        "code_sha256": {
+          "recovery_interior_anchor": "251b65ee4f3348a08802403c7647e044f5d3461eba4ac3a9a2ed1156399cea6d",
+          "recovery_destination_soma": "e6315a5243c4344926c684bebbb8fe02318341fc2a09d54642f71e9db1e0700b",
+          "recovery_temporal_soma_support": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+          "recovery_qualified_soma": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R186-measured-interior-before-anchor-protection/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r186_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R186-measured-interior-before-anchor-protection",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r186_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r187_a002",
+        "module": "recovery_interior_neighbour",
+        "function": "constrain_interior_neighbour_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r187_a002",
+        "code_sha256": {
+          "recovery_interior_neighbour": "eb109ccb848bbcb9beaf243ddea5ccf4dee2ce7abb48693ff27c0a05f0aedc62",
+          "recovery_destination_soma": "fbbf22c20518b6d0434d1052a9128025fe71881c3824cf69c69692849519ecd7",
+          "recovery_temporal_soma_support": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+          "recovery_qualified_soma": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R187-measured-interior-before-neighbour-protection/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r187_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R187-measured-interior-before-neighbour-protection",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r187_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r188_a001",
+        "module": "recovery_raw_source_anchor",
+        "function": "constrain_raw_source_anchor",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r188_a001",
+        "code_sha256": {
+          "recovery_raw_source_anchor": "e44d297812afe4162f2876404b45130bc93a306824ec93c8517ff5d1fe2e4011",
+          "recovery_destination_soma": "ed604f7753ee09f7ca8fd760860b17b83dc59ad600ea898aa7e4648c81db465d",
+          "recovery_temporal_soma_support": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+          "recovery_qualified_soma": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R188-raw-source-before-anchor-protection/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r188_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R188-raw-source-before-anchor-protection",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r188_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r189_a001",
+        "module": "recovery_raw_adjacent",
+        "function": "constrain_raw_adjacent_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r189_a001",
+        "code_sha256": {
+          "recovery_raw_adjacent": "55d37580490e787a545387f6fa904f8cb33dbc80b121f887be6d55044f47e15c",
+          "recovery_destination_soma": "2bb68c69e75a96c2ee739255b7dd3f2f2e18442f42c3836b797fe9eca441fb57",
+          "recovery_temporal_soma_support": "3984e8984c349b90cad0f51eac95c3136ba031f4d49a77cfa7c1ef461c824d15",
+          "recovery_qualified_soma": "a15cda3f7e4b92968c50be0815b4dfce1ce07481e206fa9297aa9824a81ae378"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R189-raw-support-before-adjacent-protection/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r189_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R189-raw-support-before-adjacent-protection",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r189_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r190_a002",
+        "module": "recovery_centred_soma",
+        "function": "constrain_centred_footprint_soma",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r190_a002",
+        "code_sha256": {
+          "recovery_centred_soma": "d5cec34d9352806115e3f54d886e6f87fefc64a26fec3f22941dc92a2dade668",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_temporal_soma_support": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+          "recovery_qualified_soma": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R190-centred-tracker-soma-support/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r190_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R190-centred-tracker-soma-support",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r190_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r191_a003",
+        "module": "spatial_soma_paths",
+        "function": "constrain_spatial_soma_paths",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r191_a003",
+        "code_sha256": {
+          "spatial_soma_paths": "d9b3e3139872778bc46e5b6c97e14a26d6bbdc6cc6e09c139f7ec441ecfa2800",
+          "recovery_temporal_soma_support": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R191-spatial-path-soma-validation/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r191_a003",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R191-spatial-path-soma-validation",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r191_a003.py",
+        "suffix": "a003"
+      },
+      {
+        "stage": "r192_a001",
+        "module": "enclosed_soma_paths",
+        "function": "constrain_enclosed_soma_paths",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r192_a001",
+        "code_sha256": {
+          "enclosed_soma_paths": "28e744b328b764e94e447a03b045b663bb57ba63ef1f393d5032e3936636c293",
+          "spatial_soma_paths": "5c4f3f290de794288d7f3324013a104844daee6f6614774a258e2a33cf3586af",
+          "recovery_temporal_soma_support": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R192-enclosed-signal-for-thin-outlines/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r192_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R192-enclosed-signal-for-thin-outlines",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r192_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r193_a002",
+        "module": "enclosed_measured_soma_paths",
+        "function": "constrain_enclosed_measured_soma_paths",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r193_a002",
+        "code_sha256": {
+          "enclosed_measured_soma_paths": "e26ffc5f0b95529829079ff36e5d6431d90fc65a6ef3807c0f7223b206dbc09d",
+          "spatial_soma_paths": "be805a5aade28f9b0b4c24a48d72fcfa70821409f26236f32eca532bf4fce8ce",
+          "recovery_temporal_soma_support": "4c009c6dfac15e18bf2a086345aca1a210dcec574bb0d21862b87f11b56dce72",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "535a87d3760f02cf7ad804b832f15d1451c8491f27e4542a7c71f4dcf6e5d000"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R193-coherent-measured-soma-support/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r193_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R193-coherent-measured-soma-support",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r193_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r194_a003",
+        "module": "quantised_peak_tracker_soma_paths",
+        "function": "constrain_quantised_peak_tracker_soma_paths",
+        "uses_history": true,
+        "code_dir": "frozen/recovery/r194_a003",
+        "code_sha256": {
+          "quantised_peak_tracker_soma_paths": "62175a8baed6c9fa1994ca756867ae31fee6ea5b3b21dd0a643a164801f5973d",
+          "spatial_soma_paths": "640a0d220649c1e7b75ec684c42492d1259efb24bd77d239a65227a3359cc29e",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R194-tracker-peak-qualification/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r194_a003",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R194-tracker-peak-qualification",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_r194_a003.py",
+        "suffix": "a003"
+      }
+    ],
+    "current": [
+      {
+        "stage": "r195_a002",
+        "module": "measured_current_spatial_soma_paths",
+        "function": "constrain_measured_current_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r195_a002",
+        "code_sha256": {
+          "measured_current_spatial_soma_paths": "05cddf9f9cdb58e65bc80ca479b1db3d78d14b90180d005774a8d00145ff5f0d",
+          "current_spatial_soma_paths": "0e793f4da6e38a81c29e08a78d9e43cbb9735d723c8eac69350de2a484d56b16",
+          "spatial_soma_paths": "640a0d220649c1e7b75ec684c42492d1259efb24bd77d239a65227a3359cc29e",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R195-shared-support-boundaries/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r195_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R195-shared-support-boundaries",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R195-shared-support-boundaries/frozen_code/run_spatial_review.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r196_a001",
+        "module": "reciprocal_measured_soma_paths",
+        "function": "constrain_reciprocal_measured_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r196_a001",
+        "code_sha256": {
+          "reciprocal_measured_soma_paths": "fee80d08101eac53d40dd306e4b362381be82d2080a83335bfafb1f794b80daf",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "spatial_soma_paths": "ce57e98b35ddbbe6d3b4a4bfb4e9121ed1b134be784e46f9914aa31bbde468ce",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R196-reciprocal-path-support/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r196_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R196-reciprocal-path-support",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R196-reciprocal-path-support/frozen_code/run_spatial_review_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r197_a002",
+        "module": "owned_tracker_measured_soma_paths",
+        "function": "constrain_owned_tracker_measured_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r197_a002",
+        "code_sha256": {
+          "owned_tracker_measured_soma_paths": "d99c3a0bc6755479ce592e415eede2bac0b5f68e9a3fa9ce5c3d05a9f7327ce0",
+          "tracker_core_ownership": "fcde2d1d8e18e599d4aee9a7f7ca7959c2842a236def13b500383cd9821cff49",
+          "reciprocal_measured_soma_paths": "bee81e0dbf485f9f961a7957bb2992f540a58ed87a45dd4265f5a5cf9ba89ec6",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "spatial_soma_paths": "87c9144db28af324b86d26122c6f5701a3bec0d73cc19cd391bff8247c3e8bbb",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R197-owned-soma-support/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r197_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R197-owned-soma-support",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R197-owned-soma-support/frozen_code/run_spatial_review_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r198_a003",
+        "module": "observed_signal_gap_soma_paths",
+        "function": "constrain_observed_signal_gap_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r198_a003",
+        "code_sha256": {
+          "observed_signal_gap_soma_paths": "45777882aa5f46548497545b967a5885ae3ae94d3cfb0e713305fc77c74f7cd7",
+          "inferred_raw_soma_evidence": "0eaa71bea76fff3c538e87952bba17f8571956bc52b1a5ac63f629fed36239fc",
+          "tracker_core_ownership": "fcde2d1d8e18e599d4aee9a7f7ca7959c2842a236def13b500383cd9821cff49",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "spatial_soma_paths": "4a51c2a7cda614bfad36b67ef7402417a308159c39a0485419bb7b6cd8ceb03a",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R198-marked-path-evidence/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r198_a003",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R198-marked-path-evidence",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R198-marked-path-evidence/frozen_code/run_spatial_review_a003.py",
+        "suffix": "a003"
+      },
+      {
+        "stage": "r199_a001",
+        "module": "optical_basin_soma_paths",
+        "function": "constrain_optical_basin_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r199_a001",
+        "code_sha256": {
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R199-optical-source-neighbours/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r199_a001",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R199-optical-source-neighbours",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R199-optical-source-neighbours/frozen_code/run_spatial_review_a001.py",
+        "suffix": "a001"
+      },
+      {
+        "stage": "r200_a004",
+        "module": "inferred_owned_tracker_soma_paths",
+        "function": "constrain_inferred_owned_tracker_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r200_a004",
+        "code_sha256": {
+          "inferred_owned_tracker_soma_paths": "2f205efbae395534d356ad62732742b460ca9b7009919ac2af05085c25e8120d",
+          "spatial_soma_paths": "53c11dbb37dd86dadf61533af7db25c5925eb59a4c3314dac140036fac2bb8dc",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R200-owned-optical-maxima/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r200_a004",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R200-owned-optical-maxima",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R200-owned-optical-maxima/frozen_code/run_spatial_review_a004.py",
+        "suffix": "a004"
+      },
+      {
+        "stage": "r201_a002",
+        "module": "repeated_thin_soma_paths",
+        "function": "constrain_repeated_thin_soma_paths",
+        "use_current_labels": true,
+        "use_original_labels": false,
+        "projection_scope": "native_unchanged",
+        "uses_history": true,
+        "code_dir": "frozen/current/r201_a002",
+        "code_sha256": {
+          "repeated_thin_soma_paths": "4ee1a9f7bb7fe3fc57cb1a9141cc2ae845b82b17765c935f5d45ccd054f53421",
+          "spatial_soma_paths": "621bcecf4fda8f39bcf6e050a26c536b7baecb391f663568a9a49ea52afaf966",
+          "recovery_temporal_soma_support": "13b006b732e13c4500904a927dcf4f66843c2d4f82bed1ca952dbb6b216f1aad",
+          "recovery_destination_soma": "a733590c56b09bc211d59e3219e0d5a40f0f2d3b5a68479fc9bdf39275da16e0",
+          "recovery_qualified_soma": "7ae897cd7478b5fa227ee8f31eb656a2b58e010a4efd677a7eda1bdf212474a6"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R201-unsupported-path-extensions/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r201_a002",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R201-unsupported-path-extensions",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R201-unsupported-path-extensions/frozen_code/run_spatial_review_a002.py",
+        "suffix": "a002"
+      },
+      {
+        "stage": "r202_a007",
+        "module": "complete_body_consensus_memory",
+        "function": "restore_complete_body_memory",
+        "use_current_labels": true,
+        "use_original_labels": true,
+        "projection_scope": "unrevised_original",
+        "uses_history": true,
+        "code_dir": "frozen/current/r202_a007",
+        "code_sha256": {
+          "complete_body_consensus_memory": "080f228969bddea0859f0406fb0951ae62c7b2c723e317b677d10f1750a56b8e",
+          "bracketed_consensus_memory": "5916ad335234b93b405a315ce1c8690ef9a3371ded633ff85e4bac63ab4bc5ea",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R202-coupled-core-ownership/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r202_a007",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R202-coupled-core-ownership",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_spatial_review.py",
+        "suffix": "a007"
+      },
+      {
+        "stage": "r203_a003",
+        "module": "stable_birth_lineage",
+        "function": "restore_stable_birth_lineage",
+        "use_current_labels": true,
+        "use_original_labels": true,
+        "projection_scope": "unrevised_original",
+        "uses_history": true,
+        "code_dir": "frozen/current/r203_a003",
+        "code_sha256": {
+          "stable_birth_lineage": "ce044dd30b987f66225268b31fd3bddf2025db7137254fbbb46696f8b49570ba",
+          "measured_birth_lineage": "b71552c75ee1f2da2e6672f92330a4b4c50ce1f5fdcfca9e4619ee2de24c990c",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R203-measured-core-lineage/accepted_parent_manifest.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r203_a003",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R203-measured-core-lineage",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_spatial_review.py",
+        "suffix": "a003"
+      }
+    ],
+    "contact": [
+      {
+        "stage": "r204_a004",
+        "module": "contact_identity_reservation",
+        "function": "reserve_contact_identity_by_core",
+        "use_current_labels": true,
+        "use_original_labels": true,
+        "projection_scope": "rule_validated_complete_paths",
+        "uses_history": true,
+        "code_dir": "frozen/contact/r204_a004",
+        "code_sha256": {
+          "contact_identity_reservation": "37beef7673f4ca6951109ffedb0c10cd8cfe8775d30bdbb3d70800c13c1cdc58",
+          "contact_core_continuity": "7ccc1c6433515f005edfd60a67b3394c911f35c296c3b5d28e0b114b23e3bb38",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        },
+        "manifest": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R204-independent-soma-ownership/accepted_parent_manifest_a004.json",
+        "original_trial": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/m1_complete_lineage/r204_a004",
+        "round_folder": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/rounds/R204-independent-soma-ownership",
+        "producer": "Microglia Project/Motion/issues/ISSUE-009-completed-feedback-rule-optimization/analysis/completed_feedback_tuning/scripts/run_core_contact_review.py",
+        "suffix": "a004"
+      }
+    ],
+    "reviewed": [
+      {
+        "stage": "R205-A007",
+        "module": "precontact_soma_ownership",
+        "function": "preserve_precontact_owners",
+        "kind": "ownership",
+        "code_dir": "frozen/reviewed/R205-A007",
+        "code_sha256": {
+          "precontact_soma_ownership": "ecfe963cddb20fcca990d242796070c1097bb73c4504a01f9b30f7ce62d2b1e6",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        }
+      },
+      {
+        "stage": "R206-A002",
+        "module": "shared_birth_soma_ownership",
+        "function": "preserve_shared_birth_owners",
+        "kind": "ownership",
+        "code_dir": "frozen/reviewed/R206-A002",
+        "code_sha256": {
+          "shared_birth_soma_ownership": "24d9ae21149114ce9f86d15c896660840b1269ed92259501586129199bba9d82",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        }
+      },
+      {
+        "stage": "R207-A003",
+        "module": "silhouette_owner_continuity",
+        "function": "preserve_silhouette_owners",
+        "kind": "ownership",
+        "code_dir": "frozen/reviewed/R207-A003",
+        "code_sha256": {
+          "silhouette_owner_continuity": "5f27548d7027c9e6017f20aa39697426160344b57ccc9bd7d29300d0d9b4862c",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59"
+        }
+      },
+      {
+        "stage": "R208-A005",
+        "module": "core_replacement_ownership",
+        "function": "preserve_core_replacement_owners",
+        "kind": "ownership",
+        "code_dir": "frozen/reviewed/R208-A005",
+        "code_sha256": {
+          "core_replacement_ownership": "bc2f4e19a54ccaaa9a6b1263ef0af96af279f5a3b1282835906abfa4673f8235",
+          "remove_optical_core_adjacent_pseudosomata": "ae7aa5e19da3e7d62e447b4a5f8a02040f0e4c00168b6b8c83313f65a7fd8802",
+          "remove_extreme_compact_overbright_sources": "78788fc50cdd06821e7834c250eceb8c35a8e320908dcd0a46a1e9c13f71180b",
+          "remove_compact_stable_overbright_sources": "61401bc2d4339b607445680d54b90191d0e0b1824e9cef94234421eed8e28048",
+          "remove_persistent_overbright_sources": "646f7944ba8df5dfafb1fa6498b36ed7b9f50f5baee712565d7e5678399ccd59",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba"
+        }
+      },
+      {
+        "stage": "R210-A011",
+        "module": "closed_integration",
+        "function": "integrate",
+        "kind": "closed_episode",
+        "code_dir": "frozen/reviewed/R210-A011",
+        "code_sha256": {
+          "closed_integration": "f0d51102e4895167978a2b26ffa0f620c7d000ad09b94d430e78d6d1b2bcc402",
+          "touching_peak": "810b591578ba0bd9bbfd5268c03de6ee38d84c41d408013d8d82586ab29558e5",
+          "local_fragment_reunion": "0e80070f4c64e06804ecc88fc09e21244cb77adf612e4b278dc9b1216b671c88"
+        }
+      }
+    ],
+    "final": [
+      {
+        "stage": "r213_a010",
+        "kind": "gap",
+        "module": "native_gap_owner_transport_a010",
+        "function": "carry_measured_gap_owners",
+        "code_dir": "frozen/final/r213_a010",
+        "code_sha256": {
+          "native_gap_owner_transport_a010": "208766a7f376fae2870592f657583c01c3014206e6def06af99afa45a1870bbb",
+          "measured_soma_gap_memory": "2535e5785260bbc345fb88fd092ffc0d4205699650b2e8f31c1df24edca92bb5"
+        }
+      },
+      {
+        "stage": "r214_a003",
+        "kind": "restoration",
+        "module": "transport_restored_ownership_a003",
+        "function": "carry_restorations",
+        "code_dir": "frozen/final/r214_a003",
+        "code_sha256": {
+          "transport_restored_ownership_a003": "9eb7dff1b9deaac8d140e6bc0beab730698979a7660fbf4504f6e82210cc2d64",
+          "transport_restored_ownership_a002": "a25a2f21169bbab6936753413c9d83e701642802f69d59eda6b712461b2c725c",
+          "measured_restoration_continuity_a002": "7900b57c91732dfbac9b7b56c2541134aa61b5abadb123638da44d6988c153bf",
+          "measured_restoration_continuity": "65a64b86871171cc2f3161c60f81205ad70b8a012d6609acf3917c327fffb7e5"
+        }
+      },
+      {
+        "stage": "r215_a003",
+        "kind": "gap",
+        "module": "native_gap_owner_transport_a003",
+        "function": "carry_measured_gap_owners",
+        "code_dir": "frozen/final/r215_a003",
+        "code_sha256": {
+          "native_gap_owner_transport_a003": "81a7217a8ef0b56fc768522f1f797c0fd597e25235138f267526ef50ab212fa5",
+          "measured_soma_gap_memory": "e265acb11ed35dc5facc2e52798db0b90e9760ef5f4c21315e0c8e2b028c3f01"
+        }
+      },
+      {
+        "stage": "r217_a001",
+        "kind": "allocation",
+        "module": "existing_owner_a001",
+        "function": "existing_owner_claims",
+        "code_dir": "frozen/final/r217_a001",
+        "code_sha256": {
+          "existing_owner_a001": "ef933402f45a679e08db726e3b7854f7dc4a15a66482e6ee0b2a8dae54b4628a"
+        }
+      },
+      {
+        "stage": "r218_a004",
+        "kind": "separation",
+        "module": "separated_body_ownership_a004",
+        "function": "continue_separated_ownership",
+        "code_dir": "frozen/final/r218_a004",
+        "code_sha256": {
+          "separated_body_ownership_a004": "56dfc4c72f1142b2e7144c190729921eb414563c4466a2c7546d17f571cc4741",
+          "optical_basin_soma_paths": "3ed4d577a48684020bc5309c245e3fb5701cd62e85396f817e699afd743c6699",
+          "reciprocal_soma_overlap": "c592f5bd6e1b298dde884463cf131efdc37be878e599ad3e259bd8bd527e37ba"
+        }
+      }
+    ]
+  }
+}

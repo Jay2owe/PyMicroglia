@@ -5,33 +5,32 @@ import json
 from pathlib import Path
 import sys
 from types import ModuleType
-import zipfile
 
 import pytest
 
 from pymicroglia.tracking import completed_feedback as corrections
 from pymicroglia.tracking import engine
+from pymicroglia.tracking import shipped_engines
 
 
 def test_complete_recipe_and_all_sources_are_packaged():
-    archive = Path(corrections.__file__).parent/'data/completed_feedback_engine.zip'
-    with zipfile.ZipFile(archive) as z:
-        manifest = json.loads(z.read('source_hashes.json'))
-        assert manifest['accepted_attempt'] == 'R218-A004'
-        assert manifest['saved_feedback'] == {'satisfied':1798,'total':2348}
-        for name,digest in manifest['files_sha256'].items():
-            assert hashlib.sha256(z.read(name)).hexdigest() == digest,name
-        settings = json.loads(z.read('settings.json'))
-        assert set(settings) == {'density_parameters','operations','revise_isolated_prior_reassignment'}
-        assert [op['kind'] for op in settings['operations']['final']] == [
-            'gap','restoration','gap','allocation','separation']
-        assert settings['operations']['final'][-1]['stage'] == 'r218_a004'
-        for group in settings['operations'].values():
-            for spec in group:
-                assert not Path(spec['code_dir']).is_absolute()
-                for name,digest in spec['code_sha256'].items():
-                    assert hashlib.sha256(z.read(spec['code_dir']+'/'+name+'.py')).hexdigest()==digest
-        assert '95_A' not in z.read('settings.json').decode()
+    shipped = Path(corrections.__file__).parent/'data/completed_feedback_engine'
+    manifest = json.loads((shipped/'source_hashes.json').read_bytes())
+    assert manifest['accepted_attempt'] == 'R218-A004'
+    assert manifest['saved_feedback'] == {'satisfied':1798,'total':2348}
+    for name,digest in manifest['files_sha256'].items():
+        assert hashlib.sha256((shipped/name).read_bytes()).hexdigest() == digest,name
+    settings = json.loads((shipped/'settings.json').read_bytes())
+    assert set(settings) == {'density_parameters','operations','revise_isolated_prior_reassignment'}
+    assert [op['kind'] for op in settings['operations']['final']] == [
+        'gap','restoration','gap','allocation','separation']
+    assert settings['operations']['final'][-1]['stage'] == 'r218_a004'
+    for group in settings['operations'].values():
+        for spec in group:
+            assert not Path(spec['code_dir']).is_absolute()
+            for name,digest in spec['code_sha256'].items():
+                assert hashlib.sha256((shipped/(spec['code_dir']+'/'+name+'.py')).read_bytes()).hexdigest()==digest
+    assert '95_A' not in (shipped/'settings.json').read_bytes().decode()
 
 
 def test_imports_outside_motion_and_restores_existing_modules(tmp_path,monkeypatch):
@@ -75,15 +74,15 @@ def test_packaging_adaptation_preserves_every_scientific_function():
     motion = package.parent/'Motion'
     if not motion.is_dir():
         pytest.skip('Build-source check; source checkout not installed')
-    with zipfile.ZipFile(Path(corrections.__file__).parent/'data/completed_feedback_engine.zip') as z:
-        manifest=json.loads(z.read('source_hashes.json'))
-        for name,adaptation in manifest['packaging_adaptations'].items():
-            original=(motion/manifest['source_origins'][name]).read_bytes()
-            assert hashlib.sha256(original).hexdigest()==adaptation['original_sha256']
-            def functions(data):
-                tree=ast.parse(data.decode('utf-8-sig'))
-                return [ast.dump(node) for node in tree.body if isinstance(node,(ast.FunctionDef,ast.ClassDef))]
-            assert functions(original)==functions(z.read(name))
+    shipped = Path(corrections.__file__).parent/'data/completed_feedback_engine'
+    manifest=json.loads((shipped/'source_hashes.json').read_bytes())
+    for name,adaptation in manifest['packaging_adaptations'].items():
+        original=(motion/manifest['source_origins'][name]).read_bytes()
+        assert hashlib.sha256(original).hexdigest()==adaptation['original_sha256']
+        def functions(data):
+            tree=ast.parse(data.decode('utf-8-sig'))
+            return [ast.dump(node) for node in tree.body if isinstance(node,(ast.FunctionDef,ast.ClassDef))]
+        assert functions(original)==functions((shipped/name).read_bytes())
 
 
 def test_movie_without_process_pairs_does_not_require_other_movies(tmp_path,monkeypatch):
@@ -109,8 +108,8 @@ def test_full_port_checker_rejects_native_only_and_missing_final_stage(tmp_path)
     spec=importlib.util.spec_from_file_location('port_completion',tool)
     module=importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    archive=Path(corrections.__file__).parent/'data/completed_feedback_engine.zip'
-    digest=hashlib.sha256(archive.read_bytes()).hexdigest()
+    archive=Path(corrections.__file__).parent/'data/completed_feedback_engine'
+    digest=shipped_engines.digest(archive)
     recipe=tmp_path/'recipe.json'
     recipe.write_text(json.dumps(dict(movies={'movie':{'expected':{'final':{'r218_a004':{}}}}},inventories={'tracked':{}})))
     report=tmp_path/'summary.json'
@@ -181,8 +180,8 @@ def test_second_gap_compares_with_first_gap_result(tmp_path,monkeypatch,restorat
     owner=SimpleNamespace(reconcile=lambda old,ledger,*a:(old.copy(),ledger.copy(),[],None))
     detector=SimpleNamespace(detect=lambda *a:([],[]))
     reconciler=SimpleNamespace(select_events=lambda *a:[],reconcile=lambda candidate,ledger,*a:(candidate,ledger,None))
-    issue_modules={'m1_reconcile_domain_ownership':owner,'m8_detect_dormant_releases':detector,'m9_reconcile_dormant_releases':reconciler}
-    module('accepted_history',_field_motion_reservations=lambda run:set(),I012='fixture',
+    issue_modules={'reconcile_domain_ownership':owner,'detect_dormant_releases':detector,'reconcile_dormant_releases':reconciler}
+    module('accepted_history',_field_motion_reservations=lambda run:set(),DOMAIN_OWNERSHIP_OPS='fixture',
         align_transition_stack=lambda lag,*a:lag,
         _issue_module=lambda issue,name:issue_modules[name],
         _params=lambda *a:dict(methods=[],ownership={},detection={},reconcile={}))

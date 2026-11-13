@@ -1,0 +1,18 @@
+{
+ "case": "pm.page.run-to-first-stage",
+ "label": "w1after1",
+ "source": "<session>/scratch\\drop-speed\\warm1",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\warm1\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\warm1\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 6.1873,
+ "segments": {
+  "run_to_status": 0.2618,
+  "run_to_first_stage": 6.1873
+ },
+ "server_start_seconds": 8.865,
+ "output_sha256": "1d9c33ffeb0ca1ecc2f664374d15f426938b3ecf1566cdbe562ada7722d64233",
+ "error": null,
+ "browser": "http://127.0.0.1:9333"
+}

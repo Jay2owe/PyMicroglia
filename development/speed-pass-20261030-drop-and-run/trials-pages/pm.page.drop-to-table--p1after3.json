@@ -1,0 +1,17 @@
+{
+ "case": "pm.page.drop-to-table",
+ "label": "p1after3",
+ "source": "<session>/scratch\\drop-speed\\final",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\final\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\final\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.2401,
+ "segments": {
+  "drop_to_table": 0.2401
+ },
+ "server_start_seconds": 5.906,
+ "output_sha256": "33e225a19350b71720000fa8459790d25536a4b40693b6e56aab5be47005e867",
+ "error": null,
+ "browser": "http://127.0.0.1:9333"
+}

@@ -95,3 +95,17 @@ def test_contrasts_use_declared_replication_unit(tmp_path, monkeypatch):
     assert result.iloc[0].n_a == result.iloc[0].n_b == 5
     with pytest.raises(ValueError, match="unit"):
         contrasts(root, contrasts=[{k: v for k, v in spec.items() if k != "unit"}])
+
+
+def test_saved_run_records_carry_no_machine_folder():
+    import json
+    from pymicroglia import workbench
+    estimate = workbench.estimate_one(np.arange(48.), np.sin(np.arange(48.) * 2 * np.pi / 24), {
+        **workbench.PERIOD_ANALYSIS_DEFAULTS, **workbench.DETREND_DEFAULTS, "period_search_hours": [2.0, 48.0],
+        "workbench_config": {}}, "lomb")
+    assert json.loads(estimate["workbench_run_record_json"])["cwd"] == "."
+    record = {"cwd": "D:/data", "sources": [{"path": "trace.csv"}],
+              "children": [{"cwd": "D:/data", "sources": [], "children": []}]}
+    saved = json.loads(workbench.run_record_json(record))
+    assert saved["cwd"] == "D:/data"  # replay resolves trace.csv against it
+    assert saved["children"][0]["cwd"] == "."

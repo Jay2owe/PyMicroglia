@@ -1,0 +1,17 @@
+{
+ "case": "ao.create_project.local12",
+ "label": "t2after1",
+ "source": "<session>/scratch/drop-speed/after3",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\after3\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\after3\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 0.3368,
+ "setup_in_act_seconds": 6.8885,
+ "cpu_seconds": 4.4531,
+ "peak_wset_bytes": 185393152,
+ "output_sha256": "8198cbffc0f0ffd57422171e4dfce62c0768062593b9dd8eb12fe91d3ab818ea",
+ "error": null,
+ "stages": null,
+ "profiled": false
+}

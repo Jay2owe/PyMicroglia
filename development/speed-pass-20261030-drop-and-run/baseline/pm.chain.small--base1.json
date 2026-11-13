@@ -1,0 +1,17 @@
+{
+ "case": "pm.chain.small",
+ "label": "base1",
+ "source": "<session>/scratch/drop-speed/baseline",
+ "imported": {
+  "pymicroglia": "<session>/scratch\\drop-speed\\baseline\\pymicroglia\\__init__.py",
+  "auto_organotypic": "<session>/scratch\\drop-speed\\baseline\\auto_organotypic\\__init__.py"
+ },
+ "seconds": 416.6421,
+ "setup_in_act_seconds": 0.0408,
+ "cpu_seconds": 60.9844,
+ "peak_wset_bytes": 658538496,
+ "output_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+ "error": "Traceback (most recent call last):\n  File \"<PyMicroglia>/tools\\benchmark_drop_and_run.py\", line 290, in run_case\n    result = _act(args.case, ctx, work)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<PyMicroglia>/tools\\benchmark_drop_and_run.py\", line 187, in _act\n    result = auto_microglia.run(**params, on_progress=progress, claim=\"speed pass\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\pipelines\\auto_microglia.py\", line 569, in run\n    record = _chain.run_pipeline(folder, skip=skip, spatial=bool(spatial),\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\auto_organotypic\\pipeline.py\", line 3625, in run_pipeline\n    detail = _RUNNERS[name](\n             ^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\auto_organotypic\\pipeline.py\", line 497, in guarded\n    return _run(state, options)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\pipelines\\auto_microglia.py\", line 246, in _masking_stage\n    made = _mask_every(list(state[\"recordings\"]), folder, notes,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\pipelines\\_auto_microglia_support.py\", line 567, in _mask_every\n    made = _masking.mask_run(one, where, notes, **settings)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\pipelines\\cell_masks.py\", line 144, in mask_run\n    chosen, cut, backend = mask_methods.configure(method, weights, cut, method_options)\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\mask_methods.py\", line 66, in configure\n    weights = masking.weights() if weights is None else weights\n              ^^^^^^^^^^^^^^^^^\n  File \"<session>/scratch\\drop-speed\\baseline\\pymicroglia\\learned_mask\\apply.py\", line 58, in weights\n    raise FileNotFoundError(\nFileNotFoundError: no weights given. Set PYMICROGLIA_MASK_WEIGHTS to a trained run's model.pt -- development/single_frame_mask_unet/MCG_mask_model/runs/<run>/model.pt holds the runs this package was ported from.\n",
+ "stages": null,
+ "profiled": false
+}

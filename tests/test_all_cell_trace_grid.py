@@ -29,7 +29,7 @@ def _resolved(**overrides):
 
 def test_package_default_is_single_source_for_fresh_downstream_analyses():
     from pymicroglia.measure.modules import coupling, recurrence, rhythms
-    assert circadian.DETREND_DEFAULTS['detrend'] == 'robust_linear'
+    assert circadian.DETREND_DEFAULTS['detrend'] == 'asymmetric_least_squares'
     assert rhythms.DEFAULTS['detrend'] == coupling.DEFAULTS['detrend'] == recurrence.DEFAULTS['detrend']
     assert circadian.PERIOD_ANALYSIS_DEFAULTS['period_estimation_method'] == 'lomb'
     assert circadian.PERIOD_ANALYSIS_DEFAULTS['primary_rhythm_test'] == 'lomb'
@@ -180,7 +180,7 @@ def test_registered_builder_fits_original_values_and_keeps_display_separate(monk
         assert len(result.figure_data) == 16
         assert set(result.auxiliary['statistics.csv'].rhythm_status) == {'rhythmic'}
         assert [method for method, _, _ in received] == ['fft_nlls', 'fft_nlls']
-        assert all((detrend == 'robust_linear' for _, _, detrend in received))
+        assert all((detrend == circadian.DETREND_DEFAULTS['detrend'] for _, _, detrend in received))
         expected = preparation.three_frame_mean(
             original.loc[original.identity.eq(2), 'integrated_density'].to_numpy(float),
             original.loc[original.identity.eq(2), 'frame_index'].to_numpy(int))

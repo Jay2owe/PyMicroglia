@@ -3,7 +3,6 @@ import ast
 from contextlib import contextmanager
 from importlib import resources
 from types import SimpleNamespace
-import zipfile
 
 import pytest
 
@@ -12,9 +11,8 @@ from pymicroglia.tracking.completed_evidence import _restoration_context
 
 @pytest.mark.parametrize('offset',[0,2,5])
 def test_actual_frozen_restoration_receives_source_frame_offset(offset):
-    archive=resources.files('pymicroglia.tracking').joinpath('data/completed_feedback_engine.zip')
-    with zipfile.ZipFile(archive.open('rb')) as z:
-        source=z.read('frozen/final/r214_a003/measured_restoration_continuity_a002.py').decode()
+    engine=resources.files('pymicroglia.tracking').joinpath('data/completed_feedback_engine')
+    source=engine.joinpath('frozen/final/r214_a003/measured_restoration_continuity_a002.py').read_bytes().decode()
     tree=ast.parse(source)
     function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='measured_restoration_continuity')
     recorded=[]

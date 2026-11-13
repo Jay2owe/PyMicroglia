@@ -122,6 +122,17 @@ def main():
         F = L.astype(float); F[2, 0, 0] = np.nan
         compare('float/equal', lambda: np.array_equal(F, F), lambda: gs.equal(F, F))
         compare('float/names', lambda: np.array_equal(np.unique(F), np.unique(L)), lambda: gs.same_names(F, L))
+        # Reused Boolean work arrays: NaN, -0.0, bool movies and strided views.
+        G = F.copy(); G[4, 0, 0] = -0.0; G[5, 1, 1] = np.nan; G[6] = -G[6]
+        compare('float/foreground', lambda: np.array_equal(F > 0, G > 0), lambda: gs.same_foreground(F, G))
+        compare('float/where_bool', lambda: np.any((F != G) & (G > 0)), lambda: gs.changed_where(F, G, G > 0))
+        B, D = L > 0, C > 0
+        compare('bool/foreground', lambda: np.array_equal(B > 0, D > 0), lambda: gs.same_foreground(B, D))
+        compare('bool/where', lambda: np.any((B != D) & B), lambda: gs.changed_where(B, D, B))
+        T, U = L[:, ::2, ::3], C[:, ::2, ::3]
+        compare('strided/foreground', lambda: np.array_equal(T > 0, U > 0), lambda: gs.same_foreground(T, U))
+        compare('strided/where', lambda: np.any((T != U) & (U > 0)), lambda: gs.changed_where(T, U, U > 0))
+        compare('strided/where_int', lambda: np.any((T != U) & (U % 4)), lambda: gs.changed_where(T, U, U % 4))
         assert gs.stats['fallback'] - fallback_before >= 5, gs.stats
     report['helpers'] = dict(comparisons=checked, seconds=seconds, stats=dict(gs.stats))
 

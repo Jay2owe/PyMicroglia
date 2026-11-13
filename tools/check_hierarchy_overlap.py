@@ -18,7 +18,7 @@ def main():
     import accepted_history as history
     import hierarchy_overlap_reuse as reuse
     import hierarchy_component_batch as components
-    module=history._issue_module(history.I009,'m6_hierarchy_reconcile');geometry=module.geometry
+    module=history._issue_module(history.HIERARCHY_OPS,'hierarchy_reconcile');geometry=module.geometry
     original=geometry.overlap;rng=np.random.default_rng(901)
     arrays=[np.asarray(x,dtype=dtype) for dtype in ('int64','uint64') for x in ([],[0],[0,1,4],[4,1,0],[1,1,2])]
     arrays += [np.sort(rng.choice(900,size=i,replace=False)) for i in range(1,100,4)]

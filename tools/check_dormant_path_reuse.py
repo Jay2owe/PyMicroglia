@@ -19,7 +19,7 @@ def main():
     sys.path.insert(0, str(a.adapter.resolve()))
     import accepted_history as history
     import dormant_path_reuse as reuse
-    module = history._issue_module(history.I012, 'm9_reconcile_dormant_releases')
+    module = history._issue_module(history.DOMAIN_OWNERSHIP_OPS, 'reconcile_dormant_releases')
     original = module.reconcile
     rng = np.random.default_rng(1013)
     checks = []

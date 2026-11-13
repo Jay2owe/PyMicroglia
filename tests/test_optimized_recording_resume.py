@@ -1,6 +1,8 @@
 """Reject unsafe native-parent reuse without modifying its saved provenance."""
 import importlib.util
 import json
+import sys
+from types import ModuleType, SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -11,15 +13,51 @@ resume = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(resume)
 
 
+def test_fresh_recording_creates_tracking_home_before_repair_context(tmp_path,monkeypatch):
+    home=tmp_path/'batch';home.mkdir()
+    producer=home/'producer.py';producer.write_text('# replaced by instrumented producer')
+    snapshot=tmp_path/'snapshot';snapshot.mkdir();(snapshot/'composition.json').write_text('{}')
+    well='fresh';output=home/'rigid_analysis'/well
+    inputs=home/'rigid_batch/.j'/well;inputs.mkdir(parents=True)
+    config=inputs/'config.json';config.write_text('{}')
+    (inputs/'motion_inputs.json').write_text(json.dumps({'prepared':{'95_full_'+well:{'config':str(config)}}}))
+    repair=SOURCE.parents[1]/'src/pymicroglia/tracking/core_replacement_evidence.py'
+    authority=tmp_path/'authority.json';authority.write_text(json.dumps(dict(snapshot=str(snapshot),producer=str(producer),
+        composition_sha256=resume.sha(snapshot/'composition.json'),core_replacement_evidence_repair=dict(source=str(repair),sha256=resume.sha(repair)))))
+    original=lambda *a,**k:None
+    methods=lambda *a,**k:None
+    engine=SimpleNamespace(_execute_pipeline=original)
+    feedback=SimpleNamespace(methods=methods)
+    package=ModuleType('pymicroglia.tracking');package.engine=engine;package.completed_feedback=feedback
+    monkeypatch.setitem(sys.modules,'pymicroglia.tracking',package)
+    monkeypatch.setattr(resume,'activate',lambda *a:None)
+    monkeypatch.setattr(resume,'verify_snapshot',lambda *a:{})
+    seen=[]
+    def run_producer(*a,**k):
+        record=output/'tracking/core_replacement_evidence_repair.json'
+        assert record.is_file()
+        assert feedback.methods is not methods
+        seen.append(record.read_bytes())
+    monkeypatch.setattr(resume.runpy,'run_path',run_producer)
+    monkeypatch.setattr(sys,'path',sys.path.copy())
+    assert not (output/'tracking').exists()
+    for _ in range(2):
+        monkeypatch.setattr(sys,'argv',['resume','--authority',str(authority),well,str(output)])
+        resume.main()
+        assert feedback.methods is methods and engine._execute_pipeline is original
+    assert len(seen)==2 and seen[0]==seen[1]
+    assert len(list(output.glob('optimized_continuation_before_*.json')))==1
+
+
 @pytest.fixture
 def parent(tmp_path):
     root = tmp_path / "engine"
     snapshot = tmp_path / "candidate"
     root.mkdir()
-    archive = snapshot / "pymicroglia/tracking/data/motion_engine.zip"
-    archive.parent.mkdir(parents=True)
-    archive.write_bytes(b"frozen archive")
-    (root / "archive.sha256").write_text(resume.sha(archive))
+    shipped = snapshot / "pymicroglia/tracking/data/motion_engine"
+    shipped.mkdir(parents=True)
+    (shipped / "config.json").write_bytes(b"frozen engine")
+    (root / "archive.sha256").write_text(resume.engine_digest(shipped))
     config = tmp_path / "config.json"
     config.write_text('{"source_frame_offset": 0}')
     code = root / "code/pipeline.py"
@@ -64,9 +102,15 @@ def test_changed_config_rejected(parent):
 
 
 def test_changed_engine_archive_rejected(parent):
-    (parent[3] / "pymicroglia/tracking/data/motion_engine.zip").write_bytes(b"new science")
+    (parent[3] / "pymicroglia/tracking/data/motion_engine/config.json").write_bytes(b"new science")
     with pytest.raises(ValueError, match="native engine archive"):
         resume.verify_native(*parent)
+
+
+def test_snapshot_from_before_engine_folders_is_read_from_its_zip(tmp_path):
+    archive = tmp_path / "motion_engine.zip"
+    archive.write_bytes(b"frozen archive")
+    assert resume.engine_digest(tmp_path / "motion_engine") == resume.sha(archive)
 
 
 def test_partial_native_is_not_complete(parent):
@@ -97,9 +141,48 @@ def test_changed_stage_signature_rejected(parent):
         resume.verify_native(*parent)
 
 
+def test_composition_repair_parent_requires_matching_record(parent):
+    root, run, *_ = parent
+    path=root/'m22_accepted_history'/run/'checkpoint.json'
+    receipt=json.loads(path.read_text())
+    repair={'version':'fixture', 'repair_sha256':'verified against authority'}
+    receipt['signature']['composition_repair']=repair
+    path.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError,match='different parent signature'):
+        resume.verify_native(*parent)
+    (root/'parallel_repair_composition.json').write_text(json.dumps(repair))
+    assert resume.verify_native(*parent)['native_stages']==13
+
+
+def test_local_lineage_repair_parent_requires_matching_record(parent):
+    root, run, *_ = parent
+    path=root/'m22_accepted_history'/run/'checkpoint.json'
+    receipt=json.loads(path.read_text())
+    repair={'version':'fixture', 'repair_sha256':'verified against authority'}
+    receipt['signature']['lineage_overlap_repair']=repair
+    path.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError,match='different parent signature'):
+        resume.verify_native(*parent)
+    (root/'local_lineage_overlap_repair.json').write_text(json.dumps(repair))
+    assert resume.verify_native(*parent)['native_stages']==13
+
+
 def test_escaped_record_rejected(tmp_path):
     with pytest.raises(ValueError, match="escapes"):
         resume.contained(tmp_path / "engine", "../outside")
+
+
+def test_owner_consensus_repair_parent_requires_matching_record(parent):
+    root, run, *_ = parent
+    path=root/'m22_accepted_history'/run/'checkpoint.json'
+    receipt=json.loads(path.read_text())
+    repair={'version':'fixture', 'repair_sha256':'verified against authority'}
+    receipt['signature']['owner_consensus_repair']=repair
+    path.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError,match='different parent signature'):
+        resume.verify_native(*parent)
+    (root/'owner_consensus_attachment_repair.json').write_text(json.dumps(repair))
+    assert resume.verify_native(*parent)['native_stages']==13
 
 
 def test_candidate_source_change_rejected(tmp_path):

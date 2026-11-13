@@ -1,4 +1,8 @@
-"""Check batched local ownership against every scalar vote and table value."""
+"""Check batched local ownership against every scalar vote and table value.
+
+Repeated calls on movies edited in a few frames, and on point subsets, check
+the per-frame vote reuse: every call is compared with the original sampler.
+"""
 import argparse
 import hashlib
 import importlib
@@ -14,6 +18,7 @@ def main():
     for name in ('snapshot','adapter','correction-root','labels','points','output'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--module',choices=['separable_merge_recovery','resident_takeover'],default='separable_merge_recovery')
+    p.add_argument('--plane-budget',type=int,help='bytes of frame copies the sampler may hold (0 forces frame digests)')
     a=p.parse_args();platform.platform=lambda *a,**k:'Windows-owner-sampling-check'
     import numpy as np
     import pandas as pd
@@ -21,6 +26,7 @@ def main():
     sys.path[:0]=[str(a.snapshot.resolve()),str(a.adapter.resolve())]
     from pymicroglia.tracking import completed_feedback
     import correction_owner_sampling as reuse
+    if a.plane_budget is not None:reuse.PLANE_BUDGET=a.plane_budget
     rng=np.random.default_rng(3652);cases=0;observations=0;before=after=0.
     with completed_feedback.methods(a.correction_root):
         module=importlib.import_module(a.module);original=module.attach_owners
@@ -41,12 +47,23 @@ def main():
                 if trial%5==0:points.index=np.repeat(np.arange(60),2)
                 if trial%7==0:labels[:,10:15,10:15]=0
                 compare(points,labels)
+                if trial%3==0:
+                    labels[int(rng.integers(0,4))]=rng.choice([0,1,2,7,81],size=(29,31)).astype(np.uint16)
+                    compare(points,labels);compare(points.sample(frac=.5,random_state=trial),labels)
             labels=tifffile.imread(a.labels);points=pd.read_csv(a.points,low_memory=False)
             full_before,full_after=before,after;compare(points,labels)
             full_before=before-full_before;full_after=after-full_after
             compare(points.iloc[:0],labels)
+            edited=labels.copy()
+            for t in rng.choice(len(labels),5,replace=False):
+                names=np.unique(edited[t]);names=names[names>0]
+                edited[t][edited[t]==names[0]]=names[-1]
+                edited[t][:40,:40]=0
+            compare(points,edited);compare(points.sample(frac=.3,random_state=1),edited)
+            compare(points,labels);compare(points,edited.astype(np.int32))
         assert module.attach_owners is original
-    report=dict(status='pass',cases=cases,points=observations,before_seconds=before,after_seconds=after,
+        assert counters['reused']>0 and counters['measured']>0,counters
+    report=dict(status='pass',plane_budget=reuse.PLANE_BUDGET,cases=cases,points=observations,before_seconds=before,after_seconds=after,
         recording_before_seconds=full_before,recording_after_seconds=full_after,counters=counters,
         sources={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in
             [Path(__file__),Path(module.__file__),Path(reuse.__file__),a.labels,a.points]},

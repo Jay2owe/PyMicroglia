@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from auto_organotypic import conventions as _conventions
+from auto_organotypic import recording_labels as _recording_labels
 
 from ..review import Review
 from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
@@ -29,12 +30,14 @@ from . import (PipelineResult, StageLog, append_runs_index, check_stage_order,
 from . import motion_handoff as _motion
 from ._auto_microglia_contracts import (
     _registry, _the_stages_we_turn_off_still_exist, _the_mask_feeds_the_measurement,
+    _the_cells_have_masks,
 )
 from ._auto_microglia_support import (
     _measure_tracked, _eligible_tracks, _tracked_videos, _tracked_images,
     _cell_grids, _shared_cell_periods, _validate_cell_grid_options,
     _mask_every, _measure_every, _small, _Registered,
     _refine_tracking, _measure_gaps,
+    _sequential_numbers, _numbered_periods, _numbered_gap_tables,
 )
 
 __all__ = ["METHOD_VERSION", "PIPELINE", "STAGES", "AO_STAGES", "NOT_OURS",
@@ -69,6 +72,9 @@ CLAIMED: dict[str, str] = {
     # taken here only because it is also one of the three defaults this pipeline
     # changes. It goes down by hand rather than through ``**options``.
     "spatial": "spatial",
+    # ``outline`` too: the same switch in both, off by default in both, and
+    # passed down by hand with the channel check made here first.
+    "outline": "outline",
     # ``folder`` is the positional argument, and the same folder either way.
     "folder": "",
     # ``options`` is that function's mapping and also this one's ``**options``
@@ -95,7 +101,7 @@ AO_STAGES: tuple[str, ...] = ("acquire", "index", "trim_before_crop",
 #: ``split``, so that is where it is listed.
 OURS: tuple[str, ...] = ("cell_masks", "cells", "motion_inputs", "motion",
                          "eligibility", "tracked_outline_refinement",
-                         "tracked_cell_period_selection",
+                         "identity_numbers", "tracked_cell_period_selection",
                          "tracked_cell_grid",
                          "tracked_cell_video_grid", "tracked_measurement",
                          "tracked_gap_measurement", "tracked_video",
@@ -104,7 +110,7 @@ _AFTER = AO_STAGES.index("split") + 1
 STAGES: tuple[str, ...] = (
     AO_STAGES[:_AFTER] + ("cell_masks",) + AO_STAGES[_AFTER:]
     + ("cells", "motion_inputs", "motion", "eligibility",
-       "tracked_outline_refinement",
+       "tracked_outline_refinement", "identity_numbers",
        "tracked_cell_period_selection",
        "tracked_cell_grid", "tracked_cell_video_grid",
        "tracked_measurement", "tracked_gap_measurement",
@@ -149,6 +155,9 @@ def differences() -> list[dict[str, Any]]:
          "auto_organotypic": None, "here": True,
          "why": "the single-frame gate refines measured outlines after seven-frame "
                 "Motion identities are frozen"},
+        {"setting": "identity_numbers", "auto_organotypic": None, "here": True,
+         "why": "videos, images and final gap tables number cells 1 to N in Motion's "
+                "identity order; Motion's files and every calculation keep native ones"},
         {"setting": "tracked_gap_measurement",
          "auto_organotypic": None, "here": True,
          "why": "stable internal gaps of at most three native frames receive "
@@ -330,6 +339,7 @@ def run(folder=None, *,
         tracked_video_options: Mapping[str, Any] | None = None,
         tracked_image: bool = True,
         tracked_image_options: Mapping[str, Any] | None = None,
+        sequential_cell_numbers: bool = True,
         # --- the mask, when it runs
         mask_weights=None, mask_cut: float | None = None,
         mask_method: str = "unet",
@@ -366,7 +376,8 @@ def run(folder=None, *,
     ``outline=True`` restores Auto-Organotypic's SCN half whole -- the outline,
     its region traces and the spatial grid -- for a recording that does have one.
     Nothing was removed to make them off by default, so what comes back is that
-    package's stages at that package's settings.
+    package's stages at that package's settings. It needs ``channel=``, the
+    channel to outline by name or one-based number; there is no default.
 
     ``region_traces`` and ``spatial`` follow ``outline`` unless they are given.
     They read what the outline wrote -- one trace per region *of the outline*,
@@ -412,6 +423,11 @@ def run(folder=None, *,
     measurement then uses the original Motion history and cannot fill these
     deliberately suppressed observations.
 
+    ``sequential_cell_numbers=True`` shows final cells as 1 to N, in Motion's
+    ascending identity order, in grids, tracked video and image and a
+    ``cell_number`` gap-table column (map in ``identity_numbers/``); Motion's files
+    and every calculation keep native identities. ``False`` changes nothing.
+
     Returns the run manifest: Auto-Organotypic's own run record for the stages
     it ran, this pipeline's stages appended in the same shape, and the review.
     """
@@ -447,6 +463,10 @@ def run(folder=None, *,
     # in, on a missing file, rather than here on the keyword that caused it.
     region_traces = outline if region_traces is None else region_traces
     spatial = outline if spatial is None else spatial
+    if outline and options.get("channel") in (None, "")             and options.get("outline_channel") in (None, ""):
+        raise ValueError(
+            "outline=True needs the channel to outline named: pass channel= "
+            "(a name such as 'red' or a one-based number). It is never guessed.")
     if (region_traces or spatial) and not outline:
         raise ValueError(
             "region_traces and spatial read what the outline stage wrote -- one "
@@ -455,6 +475,8 @@ def run(folder=None, *,
             "them out and let the cell mask find the regions instead.")
 
     _the_stages_we_turn_off_still_exist(_chain, NOT_OURS)
+    if not isinstance(sequential_cell_numbers, bool):
+        raise ValueError("sequential_cell_numbers must be true or false")
     if isinstance(tracked_gap_max_frames, bool) or not isinstance(
             tracked_gap_max_frames, int) or not 1 <= tracked_gap_max_frames <= 15:
         raise ValueError("tracked_gap_max_frames must be a whole number from 1 to 15")
@@ -520,6 +542,8 @@ def run(folder=None, *,
                                    "tracked_cell_video_grid_options":
                                        tracked_cell_video_grid_options,
                                    "tracked_cell_period_recipe": shared_period_recipe,
+                                   **({"sequential_cell_numbers": True}
+                                      if sequential_cell_numbers else {}),
                                    "method": METHOD_VERSION}))
     where = run_folder(root, PIPELINE, label, if_exists)
     if where.reuse:
@@ -550,7 +574,7 @@ def run(folder=None, *,
     # Auto-Organotypic's half, called and not reimplemented. ``spatial`` is one
     # of its own keywords as well as one of ours, so it is passed by name.
     record = _chain.run_pipeline(folder, skip=skip, spatial=bool(spatial),
-                                 **options)
+                                 outline=bool(outline), **options)
     # The chain's registry (channel names, lookup tables, trace colours),
     # written beside this run's record and current for the cells below.
     registry = _registry(folder, options)
@@ -575,6 +599,7 @@ def run(folder=None, *,
                                "skipped": list(skip)}
     summary["tracked_cell_period_recipe"] = shared_period_recipe
     summary["mask_configuration"] = mask_configuration
+    summary.update({"sequential_cell_numbers": True} if sequential_cell_numbers else {})
     if conventions_path is not None:
         outputs["conventions"] = str(conventions_path)
 
@@ -593,11 +618,7 @@ def run(folder=None, *,
                                  for path, one in masks.items()}
 
     if cells:
-        if not masks:
-            raise ValueError(
-                "cells=True needs the labels the mask produces, and "
-                "cell_masks=False turned it off. Pass cell_masks=True, or "
-                "cells=False to run the chain without measuring anything.")
+        _the_cells_have_masks(masks, cell_masks, record)
         with log("cells") as entry:
             previous = _conventions.use(registry)
             try:
@@ -628,6 +649,9 @@ def run(folder=None, *,
         summary["motion"] = {k: v for k, v in handoff.items()
                              if k != "outputs"}
         motion_tracking = outputs["motion"]["tracking"]
+        # A person's names and conditions, read from beside the recordings.
+        if recording_labels := _recording_labels.by_stem(folder, motion_tracking):
+            summary["recording_labels"] = recording_labels
         eligibility_results = _eligible_tracks(
             motion_tracking, handoff, where.path,
             enabled=eligibility, max_gap_h=eligibility_max_gap_h,
@@ -660,6 +684,17 @@ def run(folder=None, *,
                     int(one["settings"]["changed_pixels"])
                     for one in refined.values())
             outputs["tracked_outline_refinement"] = refined
+        display_eligibility, cell_number_maps = downstream_eligibility, None
+        if sequential_cell_numbers:  # display copies; measurement stays native
+            with log("identity_numbers") as entry:
+                numbered, display_eligibility, cell_number_maps = _sequential_numbers(
+                    motion_tracking, downstream_eligibility, where.path,
+                    destinations=[name for name, wanted in (
+                        ("videos", tracked_cell_video_grid or tracked_video),
+                        ("images", tracked_cell_grid or tracked_image)) if wanted])
+                entry.update(recordings=len(numbered),
+                             cells=sum(one["cells"] for one in numbered.values()))
+            outputs["identity_numbers"] = numbered
         period_results: dict[str, Any] = {}
         if active_period_grids:
             with log("tracked_cell_period_selection") as entry:
@@ -679,22 +714,23 @@ def run(folder=None, *,
                            result["decisions"].items()
                            if decision["significant_period"]]}
                 for stem, result in period_results.items()}
+        grid_periods = _numbered_periods(period_results, cell_number_maps)
         if tracked_cell_grid:
             with log("tracked_cell_grid") as entry:
                 grids = _cell_grids(
                     "images", downstream_tracking, handoff,
-                    downstream_eligibility, where.path,
+                    display_eligibility, where.path,
                     options=tracked_cell_grid_options,
-                    period_evidence=period_results)
+                    period_evidence=grid_periods)
                 entry["recordings"] = len(grids)
             outputs["tracked_cell_grid"] = grids
         if tracked_cell_video_grid:
             with log("tracked_cell_video_grid") as entry:
                 videos_grid = _cell_grids(
                     "videos", downstream_tracking, handoff,
-                    downstream_eligibility, where.path,
+                    display_eligibility, where.path,
                     options=tracked_cell_video_grid_options,
-                    period_evidence=period_results)
+                    period_evidence=grid_periods)
                 entry["recordings"] = len(videos_grid)
             outputs["tracked_cell_video_grid"] = videos_grid
         if tracked_measurement:
@@ -702,7 +738,8 @@ def run(folder=None, *,
                 measured_tracks = _measure_tracked(
                     downstream_tracking, handoff,
                     where.path, modules=tracked_measure_modules,
-                    eligibility=downstream_eligibility)
+                    eligibility=downstream_eligibility,
+                    labels=recording_labels)
                 entry["recordings"] = len(measured_tracks)
             outputs["tracked_measurement"] = measured_tracks
         if tracked_gap_measurement:
@@ -727,7 +764,7 @@ def run(folder=None, *,
             with log("tracked_video") as entry:
                 videos = _tracked_videos(
                     downstream_tracking, handoff,
-                    downstream_eligibility, where.path,
+                    display_eligibility, where.path,
                     options=tracked_video_options)
                 entry["recordings"] = len(videos)
             outputs["tracked_video"] = videos
@@ -735,10 +772,13 @@ def run(folder=None, *,
             with log("tracked_image") as entry:
                 images = _tracked_images(
                     downstream_tracking, handoff,
-                    downstream_eligibility, where.path,
+                    display_eligibility, where.path,
                     options=tracked_image_options)
                 entry["recordings"] = len(images)
             outputs["tracked_image"] = images
+        if sequential_cell_numbers and "tracked_gap_measurement" in outputs:
+            outputs["identity_numbers_tables"] = _numbered_gap_tables(  # last
+                outputs["tracked_gap_measurement"], cell_number_maps)
 
     check_stage_order(log.names)
     _the_mask_feeds_the_measurement(log.names)

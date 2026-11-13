@@ -23,7 +23,7 @@ correction runner publishes files and returns only a path, satisfying that rule.
     record_path=Path(root)/'correction_array_storage.json'
     with tempfile.TemporaryDirectory(prefix='motion-correction-storage-') as temporary:
         folder=Path(temporary)
-        pool=Pool(folder/'working',minimum_bytes=minimum_bytes)
+        pool=Pool(folder/'working',minimum_bytes=minimum_bytes,temporary_ram_bytes=32*1024**2,released_bytes=1073741824)
         original_read=tifffile.imread
         record=dict(status='running',minimum_bytes=minimum_bytes,temporary_directory=temporary)
         record_path.write_text(json.dumps(record,indent=2)+'\n')

@@ -63,7 +63,7 @@ def main():
             assert holder['counters']['supported']
             profiler=cProfile.Profile();profiler.enable()
             try:
-                result=history._well_b3_issue004_reconnected_companion_merge_partition(
+                result=history._reconnected_companion_merge_partition(
                     labels,unclaimed,common.Config.load(a.config),a.output)
             finally:
                 profiler.disable();profiler.dump_stats(a.output/'profile.pstats')

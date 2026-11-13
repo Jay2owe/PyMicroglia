@@ -119,6 +119,13 @@ def transfer_frame(baseline: np.ndarray, gated: np.ndarray,
             local_result[ys[chosen], xs[chosen]] = identity
     before = set(map(int, np.unique(tracked))) - {0}
     after = set(map(int, np.unique(result))) - {0}
+    # A cell no refined object covers keeps Motion's outline for this frame,
+    # rather than disappearing (or stopping the whole run).
+    lost = sorted(before - after)
+    for identity in lost:
+        keep = (tracked == identity) & (result == 0)
+        result[keep] = identity
+    after |= {identity for identity in lost if np.any(result == identity)}
     if before != after:
         raise ValueError(f"refinement changed the identity set: "
                          f"lost={sorted(before - after)}, added={sorted(after - before)}")
@@ -128,7 +135,8 @@ def transfer_frame(baseline: np.ndarray, gated: np.ndarray,
                     "detections_without_identity": missing,
                     "protected_collision_pixels": collisions,
                     "changed_pixels": int(np.count_nonzero(result != tracked)),
-                    "identities": len(before)}
+                    "identities": len(before),
+                    **({"motion_outlines_kept": len(lost)} if lost else {})}
 
 
 def run(seven_frame_masks, photons, motion_labels, *, output_dir,
@@ -248,7 +256,10 @@ def run(seven_frame_masks, photons, motion_labels, *, output_dir,
     tifffile.imwrite(outputs["refined_labels"], np.stack(refined),
                      compression="zlib", photometric="minisblack")
     with outputs["frame_audit"].open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(audit[0]))
+        # Optional columns (cells given back Motion's outline) appear only
+        # in runs that needed them, so other runs' tables are unchanged.
+        fields = list(dict.fromkeys(key for row in audit for key in row))
+        writer = csv.DictWriter(stream, fieldnames=fields, restval=0)
         writer.writeheader()
         writer.writerows(audit)
     if sha256_of(paths["motion_labels"]) != input_hashes["motion_labels"]:

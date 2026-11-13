@@ -1,9 +1,9 @@
 """Real residency calculations keep movie indices independent of source offsets."""
 import ast
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
-import zipfile
 
 import numpy as np
 import pandas as pd
@@ -11,17 +11,16 @@ import pytest
 from scipy import ndimage as ndi
 from pymicroglia.tracking import residency_frames as repair
 
-ARCHIVE = Path(__file__).parents[1] / 'src/pymicroglia/tracking/data/motion_engine.zip'
+ENGINE = Path(__file__).parents[1] / 'src/pymicroglia/tracking/data/motion_engine'
 
 
 def fixture_code():
-    with zipfile.ZipFile(ARCHIVE) as z:
-        source = z.read('code/accepted_history.py').decode().replace('\r\n', '\n')
-        ops = {}
-        exec(z.read('code/accepted_history_ops/issue015/m5_blob_residency.py'), ops)
-        params = json.loads(z.read('code/accepted_history_parameters.json'))['issue015']['blob_residency']
+    source = (ENGINE / 'code/accepted_history.py').read_bytes().decode().replace('\r\n', '\n')
+    ops = {}
+    exec((ENGINE / 'code/corrections/blob_residency/blob_residency.py').read_bytes(), ops)
+    params = json.loads((ENGINE / 'code/accepted_history_parameters.json').read_bytes())['issue015']['blob_residency']
     module = SimpleNamespace(**ops)
-    ns = dict(np=np, pd=pd, ndi=ndi, I015=None,
+    ns = dict(np=np, pd=pd, ndi=ndi, BLOB_RESIDENCY_OPS=None,
               _issue_module=lambda *a: module, _params=lambda *a: params)
     tree = ast.parse(source)
     for n in tree.body:
@@ -50,7 +49,10 @@ def evaluate(offset, *, old=False, donor=11, host=27, padding=0, empty=False, ca
     original, patched = repair.repaired_function(source)
     if canonical:
         path = Path(__file__).parents[2] / 'Motion/code/accepted_history.py'
-        text = path.read_text()
+        # The Motion project keeps the names from before tools/rename_motion_engine.py.
+        sys.path.insert(0, str(Path(__file__).parents[1] / 'tools'))
+        from rename_motion_engine import Rewrite, renames
+        text = Rewrite(*renames()).text(path.read_text())
         node = next(n for n in ast.parse(text).body if isinstance(n, ast.FunctionDef) and n.name == repair.FUNCTION)
         patched = ast.get_source_segment(text, node)
     exec(original if old else patched, ns)

@@ -194,7 +194,7 @@ def connected_neutral_tracks(raw: np.ndarray, ratio: np.ndarray,
 
 
 def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
-                   window: int = 10, *, output_arrays=None
+                   window: int = 10, *, output_arrays=None, flush_outputs=True
                    ) -> tuple[np.ndarray, np.ndarray, set[int]]:
     """Rolling connected breadcrumb paths; current pixels are newest, old ones fade."""
     if component_tracks.ndim != 3:
@@ -214,7 +214,7 @@ def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
         for t in range(len(labels)):
             labels[t] = 0
             ages[t] = 0
-            if (t+1)%16==0:
+            if flush_outputs and (t+1)%16==0:
                 for buffer in (labels,ages):
                     if hasattr(buffer,'flush'):buffer.flush()
     records = {int(track): group.sort_values("t")
@@ -245,7 +245,7 @@ def rolling_trails(component_tracks: np.ndarray, table: pd.DataFrame,
                 labels[t, yy[replace], xx[replace]] = int(track)
                 ages[t, yy[replace], xx[replace]] = int(age)
                 best_age[yy[replace], xx[replace]] = int(age)
-        if output_arrays is not None and (t+1)%16==0:
+        if flush_outputs and output_arrays is not None and (t+1)%16==0:
             for buffer in (labels,ages):
                 if hasattr(buffer,'flush'):buffer.flush()
     return labels, ages, eligible

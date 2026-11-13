@@ -59,6 +59,34 @@ def main():
                 m[...]=value;mapped.append(m)
             check(mapped[0],mapped[1],dict(confidence_background_ring_px=i%3),f'mapped_{i}')
             del mapped,m
+    # Sparse blob movies, where most smaller objects are far apart, at several edge-gap thresholds.
+    for i in range(8):
+        labels=np.zeros((4,60,70),np.uint16)
+        for t in range(4):
+            for name in range(1,25):
+                y,x=int(rng.integers(0,56)),int(rng.integers(0,66))
+                labels[t,y:y+int(rng.integers(1,5)),x:x+int(rng.integers(1,5))]=name if rng.random()<.9 else 0
+        raw=rng.normal(5,2,labels.shape).astype(np.float32)
+        check(labels,raw,dict(near_smaller_edge_gap_px=(0.,1.,3.,8.,20.,-2.,float('nan'),float('inf'))[i]),f'blobs_{i}')
+    # The pruned edge-gap test against the original list on random rows, including
+    # non-finite, huge and empty inputs.
+    near_cases=near_equal=0
+    def original_near(row,smaller,near):
+        gaps=[max(float(np.linalg.norm(row["position"]-other["position"]))-float(row["radius"])-float(other["radius"]),0.0) for other in smaller]
+        return bool(gaps and min(gaps)<=near)
+    for trial in range(3000):
+        n=int(rng.integers(0,12))
+        spread=float((5,50,500,1e15)[trial%4])
+        smaller=[dict(position=rng.uniform(0,spread,2),radius=float(rng.uniform(0,6))) for _ in range(n)]
+        row=dict(position=rng.uniform(0,spread,2),radius=float(rng.uniform(0,6)))
+        if trial%17==0 and n:smaller[0]['position'][1]=np.nan
+        if trial%19==0:row['radius']=float('inf')
+        if trial%23==0 and n:smaller[-1]['radius']=float('nan')
+        near=float((0.,2.,8.,float('nan'),-1.,30.)[trial%6])
+        near_cases+=1
+        near_equal+=original_near(row,smaller,near)==reuse.near_smaller(row,smaller,near)
+    assert near_cases==near_equal,(near_cases,near_equal)
+    cases.append(dict(name='near_smaller_rows',cases=near_cases,equal=near_equal))
     if a.labels:
         import common,pipeline,tifffile
         labels=tifffile.imread(a.labels)

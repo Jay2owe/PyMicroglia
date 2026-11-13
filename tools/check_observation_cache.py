@@ -113,8 +113,28 @@ def main():
             check(np.zeros_like(labels_stack[0]), raw[0], (), 'empty')
             check(np.zeros_like(labels_stack[0]), raw[0], (), 'empty-again')
             failures.extend(f'{storage}-stats {cache.stats}' for _ in range(0 if cache.stats['hits'] else 1))
+    # Every label frame's checksum equal, beside one raw frame: each lookup
+    # finds another frame's entry and must still answer for its own frame.
+    label_digest = cache_module._label_digest
+    cache_module._label_digest = lambda array: 0
+    try:
+        reader = frozen.observation_reader(tracking.frame_observations, None)
+        cache = cache_module.ObservationCache(reader, frozen.LabelMask)
+        shared_raw = raw_stack[frames[0]]
+        for t in frames:
+            for again in range(2):
+                expected, actual = reader(labels_stack[t], shared_raw), cache(labels_stack[t], shared_raw)
+                calls += 1
+                problem = same(expected, actual, frozen.LabelMask)
+                if problem:
+                    failures.append(f'clash-{t}-{again}: {problem}')
+        clash = dict(cache.stats)
+    finally:
+        cache_module._label_digest = label_digest
+    if not clash['hits'] or clash['misses'] < len(frames):
+        failures.append(f'clash-stats {clash}')
     report = dict(status='pass' if not failures else 'fail', calls=calls, seconds=times,
-                  failures=failures[:20])
+                  clash_stats=clash, failures=failures[:20])
     a.output.write_text(json.dumps(report, indent=1), encoding='utf-8')
     print(json.dumps(report, indent=1))
     return 0 if not failures else 1

@@ -32,7 +32,6 @@ Ported from Motion's ``analysis/modules/rhythms.py`` on 2026-09-21 (stage 04 of 
 
 from __future__ import annotations
 
-import json
 import numpy as np
 import pandas as pd
 
@@ -400,7 +399,7 @@ def derive(cell_frame: pd.DataFrame, context: MeasurementContext) -> dict[str, p
                     "method_rhythmic": method_rhythmic,
                     "method_rhythm_status": method_rhythm_status,
                     "period_estimator": entry["method"] == estimator_method,
-                    "workbench_run_record_json": json.dumps(analysed["run_record"], allow_nan=False),
+                    "workbench_run_record_json": workbench.run_record_json(analysed["run_record"]),
                     **method_entry,
                 })
 

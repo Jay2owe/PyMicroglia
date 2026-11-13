@@ -7,7 +7,9 @@ and the labels measured against themselves, as separated-body ownership calls
 it), given as plain arrays and read-only memmaps, and on random synthetic
 movies including empty, one-pixel and edge-touching frames. Nodes (dtype,
 shape, values), records (values and types), groups (order) and blocked must
-equal the original's.
+equal the original's. The same movies asked again (as copies, after the caller
+wrote into the last answer) give the held answer: equal, fresh, and with the
+blocked set in the same iteration order.
 """
 import argparse
 import json
@@ -90,10 +92,27 @@ def main():
         with adapter.install(stats):
             assert module.physical_paths.__wrapped__ is original
             actual = module.physical_paths(proposals, observed)
-        end = time.perf_counter()
+            end = time.perf_counter()
+            same(expected, actual)
+            # The same movies again, after the caller wrote into every part of
+            # the last answer: a fresh, equal answer whose blocked set iterates
+            # in the same order.
+            order = list(actual[3])
+            actual[0][...] = 7
+            if len(actual[1]) > 1:
+                actual[1][1]['node'] = -1
+            for group in actual[2].values():
+                group.append(-1)
+            actual[3].add(-5)
+            again = module.physical_paths(np.array(proposals), np.array(observed))
+            same(expected, again)
+            assert list(again[3]) == order
+            fresh = module.physical_paths(proposals, observed)
+            same(expected, fresh)
+            assert list(fresh[3]) == order
         assert module.physical_paths is original
-        same(expected, actual)
-        assert stats['fast'] == 1 and stats['fallback'] == 0, (name, stats)
+        assert stats['fast'] + stats.get('reused', 0) == 3 and stats['fallback'] == 0, (name, stats)
+        report['reused'] = report.get('reused', 0) + stats.get('reused', 0)
         report['seconds']['original'] += middle - tick
         report['seconds']['adapted'] += end - middle
         if not name.startswith('synthetic'):
@@ -101,6 +120,8 @@ def main():
                                          groups=len(expected[2]), blocked=len(expected[3]),
                                          seconds=dict(original=middle - tick, adapted=end - middle))
     report['synthetic'] = a.synthetic
+    # Real movies are under a quarter foreground, so each is held and asked twice more.
+    assert report['reused'] >= 2 * sum(not c[0].startswith('synthetic') for c in cases), report['reused']
     for array in maps:
         array._mmap.close()
     maps.clear()

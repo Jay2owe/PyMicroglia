@@ -71,7 +71,7 @@ def main():
         return ('ok', data.dtype.str, data.shape, hashlib.sha256(np.ascontiguousarray(data).tobytes()).hexdigest(),
                 json.dumps(actions, sort_keys=False), json.dumps(flags, sort_keys=False))
     with counts.install_loader(history) as loaded:
-        module = history._issue_module(history.I017, 'm3_repair')
+        module = history._issue_module(history.CONTINUITY_OPS, 'continuity_repair')
         assert loaded and loaded[0]['supported'], loaded
         original = module._end_path_original
         replaced = module._truncate_to_contiguous_end_path
@@ -101,7 +101,7 @@ def main():
         ending_expected.append(ending_outcome(original_ending, c)); module.complete_presence = presence
     ending_before = time.perf_counter() - tick
     with counts.install_loader(history) as loaded_again:
-        module = history._issue_module(history.I017, 'm3_repair')
+        module = history._issue_module(history.CONTINUITY_OPS, 'continuity_repair')
         replaced_ending = module._ending_search
         assert replaced_ending is not original_ending
         tick = time.perf_counter(); ending_actual = []

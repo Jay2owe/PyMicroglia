@@ -3,7 +3,8 @@
 Every frame of two accepted label stacks, read plain and from disk-backed
 working arrays, plus synthetic frames with negative values, touching
 identities and empty frames. Component numbers maps and component lists must
-be identical.
+be identical, and so must every component's mask (plus numbers that name no
+component), in value, shape, dtype and array type.
 """
 import argparse, json, sys, time
 from contextlib import ExitStack
@@ -28,7 +29,8 @@ def main():
     import lineage_frame_components as adapter
     import array_storage
     original = module._frame_components
-    failures, counts = [], dict(frames=0, components=0)
+    original_mask = module.FrameComponents.mask
+    failures, counts = [], dict(frames=0, components=0, masks=0)
     times = dict(original=0.0, adapted=0.0)
 
     def compare(frame, label):
@@ -38,6 +40,17 @@ def main():
             t1 = time.perf_counter(); actual = module._frame_components(frame)
             t2 = time.perf_counter()
             assert stats['fallback'] == 0
+            asked = list(actual.components)
+            top = int(np.max(expected.numbers, initial=0))
+            asked += [module.Component(number, 1, 0, 0.0, 0.0) for number in (0, top + 1, top + 7)]
+            for component in asked:
+                left, right = original_mask(expected, component), actual.mask(component)
+                counts['masks'] += 1
+                if not (type(left) is type(right) and left.dtype == right.dtype
+                        and left.shape == right.shape and np.array_equal(left, right)):
+                    failures.append(f'{label} mask {component.number}')
+            if type(actual.numbers) is np.ndarray and actual.components:
+                assert stats['boxed_masks'] > 0, stats
         times['original'] += t1 - t0; times['adapted'] += t2 - t1
         counts['frames'] += 1; counts['components'] += len(expected.components)
         if not (np.array_equal(expected.numbers, actual.numbers)

@@ -3,7 +3,6 @@ from contextlib import contextmanager
 import json
 import sys
 import types
-import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -15,9 +14,8 @@ from pymicroglia.tracking import process_proposals as repair
 
 @pytest.fixture
 def groups(tmp_path):
-    archive = Path(__file__).parents[1] / 'src/pymicroglia/tracking/data/completed_feedback_engine.zip'
-    with zipfile.ZipFile(archive) as z:
-        source = z.read('code/reunite_large_process_groups.py').decode()
+    engine = Path(__file__).parents[1] / 'src/pymicroglia/tracking/data/completed_feedback_engine'
+    source = (engine / 'code/reunite_large_process_groups.py').read_bytes().decode()
     path = tmp_path / 'groups.py'
     path.write_text(source)
     module = types.ModuleType('process_proposal_fixture')

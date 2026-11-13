@@ -82,14 +82,14 @@ UNIFORM = (['labels', 'unclaimed', 'raw', 'config', 'output_root'],
 # outputs explicitly. Labels saved before 04 are uncropped source frames.
 HEAD = {
     # First operation: inputs are the m12/m19 history fields, not checkpoints.
-    '_issue005': (dict(), dict(labels='01_issue005.tif')),
-    '_issue008': (dict(labels='03_issue007.tif'), dict(labels='04_issue008.tif')),
-    '_issue009': (dict(labels='04_issue008.tif'), dict(labels='05_issue009.tif')),
-    '_issue010': (dict(labels='05_issue009.tif'),
+    '_confidence_layered_retracking': (dict(), dict(labels='01_issue005.tif')),
+    '_ownership_quarantine': (dict(labels='03_issue007.tif'), dict(labels='04_issue008.tif')),
+    '_hierarchy_reconcile': (dict(labels='04_issue008.tif'), dict(labels='05_issue009.tif')),
+    '_short_lived_reclaim': (dict(labels='05_issue009.tif'),
                   dict(labels='06_issue010.tif', unclaimed='06_issue010_unclaimed.tif')),
-    '_issue011': (dict(labels='06_issue010.tif', unclaimed='06_issue010_unclaimed.tif'),
+    '_merge_split_reconcile': (dict(labels='06_issue010.tif', unclaimed='06_issue010_unclaimed.tif'),
                   dict(labels='07_issue011.tif', unclaimed='07_issue011_unclaimed.tif')),
-    '_issue012': (dict(labels='07_issue011.tif', unclaimed='07_issue011_unclaimed.tif',
+    '_domain_ownership_reconcile': (dict(labels='07_issue011.tif', unclaimed='07_issue011_unclaimed.tif',
                        issue010='06_issue010.tif'),
                   dict(labels='08_issue012.tif', unclaimed='08_issue012_unclaimed.tif')),
     '_seat_identity': (dict(labels='08_issue012.tif', unclaimed='08_issue012_unclaimed.tif'),
@@ -98,7 +98,7 @@ HEAD = {
     # blob residency, lineage aliases and continuity repair).
     '_issue017_block': (dict(labels='08_issue012.tif', unclaimed='08_issue012_unclaimed.tif'),
                         dict(labels='11_issue017_rebase.tif', unclaimed='11_issue017_rebase_unclaimed.tif')),
-    '_issue023_tail': (dict(labels='11_issue017_rebase.tif', unclaimed='11_issue017_rebase_unclaimed.tif'),
+    '_generalised_repairs': (dict(labels='11_issue017_rebase.tif', unclaimed='11_issue017_rebase_unclaimed.tif'),
                        dict(labels='12_issue023_generalized.tif', unclaimed='12_issue023_generalized_unclaimed.tif')),
     # Stationary reconciliation and the short-blank recovery between saves 12 and 13.
     '_issue027_block': (dict(labels='12_issue023_generalized.tif', unclaimed='12_issue023_generalized_unclaimed.tif'),
@@ -163,14 +163,14 @@ def issue027_block(ah, inputs, raw, lag, cfg, work):
             labels, _, _, events, _ = ah.discover_stationary_takeovers(labels, raw, stationary_params)
         else:
             events = pd.DataFrame()
-        labels, unclaimed, _, _ = ah._issue027_short_blank_recovery(
+        labels, unclaimed, _, _ = ah._short_blank_recovery(
             labels, unclaimed, raw, lag, cfg, work)
         return labels, unclaimed
     return call
 
 
 def issue005_call(ah, raw_full, lag_full, cfg, stem, work):
-    """_issue005 with the history fields decoded read-only from the m12 and m19 checkpoints."""
+    """_confidence_layered_retracking with the history fields decoded read-only from the m12 and m19 checkpoints."""
     import json
     import pipeline
     import tifffile
@@ -185,7 +185,7 @@ def issue005_call(ah, raw_full, lag_full, cfg, stem, work):
             setattr(history_inputs, name, decoder._load(value))
     physical, reservation, _, _, motion_reserved = history_inputs.required()
     observations, observation_table, anchor_t = pipeline._load_anchor_inputs(stem, REPLAY_RUN[0])
-    return lambda: ah._issue005(cfg, physical, reservation, raw_full, lag_full, observations,
+    return lambda: ah._confidence_layered_retracking(cfg, physical, reservation, raw_full, lag_full, observations,
                                 observation_table, anchor_t, motion_reserved)
 
 
@@ -196,10 +196,10 @@ def head_call(ah, name, inputs, raw_full, lag_full, cfg, stem, work):
     """Call one head operation exactly as run_accepted_history does."""
     offset = cfg.source_frame_offset
     interval = float(cfg.values['frame_interval_min'])
-    if name == '_issue005':
+    if name == '_confidence_layered_retracking':
         return issue005_call(ah, raw_full, lag_full, cfg, stem, work)
     labels = inputs['labels']
-    if name == '_issue008':
+    if name == '_ownership_quarantine':
         labels = labels[offset:].copy()
     raw = raw_full[offset:offset + len(labels)]
     lag = ah.align_transition_stack(lag_full, len(labels), offset)
@@ -208,15 +208,15 @@ def head_call(ah, name, inputs, raw_full, lag_full, cfg, stem, work):
     if name == '_issue017_block':
         return issue017_block(ah, inputs, raw_full, lag_full, raw, lag, cfg, stem, work, offset, interval)
     operation = getattr(ah, name)
-    if name in ('_issue008', '_issue009'):
+    if name in ('_ownership_quarantine', '_hierarchy_reconcile'):
         return lambda: operation(labels, raw, lag, stem, work, offset, frame_interval_min=interval)
-    if name == '_issue010':
+    if name == '_short_lived_reclaim':
         import pandas as pd
         authority = pd.read_csv(work / '12_movie_authority/out/movie_wide_authority.csv')
         return lambda: operation(labels, authority, lag, offset)
-    if name == '_issue011':
+    if name == '_merge_split_reconcile':
         return lambda: operation(labels, inputs['unclaimed'], raw, stem, work, offset)
-    if name == '_issue012':
+    if name == '_domain_ownership_reconcile':
         return lambda: operation(labels, inputs['unclaimed'], inputs['issue010'], raw, lag, offset)
     if name == '_seat_identity':
         return lambda: operation(labels, inputs['unclaimed'], raw, stem, work, offset, frame_interval_min=interval)
