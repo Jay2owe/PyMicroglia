@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace review</title>
+<link rel="stylesheet" href="/assets/trace-review.css">
+</head>
+<body>
+<div class="tr-shell">
+  <header class="tr-bar" aria-label="Review controls">
+    <strong id="tr-title" class="tr-title">Trace review</strong>
+    <span class="tr-group" id="tr-variants" aria-label="Rhythm variants"></span>
+    <label class="tr-switch" title="Overlay ticked variants and metrics on one trace. Only variants analysed over the same time window can be overlaid."><input id="tr-overlay" type="checkbox"> Overlay</label>
+    <span class="tr-group" id="tr-metrics" aria-label="Metrics" hidden></span>
+    <span class="tr-sep"></span>
+    <label>Sort <select id="tr-sort"></select></label>
+    <button id="tr-sort-dir" type="button" title="Reverse sort order">&#8595;</button>
+    <label>Show <select id="tr-filter">
+      <option value="all">All</option><option value="unreviewed">Unreviewed</option><option value="include">Included</option>
+      <option value="exclude">Excluded</option><option value="star">Starred</option><option value="suggested">Agent suggestions</option>
+      <option value="rhythmic">Rhythmic</option><option value="stale">Stale</option></select></label>
+    <label>Recording <select id="tr-recording"><option value="">All</option></select></label>
+    <span class="tr-sep"></span>
+    <label>Rows <select id="tr-rows"></select></label>
+    <label>Cols <select id="tr-cols"></select></label>
+    <label class="tr-switch"><input id="tr-images" type="checkbox"> Images</label>
+    <label class="tr-switch"><input id="tr-fit" type="checkbox" checked> Fit</label>
+    <label class="tr-switch"><input id="tr-inspector-toggle" type="checkbox" checked> Inspector</label>
+    <span class="tr-sep"></span>
+    <span id="tr-selection" class="tr-muted">0 selected</span>
+    <button id="tr-include" type="button" class="tr-include" title="Include selected cells (I)">Include</button>
+    <button id="tr-exclude" type="button" class="tr-exclude" title="Exclude selected cells (X)">Exclude</button>
+    <button id="tr-clear" type="button" title="Clear decision on selected cells (U)">Clear</button>
+    <button id="tr-star" type="button" title="Star or unstar selected cells as representative (S)">&#9733;</button>
+    <button id="tr-accept" type="button" title="Turn agent suggestions on selected (or all shown) cells into your decisions" hidden>Accept suggestions</button>
+    <button id="tr-handoff" type="button" class="tr-primary">Hand off</button>
+  </header>
+  <form id="tr-open" class="tr-open" hidden>
+    <label>Review or run folder <input id="tr-open-path" type="text" placeholder="Saved measurement run, or an existing trace_review folder" required></label>
+    <button type="submit" class="tr-primary">Open</button>
+    <span id="tr-open-message" class="tr-muted"></span>
+  </form>
+  <main class="tr-main">
+    <section id="tr-grid" class="tr-grid" aria-label="Cell traces" tabindex="0"></section>
+    <aside id="tr-inspector" class="tr-inspector" aria-label="Selected cell">
+      <div class="tr-inspector-head"><strong id="tr-cell-name">No cell</strong><span id="tr-cell-mark"></span></div>
+      <div class="tr-video-wrap"><canvas id="tr-video" width="320" height="320" aria-label="Cell crop with saved mask outline"></canvas><span id="tr-video-message" class="tr-video-message"></span></div>
+      <div class="tr-transport">
+        <button id="tr-play" type="button" title="Play or pause (P)">Play</button>
+        <input id="tr-frame" type="range" min="0" max="0" value="0" aria-label="Frame">
+        <output id="tr-time"></output>
+        <select id="tr-fps" aria-label="Playback rate"><option value="4">4 fps</option><option value="8" selected>8 fps</option><option value="16">16 fps</option></select>
+        <select id="tr-crop" aria-label="Crop size"><option value="48">48 px</option><option value="72" selected>72 px</option><option value="112">112 px</option><option value="160">160 px</option></select>
+      </div>
+      <canvas id="tr-trace" width="340" height="150" aria-label="Trace with video time cursor; click to move the video"></canvas>
+      <div id="tr-thumbs" class="tr-thumbs"></div>
+      <div class="tr-actions">
+        <button id="tr-cell-include" type="button" class="tr-include">Include</button>
+        <button id="tr-cell-exclude" type="button" class="tr-exclude">Exclude</button>
+        <button id="tr-cell-clear" type="button">Clear</button>
+        <button id="tr-cell-star" type="button">&#9733;</button>
+      </div>
+      <textarea id="tr-note" rows="2" placeholder="Note for this cell"></textarea>
+      <div id="tr-suggestion" class="tr-suggestion" hidden></div>
+      <details class="tr-how" open><summary>How it was produced</summary><div id="tr-provenance"></div></details>
+    </aside>
+  </main>
+  <footer class="tr-foot"><span id="tr-counts"></span><span id="tr-status" role="status" aria-live="polite"></span>
+    <span class="tr-muted">Click select · Shift/Ctrl add · I include · X exclude · U clear · S star · Space inspect · P play</span></footer>
+</div>
+<dialog id="tr-handoff-dialog">
+  <form method="dialog" class="tr-dialog">
+    <h2>Hand off decisions</h2>
+    <p id="tr-handoff-summary"></p>
+    <label>Variant for downstream analysis <select id="tr-handoff-variant"></select></label>
+    <label>Note for the next agent <textarea id="tr-handoff-note" rows="4" placeholder="e.g. use starred cells for the figure; re-run A4 with a 24-96 h window"></textarea></label>
+    <p id="tr-handoff-result" class="tr-muted"></p>
+    <div class="tr-dialog-actions"><button value="cancel">Close</button><button id="tr-handoff-save" value="default" class="tr-primary">Save handoff</button></div>
+  </form>
+</dialog>
+<script src="/assets/trace-review.js"></script>
+</body>
+</html>

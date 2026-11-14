@@ -60,6 +60,7 @@ MODULE_NAMES: tuple[str, ...] = (
     "visualisation.cell_image_grid",
     "visualisation.cell_video_grid",
     "visualisation.cell_review",
+    "ui.trace_review",
     "video.cell_cards",
     "publication",
     "video",
@@ -473,6 +474,10 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "tracked_cell_video": "drew tracked-cell outlines over the original photons from {source}",
     "tracked_cell_image": "drew tracked-cell outlines over one original-photon frame from {source}",
     "cell_review": "exported linked interactive views of the saved cell masks from {source}",
+    "trace_review_create": "set up the trace review for {source}",
+    "trace_review_import": "imported an older trace grid into the trace review {source}",
+    "trace_review_suggest": "suggested cells for Jamie to include or exclude in the trace review {source}",
+    "trace_review_handoff": "read the trace review decisions handed off from {source}",
     "mask_change_map": "mapped measured changes in the saved cell masks from {source}",
     "cell_time_sculpture": "plotted observed cell outlines through time from {source}",
     "cell_trace_card": "plotted an original cell image and its measured traces from {source}",
@@ -508,6 +513,8 @@ NEEDS_A_CLAIM: frozenset[str] = frozenset({'rhythm_discovery', 'method_audit', '
     "measure_fixed_apertures",
     "run_controls",
     "test_rhythm",
+    # A variant tests rhythmicity under new settings; the agent says why.
+    "trace_review_variant",
     "test_simulation_rhythm",
     # Which pixels are which cell, across time: the same kind of conclusion
     # as ``segment``, made over the whole recording.

@@ -1623,6 +1623,56 @@
     },
     {
       "kind": "action",
+      "name": "trace_review_create",
+      "view": "",
+      "title": "Trace Review Create",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Create or extend the trace review for a run's recordings, where Jamie includes, excludes and stars cells.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "trace_review_import",
+      "view": "",
+      "title": "Trace Review Import",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Convert an older trace-grid figure folder (statistics.csv, figure_data.csv, sources.csv) into a trace review variant.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "trace_review_variant",
+      "view": "",
+      "title": "Trace Review Variant",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Run one rhythm-analysis variant (method, detrend, metrics, label, time window) over every recording in a trace review.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "trace_review_suggest",
+      "view": "",
+      "title": "Trace Review Suggest",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Record agent include/exclude suggestions in a trace review; they are shown to Jamie and never applied as decisions.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
+      "name": "trace_review_handoff",
+      "view": "",
+      "title": "Trace Review Handoff",
+      "home": "micro/rhythms",
+      "style": "operation",
+      "summary": "Read Jamie's frozen trace review decisions for downstream analysis, flagging recordings re-measured since.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
       "name": "method_audit",
       "view": "",
       "title": "Method Audit",

@@ -3725,6 +3725,198 @@
       "source": []
     },
     {
+      "name": "trace_review_create",
+      "summary": "Create or extend the trace review for a run's recordings, where Jamie includes, excludes and stars cells.",
+      "method": "ui.trace_review.trace_review_create",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "review_dir",
+        "stems",
+        "review_title"
+      ],
+      "defaults": {
+        "source": null,
+        "review_dir": null,
+        "stems": null,
+        "review_title": null
+      },
+      "parameter_details": {
+        "source": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+        },
+        "review_dir": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Review folder; None uses <run>/AI_Exports/trace_review."
+        },
+        "stems": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Recording names to include; None includes every recording in the run."
+        },
+        "review_title": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Title shown above the review grid; None keeps the existing or folder name."
+        }
+      },
+      "method_version": "2026-10-27-trace-review-v1",
+      "source": []
+    },
+    {
+      "name": "trace_review_variant",
+      "summary": "Run one rhythm-analysis variant (method, detrend, metrics, label, time window) over every recording in a trace review.",
+      "method": "ui.trace_review.trace_review_variant",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "rhythm_options",
+        "fit_workers"
+      ],
+      "defaults": {
+        "source": null,
+        "rhythm_options": null,
+        "fit_workers": null
+      },
+      "parameter_details": {
+        "source": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+        },
+        "rhythm_options": {
+          "type": "dict",
+          "units": "-",
+          "required": true,
+          "description": "run_rhythm_analysis settings, plus label and window_start_hours/window_end_hours; identical completed analyses are reused."
+        },
+        "fit_workers": {
+          "type": "int",
+          "units": "-",
+          "required": false,
+          "description": "Fitting processes per recording, 1 to 8; None chooses from the cell count."
+        }
+      },
+      "method_version": "2026-10-27-trace-review-v1",
+      "source": []
+    },
+    {
+      "name": "trace_review_import",
+      "summary": "Convert an older trace-grid figure folder (statistics.csv, figure_data.csv, sources.csv) into a trace review variant.",
+      "method": "ui.trace_review.trace_review_import",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "legacy_folder",
+        "variant_label"
+      ],
+      "defaults": {
+        "source": null,
+        "legacy_folder": null,
+        "variant_label": null
+      },
+      "parameter_details": {
+        "source": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+        },
+        "legacy_folder": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "Older figure-export folder; read only, never modified."
+        },
+        "variant_label": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Name shown on the variant chip; None uses the folder name."
+        }
+      },
+      "method_version": "2026-10-27-trace-review-v1",
+      "source": []
+    },
+    {
+      "name": "trace_review_suggest",
+      "summary": "Record agent include/exclude suggestions in a trace review; they are shown to Jamie and never applied as decisions.",
+      "method": "ui.trace_review.trace_review_suggest",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source",
+        "suggestions",
+        "agent"
+      ],
+      "defaults": {
+        "source": null,
+        "suggestions": null,
+        "agent": null
+      },
+      "parameter_details": {
+        "source": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+        },
+        "suggestions": {
+          "type": "list",
+          "units": "-",
+          "required": true,
+          "description": "Rows of {cell, status: include|exclude, reason}; cell keys come from the review grid or handoff."
+        },
+        "agent": {
+          "type": "str",
+          "units": "-",
+          "required": true,
+          "description": "Name of the suggesting agent, shown beside each suggestion."
+        }
+      },
+      "method_version": "2026-10-27-trace-review-v1",
+      "source": []
+    },
+    {
+      "name": "trace_review_handoff",
+      "summary": "Read Jamie's frozen trace review decisions for downstream analysis, flagging recordings re-measured since.",
+      "method": "ui.trace_review.trace_review_handoff",
+      "mutates": true,
+      "destructive": false,
+      "display_only": false,
+      "params": [
+        "source"
+      ],
+      "defaults": {
+        "source": null
+      },
+      "parameter_details": {
+        "source": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "What the action reads: the TIFF time series for a processing or quality-control action, or the trace CSV for a trace panel. The folder holding it also works."
+        }
+      },
+      "method_version": "2026-10-27-trace-review-v1",
+      "source": []
+    },
+    {
       "name": "states",
       "summary": "Learn shared cell-frame states and describe their dynamics and separately tested rhythms.",
       "method": "states.states",

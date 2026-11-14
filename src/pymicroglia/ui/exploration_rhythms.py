@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import shutil
 from datetime import datetime, timezone
@@ -22,6 +23,10 @@ ADVANCED_OPTION_NAMES = ("trace_filter", "period_config", "detrend_window_hours"
                          "detrend_lowess_fraction", "detrend_lowess_iterations",
                          "detrend_asls_smoothness", "detrend_asls_asymmetry", "detrend_asls_iterations")
 OPTION_NAMES = (*OPTION_NAMES, *ADVANCED_OPTION_NAMES)
+# Review variants: a name and an optional recording-hour window, applied before
+# fitting. They are not figure options, so they default here.
+VARIANT_OPTION_NAMES = ("label", "window_start_hours", "window_end_hours")
+VARIANT_DEFAULTS = dict.fromkeys(VARIANT_OPTION_NAMES)
 
 
 def _defaults():
@@ -103,12 +108,20 @@ def rhythm_options(run, stem):
 
 
 def validate_request(run, stem, options):
-    if not isinstance(options, dict) or set(options) - {*OPTION_NAMES, "metrics"}:
+    if not isinstance(options, dict) or set(options) - {*OPTION_NAMES, *VARIANT_OPTION_NAMES, "metrics"}:
         raise ValueError("Unknown rhythm analysis settings.")
     root, saved, movie = recording(run, stem)
     path, observations, frames, metrics = _observations(root, movie)
     defaults = _defaults()
-    config = {**defaults, **options}
+    config = {**defaults, **VARIANT_DEFAULTS, **options}
+    label = config["label"]
+    if label is not None and (not isinstance(label, str) or not 0 < len(label.strip()) <= 80):
+        raise ValueError("A variant label is 1 to 80 characters.")
+    window = [config["window_start_hours"], config["window_end_hours"]]
+    if any(v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)) for v in window):
+        raise ValueError("Window limits are recording hours, or blank for the start or end.")
+    if None not in window and window[0] >= window[1]:
+        raise ValueError("The window must end after it starts.")
     keys = {m["key"] for m in metrics}
     if "metrics" not in options:
         config["metrics"] = [key for key in defaults["metrics"] if key in keys]
@@ -194,6 +207,12 @@ def run_rhythm_analysis(run, stem, options=None, *, analysis_id=None, progress=N
     frame = pd.DataFrame(read_rows(path))
     for column in {"identity", "frame_index", "hours", *config["metrics"]}:
         frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    start, end = config["window_start_hours"], config["window_end_hours"]
+    if start is not None or end is not None:
+        inside = frame["hours"].between(-math.inf if start is None else start, math.inf if end is None else end)
+        frame = frame[inside].reset_index(drop=True)
+        if frame.empty:
+            raise ValueError("No saved observations fall inside the chosen window.")
 
     class Source:
         def table(self, name):
@@ -266,7 +285,7 @@ def run_rhythm_analysis(run, stem, options=None, *, analysis_id=None, progress=N
         "if __name__ == '__main__':\n"
         "    result = json.loads(Path(__file__).with_name('result.json').read_text(encoding='utf-8'))\n"
         "    run_rhythm_analysis(result['run'], result['stem'], {k: v for k, v in result['resolved_options'].items() "
-        f"if k in {list(OPTION_NAMES)!r} or k == 'metrics'}}, workers=result.get('execution', {{}}).get('workers', 1))\n", encoding="utf-8")
+        f"if k in {[*OPTION_NAMES, *VARIANT_OPTION_NAMES]!r} or k == 'metrics'}}, workers=result.get('execution', {{}}).get('workers', 1))\n", encoding="utf-8")
     _atomic_json(folder.parent / "latest.json", {"result": f"{identifier}/result.json"})
     return result
 
