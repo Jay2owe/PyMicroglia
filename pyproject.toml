@@ -94,7 +94,8 @@ rhythm  = ["circadian-workbench>=0.15,<0.16"]
 # ``scn_outline`` prints when the outline cannot resolve â€” and an extra that
 # stops existing turns all three into a warning nobody reads.
 scn     = ["Auto-Organotypic>=0.7.2,<0.8"]
-test    = ["pytest>=8.0"]
+# Starlette 1.x's TestClient needs httpx2; earlier releases use httpx.
+test    = ["pytest>=8.0", "httpx2>=2"]
 ui      = ["fastapi>=0.115", "uvicorn>=0.30"]
 desktop = ["fastapi>=0.115", "uvicorn>=0.30", "pywebview>=5.0"]
 

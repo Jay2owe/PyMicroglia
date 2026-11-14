@@ -99,8 +99,9 @@ def protected_fingerprints(root: Path) -> dict[str, str]:
     server = (ui / "server.py").read_text(encoding="utf-8")
     def block(text, start, end):
         return text[text.index(start):text.index(end, text.index(start))]
-    values = {"styles": (ui / "static/styles.css").read_bytes(),
-              "desktop": (ui / "desktop.py").read_bytes(),
+    # Unix line endings, so a Windows checkout pins the same bytes as GitHub's.
+    values = {"styles": (ui / "static/styles.css").read_bytes().replace(b"\r\n", b"\n"),
+              "desktop": (ui / "desktop.py").read_bytes().replace(b"\r\n", b"\n"),
               "openAuto": block(js, "  function openAuto()", "  function renderNav()"),
               "motion_handlers": block(js, "  async function openMotion()", "  async function initialize()"),
               "motion_proxy": block(server, '    @app.api_route("/api/motion/', "    if STATIC.is_dir()")}
