@@ -1273,6 +1273,16 @@
     },
     {
       "kind": "action",
+      "name": "test_simulation_rhythm",
+      "view": "",
+      "title": "Test Simulation Rhythm",
+      "home": "auto/source and channels",
+      "style": "operation",
+      "summary": "Optional simulation-based rhythm test through detected outlines, with shared recording optics, summed light and conditional block significance.",
+      "requires_saved_pipeline": false
+    },
+    {
+      "kind": "action",
       "name": "unmix",
       "view": "",
       "title": "Unmix",
