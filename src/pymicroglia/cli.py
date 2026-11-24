@@ -71,6 +71,9 @@ def build_parser() -> argparse.ArgumentParser:
     ui.add_argument("--project", default=None, help="saved Auto-Organotypic project folder")
     ui.add_argument("--motion-root", default=None, help="Motion checkout with saved edit sessions")
     ui.add_argument("--motion-url", default=None, help="already-running loopback Motion service")
+    ui.add_argument("--idle-timeout", type=float, default=None,
+                    help="with --browser, stop this many seconds after the page closes "
+                         "(default 90, or PYMICROGLIA_UI_IDLE_TIMEOUT; 0 never stops)")
     serve = sub.add_parser("serve", help="serve the workbench on this computer")
     serve.add_argument("--project", default=None)
     serve.add_argument("--motion-root", default=None)
@@ -219,7 +222,8 @@ def main(argv: list[str] | None = None) -> int:
         from .ui.desktop import launch
         return launch(browser=getattr(args, "browser", False), project=args.project,
                       motion_root=args.motion_root, motion_url=args.motion_url,
-                      serve_only=command == "serve")
+                      serve_only=command == "serve",
+                      idle_timeout=getattr(args, "idle_timeout", None))
 
     if command == "doctor":
         return _emit(knowledge.doctor())

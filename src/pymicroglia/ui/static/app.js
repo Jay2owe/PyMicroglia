@@ -467,7 +467,14 @@
   async function chooseMotionSource(value){
     state.motionSource=value;state.motionInfo=null;
     localStorage.setItem("pm-motion-source",value);
-    if(value){try{state.motionInfo=await api(`/api/motion/source?source=${encodeURIComponent(value)}`);state.motionFrame=1;
+    if(value){
+      // Motion reads the whole saved session before answering: up to a minute for a large one.
+      const name=value.split(/[\\/]/).filter(Boolean).pop();
+      $("motion-content").innerHTML="";$("motion-status").textContent=`Opening ${name}…`;
+      motionSection(`Opening ${name}…`,"Reading the saved tracks. A large session can take up to a minute; the frames appear here when it is ready.");
+      try{const info=await api(`/api/motion/source?source=${encodeURIComponent(value)}`);
+        if(state.motionSource!==value)return;   // another source was chosen while this one was opening
+        state.motionInfo=info;state.motionFrame=1;
         $("motion-status").textContent=`${state.motionInfo.frames} frames · ${state.motionInfo.identities} identities`;
       }catch(error){$("motion-status").textContent=error.message;}}
     renderMotionPage();

@@ -1,0 +1,40 @@
+{
+  "phase": "after",
+  "rows": 3,
+  "button": "Run full analysis on 3 recordings",
+  "beside_button": "Choose the signal channel.",
+  "signal_preselected": [
+    "",
+    "",
+    ""
+  ],
+  "run_disabled_before_signal": true,
+  "hint_before_signal": "Choose the signal channel.",
+  "signal_after_choice": [
+    "2",
+    "2",
+    "2"
+  ],
+  "plan_with_outline": "Runs: registration, outline, region traces, spatial grid, cell masks, cell traces, tracking, gap check, measurement, cell grid images, cell grid videos, tracked-cell image, tracked-cell video. Every step and setting is recorded in the run folder.",
+  "plan_without_tracking": "Runs: registration, outline, region traces, spatial grid, cell masks, cell traces. Track cells over time is off, so gap check, measurement, cell grid images, cell grid videos, tracked-cell image will not run. Every step and setting is recorded in the run folder.",
+  "plan_final": "Runs: registration, outline, region traces, spatial grid, cell masks, cell traces, tracking, gap check, measurement, cell grid images, cell grid videos, tracked-cell image. Every step and setting is recorded in the run folder.",
+  "narrow_overflow": false,
+  "run_keywords": {
+    "folder": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pm-intakecheck-i6xcnwhc\\Microglia 2026-11\\pymicroglia_analysis",
+    "tracked_video": false,
+    "outline": true,
+    "channel": 3
+  },
+  "after_stop": "Stopped: RuntimeError: Stopped by request after the current stage\nregister \u2192 register \u2192 register \u2192 register \u2192 register",
+  "manifest_written": true,
+  "manifest_signals": [
+    "2"
+  ],
+  "desktop_buttons": [
+    "Read",
+    "Choose stacks\u2026",
+    "Choose folder\u2026"
+  ],
+  "desktop_folder_rows": 3,
+  "page_errors": []
+}

@@ -24932,6 +24932,306 @@
       "source": []
     },
     {
+      "name": "tracking_tower",
+      "summary": "Saved identities followed through stacked snapshot planes",
+      "method": "figure_tables.actions.tracking_tower",
+      "mutates": true,
+      "destructive": false,
+      "display_only": true,
+      "params": [
+        "run",
+        "stem",
+        "view",
+        "theme",
+        "output_dir",
+        "output_formats",
+        "dpi",
+        "overwrite",
+        "claim",
+        "text",
+        "fig_width_in",
+        "fig_height_in",
+        "workers",
+        "figure_profile",
+        "figure_safe_columns",
+        "public_sources",
+        "dpi_preset",
+        "render_preset",
+        "render_width_in",
+        "render_height_in",
+        "format_options",
+        "allow_reencode",
+        "proof",
+        "required_grades",
+        "signing_key_path",
+        "signing_password_env",
+        "trust_policy_path",
+        "encrypted_sections",
+        "encryption_password_env",
+        "recipient_file",
+        "broker_policy_path",
+        "item",
+        "display_preset",
+        "tower_settings"
+      ],
+      "defaults": {
+        "run": null,
+        "stem": null,
+        "view": null,
+        "theme": "pyflash",
+        "output_dir": null,
+        "output_formats": [
+          "svg"
+        ],
+        "dpi": 150,
+        "overwrite": false,
+        "claim": "",
+        "text": null,
+        "fig_width_in": null,
+        "fig_height_in": null,
+        "workers": 1,
+        "figure_profile": "master",
+        "figure_safe_columns": [],
+        "public_sources": null,
+        "dpi_preset": null,
+        "render_preset": null,
+        "render_width_in": null,
+        "render_height_in": null,
+        "format_options": null,
+        "allow_reencode": false,
+        "proof": false,
+        "required_grades": [],
+        "signing_key_path": null,
+        "signing_password_env": null,
+        "trust_policy_path": null,
+        "encrypted_sections": [],
+        "encryption_password_env": null,
+        "recipient_file": null,
+        "broker_policy_path": null,
+        "item": null,
+        "display_preset": "cd68",
+        "tower_settings": {}
+      },
+      "parameter_details": {
+        "run": {
+          "type": "path",
+          "units": "-",
+          "required": true,
+          "description": "Saved measurement run whose tables this action reads."
+        },
+        "stem": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Stem."
+        },
+        "view": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Named view; null composes every view.",
+          "choices": [
+            "line",
+            "perimeter"
+          ]
+        },
+        "theme": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "The house look, by name, from analysis-kit. 'engine' is the deliberate exception: it leaves Matplotlib's own defaults alone so a ported figure comes out pixel-for-pixel like the script it replaces."
+        },
+        "output_dir": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Folder where this action writes its results."
+        },
+        "output_formats": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Extra copies: e.g. [\"png\", \"svg\", \"pdf\"]."
+        },
+        "dpi": {
+          "type": "int",
+          "units": "-",
+          "required": false,
+          "description": "Raster resolution. 150 for review, 300+ for print; file size grows with the square."
+        },
+        "overwrite": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Replace an existing output. Off by default: refusing to overwrite is what stops a re-run destroying the figures you were comparing against."
+        },
+        "claim": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "The one sentence this figure proves, written into the provenance bundle. Left empty, one is generated from what was actually drawn."
+        },
+        "text": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Text."
+        },
+        "fig_width_in": {
+          "type": "float",
+          "units": "-",
+          "required": false,
+          "description": "Figure width, inches."
+        },
+        "fig_height_in": {
+          "type": "float",
+          "units": "-",
+          "required": false,
+          "description": "Figure height, inches."
+        },
+        "workers": {
+          "type": "int",
+          "units": "-",
+          "required": false,
+          "description": "Independent fitting processes, 1 to 8; more than 1 supports cell_grid with trace analysis and all_cell_trace_grid. Default 1. Python scripts using workers need an if __name__ == '__main__' guard."
+        },
+        "figure_profile": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Embedded ReproFig record profile: master, public, or minimal_public."
+        },
+        "figure_safe_columns": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Columns explicitly approved for a public figure and its safe CSV."
+        },
+        "public_sources": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Approved source name or hash to public URL replacements."
+        },
+        "dpi_preset": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Named ReproFig raster resolution: screen, continuous_tone, or line_art. Exact dpi wins."
+        },
+        "render_preset": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Alias for dpi_preset when describing the intended render rather than a numeric resolution."
+        },
+        "render_width_in": {
+          "type": "float",
+          "units": "in",
+          "required": false,
+          "description": "Export width in inches; supplying only width preserves the authored aspect ratio."
+        },
+        "render_height_in": {
+          "type": "float",
+          "units": "in",
+          "required": false,
+          "description": "Export height in inches; supplying only height preserves the authored aspect ratio."
+        },
+        "format_options": {
+          "type": "mapping",
+          "units": "-",
+          "required": false,
+          "description": "Encoder options shared by all outputs or keyed by figure format."
+        },
+        "allow_reencode": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Allow ReproFig to re-encode a carrier when its metadata cannot otherwise be embedded safely."
+        },
+        "proof": {
+          "type": "bool",
+          "units": "-",
+          "required": false,
+          "description": "Capture semantic marks and a proof root. Off preserves the existing lightweight exact-data figure workflow."
+        },
+        "required_grades": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Verification meanings that must pass, such as internally_consistent or display_verified."
+        },
+        "signing_key_path": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Protected Ed25519 signing-key file; never key contents."
+        },
+        "signing_password_env": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Name of the environment variable holding the signing-key password."
+        },
+        "trust_policy_path": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Offline signer trust-store file used only for explicit verification."
+        },
+        "encrypted_sections": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Evidence section identities to encrypt before the artifact is signed."
+        },
+        "encryption_password_env": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Name of the environment variable holding a section password."
+        },
+        "recipient_file": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "JSON mapping of approved recipient names to public encryption keys."
+        },
+        "broker_policy_path": {
+          "type": "path",
+          "units": "-",
+          "required": false,
+          "description": "Controlled-output broker policy used for explicit promotion."
+        },
+        "item": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "Saved figure-plan item identifying the exact scientific inputs."
+        },
+        "display_preset": {
+          "type": "str",
+          "units": "-",
+          "required": false,
+          "description": "approved image display recipe (filter, pooled contrast, gamma, lookup table) for the reporter: cd68, cry1, rbm3 or none",
+          "choices": [
+            "cd68",
+            "cry1",
+            "rbm3",
+            "none"
+          ]
+        },
+        "tower_settings": {
+          "type": "dict",
+          "units": "-",
+          "required": false,
+          "description": "overrides of the approved tracking-tower layout by TowerSettings field name (snapshot_interval_h, plane_gap_ratio, outline_width_pt, surface_opacity, ...); empty keeps the defaults"
+        }
+      },
+      "method_version": "2026-09-21-measure-chassis-v1",
+      "source": []
+    },
+    {
       "name": "tissue_expansion_sequence",
       "summary": "Within-cell changes across the tissue",
       "method": "figure_tables.actions.tissue_expansion_sequence",
@@ -25395,7 +25695,11 @@
         "detrend_lowess_iterations",
         "detrend_asls_smoothness",
         "detrend_asls_asymmetry",
-        "detrend_asls_iterations"
+        "detrend_asls_iterations",
+        "underlay",
+        "underlay_luts",
+        "underlay_weights",
+        "underlay_alpha"
       ],
       "defaults": {
         "run": null,
@@ -25467,7 +25771,11 @@
         "detrend_lowess_iterations": null,
         "detrend_asls_smoothness": null,
         "detrend_asls_asymmetry": null,
-        "detrend_asls_iterations": null
+        "detrend_asls_iterations": null,
+        "underlay": [],
+        "underlay_luts": [],
+        "underlay_weights": [],
+        "underlay_alpha": 0.6
       },
       "parameter_details": {
         "run": {
@@ -25881,6 +26189,30 @@
           "units": "-",
           "required": false,
           "description": "Reweighting passes used by asymmetric least-squares detrending."
+        },
+        "underlay": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Real channel images drawn beneath the map, comma separated: a recorded input name (raw) or name=path to a TIFF in label coordinates (brightfield=bf_mean.tif). A stack is averaged over the label movie's frames; several channels are combined. Empty draws no underlay."
+        },
+        "underlay_luts": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "colour map per underlay channel, comma separated in channel order; one value applies to all. Empty uses the house map for brightfield, phase, red, green, raw or bioluminescence."
+        },
+        "underlay_weights": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "brightness weight per underlay channel when several are combined, comma separated; empty weights each channel 1. Brightfield at 0.5 keeps fluorescence readable."
+        },
+        "underlay_alpha": {
+          "type": "float",
+          "units": "-",
+          "required": false,
+          "description": "opacity of a pixel map over its channel underlay, above 0 and at most 1; cell markers stay opaque"
         }
       },
       "method_version": "2026-09-21-measure-chassis-v1",
@@ -34440,6 +34772,10 @@
         "map_luts",
         "map_range",
         "reporter_metric",
+        "underlay",
+        "underlay_luts",
+        "underlay_weights",
+        "underlay_alpha",
         "fit_method",
         "significance_method",
         "period_config",
@@ -34503,6 +34839,10 @@
         "map_luts": [],
         "map_range": "robust",
         "reporter_metric": "integrated_density_mean3",
+        "underlay": [],
+        "underlay_luts": [],
+        "underlay_weights": [],
+        "underlay_alpha": 0.6,
         "fit_method": null,
         "significance_method": null,
         "period_config": {},
@@ -34756,6 +35096,30 @@
           "units": "-",
           "required": false,
           "description": "Reporter measurement used for tissue period maps; choose corrected_mean for an older saved run without the three-frame total column."
+        },
+        "underlay": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "Real channel images drawn beneath the map, comma separated: a recorded input name (raw) or name=path to a TIFF in label coordinates (brightfield=bf_mean.tif). A stack is averaged over the label movie's frames; several channels are combined. Empty draws no underlay."
+        },
+        "underlay_luts": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "colour map per underlay channel, comma separated in channel order; one value applies to all. Empty uses the house map for brightfield, phase, red, green, raw or bioluminescence."
+        },
+        "underlay_weights": {
+          "type": "list",
+          "units": "-",
+          "required": false,
+          "description": "brightness weight per underlay channel when several are combined, comma separated; empty weights each channel 1. Brightfield at 0.5 keeps fluorescence readable."
+        },
+        "underlay_alpha": {
+          "type": "float",
+          "units": "-",
+          "required": false,
+          "description": "opacity of a pixel map over its channel underlay, above 0 and at most 1; cell markers stay opaque"
         },
         "fit_method": {
           "type": "str",
@@ -36265,6 +36629,13 @@
       "description": "Accepted sparse identity-label TIFF used to recover the observed outlines on both sides of a gap."
     },
     {
+      "name": "agent",
+      "type": "str",
+      "units": "-",
+      "required": true,
+      "description": "Name of the suggesting agent, shown beside each suggestion."
+    },
+    {
       "name": "allow_full_frame_valid",
       "type": "bool",
       "units": "-",
@@ -37473,6 +37844,19 @@
       "description": "spatial pooling width for adaptive display denoising, in pixels"
     },
     {
+      "name": "display_preset",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "approved image display recipe (filter, pooled contrast, gamma, lookup table) for the reporter: cd68, cry1, rbm3 or none",
+      "choices": [
+        "cd68",
+        "cry1",
+        "rbm3",
+        "none"
+      ]
+    },
+    {
       "name": "display_range",
       "type": "list",
       "units": "source intensity",
@@ -37811,6 +38195,13 @@
         "mfourfit",
         "spectrum_resampling"
       ]
+    },
+    {
+      "name": "fit_workers",
+      "type": "int",
+      "units": "-",
+      "required": false,
+      "description": "Fitting processes per recording, 1 to 8; None chooses from the cell count."
     },
     {
       "name": "floor_off_tissue_pct",
@@ -38336,6 +38727,13 @@
       "units": "hours",
       "required": false,
       "description": "Exposure to assemble for the network, as an unblurred rolling mean. Left out, the duration the weights were trained on. Converted to the nearest odd number of this recording's frames, because the mean is centred."
+    },
+    {
+      "name": "legacy_folder",
+      "type": "path",
+      "units": "-",
+      "required": true,
+      "description": "Older figure-export folder; read only, never modified."
     },
     {
       "name": "legend_font_size",
@@ -39689,11 +40087,32 @@
       "description": "A pymicroglia.review.Review to record judgement calls into, so several runs can share one. Left out, the run makes its own and loads any answers already stored against this source."
     },
     {
+      "name": "review_dir",
+      "type": "path",
+      "units": "-",
+      "required": false,
+      "description": "Review folder; None uses <run>/AI_Exports/trace_review."
+    },
+    {
+      "name": "review_title",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Title shown above the review grid; None keeps the existing or folder name."
+    },
+    {
       "name": "rhythm_metric",
       "type": "str",
       "units": "-",
       "required": false,
       "description": "measurement whose rhythm result is compared between cells"
+    },
+    {
+      "name": "rhythm_options",
+      "type": "dict",
+      "units": "-",
+      "required": true,
+      "description": "run_rhythm_analysis settings, plus label and window_start_hours/window_end_hours; identical completed analyses are reused."
     },
     {
       "name": "rhythmic_alpha",
@@ -40473,6 +40892,13 @@
       "description": "Stem."
     },
     {
+      "name": "stems",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Recording names to include; None includes every recording in the run."
+    },
+    {
       "name": "structural",
       "type": "array",
       "units": "counts",
@@ -40492,6 +40918,13 @@
       "units": "-",
       "description": "Empty = generated. \" \" suppresses it.",
       "required": false
+    },
+    {
+      "name": "suggestions",
+      "type": "list",
+      "units": "-",
+      "required": true,
+      "description": "Rows of {cell, status: include|exclude, reason}; cell keys come from the review grid or handoff."
     },
     {
       "name": "summary_level",
@@ -40739,6 +41172,13 @@
       "description": "number of top-ranked frames retained per cell"
     },
     {
+      "name": "tower_settings",
+      "type": "dict",
+      "units": "-",
+      "required": false,
+      "description": "overrides of the approved tracking-tower layout by TowerSettings field name (snapshot_interval_h, plane_gap_ratio, outline_width_pt, surface_opacity, ...); empty keeps the defaults"
+    },
+    {
       "name": "trace_channel",
       "type": "int",
       "units": "one-based channel",
@@ -40856,6 +41296,34 @@
       "description": "Pixel size when the file is not calibrated. Measurements stay in pixels and display scale bars are omitted without it."
     },
     {
+      "name": "underlay",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "Real channel images drawn beneath the map, comma separated: a recorded input name (raw) or name=path to a TIFF in label coordinates (brightfield=bf_mean.tif). A stack is averaged over the label movie's frames; several channels are combined. Empty draws no underlay."
+    },
+    {
+      "name": "underlay_alpha",
+      "type": "float",
+      "units": "-",
+      "required": false,
+      "description": "opacity of a pixel map over its channel underlay, above 0 and at most 1; cell markers stay opaque"
+    },
+    {
+      "name": "underlay_luts",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "colour map per underlay channel, comma separated in channel order; one value applies to all. Empty uses the house map for brightfield, phase, red, green, raw or bioluminescence."
+    },
+    {
+      "name": "underlay_weights",
+      "type": "list",
+      "units": "-",
+      "required": false,
+      "description": "brightness weight per underlay channel when several are combined, comma separated; empty weights each channel 1. Brightfield at 0.5 keeps fluorescence readable."
+    },
+    {
       "name": "unmixing_coefficient",
       "type": "float",
       "units": "-",
@@ -40875,6 +41343,13 @@
       "units": "-",
       "description": "Extra multiplier, applied whatever NORMALISE is. Set to 100 when plotting a column that already holds a fraction (a *_dFF or *_fractional column with DETREND_METHOD = \"none\"), so the axis reads in percent. CAUTION: leaving it at 1 there gives an axis marked % whose numbers are fractions, understating every amplitude a hundredfold.",
       "required": false
+    },
+    {
+      "name": "variant_label",
+      "type": "str",
+      "units": "-",
+      "required": false,
+      "description": "Name shown on the variant chip; None uses the folder name."
     },
     {
       "name": "venvpythonrelativepath",

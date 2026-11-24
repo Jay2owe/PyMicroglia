@@ -350,13 +350,16 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame | np.ndarray]
     owners: dict[int, np.ndarray] = {
         identity: np.zeros(shape, dtype=bool) for identity in context.identities
     }
+    frames_by_owner: dict[int, list[int]] = {}
     for frame_index in range(context.n_frames):
         frame = labels[frame_index]
         unclaimed = (first_owner == 0) & (frame > 0)
         first_owner[unclaimed] = frame[unclaimed].astype(np.uint32)
         for identity in (int(value) for value in np.unique(frame) if value):
-            owners.setdefault(identity, np.zeros(shape, dtype=bool))
+            if identity not in owners:
+                owners[identity] = np.zeros(shape, dtype=bool)
             owners[identity] |= frame == identity
+            frames_by_owner.setdefault(identity, []).append(frame_index)
     owner_count = np.zeros(shape, dtype=np.uint16)
     for occupied in owners.values():
         owner_count += occupied.astype(np.uint16)
@@ -365,24 +368,26 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame | np.ndarray]
     frame_rows: list[dict] = []
     unions: dict[int, np.ndarray] = {}
     for identity in sorted(owners):
-        occupied_frames = [
-            frame_index for frame_index in range(context.n_frames)
-            if np.any(labels[frame_index] == identity)
-        ]
+        occupied_frames = frames_by_owner.get(identity, [])
+        if identity == 0:
+            # Normal input identities exclude background; retain the historical
+            # direct-call behaviour when a caller explicitly includes it.
+            occupied_frames = [i for i in range(context.n_frames)
+                               if np.any(labels[i] == 0)]
         if not occupied_frames:
             continue
-        counts = np.sum(labels == identity, axis=0)
+        # Accumulate one count plane while reading the occupied frames below,
+        # instead of materialising a recording-sized boolean stack per cell.
+        counts = np.zeros(shape, dtype=np.intp)
         observed = len(occupied_frames)
-        union = counts > 0
-        core = counts >= max(1, int(np.ceil(core_fraction * observed)))
-        transient = union & (counts < max(1, transient_fraction * observed))
-        fringe = union & ~core & ~transient
+        union = owners[identity]
 
         cumulative = np.zeros(shape, dtype=bool)
         cumulative_counts: list[int] = []
         centres: list[tuple[float, float]] = []
         for frame_index in occupied_frames:
             current = labels[frame_index] == identity
+            counts += current
             before = cumulative.copy()
             cumulative |= current
             cumulative_count = int(cumulative.sum())
@@ -408,6 +413,11 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame | np.ndarray]
                 }
             )
 
+        core = counts >= max(1, int(np.ceil(core_fraction * observed)))
+        if identity == 0:
+            union = counts > 0
+        transient = union & (counts < max(1, transient_fraction * observed))
+        fringe = union & ~core & ~transient
         union_px = int(union.sum())
         half_target = 0.5 * union_px
         saturation_target = 0.95 * union_px

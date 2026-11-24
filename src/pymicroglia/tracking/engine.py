@@ -26,6 +26,15 @@ METHOD_VERSION = "2026-10-12-R218-A004-complete-corrections"
 _IMPORT_LOCK = threading.RLock()
 
 
+def _history_timing_path(root):
+    """Preserve previous timing evidence when a checkpointed run resumes."""
+    import uuid
+    path = Path(root)/'accepted_stage_timings.jsonl'
+    if path.exists():
+        return path.with_name(f'accepted_stage_timings_resume_{uuid.uuid4().hex}.jsonl')
+    return path
+
+
 def _inside(path: object, root: Path) -> bool:
     try:
         return Path(str(path)).resolve().is_relative_to(root.resolve())
@@ -79,7 +88,7 @@ def _run_frozen(root: Path, stem: str, run_name: str, config: Path,
                                     bounded_memory=bounded_memory,working_array_min_bytes=working_array_min_bytes)
                     optimized = importlib.import_module("optimized_pipeline")
                     optimized.main(["--no-evidence-cache", "--stage-timings",
-                                    str(root / "accepted_stage_timings.jsonl")], runner=execute)
+                                    str(_history_timing_path(root))], runner=execute)
         finally:
             sys.path.remove(str(code))
             for name, module in list(sys.modules.items()):
@@ -222,12 +231,14 @@ def _run_with_retries(root, stem, run_name, config, config_values, log, *, bound
 
 def run(inputs, folder, *, stem: str | None = None,
         bounded_memory: bool = False,working_array_min_bytes: int = 32*1024**2,
-        resume: bool = False) -> TrackingResult:
+        resume: bool = False, execution=None) -> TrackingResult:
     """Run Motion; resume=True reuses verified stages in bounded-memory mode.
 
     Completed stage files remain immutable. The interrupted stage is preserved
     before retry; Motion's accepted-history checkpoints are carried forward.
     Inputs, settings, software and producer code must match the saved run.
+    ``execution`` selects processor budgets for independent detection frames
+    and identity-handoff discovery; omitted execution preserves native defaults.
     """
     if resume and not bounded_memory:
         raise ValueError('Motion checkpoint resume requires bounded_memory=True')
@@ -255,8 +266,17 @@ def run(inputs, folder, *, stem: str | None = None,
     if bounded_memory and working_array_min_bytes<=0:
         raise ValueError('Working-array storage threshold must be positive')
     config_values = json.loads(config.read_text(encoding="utf-8"))
-    _run_with_retries(root, stem, run_name, config, config_values, log, bounded_memory=bounded_memory,
-                      working_array_min_bytes=working_array_min_bytes, resume=resume)
+    from .execution import activate
+    with activate(execution) as policy:
+        if policy is not None:
+            from . import execution as execution_module, parallel_handoff
+            (root/'execution.json').write_text(json.dumps(dict(
+                policy=policy.as_dict(), scientific_parameters_changed=False,
+                implementation_sha256={Path(module.__file__).name:
+                    hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
+                    for module in (execution_module, parallel_handoff)}), indent=2)+'\n')
+        _run_with_retries(root, stem, run_name, config, config_values, log, bounded_memory=bounded_memory,
+                          working_array_min_bytes=working_array_min_bytes, resume=resume)
     registered_directory = (config.parent / config_values["registered_input_dir"]).resolve()
     motion_directory = (config.parent / config_values["motion_input_dir"]).resolve()
     raw = registered_directory / prepared["pins"]["registered_raw"][

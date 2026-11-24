@@ -64,12 +64,16 @@ def test_a_dropped_file_selects_only_itself_and_keeps_its_labels(tmp_path):
     assert second.exists()
 
 
-def test_luciferase_channel_is_the_guessed_signal_and_no_outline_is_guessed(tmp_path):
+def test_a_stack_with_several_channels_waits_for_its_signal_to_be_chosen(tmp_path):
     path = _stack(tmp_path / "two.tif", channels=2)
     row = intake._local_row(tmp_path, path, {})
-    assert row["valid"] and row["roles"]["signal"] == 1 and row["roles"]["outline"] is None
-    assert intake._guess_roles([{"index": 1, "name": "BF"}, {"index": 2, "name": "Biolum"}]) == {
-        "signal": 2}
+    assert not row["valid"] and row["roles"]["signal"] is None and row["roles"]["outline"] is None
+    assert row["issues"] == ["Choose the signal channel"]
+    assert intake._only_channel([{"index": 1, "name": "BF"}, {"index": 2, "name": "Biolum"}]) is None
+    assert intake._only_channel([{"index": 1, "name": "Biolum"}]) == {"signal": 1}
+    chosen = intake.run_params(str(tmp_path), "local", [{**row, "roles": {"signal": 2}}])
+    written = (tmp_path / intake.HOME).rglob("*.json")
+    assert chosen["folder"] and any('"signal": 2' in one.read_text(encoding="utf-8") for one in written)
 
 
 def test_mixed_or_scattered_drops_are_refused_plainly(tmp_path):
@@ -179,3 +183,30 @@ def test_a_started_run_no_longer_says_queued(tmp_path, monkeypatch):
     manager.submit_intake(str(tmp_path), "local", [])
     manager.pool.shutdown(wait=True)
     assert seen == [[("running", "starting")]]
+
+
+def test_the_page_offers_switches_with_the_pipelines_own_defaults(tmp_path):
+    import inspect as signature
+    from pymicroglia.pipelines import auto_microglia
+    _stack(tmp_path / "A1.tif")
+    offered = intake.inspect([str(tmp_path)])["options"]["switches"]
+    defaults = signature.signature(auto_microglia.run).parameters
+    assert [row["key"] for row in offered] == [key for key, *_ in intake.SWITCHES]
+    assert all(row["default"] == defaults[row["key"]].default for row in offered)
+    assert all(row["needs"] in (None, "motion") for row in offered)
+
+
+def test_run_choices_become_pipeline_keywords_and_nothing_else(tmp_path):
+    _stack(tmp_path / "A1.tif")
+    found = intake.inspect([str(tmp_path)])
+    rows = found["recordings"]
+    plain = intake.run_params(found["folder"], found["mode"], rows)
+    assert set(plain) == {"folder"}, "No choices means the pipeline's defaults, not a copy of them"
+    chosen = intake.run_params(found["folder"], found["mode"], rows,
+                               {"outline_channel": 2, "tracked_video": False})
+    assert chosen["outline"] is True and chosen["channel"] == 2 and chosen["tracked_video"] is False
+    unchosen = intake.run_params(found["folder"], found["mode"], rows, {"outline_channel": None})
+    assert "outline" not in unchosen and "channel" not in unchosen
+    for bad in ({"force": True}, {"motion": "yes"}, {"outline_channel": 0}, {"outline_channel": True}):
+        with pytest.raises(ValueError):
+            intake.run_params(found["folder"], found["mode"], rows, bad)

@@ -1,11 +1,24 @@
 """Original linear cell-value assignment, preserving every overlap rule."""
 import numpy as np
 import pandas as pd
-from .territory_values import metric_assignment,owner_assignment,_value_limits
+from .territory_values import metric_assignment,owner_assignment,_value_limits,cumulative_occupancy
 
 
-def cell_metric(labels,metric_values,*,metric,assignment,range_mode='robust',limits=None,allow_empty=False):
+def cell_metric(labels,metric_values,*,metric,assignment,range_mode='robust',limits=None,allow_empty=False,hours=None):
+    """Place cell values on their territories using the requested overlap rule.
+
+    With ``hours``, occupancy weighting integrates each cell's observed mask
+    between acquisition times using the existing endpoint-average occupancy
+    reducer. No time is extrapolated beyond the first or last acquisition.
+    Without a clock the historical frame-count weighting is preserved exactly.
+    Other overlap rules retain their existing meaning when a clock is supplied.
+    """
     assignment=metric_assignment(assignment);carrier=np.asarray(labels,dtype=int)
+    if hours is not None:
+        hours=np.asarray(hours,dtype=float)
+        if (carrier.ndim!=3 or len(carrier)<2 or hours.shape!=(len(carrier),)
+                or not np.isfinite(hours).all() or (np.diff(hours)<=0).any()):
+            raise ValueError('Clock weighting needs at least two label frames and one finite increasing time per frame')
     averaging=assignment in {'equal_mean','occupancy_weighted_mean'}
     if averaging and carrier.ndim!=3:raise ValueError('Averaging needs the complete label movie')
     if not averaging and carrier.ndim==3:carrier=owner_assignment(carrier,assignment)
@@ -17,8 +30,11 @@ def cell_metric(labels,metric_values,*,metric,assignment,range_mode='robust',lim
     if averaging:
         numerator=np.zeros(shape)
         for identity,value in finite.items():
-            occupied=np.count_nonzero(carrier==int(identity),axis=0);visited=occupied>0
+            mask=carrier==int(identity)
+            occupied=np.count_nonzero(mask,axis=0);visited=occupied>0
             counts[int(identity)]=int(np.count_nonzero(visited));weights=visited if assignment=='equal_mean' else occupied
+            if assignment=='occupancy_weighted_mean' and hours is not None:
+                weights=cumulative_occupancy(mask,hours,final_only=True)
             numerator+=float(value)*weights;weight+=weights;contributors+=visited
         np.divide(numerator,weight,out=mapped,where=weight>0)
     else:
@@ -31,6 +47,6 @@ def cell_metric(labels,metric_values,*,metric,assignment,range_mode='robust',lim
     yy,xx=np.where(weight>0)
     pixels=pd.DataFrame(dict(row=yy,column=xx,value=mapped[yy,xx],display_minimum=low,display_maximum=high))
     pixels['metric']=metric;pixels['map_assignment']=assignment;pixels['map_range']=range_mode;pixels['contributor_count']=contributors[yy,xx];pixels['total_weight']=weight[yy,xx]
-    pixels['weight_unit']='occupied frames' if assignment=='occupancy_weighted_mean' else 'cells'
+    pixels['weight_unit']=('occupied hours' if hours is not None else 'occupied frames') if assignment=='occupancy_weighted_mean' else 'cells'
     pixels['circular_period']=None;pixels['phase_coherence']=np.nan;pixels['displayed']=np.isfinite(pixels.value);pixels['mixed_phase']=False
     return mapped,pixels,cells,(low,high)

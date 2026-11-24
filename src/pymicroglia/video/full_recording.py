@@ -51,7 +51,9 @@ def overlay(raw, labels, high, title):
 
 
 def render(measurement_dir, output_dir, *, prefix, fps=4., progress=None,
-           registered_manifest=None, tracking_labels=None, tracking_offset=0):
+           registered_manifest=None, tracking_labels=None, tracking_offset=0,
+           video_signal='channels', revise_video=False, tracking_raw=None,
+           tracking_raw_sha256=None, tracking_signal_name='Tracking input'):
     """Return verified full-duration files, reusing only matching complete output."""
     from auto_organotypic.video.encode import write_video
     import imageio_ffmpeg
@@ -60,6 +62,10 @@ def render(measurement_dir, output_dir, *, prefix, fps=4., progress=None,
     manifest = json.loads(manifest_path.read_text())
     inputs = {row['role']: row for row in manifest['inputs']}
     channels = manifest['channels']
+    if video_signal not in ('channels', 'tracking_input'):
+        raise ValueError('Unknown review video signal')
+    if video_signal == 'tracking_input' and (tracking_raw is None or not tracking_raw_sha256):
+        raise ValueError('Tracking-input review requires the saved stack and its recorded fingerprint')
     count, offset = int(manifest['source_frames']), int(manifest['source_frame_offset'])
     coordinate_space = 'original camera'
     registration = None
@@ -77,22 +83,39 @@ def render(measurement_dir, output_dir, *, prefix, fps=4., progress=None,
         coordinate_space = 'registered crop'
     output_dir.mkdir(parents=True, exist_ok=True)
     receipt_path = output_dir / f'{prefix}_full_recording.json'
-    signature = dict(manifest_sha256=digest(manifest_path), producer_sha256=digest(Path(__file__)), fps=fps)
+    signature = dict(manifest_sha256=digest(manifest_path), producer_sha256=digest(Path(__file__)),
+                     fps=fps, video_signal=video_signal)
     if registration is not None:
         signature.update(registered_manifest_sha256=digest(registered_manifest),
                          tracking_labels_sha256=inputs['labels']['sha256'], tracking_offset=offset)
+    if video_signal == 'tracking_input':
+        if digest(tracking_raw) != tracking_raw_sha256:
+            raise ValueError('Tracking-input review source changed')
+        inputs['tracking_raw'] = dict(role='tracking_raw', path=str(tracking_raw), sha256=tracking_raw_sha256)
+        signature.update(tracking_raw_sha256=tracking_raw_sha256, tracking_signal_name=tracking_signal_name)
+    saved = None
     if receipt_path.is_file():
         saved = json.loads(receipt_path.read_text())
-        if saved['signature'] != signature: raise ValueError('Completed recording review uses different inputs or code')
         if any(digest(output_dir / name) != fingerprint for name, fingerprint in saved['files'].items()):
             raise ValueError('Completed recording review file changed')
-        return saved
+        if saved['signature'] == signature: return saved
+        # Explicit display revision: all scientific inputs and channel rendering
+        # must still match. The legacy producer below was checked for exact
+        # overlay/normalisation equivalence; arbitrary old code is not reusable.
+        scientific = lambda s: {k: v for k, v in s.items() if k not in
+                               ('producer_sha256', 'video_signal', 'tracking_raw_sha256', 'tracking_signal_name')}
+        compatible_producers = {signature['producer_sha256'],
+            '1ddf6d91aee24e56656a9c76c3d25aec16209cf960e5201b81f865adf6a3dec8'}
+        if (not revise_video or scientific(saved['signature']) != scientific(signature)
+                or saved['signature']['producer_sha256'] not in compatible_producers):
+            raise ValueError('Completed recording review uses different inputs or code')
     times = pd.read_csv(measurement_dir/'cell_frame.csv', usecols=['source_frame_index', 'hours']).drop_duplicates()
     if times.source_frame_index.duplicated().any(): raise ValueError('Conflicting acquired timestamps')
     times = times.set_index('source_frame_index').hours.reindex(range(count))
     if times.isna().any(): raise ValueError('Missing acquired timestamp')
     with ExitStack() as stack:
         raw_files = {c: stack.enter_context(tifffile.TiffFile(inputs['channel:' + c]['path'])) for c in channels}
+        video_file = stack.enter_context(tifffile.TiffFile(tracking_raw)) if video_signal == 'tracking_input' else None
         labels_file = stack.enter_context(tifffile.TiffFile(inputs['labels']['path']))
         shape = raw_files[channels[0]].pages[0].shape
         if registration is not None and list(shape) != registration['canvas_shape'][1:]:
@@ -101,6 +124,8 @@ def render(measurement_dir, output_dir, *, prefix, fps=4., progress=None,
             raise ValueError('Channels must have matching full camera frames')
         if len(labels_file.pages) + offset != count or labels_file.pages[0].shape != shape:
             raise ValueError('Saved outlines do not cover the acquisition clock and field')
+        if video_file is not None and (len(video_file.pages) != count or video_file.pages[0].shape != shape):
+            raise ValueError('Tracking-input video does not cover the acquisition clock and crop')
         required = count * (shape[0]+32) * shape[1] * 3 * (len(channels)+1) + 256*1024**2
         if shutil.disk_usage(output_dir).free < required: raise OSError('Insufficient space for full recording review')
         for row in [inputs['labels'], *(inputs['channel:'+c] for c in channels)]:
@@ -111,37 +136,68 @@ def render(measurement_dir, output_dir, *, prefix, fps=4., progress=None,
                                      for i in np.unique(np.linspace(0, count-1, min(count, 41), dtype=int))])
             positive = sample[np.isfinite(sample) & (sample > 0)]
             high[channel] = float(np.percentile(positive, 99.5)) if positive.size else 1.
+        if saved and any(saved['display_high'][c] != high[c] for c in channels):
+            raise ValueError('Channel display normalisation changed; cannot reuse outline TIFFs')
+        if video_file is not None:
+            sample = np.concatenate([
+                video_file.pages[int(i)].asarray()[::16, ::16].ravel()
+                for i in np.unique(np.linspace(0, count-1, min(count, 41), dtype=int))])
+            positive = sample[np.isfinite(sample) & (sample > 0)]
+            high['Tracking input'] = float(np.percentile(positive, 99.5)) if positive.size else 1.
         names = {c: f'{prefix}_{c.lower()}_outlines.tif' for c in channels}
         temporary = {c: output_dir/(names[c]+'.partial') for c in channels}
-        writers = {c: stack.enter_context(tifffile.TiffWriter(temporary[c], bigtiff=True)) for c in channels}
+        writers = {} if saved else {c: stack.enter_context(tifffile.TiffWriter(temporary[c], bigtiff=True)) for c in channels}
         movie = output_dir/f'{prefix}_full_recording.mp4'
+        temporary_movie = movie.with_name(movie.stem+'.partial.mp4')
         def frames():
             for index in range(count):
                 labels = (np.zeros(shape, np.uint16) if index < offset else labels_file.pages[index-offset].asarray())
                 panels = []
+                raw = ({c: opened.pages[index].asarray() for c, opened in raw_files.items()}
+                       if writers or video_signal == 'channels' else {})
                 for channel, opened in raw_files.items():
-                    rendered = overlay(opened.pages[index].asarray(), labels, high[channel],
+                    if channel not in writers and video_signal != 'channels': continue
+                    rendered = overlay(raw[channel], labels, high[channel],
                         f'{prefix} | {channel} | Frame {index+1}/{count} | {times.iloc[index]:.2f} h')
-                    writers[channel].write(rendered, photometric='rgb', compression='zlib',
+                    if channel in writers:
+                        writers[channel].write(rendered, photometric='rgb', compression='zlib',
                                            metadata={'axes': 'YXS'} if index == 0 else None)
                     panels.append(rendered)
                 if progress: progress(index+1, count)
-                joined = np.concatenate(panels, axis=1)
+                if video_file is not None:
+                    # Read the actual tracking input; never recreate its signal
+                    # isolation, subtraction, registration or crop for display.
+                    joined = overlay(video_file.pages[index].asarray(), labels, high['Tracking input'],
+                        f'{prefix} | {tracking_signal_name} | Frame {index+1}/{count} | {times.iloc[index]:.2f} h')
+                else:
+                    joined = np.concatenate(panels, axis=1)
                 # H.264 requires even dimensions: pad outside the preserved field.
                 yield np.pad(joined, ((0, joined.shape[0] % 2), (0, joined.shape[1] % 2), (0, 0)))
-        write_video(movie, frames(), fps=fps, profile='fast', extra_params=('-threads', '2'))
-    for c in channels:
+        write_video(temporary_movie, frames(), fps=fps, profile='fast', extra_params=('-threads', '2'))
+    for c in writers:
         with tifffile.TiffFile(temporary[c]) as opened:
             if len(opened.pages) != count: raise ValueError('Incomplete outline TIFF')
         temporary[c].replace(output_dir/names[c])
-    decoded, _ = imageio_ffmpeg.count_frames_and_secs(str(movie))
+    decoded, _ = imageio_ffmpeg.count_frames_and_secs(str(temporary_movie))
     if decoded != count: raise ValueError('Video frame count differs from the acquired recording')
+    history = None
+    if saved:
+        history = output_dir.parent/'history/channel_pair_review'/prefix/digest(receipt_path)[:16]
+        history.mkdir(parents=True, exist_ok=False)
+        shutil.copy2(receipt_path, history/receipt_path.name)
+        movie.replace(history/movie.name)
+    temporary_movie.replace(movie)
     files = {name: digest(output_dir/name) for name in [movie.name, *names.values()]}
     result = dict(status='complete', signature=signature, recording=prefix,
         channels=channels, frames=count, decoded_frames=decoded, camera_shape=list(shape),
         coordinate_space=coordinate_space, registered_crop=registration.get('registered_crop') if registration else None,
         source_frame_offset=offset, source_hours=[float(times.iloc[0]), float(times.iloc[-1])],
         native_pixels_preserved=True, header_height=32, display_high=high,
+        video_signal=video_signal, video_signal_name=tracking_signal_name if video_file is not None else None,
+        negative_display_values='black', signal_recomputed=False,
+        unchanged_outline_tiffs_reused=bool(saved), previous_review=str(history) if history else None,
+        outline_producer_sha256=(saved.get('outline_producer_sha256', saved['signature']['producer_sha256'])
+                                if saved else signature['producer_sha256']),
         display_only=True, individual_cell_videos=False, files=files,
         source_manifest=str(manifest_path), source_inputs=list(inputs.values()),
         registered_manifest=str(registered_manifest) if registered_manifest is not None else None)

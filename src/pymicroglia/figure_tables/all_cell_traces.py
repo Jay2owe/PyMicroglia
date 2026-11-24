@@ -189,8 +189,22 @@ def _adjust_evidence(evidence, resolved, fft_component_test):
         evidence.loc[tested, 'rhythm_status'] = np.where(evidence.loc[tested, 'q_value'] < resolved['rhythmic_alpha'], 'rhythmic', 'not rhythmic')
     return evidence
 
+def strongest_display_component(result):
+    """Largest-amplitude returned component in the declared band; no refitting."""
+    try:
+        components = json.loads(result.get('estimate_components_json') or '[]')
+        params = json.loads(result.get('applied_settings_json') or '{}')
+        low, high = params.get('period_search_hours', [2., 48.])
+        eligible = [c for c in components if low <= float(c['period_hours']) <= high
+                    and np.isfinite(float(c.get('amplitude', np.nan)))
+                    and ('rae' not in c or (c['rae'] is not None and np.isfinite(float(c['rae'])) and float(c['rae']) < 1))]
+        return max(eligible, key=lambda c: abs(float(c['amplitude']))) if eligible else None
+    except (TypeError, ValueError, KeyError, json.JSONDecodeError):
+        return None
+
+
 def _fft_nlls_display_fit(segment: pd.DataFrame, result: pd.Series) -> np.ndarray:
-    """Put the native multi-component fit on the existing affine display scale."""
+    """Put only the strongest native component on its parent trace's scale."""
     empty = np.full(len(segment), np.nan)
     if result.get('trace_view') != 'detrended':
         return empty
@@ -198,12 +212,27 @@ def _fft_nlls_display_fit(segment: pd.DataFrame, result: pd.Series) -> np.ndarra
         estimate = {'method': 'fft_nlls', 'diagnostics': json.loads(result.get('estimate_diagnostics_json') or '{}'), 'components': json.loads(result.get('estimate_components_json') or '[]')}
     except (TypeError, ValueError, json.JSONDecodeError):
         return empty
-    native = workbench.fft_nlls_fitted_values(segment.hours.to_numpy(float), estimate)
+    component = strongest_display_component(result)
+    if component is None:
+        return empty
+    # Evaluate the returned component in its native clock and amplitude units.
+    index = estimate['components'].index(component)
+    if component.get('native_parameters'):
+        native = np.asarray(workbench.fft_component_values(segment.hours.to_numpy(float), estimate)[index], float)
+    else:
+        # Older saved models contain the returned amplitude/period/phase only.
+        origin = estimate['diagnostics'].get('phase_zero_timestamp')
+        if not origin:
+            return empty
+        zero = (pd.Timestamp(origin) - pd.Timestamp('2000-01-01')).total_seconds() / 3600
+        native = float(component['amplitude']) * np.cos(
+            2 * np.pi * (segment.hours.to_numpy(float) - zero - float(component['phase_hours'])) / float(component['period_hours']))
     processed = segment.processed_value.to_numpy(float)
     displayed = segment.value.to_numpy(float)
     usable = np.isfinite(processed) & np.isfinite(displayed)
     if usable.sum() < 2 or np.ptp(processed[usable]) <= 0:
         return empty
+    native += np.mean(processed[usable] - native[usable])
     design = np.column_stack([processed[usable], np.ones(usable.sum())])
     slope, intercept = np.linalg.lstsq(design, displayed[usable], rcond=None)[0]
     reproduced = slope * processed[usable] + intercept
@@ -237,7 +266,7 @@ def add_period_display(points: pd.DataFrame, evidence: pd.DataFrame) -> pd.DataF
             fitted = _fft_nlls_display_fit(segment, result)
             styled.loc[indices, 'descriptive_fit'] = fitted
             if np.isfinite(fitted).any():
-                styled.loc[indices, 'fit_kind'] = 'actual summed FFT-NLLS fit'
+                styled.loc[indices, 'fit_kind'] = 'strongest native FFT-NLLS component'
         else:
             styled.loc[indices, 'descriptive_fit'] = workbench.descriptive_cosinor_fitted_values(segment.hours.to_numpy(float), segment.value.to_numpy(float), float(period))
             styled.loc[indices, 'fit_kind'] = 'descriptive single cosinor'
@@ -299,18 +328,19 @@ def prepare(source, options, *, progress=None, workers=1):
     from pymicroglia.visualisation.time_guides import time_guides
     time_guides([finite.min(), finite.max()], options.get('time_guides_hours'), options.get('time_guides_offset_hours', 0.0))
     native_fit = resolved['method'] == 'fft_nlls'
-    fit_label = 'Actual summed FFT-NLLS fit' if native_fit and view == 'detrended' else '' if native_fit else 'Descriptive cosinor fit'
-    fit_claim = 'Dotted curves are the actual summed FFT-NLLS models.' if native_fit and view == 'detrended' else 'No model curve is substituted because the exact FFT-NLLS model is on the detrended scale.' if native_fit else 'Dotted fits describe the displayed trace at each tested period.'
+    fit_label = 'Strongest native FFT-NLLS component' if native_fit and view == 'detrended' else '' if native_fit else 'Descriptive cosinor fit'
+    fit_claim = 'Dotted curves show only the strongest eligible native FFT-NLLS component, on the parent trace scale.' if native_fit and view == 'detrended' else 'No model curve is substituted because the exact FFT-NLLS model is on the detrended scale.' if native_fit else 'Dotted fits describe the displayed trace at each tested period.'
     total_default = fft_component_test and metrics == ['integrated_density_mean3']
-    title = ('Native-frame cell traces | total light → mean3 → robust linear → FFT-NLLS component test'
+    detrend_name = str(resolved['detrend']).replace('_', ' ')
+    title = (f'Native-frame cell traces | total light → mean3 → robust linear → FFT-NLLS component test'
              if total_default else
-             'Native-frame cell traces | FFT-NLLS component test'
+             f'Native-frame cell traces | {detrend_name} | FFT-NLLS component test'
              if fft_component_test else
              f"Native-frame cell traces | {str(resolved['significance_method']).replace('_', ' ').title()} period test: uncorrected p"
              if resolved['multiple_testing'] == 'none' else 'All measured cell traces')
-    claim = ('Each cell retains its original observed clock; a centered three-frame mean of uncorrected total light is fitted by FFT-NLLS after robust-linear detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves are the actual summed FFT-NLLS models.'
+    claim = (f'Each cell retains its original observed clock; a centered three-frame mean of uncorrected total light is fitted by FFT-NLLS after {detrend_name} detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves show only the strongest eligible native FFT-NLLS component on its parent trace scale.'
              if total_default else
-             'Each selected measurement is fitted by FFT-NLLS after robust-linear detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves are the actual summed FFT-NLLS models.'
+             f'Each selected measurement is fitted by FFT-NLLS after {detrend_name} detrending. Red means an uncorrected conditional component test p < 0.05. Dotted curves show only the strongest eligible native FFT-NLLS component on its parent trace scale.'
              if fft_component_test else
              f'Each cell is measured at its original time points; display traces are normalized independently, and measured values before display scaling are period-tested with uncorrected p-values. {fit_claim}'
              if resolved['multiple_testing'] == 'none' and period_testing else

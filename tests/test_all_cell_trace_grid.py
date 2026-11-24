@@ -173,6 +173,8 @@ def test_registered_builder_fits_original_values_and_keeps_display_separate(monk
     ctx = SimpleNamespace(spec=spec, name='all-cell-trace-grid', table=lambda _: original.copy(), option=options.__getitem__, module_params=lambda _: {})
     prepared, evidence = preparation.prepare(ctx, options)
     data = prepared['traces']
+    assert circadian.DETREND_DEFAULTS['detrend'].replace('_', ' ') in data['settings']['title']
+    assert 'summed FFT' not in data['settings']['claim']
     fig, axes = all_cell_traces.draw(data['table'], data['settings'], data['annotations'], canvas=__import__('matplotlib.pyplot', fromlist=['figure']).figure())
     result = SimpleNamespace(figure=fig, axes=axes, figure_data=data['table'], auxiliary=prepared.auxiliary)
     try:
@@ -241,7 +243,7 @@ def test_reference_period_style_changes_display_only(monkeypatch):
         plt.close(figure)
 
 
-def test_fft_nlls_period_style_uses_the_actual_multicomponent_fit(monkeypatch):
+def test_fft_nlls_period_style_uses_only_the_strongest_native_component(monkeypatch):
     helpers = _functions()
     points, tests = helpers['trace_data'](_frame(), ['corrected_mean'], [2], _resolved(), 'detrended', 'minmax', {})
     points.loc[points.frame_index.eq(0), ['processed_value', 'value']] = np.nan
@@ -255,18 +257,19 @@ def test_fft_nlls_period_style_uses_the_actual_multicomponent_fit(monkeypatch):
     monkeypatch.setattr(circadian, 'descriptive_cosinor_fitted_values', lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('substitute cosine used')))
     styled = helpers['add_period_display'](points, tests)
     segment = styled.sort_values('frame_index')
-    native = circadian.fft_nlls_fitted_values(segment.hours.to_numpy(float), {'method': 'fft_nlls', 'diagnostics': json.loads(tests.estimate_diagnostics_json.iloc[0]), 'components': components})
+    native = .4 * np.cos(2*np.pi*(segment.hours.to_numpy(float)-.5)/4.)
     processed = segment.processed_value.to_numpy(float)
     displayed = segment.value.to_numpy(float)
     usable = np.isfinite(processed) & np.isfinite(displayed)
     slope, intercept = np.linalg.lstsq(np.column_stack([processed[usable], np.ones(usable.sum())]), displayed[usable], rcond=None)[0]
+    native += np.mean(processed[usable] - native[usable])
     expected = slope * native + intercept
     expected[segment.hours.to_numpy(float) < segment.loc[usable, 'hours'].min()] = np.nan
     expected[~usable] = np.nan
     np.testing.assert_allclose(segment.descriptive_fit, expected, equal_nan=True)
     assert np.isnan(segment.descriptive_fit.iloc[0])
     assert np.isnan(segment.loc[segment.frame_index.eq(3), 'descriptive_fit']).all()
-    assert set(segment.fit_kind) == {'actual summed FFT-NLLS fit'}
+    assert set(segment.fit_kind) == {'strongest native FFT-NLLS component'}
 
 
 def test_fft_nlls_never_substitutes_a_cosine_when_actual_fit_cannot_share_the_view(monkeypatch):

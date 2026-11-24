@@ -61,7 +61,7 @@ def install(app, *, options=None, engine_argv=None):
         "Use the on-screen controls for the current comparison, recordings and display choices.",
         **helper_options(Path(__file__).parent, env="PYMICROGLIA_AIIFY_OPTIONS",
                          routes=("/api/*",), overrides=options))
-    agent.mount(app, inject=True, panel={"title": "PyMicroglia assistant", "layout": "float"})
+    agent.mount(app, inject=lambda path: not path.startswith("/correction-review"), panel={"title": "PyMicroglia assistant", "layout": "float"})
     protect_local_assistant(app)
     app.state.agent = agent
     return agent

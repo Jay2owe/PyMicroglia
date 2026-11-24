@@ -84,9 +84,9 @@ WRITES = (
 )
 def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
     params = {**DEFAULTS, **context.module_params("intensity")}
-    inner_disk, outer_disk = _ring_footprints(
-        int(params["background_ring_inner_px"]), int(params["background_ring_outer_px"])
-    )
+    inner_radius = int(params["background_ring_inner_px"])
+    outer_radius = int(params["background_ring_outer_px"])
+    inner_disk, outer_disk = _ring_footprints(inner_radius, outer_radius)
     pad = int(params["background_ring_outer_px"]) + 2
     rows: list[dict] = []
 
@@ -114,8 +114,17 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
             if values.size == 0:
                 continue
 
-            near = ndi.binary_dilation(mask, structure=inner_disk)
-            far = ndi.binary_dilation(mask, structure=outer_disk)
+            if inner_radius >= 0 and outer_radius >= 0:
+                # A disk dilation selects pixels within its Euclidean radius.
+                # The mask is nonempty here; one exact distance map supplies
+                # both rings while preserving their pixels and gather order.
+                distance = ndi.distance_transform_edt(~mask)
+                near = distance <= inner_radius
+                far = distance <= outer_radius
+            else:
+                # Preserve the original invalid-footprint failure behaviour.
+                near = ndi.binary_dilation(mask, structure=inner_disk)
+                far = ndi.binary_dilation(mask, structure=outer_disk)
             ring = far & ~near & ~local_occupied
             ring_values = local_raw[ring]
             if ring_values.size >= int(params["min_background_px"]):

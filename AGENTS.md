@@ -27,6 +27,8 @@ When recordings are loaded together, expose every source in the top Recording dr
 
 When explaining a running analysis, verify its engine against the package's documented default, identify any custom method explicitly, answer only the operation asked about, and keep the job running unless Jamie asks to stop.
 
+When Jamie has already named the cause of a signal (for example lipofuscin appearing in the Red channel), treat it as the working premise and test it directly against his controls; never re-present it as an open alternative or a new finding.
+
 ## graphify
 
 For exploratory single-cell rhythm analyses, use unadjusted per-trace p-values and do not apply multiple-comparison correction unless Jamie explicitly requests it.

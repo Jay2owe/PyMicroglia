@@ -17,13 +17,13 @@ COMMON_OPTIONS = {"policy", "policy_options"}
 
 def describe(method="single_frame", options=None) -> dict:
     """Validate a refiner independently of the base mask settings."""
-    builtins = {"single_frame", "cd68", "saved"}
+    builtins = {"single_frame", "cd68", "lv200_red", "saved"}
     description = mask_methods.describe(method, options,
                                          builtin=method if method in builtins else "single_frame")
     if method in builtins:
         from ..learned_mask.cd68 import OPTIONS as CD68_OPTIONS
 
-        allowed = {"single_frame": SINGLE_FRAME_OPTIONS, "cd68": CD68_OPTIONS,
+        allowed = {"single_frame": SINGLE_FRAME_OPTIONS, "cd68": CD68_OPTIONS, "lv200_red": CD68_OPTIONS,
                    "saved": {"path", "kind", "threshold"}}[method]
         unknown = set(options or {}) - allowed - COMMON_OPTIONS
         if unknown:
@@ -81,6 +81,12 @@ def propose(raw, baseline, *, method="single_frame", weights=None,
         from ..learned_mask.cd68 import predict
 
         proposal = predict(raw, weights=weights, threads=threads, options=options)
+    elif method == "lv200_red":
+        from ..learned_mask import lv200
+
+        proposal = lv200.predict(raw, weights=weights, threads=threads, options=options)
+        description["resolved_cut"] = options.get("foreground_threshold", lv200.ACCEPTED_CUT)
+        description["weights"] = str(weights if weights is not None else lv200.weights())
     elif method == "saved":
         import tifffile
 

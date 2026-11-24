@@ -1,12 +1,16 @@
 """Split prepared spatial encodings into independently selectable views."""
 from .spatial import prepare
 from .prepared import PreparedViews
+from .underlay import prepare_underlay
 
 
 def _prepare(source,options,kind):
     table,auxiliary,cfg,subtitle,footnote = prepare(source,options,kind)
+    under = prepare_underlay(source,options,cfg['shape'],int(source.field['frames'])) if kind=='period' else None
+    if under is not None:
+        auxiliary['underlay_channels.csv']=under['table']
     def data(rows):
-        return dict(table=rows,cfg=cfg,subtitle=subtitle,footnote=footnote)
+        return dict(table=rows,cfg=cfg,subtitle=subtitle,footnote=footnote,underlay=None if under is None else under['rgb'])
     if kind in {'expansion','gaps'}:
         result = {'field':data(table.loc[table.record.isin(['pixel','arrow'])])}
         if kind=='gaps':

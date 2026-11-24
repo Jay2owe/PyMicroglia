@@ -10,6 +10,8 @@ from urllib.error import HTTPError, URLError
 import asyncio
 import json
 import os
+import threading
+import time
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response
@@ -20,6 +22,14 @@ from .jobs import JobManager
 from .results import ArtifactIndex, recent_runs, saved_record
 
 STATIC = Path(__file__).with_name("static")
+
+
+def _ping_motion(motion_url: str) -> None:
+    try:
+        with urlopen(motion_url.rstrip("/") + "/api/heartbeat", timeout=2):
+            pass
+    except Exception:  # noqa: BLE001 - Motion's heartbeat is optional
+        pass
 
 
 def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
@@ -35,6 +45,18 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
     app.state.auto_url = auto_url
     app.state.motion_url = motion_url
     app.state.artifacts = artifacts
+    app.state.last_heartbeat = None  # monotonic time of the page's last heartbeat
+
+    @app.get("/api/heartbeat")
+    def heartbeat() -> dict:
+        """An open page calls this every 15 s; the browser launcher exits when it stops."""
+        app.state.last_heartbeat = time.monotonic()
+        if app.state.motion_url:
+            # Best effort: keeps a separately launched motion-edit alive while this page is open.
+            threading.Thread(target=_ping_motion, args=(app.state.motion_url,), daemon=True,
+                             name="pymicroglia-motion-heartbeat").start()
+        busy = getattr(manager, "busy", None)
+        return {"ok": True, "busy": bool(busy()) if busy else False}
 
     @app.get("/api/config")
     def config() -> dict:
@@ -760,7 +782,8 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
         if not isinstance(recordings, list):
             raise HTTPException(422, "Choose the recordings to analyse")
         return intake_call(manager.submit_intake, str(payload.get("folder") or ""),
-                           str(payload.get("mode") or ""), recordings)
+                           str(payload.get("mode") or ""), recordings,
+                           payload.get("settings"))
 
     @app.get("/api/intake/results")
     def intake_results(folder: str) -> dict:
@@ -774,8 +797,195 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
         except KeyError:
             raise HTTPException(404, "Unknown job") from None
 
+    # Agent-correction review (port of Motion's correction reviewer): correction_review.py.
+    from . import correction_review as _correction_review
+    _correction_review.PREWARM = True
+
+    def correction_call(function, *args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except (ValueError, OSError, KeyError, StopIteration, IndexError) as exc:
+            raise HTTPException(422, str(exc) or "Unknown review item") from None
+
+    @app.get("/api/correction-review")
+    def correction_reviews(root: str) -> dict:
+        from .correction_review import list_reviews
+        return {"root": root, "reviews": correction_call(list_reviews, root)}
+
+    @app.post("/api/correction-review/create")
+    def correction_create(payload: dict[str, Any]) -> dict:
+        from .correction_review import create_review
+        return correction_call(create_review, str(payload.get("root") or ""), str(payload.get("source") or ""),
+                               agent_session=payload.get("agent_session"), note=str(payload.get("note") or ""))
+
+    @app.get("/api/correction-review/set")
+    def correction_set(root: str, stem: str) -> dict:
+        from .correction_review import load
+        return correction_call(load, root, stem)
+
+    @app.get("/api/correction-review/item")
+    def correction_item(root: str, stem: str, key: str) -> dict:
+        from .correction_review import item_view
+        return correction_call(item_view, root, stem, key)
+
+    @app.get("/api/correction-review/frame")
+    def correction_frame(root: str, stem: str, key: str, frame: int, k: int = 3, prefetch: str = "",
+                         channels: str = "", follow: str = "", every: bool = False) -> dict:
+        """One frame of a join: Before / After / Raw / Changes (and shown channels) at zoom k, the map, the numbers.
+        follow: cell numbers drawn in their own colours; every: colour every cell."""
+        from .correction_review import frame_view
+        return correction_call(frame_view, root, stem, key, frame, k, [p for p in prefetch.split(",") if p],
+                               [c for c in channels.split(",") if c], [int(n) for n in follow.split(",") if n.strip()],
+                               every)
+
+    @app.get("/api/correction-review/cells")
+    def correction_cells(root: str, stem: str) -> dict:
+        """Every cell's frames and flagged events now (the reviewer's Gantt chart)."""
+        from .correction_review import cells_view
+        return correction_call(cells_view, root, stem)
+
+    @app.get("/api/correction-review/tower")
+    def correction_tower(root: str, stem: str, cells: str, lo: str = "", hi: str = "", style: str = "line",
+                         preset: str = "cd68") -> dict:
+        """The package tracking tower of the followed cells, as an image."""
+        from .correction_review import tower_view
+        return correction_call(tower_view, root, stem, [int(c) for c in cells.split(",") if c.strip()],
+                               int(lo) if lo.strip() else None, int(hi) if hi.strip() else None, style, preset)
+
+    @app.get("/api/correction-review/grow-preview")
+    def correction_grow_preview(root: str, stem: str, frame: int, y: int, x: int, level: float = 0.4,
+                                kind: str = "seed", y0: int = 0, y1: int = 0, x0: int = 0, x1: int = 0) -> dict:
+        """Pixels Seed / Grow would take at a spot and grow level (nothing saved)."""
+        from .correction_review import grow_preview
+        return correction_call(grow_preview, root, stem, frame, y, x, level, kind, (y0, y1, x0, x1) if y1 > y0 else None)
+
+    @app.get("/api/correction-review/pick")
+    def correction_pick(root: str, stem: str, key: str, frame: int, y: int, x: int, panel: str = "Before") -> dict:
+        from .correction_review import pick
+        return correction_call(pick, root, stem, key, frame, y, x, panel)
+
+    @app.post("/api/correction-review/decide")
+    def correction_decide(payload: dict[str, Any]) -> dict:
+        from .correction_review import decide
+        return correction_call(decide, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               str(payload.get("key") or ""), payload.get("value"))
+
+    @app.post("/api/correction-review/edit")
+    def correction_edit(payload: dict[str, Any]) -> dict:
+        from .correction_review import edit
+        fields = ("action", "picked", "frame", "to_frame", "key", "other", "number", "piece_only", "points", "whole",
+                  "level", "range_from", "range_to", "flip", "cells", "one_piece")
+        return correction_call(edit, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               **{k: payload.get(k) for k in fields if k in payload})
+
+    @app.get("/api/correction-review/marks")
+    def correction_marks(root: str, stem: str) -> dict:
+        """Jamie's own ticks and flags for a recording."""
+        from .correction_review import marks
+        return correction_call(marks, root, stem)
+
+    @app.post("/api/correction-review/mark")
+    def correction_mark(payload: dict[str, Any]) -> dict:
+        """Tick / untick a cell, flag one at a frame, change a flag's note, remove a flag."""
+        from .correction_review import mark
+        return correction_call(mark, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               **{k: payload.get(k) for k in ("op", "cell", "frame", "id", "note") if k in payload})
+
+    @app.post("/api/correction-review/split-preview")
+    def correction_split_preview(payload: dict[str, Any]) -> dict:
+        """Which side of a drawn split line keeps the number (nothing saved)."""
+        from .correction_review import split_preview
+        return correction_call(split_preview, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               int(payload.get("frame") or 0), payload.get("points") or [], payload.get("flip"),
+                               payload.get("number"))
+
+    @app.get("/api/correction-review/cells-in-box")
+    def correction_cells_in_box(root: str, stem: str, frame: int, y0: int, y1: int, x0: int, x1: int) -> dict:
+        from .correction_review import cells_in_box
+        return {"cells": correction_call(cells_in_box, root, stem, frame, y0, y1, x0, x1)}
+
+    @app.post("/api/correction-review/edit-batch")
+    def correction_edit_batch(payload: dict[str, Any]) -> dict:
+        """Queued edits, applied in order (each spot looked up again after the edits before it)."""
+        from .correction_review import edit_batch
+        return correction_call(edit_batch, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               payload.get("items") or [], payload.get("key"))
+
+    @app.post("/api/correction-review/undo-edit")
+    def correction_undo_edit(payload: dict[str, Any]) -> dict:
+        from .correction_review import undo_edit
+        return correction_call(undo_edit, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               int(payload.get("count") or 0))
+
+    @app.post("/api/correction-review/note")
+    def correction_note(payload: dict[str, Any]) -> dict:
+        from .correction_review import add_note
+        return correction_call(add_note, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               key=payload.get("key"), frame=int(payload.get("frame") or 0),
+                               text=str(payload.get("text") or ""), tag=payload.get("tag"), picked=payload.get("picked"))
+
+    @app.put("/api/correction-review/set")
+    def correction_save(payload: dict[str, Any]) -> dict:
+        from .correction_review import save
+        return correction_call(save, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               decisions=payload.get("decisions"), notes=payload.get("notes"),
+                               edits=payload.get("edits"))
+
+    @app.post("/api/correction-review/focus")
+    def correction_focus(payload: dict[str, Any]) -> dict:
+        """What the page shows now (recording, join, frame, clicked cell), for the page's assistant."""
+        keys = ("root", "stem", "key", "frame", "cell")
+        focus = getattr(app.state, "correction_focus", None)
+        if focus is not None:
+            focus.clear()
+            focus.update({k: payload[k] for k in keys if payload.get(k) not in (None, "")})
+        return {"ok": True}
+
+    @app.get("/api/correction-review/stamp")
+    def correction_stamp(root: str, stem: str) -> dict:
+        from .correction_review import stamp
+        return {"stamp": correction_call(stamp, root, stem)}
+
+    @app.post("/api/correction-review/save-truth")
+    def correction_save_truth(payload: dict[str, Any]) -> dict:
+        """Export to Motion (if changed) and save a dated ground-truth snapshot of the recording."""
+        from .correction_truth import save_truth
+        return correction_call(save_truth, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               app.state.motion_url, user=str(payload.get("user") or "jamie"))
+
+    @app.post("/api/correction-review/render")
+    def correction_render(payload: dict[str, Any]) -> dict:
+        """Start the corrected movie (correction_outputs.render_movie); it runs in the background."""
+        from .correction_outputs import render_movie
+        return correction_call(render_movie, str(payload.get("root") or ""), str(payload.get("stem") or ""))
+
+    @app.get("/api/correction-review/render-status")
+    def correction_render_status(root: str, stem: str) -> dict:
+        from .correction_outputs import render_status
+        return correction_call(render_status, root, stem)
+
+    @app.get("/api/correction-review/movie")
+    def correction_movie(root: str, stem: str):
+        from .correction_outputs import movie_file
+        return FileResponse(correction_call(movie_file, root, stem), media_type="video/mp4")
+
+    @app.get("/api/correction-review/traces")
+    def correction_traces(root: str, stem: str) -> dict:
+        from .correction_outputs import traces
+        return correction_call(traces, root, stem)
+
+    @app.post("/api/correction-review/export")
+    def correction_export(payload: dict[str, Any]) -> dict:
+        from .correction_review import export
+        return correction_call(export, str(payload.get("root") or ""), str(payload.get("stem") or ""),
+                               app.state.motion_url, user=str(payload.get("user") or "jamie"))
+
     if STATIC.is_dir():
         app.mount("/assets", StaticFiles(directory=STATIC), name="assets")
+
+        @app.get("/correction-review")
+        def correction_page():
+            return FileResponse(STATIC / "correction-review.html")
 
         @app.get("/")
         def index():
@@ -791,5 +1001,7 @@ def create_app(*, auto_url: str | None = None, motion_url: str | None = None,
     import os
     if os.environ.get("PYMICROGLIA_AI", "1") != "0" and find_spec("aiify") is not None:
         from pymicroglia.ai_assistant import install
+        from .correction_agent import install as install_corrections
         install(app)
+        install_corrections(app)
     return app

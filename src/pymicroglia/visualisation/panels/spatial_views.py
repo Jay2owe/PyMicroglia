@@ -31,6 +31,8 @@ def _period_maps(figure,data,key):
     axes=figure.subplots(1,len(tiles),squeeze=False)
     for ax,tile in zip(axes.flat,tiles):
         cells=table.loc[table.record.eq('cell')&table.tile.eq(tile['key'])]
+        if data.get('underlay') is not None:
+            ax.imshow(data['underlay'],extent=(0,cfg['shape'][1]*cfg['scale'],cfg['shape'][0]*cfg['scale'],0),interpolation='nearest',zorder=0)
         if key=='period' and cfg.get('spatial_tracks',True):
             spatial.track_map(ax,table.loc[table.record.eq('track')],cmap=tile['cmap'],
                               vmin=tile['vmin'],vmax=tile['vmax'],linewidth=cfg['spatial_track_width'])

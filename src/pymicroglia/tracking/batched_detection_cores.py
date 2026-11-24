@@ -212,10 +212,17 @@ def detection_workers(pool, workers=None):
         yield stats
         return
     count = max(1, min(8, os.cpu_count() or 1)) if workers is None else max(1, int(workers))
+    from .execution import current
+    policy = current()
+    if policy is not None:
+        count = policy.count('detection')
 
     def detect_frames(raw, params, detect_frame, workers=None):
         stats['calls'] += 1
-        return original(raw, params, detect_frame, workers=count if workers is None else workers)
+        resolved = count if workers is None else workers
+        if policy is not None:
+            resolved = min(count, max(1, int(resolved)))
+        return original(raw, params, detect_frame, workers=resolved)
     detect_frames.__wrapped__ = original
     pool.detect_frames = detect_frames
     stats.update(supported=True, workers=count)

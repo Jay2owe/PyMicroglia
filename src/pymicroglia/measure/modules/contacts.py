@@ -90,9 +90,11 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
         }
         centres = {identity: np.asarray(ndi.center_of_mass(mask), dtype=float) for identity, mask in masks.items()}
         for dilation in dilations:
-            structure = ndi.iterate_structure(ndi.generate_binary_structure(2, 2), dilation)
+            # Connectivity two expands to a full (2*dilation+1) square. A
+            # maximum filter on booleans computes the same union, including
+            # zero padding at the field edge, without scanning a dense kernel.
             expanded = {
-                identity: ndi.binary_dilation(mask, structure=structure)
+                identity: ndi.maximum_filter(mask, size=2*dilation+1, mode="constant", cval=0)
                 for identity, mask in masks.items()
             }
             # Ask the dilated masks which labels they can actually reach before

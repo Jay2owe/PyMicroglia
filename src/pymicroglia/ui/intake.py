@@ -22,7 +22,54 @@ from auto_organotypic import recording_labels
 HOME = "pymicroglia_analysis"
 TIFFS = {".tif", ".tiff"}
 MAX_RECORDINGS = 500
-_SIGNAL_WORDS = ("biolum", "luc", "lum")
+
+#: The run switches the drop page offers: keyword, label, short step name, and
+#: the switch it needs. Defaults are read from auto_microglia.run itself, so
+#: this list never holds a second copy of one.
+SWITCHES = (
+    ("motion", "Track cells over time", "tracking", None),
+    ("eligibility", "Leave out cells with long tracking gaps", "gap check", "motion"),
+    ("tracked_measurement", "Measure tracked cells", "measurement", "motion"),
+    ("tracked_cell_grid", "Cell grid images", "cell grid images", "motion"),
+    ("tracked_cell_video_grid", "Cell grid videos", "cell grid videos", "motion"),
+    ("tracked_image", "Tracked-cell image", "tracked-cell image", "motion"),
+    ("tracked_video", "Tracked-cell video", "tracked-cell video", "motion"),
+)
+
+
+def options() -> dict[str, Any]:
+    """What the drop page can change before a run, with the pipeline's own defaults."""
+    import inspect as _inspect
+    from pymicroglia.pipelines import auto_microglia
+    defaults = _inspect.signature(auto_microglia.run).parameters
+    # Only switches the run really takes, so a renamed keyword drops off the page instead of failing a run.
+    return {"switches": [{"key": key, "label": label, "step": step, "needs": needs,
+                          "default": defaults[key].default}
+                         for key, label, step, needs in SWITCHES if key in defaults]}
+
+
+def _settings(settings: Mapping[str, Any] | None) -> dict[str, Any]:
+    """The run keywords for the page's choices; anything else is refused."""
+    if not settings:
+        return {}
+    if not isinstance(settings, Mapping):
+        raise ValueError("Settings must be a set of named choices")
+    allowed = {key for key, *_ in SWITCHES}
+    chosen: dict[str, Any] = {}
+    for key, value in settings.items():
+        if key == "outline_channel":
+            if value in (None, ""):
+                continue
+            if isinstance(value, bool) or not isinstance(value, (int, str)) or not str(value).isdigit() or int(value) < 1:
+                raise ValueError("The outline channel must be a channel number")
+            chosen.update(outline=True, channel=int(value))
+        elif key in allowed:
+            if not isinstance(value, bool):
+                raise ValueError(f"{key} must be on or off")
+            chosen[key] = value
+        else:
+            raise ValueError(f"The drop page cannot set {key}")
+    return chosen
 
 
 def _key(root: Path, path: Path) -> str:
@@ -38,16 +85,13 @@ def _manifest_recordings(root: Path) -> list | None:
     return sources.read_manifest(root)
 
 
-def _guess_roles(channels: list[dict[str, Any]]) -> dict[str, int]:
-    """The signal only: a named luciferase channel, else 1.
+def _only_channel(channels: list[dict[str, Any]]) -> dict[str, int] | None:
+    """The signal of a one-channel stack, which has nothing to choose between.
 
-    Never the outline channel. This page does not outline, and outlining
-    elsewhere needs its channel named by a person.
+    A stack with several channels is never guessed (Jamie, 2026-11-24): its
+    own metadata names the signal, or a person chooses it on the page.
     """
-    signal = next((row["index"] for row in channels
-                   if any(word in str(row.get("name") or "").lower() for word in _SIGNAL_WORDS)),
-                  1)
-    return {"signal": signal}
+    return {"signal": 1} if len(channels) == 1 else None
 
 
 def _traceable(frames: int, interval_s: float) -> bool:
@@ -95,8 +139,8 @@ def _local_row(root: Path, path: Path, labels: Mapping[str, str],
     from auto_organotypic import local_inputs
     try:
         found = local_inputs.inspect_stack(path, roles=roles, interval_s=interval_s)
-        if roles is None and not found["roles"].get("signal"):
-            found = local_inputs.inspect_stack(path, roles=_guess_roles(found["channels"]),
+        if roles is None and not found["roles"].get("signal") and _only_channel(found["channels"]):
+            found = local_inputs.inspect_stack(path, roles=_only_channel(found["channels"]),
                                                interval_s=interval_s)
     except (OSError, ValueError) as exc:
         return {"key": _key(root, path), "path": str(path), "stem": path.stem,
@@ -185,7 +229,7 @@ def inspect(paths: Iterable[str]) -> dict[str, Any]:
             row["selected"] = row["selected"] and Path(row["path"]) in chosen
     return {"folder": str(root), "mode": mode, "recordings": rows,
             "labels_file": str(root / recording_labels.FILE_NAME),
-            "results": results(root)}
+            "results": results(root), "options": options()}
 
 
 def save_labels(folder: str, labels: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
@@ -197,8 +241,10 @@ def save_labels(folder: str, labels: Mapping[str, Mapping[str, Any]]) -> dict[st
     return {"folder": str(root), "labels": saved}
 
 
-def run_params(folder: str, mode: str, recordings: list[Mapping[str, Any]]) -> dict[str, Any]:
-    """The auto_microglia keywords for the chosen recordings."""
+def run_params(folder: str, mode: str, recordings: list[Mapping[str, Any]],
+               settings: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """The auto_microglia keywords for the chosen recordings and the page's choices."""
+    chosen_settings = _settings(settings)
     root = Path(folder).resolve()
     chosen = [row for row in recordings if row.get("selected")]
     if not chosen:
@@ -211,7 +257,7 @@ def run_params(folder: str, mode: str, recordings: list[Mapping[str, Any]]) -> d
         params: dict[str, Any] = {"folder": str(root)}
         if set(paths) != everything:
             params["only"] = [path.name for path in paths]
-        return params
+        return {**params, **chosen_settings}
     if mode != "local":
         raise ValueError("Unknown recording source")
     from auto_organotypic import local_inputs
@@ -225,7 +271,7 @@ def run_params(folder: str, mode: str, recordings: list[Mapping[str, Any]]) -> d
         inputs.append(item)
     home = root / HOME
     local_inputs.write_manifest(home, inputs)
-    return {"folder": str(home)}
+    return {"folder": str(home), **chosen_settings}
 
 
 def results(folder) -> list[dict[str, Any]]:

@@ -177,6 +177,9 @@ def run(seven_frame_masks, photons, motion_labels, *, output_dir,
     if gated_masks is None and weights is None and method == "single_frame":
         from ..learned_mask import apply as masking
         paths["weights"] = masking.weights()
+    if gated_masks is None and weights is None and method == "lv200_red":
+        from ..learned_mask import lv200
+        paths["weights"] = lv200.weights()
     if not isinstance(source_frame_offset, int) or isinstance(source_frame_offset, bool) \
             or source_frame_offset < 0:
         raise ValueError("source_frame_offset must be nonnegative")
@@ -292,13 +295,35 @@ def run(seven_frame_masks, photons, motion_labels, *, output_dir,
             "settings": settings}
 
 
-def refine_motion(photons, motion_labels, *, output_dir, method="saved", **options):
+def refine_motion(photons, motion_labels, *, output_dir, method="saved", morph=None, **options):
     """Refine an existing Motion result using any supported shape provider.
 
     The original masks themselves anchor the proposals when a pre-tracking
     detection stack is unavailable. No identity tracking is run. ``options``
     are the same as :func:`run`, including source_frame_offset, weights and
-    method_options. Measurement and display read the returned refined_labels.
+    method_options.
+
+    ``morph`` then replaces one-frame outline failures (the refiner fell back to
+    the tracking outline, or the outline shrank or swelled past 2x its
+    neighbours) with a morph of the cell's good outlines either side; see
+    :mod:`.outline_morph`. It defaults to on for ``lv200_red``, the accepted
+    LV200 route, and off otherwise. Measurement and display read the returned
+    ``measurement_labels``: the morphed labels when morphing ran, else
+    refined_labels.
     """
-    return run(None, photons, motion_labels, output_dir=output_dir,
-               method=method, **options)
+    result = run(None, photons, motion_labels, output_dir=output_dir,
+                 method=method, **options)
+    if morph is None:
+        morph = method == "lv200_red"
+    measured = result["outputs"]["refined_labels"]
+    if morph:
+        from . import outline_morph
+        smoothed = outline_morph.run(measured, motion_labels,
+                                     output_dir=Path(output_dir) / "outline_morph")
+        measured = smoothed["outputs"]["morphed_labels"]
+        result["outputs"].update(morphed_labels=measured,
+                                 morph_audit=smoothed["outputs"]["morph_audit"],
+                                 morph_settings=smoothed["outputs"]["settings"])
+        result["morph"] = smoothed["settings"]
+    result["measurement_labels"] = measured
+    return result

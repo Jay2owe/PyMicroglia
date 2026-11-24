@@ -139,18 +139,39 @@ def track(handoff: Mapping[str, Any], folder, entry: dict[str, Any]) -> dict[str
     if manifest["still_missing"]:
         raise ValueError("motion=True needs a per-frame U-Net mask for every "
                          "recording; pass cell_masks=True")
-    results = {}
+    results, failed, degraded = {}, {}, {}
     try:
         for stem in manifest["stems"]:
-            result = _tracking.run(outputs["motion_inputs"], folder,
-                                   tracker_options={"stem": stem})
+            # One recording that cannot be tracked does not stop the others.
+            try:
+                result = _tracking.run(outputs["motion_inputs"], folder,
+                                       tracker_options={"stem": stem})
+            except ActionPending:
+                raise
+            except Exception as exc:
+                failed[stem] = f"{type(exc).__name__}: {exc}"[:2000]
+                continue
             results[stem] = result.as_dict()
+            receipt = Path(result.labels).parent.parent / "run.json"
+            try:
+                record = json.loads(receipt.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                record = {}
+            if record.get("degraded"):
+                degraded[stem] = record.get("reason", "")
     except ActionPending as exc:
         entry["status"] = "pending"
         entry["reason"] = str(exc)
         return outputs
-    entry["status"] = "ok"
+    if failed and not results:
+        raise RuntimeError("Tracking failed for every recording: " + "; ".join(
+            f"{stem}: {why}" for stem, why in failed.items()))
+    entry["status"] = "partial" if failed else "ok"
     entry.pop("reason", None)
+    if failed:
+        entry["failed_recordings"] = failed
+    if degraded:
+        entry["degraded_recordings"] = degraded
     outputs["tracking"] = results
     return outputs
 

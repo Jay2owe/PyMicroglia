@@ -1448,6 +1448,58 @@ _HANDOFF_ACTIONS: list[dict] = [
      "method_version": "2026-09-25-cell-video-grid-v9"},
 ]
 
+_TRACE_REVIEW_SOURCE = {"name": "source", "type": "path", "units": "-", "required": True, "default": None,
+                        "description": "Trace review folder (or the run folder whose default review it is)."}
+_TRACE_REVIEW_VERSION = "2026-10-27-trace-review-v1"
+
+#: The one canonical route for reviewing cell traces and rhythm fits. Agents make
+#: variants, import old grids, suggest and read the handoff; only Jamie decides.
+_TRACE_REVIEW_ACTIONS: list[dict] = [
+    {"name": "trace_review_create",
+     "summary": "Create or extend the trace review for a run's recordings, where Jamie includes, excludes and stars cells.",
+     "method": "ui.trace_review.trace_review_create", "method_version": _TRACE_REVIEW_VERSION,
+     "params": [
+         {"name": "source", "type": "path", "units": "-", "required": True, "default": None,
+          "description": "Saved measurement run folder containing manifest.json."},
+         {"name": "review_dir", "type": "path", "units": "-", "required": False, "default": None,
+          "description": "Review folder; None uses <run>/AI_Exports/trace_review."},
+         {"name": "stems", "type": "list", "units": "-", "required": False, "default": None,
+          "description": "Recording names to include; None includes every recording in the run."},
+         {"name": "review_title", "type": "str", "units": "-", "required": False, "default": None,
+          "description": "Title shown above the review grid; None keeps the existing or folder name."}]},
+    {"name": "trace_review_variant",
+     "summary": "Run one rhythm-analysis variant (method, detrend, metrics, label, time window) over every recording in a trace review.",
+     "method": "ui.trace_review.trace_review_variant", "method_version": _TRACE_REVIEW_VERSION,
+     "params": [
+         _TRACE_REVIEW_SOURCE,
+         {"name": "rhythm_options", "type": "dict", "units": "-", "required": True, "default": None,
+          "description": "run_rhythm_analysis settings, plus label and window_start_hours/window_end_hours; identical completed analyses are reused."},
+         {"name": "fit_workers", "type": "int", "units": "-", "required": False, "default": None,
+          "description": "Fitting processes per recording, 1 to 8; None chooses from the cell count."}]},
+    {"name": "trace_review_import",
+     "summary": "Convert an older trace-grid figure folder (statistics.csv, figure_data.csv, sources.csv) into a trace review variant.",
+     "method": "ui.trace_review.trace_review_import", "method_version": _TRACE_REVIEW_VERSION,
+     "params": [
+         _TRACE_REVIEW_SOURCE,
+         {"name": "legacy_folder", "type": "path", "units": "-", "required": True, "default": None,
+          "description": "Older figure-export folder; read only, never modified."},
+         {"name": "variant_label", "type": "str", "units": "-", "required": False, "default": None,
+          "description": "Name shown on the variant chip; None uses the folder name."}]},
+    {"name": "trace_review_suggest",
+     "summary": "Record agent include/exclude suggestions in a trace review; they are shown to Jamie and never applied as decisions.",
+     "method": "ui.trace_review.trace_review_suggest", "method_version": _TRACE_REVIEW_VERSION,
+     "params": [
+         _TRACE_REVIEW_SOURCE,
+         {"name": "suggestions", "type": "list", "units": "-", "required": True, "default": None,
+          "description": "Rows of {cell, status: include|exclude, reason}; cell keys come from the review grid or handoff."},
+         {"name": "agent", "type": "str", "units": "-", "required": True, "default": None,
+          "description": "Name of the suggesting agent, shown beside each suggestion."}]},
+    {"name": "trace_review_handoff",
+     "summary": "Read Jamie's frozen trace review decisions for downstream analysis, flagging recordings re-measured since.",
+     "method": "ui.trace_review.trace_review_handoff", "method_version": _TRACE_REVIEW_VERSION,
+     "params": [_TRACE_REVIEW_SOURCE]},
+]
+
 _MEASURE_ACTIONS: list[dict] = [
     {
         "name": "measure_expanded_outlines",
@@ -1941,7 +1993,7 @@ def build(protocols: Path) -> dict:
     # Motion's configuration blocks, and its tables are keyed in the store
     # under ``pymicroglia.measure.run.METHOD_VERSION``.
     from motion_catalogue import actions as motion_actions
-    for entry in [*_MEASURE_ACTIONS, *_HANDOFF_ACTIONS,
+    for entry in [*_MEASURE_ACTIONS, *_HANDOFF_ACTIONS, *_TRACE_REVIEW_ACTIONS,
                   *motion_actions([*_FIGURE_COMMON,*_FIGURE_SIZE])]:
         for row in entry["params"]:
             shared = {key: value for key, value in row.items() if key != "default"}

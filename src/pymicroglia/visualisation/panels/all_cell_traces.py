@@ -6,12 +6,12 @@ from . import colour as house_colour
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import FixedLocator
+from matplotlib.ticker import FixedLocator, FixedFormatter
 from matplotlib.lines import Line2D
 COLORS = (house_colour('blue'), house_colour('circadian_red'), house_colour('circadian_teal'), house_colour('circadian_amber'), house_colour('circadian_purple'), house_colour('dark'))
 PERIOD_TEXT_COLOUR = house_colour('nan_text')
 
-def _period_annotation(evidence, identity, metrics, labels):
+def _period_annotation(evidence, identity, metrics, labels, *, period_only=False):
     """Return compact per-metric period-test results for one cell."""
     if evidence is None or evidence.empty or 'identity' not in evidence:
         return ''
@@ -24,6 +24,11 @@ def _period_annotation(evidence, identity, metrics, labels):
             continue
         result = selected.iloc[0]
         period = result.get('period_hours')
+        if result.get('estimation_method') == 'fft_nlls':
+            from ...figure_tables.all_cell_traces import strongest_display_component
+            component = strongest_display_component(result)
+            if component is not None:
+                period = component['period_hours']
         q_value = result.get('q_value')
         p_value = result.get('p_value')
         try:
@@ -44,6 +49,9 @@ def _period_annotation(evidence, identity, metrics, labels):
                 text += ' (limited)'
             if bool(result.get('alternate_fft_component', False)):
                 text += f" [component {int(result.get('period_source_component'))}]"
+            if period_only:
+                annotations.append(text)
+                continue
             if np.isfinite(q_value):
                 text += f', q={q_value:.2g}'
             elif np.isfinite(p_value):
@@ -56,14 +64,44 @@ def _period_annotation(evidence, identity, metrics, labels):
     return '\n'.join(annotations)
 
 def draw(points, settings, evidence=None, *, canvas=None):
-    """Draw original-clock traces; share the y-axis only within each row."""
+    """Draw original-clock traces; share the y-axis only within each row.
+
+    Optional ``identity_label`` changes the title prefix (default ``Cell``).
+    Optional ``colors`` supplies the metric palette, including significant
+    traces and their fits in period style; other cells remain grey. Omitted
+    settings preserve the established rendering. Neither option changes data
+    or fit evidence.
+    ``identity_annotations`` may supply a right-hand label per identity instead
+    of the period annotation, for example an independently calculated ratio.
+    ``grid_layout_inches`` optionally sets width, row_height, top and bottom
+    in inches, so margins do not grow with a long grid's row count.
+    """
     identities = settings['identities']
     columns, rows = (settings['columns'], settings['rows'])
     from ... import workbench
     figure, axes = workbench.create_cell_grid(canvas, count=len(identities),
         rows=rows, columns=columns, sharex=True, sharey='row')
+    # Poster reference: compact stacked rows, not square analysis panels.
+    layout = settings.get('grid_layout_inches') or dict(
+        width=columns * 4., row_height=2.1, top=1.4, bottom=1.05)
+    if layout is not None:
+        if set(layout) != {'width', 'row_height', 'top', 'bottom'}:
+            raise ValueError('grid_layout_inches needs width, row_height, top and bottom')
+        if any(isinstance(value, bool) or not np.isfinite(float(value)) or float(value) <= 0
+               for value in layout.values()):
+            raise ValueError('Grid dimensions must be positive finite inches')
+        width = float(layout['width'])
+        height = rows * float(layout['row_height']) + float(layout['top']) + float(layout['bottom'])
+        figure.set_size_inches(width, height)
+        axes[0].get_subplotspec().get_gridspec().update(
+            top=1-float(layout['top'])/height, bottom=float(layout['bottom'])/height,
+            hspace=.22)
     width, height = figure.get_size_inches()
     metric_names = settings['metrics']
+    colors = settings.get('colors', COLORS)
+    if not colors:
+        raise ValueError('colors must contain at least one trace colour')
+    significant_colors = colors if 'colors' in settings else (house_colour('circadian_red'),)
     period_style = bool(settings.get('period_display_style', False))
     xlim = settings['xlim']
     for index, ax in enumerate(axes):
@@ -75,19 +113,23 @@ def draw(points, settings, evidence=None, *, canvas=None):
             if not series.empty:
                 one_point = np.isfinite(series.value.to_numpy(float)).sum() == 1
                 significant = bool(series.period_test_significant.iloc[0]) if period_style and 'period_test_significant' in series else False
-                trace_color = (house_colour('circadian_red') if significant else house_colour('nan_text')) if period_style else COLORS[number % len(COLORS)]
+                trace_color = (significant_colors[number % len(significant_colors)] if significant else house_colour('nan_text')) if period_style else colors[number % len(colors)]
                 ax.plot(series.hours.to_numpy(float), series.value.to_numpy(float), color=trace_color, linewidth=1.25 if period_style else 1.15, marker='o' if one_point else None, markersize=3, label=settings['labels'][number])
                 if period_style and 'descriptive_fit' in series and series.descriptive_fit.notna().any():
                     ax.plot(series.hours.to_numpy(float), series.descriptive_fit.to_numpy(float), color=trace_color, linestyle=':', linewidth=2.0, zorder=4)
         if cell.empty or not np.isfinite(cell.value.to_numpy(float)).any():
             ax.text(0.5, 0.5, 'No measured values', ha='center', va='center', transform=ax.transAxes)
-        ax.set_title(f'Cell {identities[index]}', loc='left', fontsize=10, pad=2)
-        if settings.get('period_testing', True):
-            annotation = _period_annotation(evidence, identities[index], metric_names, settings['labels'])
+        ax.set_title(f"{settings.get('identity_label', 'Cell')} {identities[index]}", loc='left', fontsize=20, pad=2)
+        custom_annotations = settings.get('identity_annotations', {})
+        custom_annotation = custom_annotations.get(identities[index], custom_annotations.get(str(identities[index])))
+        if custom_annotation is not None:
+            ax.set_title(str(custom_annotation), loc='right', fontsize=18, color=PERIOD_TEXT_COLOUR, pad=2)
+        elif settings.get('period_testing', True):
+            annotation = _period_annotation(evidence, identities[index], metric_names, settings['labels'], period_only=period_style)
             if annotation:
                 if period_style and len(metric_names) == 1:
                     annotation = annotation.removeprefix(settings['labels'][0] + ': ')
-                ax.set_title(annotation, loc='right', fontsize=8, color=house_colour('circadian_red') if period_style and significant else PERIOD_TEXT_COLOUR, pad=2)
+                ax.set_title(annotation, loc='right', fontsize=18, color=PERIOD_TEXT_COLOUR, pad=2)
         ax.set_xlim(*xlim)
         from ..time_guides import time_guides
         for hour in time_guides(xlim, settings.get('time_guides_hours'), settings.get('time_guides_offset_hours', 0.0)):
@@ -98,27 +140,69 @@ def draw(points, settings, evidence=None, *, canvas=None):
         first_tick = tick_hours * math.ceil(xlim[0] / tick_hours)
         last_tick = tick_hours * math.floor(xlim[1] / tick_hours)
         if first_tick <= last_tick:
-            ax.xaxis.set_major_locator(FixedLocator(np.arange(first_tick, last_tick + tick_hours / 2, tick_hours)))
-            if (last_tick - first_tick) / tick_hours + 1 >= 6:
-                plt.setp(ax.get_xticklabels(), rotation=90, ha='center', va='top')
+            ticks = np.arange(first_tick, last_tick + tick_hours / 2, tick_hours)
+            ax.xaxis.set_major_locator(FixedLocator(ticks))
+            # Keep every requested tick and guide; label fewer ticks when the
+            # poster-sized horizontal text would otherwise merge together.
+            stride = max(1, math.ceil(len(ticks) / 7))
+            ax.xaxis.set_major_formatter(FixedFormatter([
+                f'{hour:g}' if i % stride == 0 else '' for i, hour in enumerate(ticks)]))
+            plt.setp(ax.get_xticklabels(), rotation=0, ha='center')
         ax.spines[['top', 'right']].set_visible(False)
-        ax.tick_params(axis='both', labelsize=8, length=3)
+        ax.tick_params(axis='both', labelsize=18, length=3)
+        if period_style:
+            ax.set_yticks([])
         if column:
             ax.tick_params(labelleft=False)
         if row != rows - 1 and index + columns < len(identities):
             ax.tick_params(labelbottom=False)
     if period_style:
         test_label = ('Conditional FFT component' if settings.get('fft_component_test') else 'Significant period test')
-        handles = [Line2D([], [], color=house_colour('circadian_red'), linewidth=2, label=f"{test_label} (uncorrected p < {settings.get('rhythmic_alpha', 0.05):g})"), Line2D([], [], color=house_colour('nan_text'), linewidth=2, label='Other cells')]
+        handles = [Line2D([], [], color=significant_colors[i % len(significant_colors)], linewidth=2,
+                          label=f"{label + ': ' if len(metric_names) > 1 else ''}{test_label} (uncorrected p < {settings.get('rhythmic_alpha', 0.05):g})")
+                   for i, label in enumerate(settings['labels'])]
+        handles.append(Line2D([], [], color=house_colour('nan_text'), linewidth=2, label='Other cells'))
         if 'descriptive_fit' in points and points.descriptive_fit.notna().any():
             handles.append(Line2D([], [], color=house_colour('dark'), linewidth=2, linestyle=':', label=settings.get('fit_label') or 'Descriptive cosinor fit'))
     else:
-        handles = [plt.Line2D([], [], color=COLORS[i % len(COLORS)], linewidth=2, label=label) for i, label in enumerate(settings['labels'])]
+        handles = [plt.Line2D([], [], color=colors[i % len(colors)], linewidth=2, label=label) for i, label in enumerate(settings['labels'])]
     width, height = figure.get_size_inches()
-    figure.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1 - 0.48 / height), ncol=min(len(handles), 5), frameon=False, fontsize=10)
-    figure.text(0.02, 1 - 0.14 / height, settings['title'], fontsize=15, fontweight='bold', va='top')
-    figure.text(0.012, 0.5, settings['unit'], rotation=90, ha='center', va='center', fontsize=16)
-    figure.supxlabel('Recording time (hours)', y=0.16 / height, fontsize=10)
+    legend_columns = min(len(handles), 5)
+    legend = figure.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1 - 0.48 / height), ncol=legend_columns, frameon=False, fontsize=18)
+    if period_style and len(metric_names) > 1 and columns > 1:
+        # Two reporter names need another legend row on narrower native grids.
+        # Measure with the actual font; keep the poster-sized text unchanged.
+        from matplotlib.backends.backend_agg import RendererAgg
+        def measure():
+            renderer = RendererAgg(int(figure.bbox.width), int(figure.bbox.height), figure.dpi)
+            figure.draw(renderer)
+            return renderer
+        renderer = measure()
+        while legend_columns > 1:
+            bounds = legend.get_window_extent(renderer)
+            if bounds.x0 >= 5 and bounds.x1 <= figure.bbox.width - 5:
+                break
+            legend.remove(); legend_columns -= 1
+            legend = figure.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.5, 1 - 0.48 / height), ncol=legend_columns, frameon=False, fontsize=18)
+            renderer = measure()
+        title_top = max(max(ax._left_title.get_window_extent(renderer).y1,
+                            ax._right_title.get_window_extent(renderer).y1) for ax in axes[:columns])
+        clearance = title_top + 8 - legend.get_window_extent(renderer).y0
+        if clearance > 0 and 'grid_layout_inches' not in settings:
+            extra = clearance / figure.dpi + .05
+            height += extra
+            figure.set_size_inches(width, height)
+            axes[0].get_subplotspec().get_gridspec().update(
+                top=1-(float(layout['top'])+extra)/height,
+                bottom=float(layout['bottom'])/height)
+            legend.set_bbox_to_anchor((.5, 1-.48/height))
+    figure.text(0.02, 1 - 0.14 / height, settings['title'], fontsize=24, fontweight='bold', va='top')
+    figure.text(0.012, 0.5, settings['unit'], rotation=90, ha='center', va='center', fontsize=24)
+    time_note = settings.get('time_note')
+    figure.supxlabel(settings.get('time_label', 'Recording time (hours)'),
+                     y=(0.24 if time_note else 0.16) / height, fontsize=24)
+    if time_note:
+        figure.text(0.02, 0.02 / height, time_note, fontsize=12, va='bottom')
     return (figure, [ax for ax in axes if ax.get_visible()])
 
 

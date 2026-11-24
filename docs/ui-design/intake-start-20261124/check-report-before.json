@@ -1,0 +1,24 @@
+{
+  "phase": "before",
+  "rows": 3,
+  "button": "Run full analysis on 3 recordings",
+  "beside_button": "Registration, cell masks, tracking, measurement, cell grids and videos, with the saved defaults. Every step and setting is recorded in the run folder.",
+  "signal_preselected": [
+    "1",
+    "1",
+    "1"
+  ],
+  "narrow_overflow": false,
+  "run_keywords": {
+    "folder": "C:\\Users\\Owner\\AppData\\Local\\Temp\\pm-intakecheck-h0w42zn5\\Microglia 2026-11\\pymicroglia_analysis"
+  },
+  "after_stop": "Stopped: RuntimeError: Stopped by request after the current stage\nregister \u2192 register \u2192 register \u2192 register \u2192 register",
+  "manifest_written": true,
+  "desktop_buttons": [
+    "Read",
+    "Choose stacks\u2026",
+    "Choose folder\u2026"
+  ],
+  "desktop_folder_rows": 3,
+  "page_errors": []
+}

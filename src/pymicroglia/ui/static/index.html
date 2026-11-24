@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/assets/events.css?v=20261002-3">
   <link rel="stylesheet" href="/assets/rhythm-audit.css?v=20261003-4">
   <link rel="stylesheet" href="/assets/cell-grid.css">
-  <link rel="stylesheet" href="/assets/intake.css?v=20261029-1">
+  <link rel="stylesheet" href="/assets/intake.css?v=20261124-1">
   <script src="/assets/quicklook.js" defer></script>
   <script src="/assets/exploration-core.js?v=20261002-3" defer></script>
   <script src="/assets/exploration-filters.js?v=20261006-outline-filter-1" defer></script>
@@ -21,9 +21,10 @@
   <script src="/assets/exploration.js?v=20261011-progressive-1" defer></script>
   <script src="/assets/events.js?v=20261003-1" defer></script>
   <script src="/assets/rhythm-audit.js?v=20261003-4" defer></script>
-  <script src="/assets/intake.js?v=20261029-1" defer></script>
+  <script src="/assets/intake.js?v=20261124-1" defer></script>
   <script src="/assets/app.js?v=20261029-intake-1" defer></script>
 <script src="/assets/assistant-controls.js" defer></script>
+<script src="/assets/heartbeat.js" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -51,6 +52,8 @@
         <button data-motion-page="correct">Correct identities</button>
         <button data-motion-page="handoff">Outline handoff</button>
         <button data-motion-page="history">History and export</button>
+        <span class="nav-divider">AFTER THE AGENT</span>
+        <a class="nav-link" style="color:#a6bfcb;padding:12px 13px;border-radius:8px;font-weight:600;text-decoration:none" href="/correction-review" title="Approve or deny each name join an agent made, edit cells and export a new Motion session">Review agent changes</a>
       </nav>
       <div class="sidebar-foot" id="motion-status">Choose a Motion source</div>
     </aside>

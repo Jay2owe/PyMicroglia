@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
@@ -58,3 +59,59 @@ def test_registered_crop_never_uses_native_camera_images(tmp_path):
     assert result['camera_shape']==[15,17] and result['decoded_frames']==3
     assert result['registered_crop']['box']==[100,200,17,15]
     assert all('not_a_review_source' not in r['path'] for r in result['source_inputs'])
+
+
+def test_video_revision_uses_exact_tracking_stack_and_preserves_measurements_and_tiffs(tmp_path, monkeypatch):
+    from auto_organotypic.video import encode
+    measurement = tmp_path/'measurement'; measurement.mkdir()
+    inputs = []
+    for role, value in [('labels', 0), ('channel:Red', 90), ('channel:Green', 40)]:
+        path = tmp_path/(role.replace(':', '_')+'.tif')
+        tifffile.imwrite(path, np.full((3, 32, 48), value, np.uint16), photometric='minisblack')
+        inputs.append(dict(role=role, path=str(path), sha256=digest(path)))
+    manifest = measurement/'manifest.json'
+    manifest.write_text(json.dumps(dict(inputs=inputs, channels=['Red','Green'],
+                                       source_frames=3, source_frame_offset=0)))
+    pd.DataFrame(dict(source_frame_index=[0,1,2], hours=[0.,.5,1.])).to_csv(measurement/'cell_frame.csv', index=False)
+    output = tmp_path/'review/full_recordings'
+    old = render(measurement, output, prefix='sample')
+    before = {str(p): digest(p) for p in [manifest, measurement/'cell_frame.csv',
+              *(Path(row['path']) for row in inputs)]}
+    # This intentionally differs from a direct Red-minus-Green subtraction:
+    # display must use the saved tracking signal, including its preprocessing.
+    signal = np.zeros((3, 32, 48), np.float32)
+    signal[:, :, :24] = -10
+    signal[:, :, 24:] = 200
+    source = tmp_path/'tracking_input.tif'
+    tifffile.imwrite(source, signal, photometric='minisblack')
+    captured = []
+    write_video = encode.write_video
+    def capture(path, frames, **kwargs):
+        def record():
+            for frame in frames:
+                captured.append(frame.copy())
+                yield frame
+        return write_video(path, record(), **kwargs)
+    monkeypatch.setattr(encode, 'write_video', capture)
+    options = dict(prefix='sample', video_signal='tracking_input', tracking_raw=source,
+                   tracking_raw_sha256=digest(source), tracking_signal_name='Red - Green')
+    with pytest.raises(ValueError, match='different inputs or code'):
+        render(measurement, output, **options)
+    new = render(measurement, output, revise_video=True, **options)
+    assert new['decoded_frames'] == 3 and new['unchanged_outline_tiffs_reused']
+    assert not new['signal_recomputed']
+    assert len(captured) == 3
+    for index, frame in enumerate(captured):
+        expected = overlay(signal[index], np.zeros((32, 48), np.uint16), 200,
+                           f'sample | Red - Green | Frame {index+1}/3 | {index*.5:.2f} h')
+        np.testing.assert_array_equal(frame, expected)
+    assert {p: digest(p) for p in before} == before
+    for name, fingerprint in old['files'].items():
+        if name.endswith('.tif'): assert digest(output/name) == new['files'][name] == fingerprint
+    history = Path(new['previous_review'])
+    assert digest(history/'sample_full_recording.mp4') == old['files']['sample_full_recording.mp4']
+    assert json.loads((history/'sample_full_recording.json').read_text()) == old
+    assert render(measurement, output, **options) == new
+    source.write_bytes(b'changed tracking input')
+    with pytest.raises(ValueError, match='Tracking-input review source changed'):
+        render(measurement, output, **options)

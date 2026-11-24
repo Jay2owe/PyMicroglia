@@ -110,6 +110,10 @@ def run_current(root, stem, run_name, config_path, folder, *, resume=False, arra
     from .correction_audit import CorrectionAudit
 
     output = Path(root)/'m23_completed_feedback'/run_name
+    if output.exists() and resume and (output/'run.json').is_file():
+        if json.loads((output/'run.json').read_text()).get('degraded'):
+            from .checkpoints import set_aside
+            set_aside(output, 'degraded')
     if output.exists():
         if not resume:
             raise FileExistsError(f'Immutable completed correction run already exists: {output}')

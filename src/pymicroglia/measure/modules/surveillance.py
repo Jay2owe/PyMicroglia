@@ -162,11 +162,13 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
             gap = frame_index - last_frame
             if gap > max_gap:
                 continue
+            area = int(np.count_nonzero(mask))
+            last_area = int(np.count_nonzero(last_mask))
             held = int(np.count_nonzero(mask & last_mask))
-            gained = int(np.count_nonzero(mask & ~last_mask))
-            lost = int(np.count_nonzero(last_mask & ~mask))
+            gained = area - held
+            lost = last_area - held
             union = held + gained + lost
-            total = int(mask.sum()) + int(last_mask.sum())
+            total = area + last_area
             rows.append(
                 {
                     "identity": identity,
@@ -178,7 +180,7 @@ def measure(context: MeasurementContext) -> dict[str, pd.DataFrame]:
                     "lost_px": lost,
                     "turnover_index": (gained + lost) / total if total else np.nan,
                     "jaccard": held / union if union else np.nan,
-                    "area_change_px": int(mask.sum()) - int(last_mask.sum()),
+                    "area_change_px": area - last_area,
                     "extension_bias": (
                         (gained - lost) / (gained + lost) if (gained + lost) else np.nan
                     ),

@@ -69,6 +69,16 @@ def install(module):
         exec(compile(source, f'<bracketed-handoff-{name}>', 'exec',
                      flags=__future__.annotations.compiler_flag, dont_inherit=True), globals_, namespace)
         setattr(module, name, namespace[name])
+    from .execution import current
+    policy = current()
+    if policy is not None:
+        from .parallel_handoff import discover
+        serial = module.discover
+        stats['parallel_calls'] = 0
+        def parallel(scored, labels, params):
+            return discover(module, sources['discover'], serial,
+                            scored, labels, params, policy, stats)
+        module.discover = parallel
     stats['supported'] = True
     try:
         yield stats

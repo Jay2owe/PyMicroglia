@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Owner\UK Dementia Research Institute Dropbox\Brancaccio Lab\Jamie\Experiments\Microglia Project\PyMicroglia\src\pymicroglia\cli.py", line 335, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\Owner\UK Dementia Research Institute Dropbox\Brancaccio Lab\Jamie\Experiments\Microglia Project\PyMicroglia\src\pymicroglia\cli.py", line 220, in main
+    return launch(browser=getattr(args, "browser", False), project=args.project,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\UK Dementia Research Institute Dropbox\Brancaccio Lab\Jamie\Experiments\Microglia Project\PyMicroglia\src\pymicroglia\ui\desktop.py", line 129, in launch
+    time.sleep(.5)
+OSError: [WinError 1450] Insufficient system resources exist to complete the requested service

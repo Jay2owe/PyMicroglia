@@ -142,6 +142,14 @@ def prepare(source, *, review: Review | None = None, channels=None,
         dluc = int(assignment["dluc"])
 
         times = _times_for(meta, dluc, frames, dt_min)
+        time_source = meta.time_source
+        assumed_timing = meta.times_s is None
+        if assumed_timing:
+            time_source = ("uniform assumption from dt_min" if dt_min else
+                           "uniform assumption from file frame interval")
+            review.flag("note", "timing", "Frame times use a nominal interval",
+                        "No per-plane timestamps are available. The uniform "
+                        "time axis cannot reveal acquisition pauses.")
         window = _metadata.usable_window(times, t0=t0, t1=t1, gap_h=gap_h)
         block = _trim_flat_edges(opened, window, review)
         for line in window.notes:
@@ -252,7 +260,8 @@ def prepare(source, *, review: Review | None = None, channels=None,
                          "block": [block[0], block[1]],
                          "shift_mode": str(shift_mode),
                          "frames": int(end - start),
-                         "time_source": meta.time_source})
+                         "time_source": time_source,
+                         "assumed_timing": assumed_timing})
 
 
 def _channels_for(opened, channels, review: Review) -> dict[str, Any]:

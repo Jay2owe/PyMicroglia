@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Correction reviewer</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/assets/correction-review.css">
+</head>
+<body>
+<div class="cr-left">
+  <div class="cr-row">
+    <a class="cr-back" href="/" title="Back to the workbench">&larr;</a>
+    <select id="cr-stem" title="Recording"></select>
+    <span id="cr-progress" class="cr-muted"></span>
+  </div>
+  <div class="cr-row cr-filter" id="cr-filter">
+    <label title="Every correction"><input type="radio" name="f" value="all" checked> All</label>
+    <label title="No decision yet"><input type="radio" name="f" value="todo"> To do</label>
+    <label title="Unsure joins: not applied unless approved"><input type="radio" name="f" value="unsure"> ?</label>
+    <label title="Applied joins that were far or late: look first"><input type="radio" name="f" value="check"> !</label>
+    <label title="Denied"><input type="radio" name="f" value="deny"> &#10007;</label>
+  </div>
+  <div class="cr-tree">
+    <table>
+      <thead><tr><th class="s"></th><th class="k"></th><th class="join">Join</th><th class="frames">Frames</th></tr></thead>
+      <tbody id="cr-rows"></tbody>
+    </table>
+  </div>
+  <div class="cr-follow">
+    <div class="cr-row"><b title="Right-click a cell in the pictures to follow it in its own colour; right-click again to stop">Following</b>
+      <span id="cr-chips" class="cr-chips"></span></div>
+    <div class="cr-row">
+      <span class="cr-muted">frames</span>
+      <input id="cr-ffrom" type="number" min="0" placeholder="first" title="First frame the follow view can show (blank: the start of the recording, so you can see where a cell came from)">
+      <span class="cr-muted">to</span>
+      <input id="cr-fto" type="number" min="0" placeholder="last" title="Last frame the follow view can show (blank: the end of the recording)">
+      <button id="cr-fshow" title="Show the followed cells together in one fixed view over these frames (F)">F Show</button>
+      <button id="cr-fclear" title="Stop following every cell">Clear</button>
+    </div>
+    <label title="Every outline and number in its own colour, not grey"><input id="cr-every" type="checkbox"> Colour every cell</label>
+  </div>
+  <details id="cr-marks" class="cr-history cr-marks" open><summary id="cr-marks-sum">My marks</summary>
+    <div class="cr-row"><button id="cr-tick" tabindex="-1" title="Tick the clicked cell (or the followed cells) as good; again to untick (V)">&#10003; Good (V)</button>
+      <button id="cr-flag" tabindex="-1" title="Flag the clicked cell (or the followed cells) at this frame to revisit, with a note (J)">&#9873; Flag (J)</button></div>
+    <div id="cr-marklist"></div>
+  </details>
+  <details id="cr-events" class="cr-history cr-events"><summary id="cr-events-sum">Timeline events</summary>
+    <div class="cr-row"><select id="cr-ekind" tabindex="-1" title="Only this kind (also the timeline legend buttons)"><option value="">all kinds</option><option value="start">start</option><option value="end">end</option><option value="gap">gap</option><option value="jump">jump</option><option value="size">size</option><option value="pieces">pieces</option><option value="mine">mine</option></select>
+      <button id="cr-eprev" tabindex="-1" title="Previous event (,)">&#9664;</button><button id="cr-enext" tabindex="-1" title="Next event (.)">&#9654;</button>
+      <button id="cr-eresolve" tabindex="-1" title="Mark the current event resolved and go to the next (H); again to reopen">&#10003; Resolve (H)</button>
+      <label title="List resolved events too"><input id="cr-eshow" type="checkbox" tabindex="-1"> resolved</label></div>
+    <div id="cr-elist"></div>
+  </details>
+  <details id="cr-history" class="cr-history"><summary>Edits</summary><div id="cr-hist"></div></details>
+  <div id="cr-questions" class="cr-questions" hidden></div>
+  <canvas id="cr-overview" width="318" height="318" title="Whole recording at this frame: red = this correction, orange = other corrections"></canvas>
+</div>
+
+<div class="cr-right">
+  <div class="cr-row cr-bar">
+    <button id="cr-approve" class="approve" title="Keep / apply this join (A)">&#10003; Approve</button>
+    <button id="cr-deny" class="deny" title="Reject this join (D)">&#10007; Deny</button>
+    <button id="cr-clear" title="Back to the default (U)">Clear</button>
+    <button id="cr-undo" title="Undo the last decision or edit (Ctrl+Z)">Undo</button>
+    <span id="cr-status" class="cr-status"></span>
+    <span class="cr-zoom" title="Mouse wheel over a picture zooms there; past the normal view it widens the field. Middle-drag pans; click the map (bottom left) to move the field there">
+      <button id="cr-zout" title="Zoom out / wider field (-)">&minus;</button><button id="cr-zfit" title="Back to the normal view (0)">0</button><button id="cr-zin" title="Zoom in (mouse wheel up)">+</button>
+    </span>
+    <button id="cr-timeline" title="Timeline of every cell, with events worth a look flagged (T)">T Timeline</button>
+    <button id="cr-tower-open" title="Tracking tower of the whole field, every cell; followed cells emphasised (Y)">Y Tower</button>
+    <button id="cr-movie" title="Open the newest corrected movie made by Render, in a new tab (M)">Movie</button>
+    <button id="cr-traces-open" title="Trace grid: every cell's red signal over time, from the current outlines (edits included)">Traces</button>
+    <button id="cr-export" title="Export this recording: a new Motion session (when anything changed) plus a dated copy in the ground-truth folder for training the tracking (E). Safe to press any time; nothing is overwritten">Export + save truth</button>
+    <button id="cr-render" title="Make a movie of the whole recording with the corrected outlines on the red channel; runs in the background, then Movie opens it (R)">Render</button>
+  </div>
+  <div id="cr-title" class="cr-title"></div>
+  <div id="cr-grid" class="cr-grid"></div>
+
+  <div id="cr-gantt-box" class="cr-gantt-box" hidden>
+    <div class="cr-row cr-gantt-bar">
+      <b>Timeline</b>
+      <span class="cr-muted" title="White line: this frame. Cyan tick: a join; yellow ring: a question; purple underline: your edit">click a cell's bar to follow it there, Shift+click adds it</span>
+      <label title="Hide cells with nothing flagged"><input id="cr-gevents" type="checkbox"> flagged only</label>
+      <label title="Hide cells you ticked as good"><input id="cr-gticked" type="checkbox"> hide ticked</label>
+      <select id="cr-gsort" title="Row order (followed cells always first)">
+        <option value="first">by first frame</option><option value="flags">most flags first</option><option value="n">by number</option>
+      </select>
+      <button id="cr-gprev" title="Previous flagged event (,)">&#9664; flag</button>
+      <button id="cr-gnext" title="Next flagged event (.)">flag &#9654;</button>
+      <span id="cr-glegend" class="cr-glegend"></span>
+    </div>
+    <div id="cr-gantt-scroll" class="cr-gantt-scroll"><canvas id="cr-gantt"></canvas></div>
+  </div>
+
+  <div class="cr-row cr-foot">
+    <button id="cr-play" class="play" title="Play (Space); a follow view plays its whole range">&#9654;</button>
+    <input id="cr-fps" type="number" min="1" max="30" value="3" title="Playback speed in frames per second ([ slower, ] faster); remembered">
+    <span class="cr-muted">fps</span>
+    <input id="cr-slider" type="range" min="0" max="1" value="0" tabindex="-1">
+    <span id="cr-frame" class="cr-frame"></span>
+  </div>
+  <div class="cr-row cr-edit">
+    <span class="cr-muted">&#9986; Edit</span>
+    <button id="cr-swap" tabindex="-1" title="Swap the clicked cell's number with the next cell you click (S)">S Swap</button>
+    <button id="cr-give" tabindex="-1" title="Give the clicked cell another number: click the cell whose number it should take, or type it and press Enter (G). Same cell, missed join or wrong number">G Give number</button>
+    <button id="cr-delete" tabindex="-1" title="Not a cell: remove the clicked number (X or Delete)">X Delete</button>
+    <button id="cr-track" tabindex="-1" title="Remove the clicked number from every frame of the recording (Shift+X)">&#8679;X Whole track</button>
+    <button id="cr-split" tabindex="-1" title="Draw a line across the cell to cut it in two; the cut follows the cell to the 'to' frame (C)">C Draw split</button>
+    <button id="cr-trim" tabindex="-1" title="Trim (Z): draw a line across a cell that has grown too far; the orange side is erased (no new number) and the cut follows the cell to the 'to' frame, like a split. Hold Shift to swap which side is erased">Z Trim</button>
+    <button id="cr-fence" tabindex="-1" title="Fence: click a cell, then hold the button and draw round an area it must never enter. Its pixels there are removed in every frame from this one to the end (or the frames from/to boxes). One edit, one Ctrl+Z">Fence</button>
+    <button id="cr-keepin" tabindex="-1" title="Keep in: click a cell, then hold the button and draw round the area it must stay inside. Its pixels outside are removed in every frame from this one to the end (or the frames from/to boxes). One edit, one Ctrl+Z">Keep in</button>
+    <button id="cr-keep" tabindex="-1" title="Keep split: the clicked cell keeps its number over this snippet and is cut back out whenever it merges with a neighbour (K). A number typed in the box is given instead">K Keep split</button>
+    <button id="cr-whole" tabindex="-1" title="Keep the clicked cell's number (or the typed one) over the whole recording, cut out of every merge (W)">W Whole recording</button>
+    <input id="cr-give-box" class="give" title="Number to give the clicked cell (G, type, Enter); also the number Draw outline and Seed use. Alt+click a cell to load its number here">
+    <label title="Give number and Delete change only the clicked part of the number (not other pieces carrying it), followed from this frame to the 'to' frame (P)"><input id="cr-piece" type="checkbox" tabindex="-1"> P Piece only</label>
+    <label title="On: a tool you pick stays selected and applies to every click until Esc or its key again. Off: each tool works once"><input id="cr-sticky" type="checkbox" tabindex="-1" checked> Keep tool</label>
+    <button id="cr-qrun" class="qrun" tabindex="-1" hidden title="Apply every queued edit in order (Enter). Ctrl+click (or Ctrl+draw) with a tool on queues one">Run queued</button>
+    <button id="cr-qclear" tabindex="-1" hidden title="Forget the queued edits (Esc)">Clear queue</button>
+    <span class="cr-muted">to frame</span>
+    <input id="cr-to" type="number" min="0" value="0" class="to" title="Last frame an edit covers; set to the end of the clicked cell's run when you click it">
+    <span id="cr-sel" class="cr-sel"></span>
+  </div>
+  <div class="cr-row cr-edit">
+    <span class="cr-muted">&#9711; Outlines</span>
+    <button id="cr-draw" tabindex="-1" title="Hold the button and draw round an area: its empty pixels go to the clicked cell, else the typed number, else a new number; this frame only (O)">O Draw outline</button>
+    <button id="cr-erase" tabindex="-1" title="Hold the button and draw round an area: the clicked cell's pixels inside it are removed (every cell's if none is clicked); this frame only (I)">I Erase inside</button>
+    <button id="cr-seed" tabindex="-1" title="Click an empty spot on a missed cell's signal, then B: the connected signal there becomes a cell, followed back and forward through the frames shown until its signal ends (forward only to 'to' if 'to' is later). It takes the typed number, else the number of a track that vanished right where it starts or ends, else a new number">B Seed new cell</button>
+    <button id="cr-grow" tabindex="-1" title="Click a cell, then +: it takes the unassigned signal touching it, from this frame to the 'to' frame (missed branches). Never takes another cell's pixels">+ Grow cell</button>
+    <button id="cr-island" tabindex="-1" title="Click the piece of a cell to keep, then ! : from this frame to the 'to' frame (and back to 'from' if set) the cell keeps only the piece that continues the clicked one (most overlap with the frame before, else the nearest); its other pieces become unassigned. For a grow that spread into several pieces across the video">! One island</button>
+    <button id="cr-mgrow" tabindex="-1" title="Click a cell, then *: it takes the LV200 outline model's piece of it (the rim and projections the trained model sees), from this frame to the 'to' frame. Only unassigned pixels; a piece shared with another cell is split by nearest pixel. The first use on a recording runs the model once (about 3-4 minutes; it also starts in the background when the recording opens)">* Model grow</button>
+    <span class="cr-muted" title="Signal = brighter than this frame's own Otsu threshold (after removing the background glow) times this level; 0.2 by default. Lower it to take dimmer branches, raise it to take less">grow level</span>
+    <input id="cr-level" type="number" min="0.1" max="3" step="0.1" value="0.2" class="level" title="Grow level (0.2 by default). Lower takes dimmer branches; higher takes less. With Seed or Grow on, hover to preview what it would take">
+    <label class="cr-muted" title="Grow from the clicked piece only: when the cell is in several pieces, only the piece you click (followed through the frames) grows; its other pieces stay as they are"><input type="checkbox" id="cr-onepiece"> one piece</label>
+    <span class="cr-muted">frames</span>
+    <input id="cr-rfrom" type="number" min="0" class="to" placeholder="from" title="First frame Seed and Grow run from (blank: as far back as the signal goes in the frames shown)">
+    <input id="cr-rto" type="number" min="0" class="to" placeholder="to" title="Last frame Seed, Grow, Draw split and Track on run to (blank: as far as the signal / cell goes)">
+    <span class="cr-muted">number</span>
+    <input id="cr-snum" class="give" placeholder="auto" title="Number the seeded cell gets (blank: continue a track that vanished there, else a free number). Splits ignore it: the cut-off side always gets a free number">
+    <button id="cr-trackon" tabindex="-1" title="Run the tracking on from this frame for the clicked cell (or the followed cells): each frame it keeps its number on whatever it overlaps most next, swapping with any other cell carrying it, until it stops overlapping or changes size suddenly (L). Frames to the 'to' box above if set">L Track on</button>
+    <button id="cr-fillgaps" tabindex="-1" title="Fill gaps (Q): wherever the clicked cell (or the followed cells) goes missing after this frame and comes back, seed at its centroid from the last frame it was seen, at the grow level, with its own number, and follow that signal until it is back. Past its last frame only up to the frames 'to' box">Q Fill gaps</button>
+  </div>
+  <div class="cr-row cr-notes">
+    <span class="cr-muted">&#9998; Note</span>
+    <span id="cr-quick" class="cr-quick"></span>
+    <input id="cr-note" class="note" title="Note for a further correction (N to type, Enter saves). Click a cell first to attach it.">
+    <span class="cr-show">
+      <span class="cr-muted">Show</span>
+      <label title="Add an original red channel panel"><input type="checkbox" data-ch="Red" tabindex="-1"> Red</label>
+      <label title="Add an original green channel panel"><input type="checkbox" data-ch="Green" tabindex="-1"> Green</label>
+      <label title="Add a phase contrast (transmitted light) panel"><input type="checkbox" data-ch="Phase" tabindex="-1"> Phase</label>
+    </span>
+  </div>
+</div>
+
+<div id="cr-traces" class="cr-modal" hidden>
+  <div class="cr-modal-box cr-traces-box">
+    <div class="cr-tower-bar">
+      <b id="cr-traces-title">Trace grid</b>
+      <label>Light <select id="cr-traces-light"><option value="total">Total in mask</option><option value="mean">Mean per pixel</option></select></label>
+      <label>Time mean <select id="cr-traces-smooth"><option value="1">Raw</option><option value="3" selected>3 frames</option><option value="7">7 frames</option></select></label>
+      <label>Y scale <select id="cr-traces-scale"><option value="cell">Each cell</option><option value="recording">Shared recording scale</option></select></label>
+      <label>Columns <select id="cr-traces-cols"><option value="auto">Auto</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option></select></label>
+      <label>Cells <select id="cr-traces-which"><option value="all">All</option><option value="follow">Followed</option></select></label>
+      <button id="cr-traces-close" title="Close (Esc)">Close</button>
+    </div>
+    <div id="cr-traces-grid" class="cr-traces-grid"></div>
+  </div>
+</div>
+<div id="cr-tower" class="cr-modal" hidden>
+  <div class="cr-modal-box">
+    <div class="cr-row">
+      <b id="cr-tower-title">Tower</b>
+      <select id="cr-tower-style" title="Track lines through the centres, or surfaces joining the outlines">
+        <option value="line">Lines</option><option value="perimeter">Surfaces</option>
+      </select>
+      <select id="cr-tower-preset" title="Image display: the approved CD68 poster display, or plain contrast">
+        <option value="cd68">CD68 display</option><option value="none">Plain</option>
+      </select>
+      <span class="cr-muted">planes:</span><span id="cr-tower-frames" class="cr-tower-frames"></span>
+      <button id="cr-tower-close" title="Close (Esc)">Close</button>
+    </div>
+    <img id="cr-tower-img" alt="Tracking tower of the followed cells">
+  </div>
+</div>
+<script src="/assets/correction-review.js"></script>
+<script src="/assets/hover-tips.js"></script>
+<script src="/assets/heartbeat.js" defer></script>
+</body>
+</html>

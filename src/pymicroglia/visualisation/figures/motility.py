@@ -1,5 +1,5 @@
 """Views of recorded cell movement and its measured displacement curves."""
-from ._declare import Figure, View, Table, Option, figure
+from ._declare import Figure, View, Table, Input, Option, figure
 from ..panels import motility
 
 figure(Figure('step_size_distribution','Frame-to-frame step size distribution','motility',
@@ -18,3 +18,12 @@ from ..panels import trajectories
 figure(Figure('identity_trajectories','Centroid paths with independent measured encodings','motility',views=(View('map',trajectories.paths),),
  reads=(Table('cell_frame'),Table('cell_summary'),Table('rhythms',optional=True)),prepare='pymicroglia.figure_tables.trajectories:prepare',
  options=(Option('metrics','net_displacement_px'),Option('trace_luts',None),Option('line_width_metric',''),Option('line_width_range',[.55,2.8]),Option('line_dash_metric',''),Option('rhythm_metric','integrated_density_mean3'),Option('period_bins',[2.,12.,20.,28.,48.]))))
+
+from ..panels import tracking_tower
+figure(Figure('tracking_tower','Saved identities followed through stacked snapshot planes','motility',
+    views=(View('line',tracking_tower.tower,block=True,needs=('labels','raw')),
+           View('perimeter',tracking_tower.tower,block=True,needs=('labels','raw'))),
+    reads=(Input('labels'),Input('raw')),prepare='pymicroglia.figure_tables.tracking_tower:prepare',
+    options=(Option('display_preset','cd68',choices=('cd68','cry1','rbm3','none')),Option('tower_settings',{})),
+    purpose='review',grammar='small-multiples',
+    claim='Acquired snapshots linked by measured native-frame positions of every saved identity; paths break at missing masks. Perimeter surfaces illustrate shape continuity, not membrane motion; this is not a tracking accuracy verdict.'))

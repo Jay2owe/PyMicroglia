@@ -105,6 +105,8 @@ native figures, plotted values and a Python replay script.
 PyMicroglia includes tracked-cell measurements, state models and clustering,
 cell-following videos, 88 figure actions with selectable views, and 11 workflows
 for rhythms, method audits, relationships, states, coordination and interventions.
+[Processor controls for tracking stages](docs/tracking-execution.md) describe per-run worker budgets and parallel identity discovery.
+
 The U-Net mask, six-file Motion input preparation, frozen Motion tracker,
 post-tracking cell eligibility, tracked-cell intensity measurement and
 configurable outline review exports now run in one automated chain.

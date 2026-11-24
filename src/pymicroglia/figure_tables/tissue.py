@@ -6,6 +6,7 @@ from . import territory_values as values
 from .tissue_rhythms import analyse_rhythm_maps
 from .prepared import PreparedViews
 from .metric_maps import cell_metric
+from .underlay import prepare_underlay
 from ..visualisation.labels import describe
 
 
@@ -26,8 +27,11 @@ def prepare(source,options):
     assignment=values.metric_assignment(options['map_assignment']);luts=_panel_luts(list(options['map_luts']))
     field={**source.field,'width':source.scale.length(source.field['width']),'height':source.scale.length(source.field['height'])}
     views={};aux={};all_pixels=[]
+    under=prepare_underlay(source,options,labels.shape[1:],len(labels))
+    if under is not None:aux['underlay_channels.csv']=under['table']
     def record(key,array,table,column,label,limits,**extras):
         normal=_plotted_pixels(key,table,column);all_pixels.append(normal);aux[key+'_pixels.csv']=table
+        if under is not None:extras.update(underlay=under['rgb'],underlay_alpha=under['alpha'])
         views[key]=dict(table=normal,array=array,field=field,label=label,limits=limits,cmap=luts[key] or 'viridis',unit=source.scale.length_unit,**extras)
     limit=max(span,np.finfo(float).eps)
     first=values.first_coverage_time(labels,hours);array,table=_pixels(first,0,limit,column='first_covered_hours')

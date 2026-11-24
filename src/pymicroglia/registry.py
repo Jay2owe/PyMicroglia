@@ -480,6 +480,7 @@ CLAIM_TEMPLATES: dict[str, str] = {
     "trace_review_handoff": "read the trace review decisions handed off from {source}",
     "mask_change_map": "mapped measured changes in the saved cell masks from {source}",
     "cell_time_sculpture": "plotted observed cell outlines through time from {source}",
+    "tracking_tower": "drew saved identities through stacked snapshot planes from {source}",
     "cell_trace_card": "plotted an original cell image and its measured traces from {source}",
     "recording_barcode": "plotted saved cell measurements across native frames from {source}",
     "cell_card_video": "rendered synchronized original cell images and measured traces from {source}",

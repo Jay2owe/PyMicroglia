@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import runpy
 import sys
 import time
@@ -76,6 +77,15 @@ def verify_native(root, run, config, snapshot):
         repair_record = root / "residency_frame_repair.json"
         if stage == "m22_accepted_history" and repair_record.is_file():
             expected_signature = {**signature, "stage_repair": json.loads(repair_record.read_text())}
+        composition_record = root / 'parallel_repair_composition.json'
+        if stage == 'm22_accepted_history' and composition_record.is_file():
+            expected_signature = {**expected_signature, 'composition_repair': json.loads(composition_record.read_text())}
+        lineage_record = root / 'local_lineage_overlap_repair.json'
+        if stage == 'm22_accepted_history' and lineage_record.is_file():
+            expected_signature = {**expected_signature, 'lineage_overlap_repair': json.loads(lineage_record.read_text())}
+        owner_record = root / 'owner_consensus_attachment_repair.json'
+        if stage == 'm22_accepted_history' and owner_record.is_file():
+            expected_signature = {**expected_signature, 'owner_consensus_repair': json.loads(owner_record.read_text())}
         if receipt["signature"] != expected_signature:
             raise ValueError("Native stage has a different parent signature: " + stage)
         record = json.loads((folder / "run.json").read_text())
@@ -122,6 +132,10 @@ def main():
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     authority = json.loads(args.authority.read_text())
+    measurement_timeout = authority.get('measurement_timeout_seconds', 3600)
+    if not isinstance(measurement_timeout, int) or not 1 <= measurement_timeout <= 86400:
+        raise ValueError('Measurement timeout must be an explicit 1-86400 second batch setting')
+    os.environ['PYMICROGLIA_MEASUREMENT_TIMEOUT_SECONDS'] = str(measurement_timeout)
     snapshot = Path(authority["snapshot"]).resolve()
     producer = Path(authority["producer"]).resolve()
     output = args.output.resolve()
@@ -142,6 +156,25 @@ def main():
     repair_record = root / "residency_frame_repair.json"
     if repair_record.is_file() and json.loads(repair_record.read_text()).get("repair_sha256") != authority.get("residency_repair", {}).get("sha256"):
         raise ValueError("Native parent repair differs from the authorized source")
+    composition = authority.get('composition_repair')
+    composition_record = root / 'parallel_repair_composition.json'
+    if composition and sha(composition['source']) != composition['sha256']:
+        raise ValueError('Authorized composition repair source changed')
+    if composition_record.exists() and json.loads(composition_record.read_text()).get('repair_sha256') != (composition or {}).get('sha256'):
+        raise ValueError('Native parent composition differs from the authorized source')
+    lineage = authority.get('lineage_overlap_repair')
+    lineage_record = root / 'local_lineage_overlap_repair.json'
+    if lineage and sha(lineage['source']) != lineage['sha256']:
+        raise ValueError('Authorized local-lineage repair source changed')
+    if lineage_record.exists() and json.loads(lineage_record.read_text()).get('repair_sha256') != (lineage or {}).get('sha256'):
+        raise ValueError('Native parent local-lineage repair differs from the authorized source')
+    owner_repair = authority.get('owner_consensus_repair')
+    owner_record = root / 'owner_consensus_attachment_repair.json'
+    if owner_record.exists() and json.loads(owner_record.read_text()).get('repair_sha256') != (owner_repair or {}).get('sha256'):
+        raise ValueError('Native parent owner-consensus repair differs from authorized source')
+    for key in ('process_proposal_repair', 'fragment_observation_repair', 'owner_consensus_repair', 'core_replacement_evidence_repair'):
+        if authority.get(key) and sha(authority[key]['source']) != authority[key]['sha256']:
+            raise ValueError('Authorized correction repair source changed: ' + key)
     parent = verify_native(root, run, config, snapshot) if completed_native(root, run) else None
     if root.exists() and parent is None:
         # Ordinary resume may reuse only the same candidate, never older partial work.
@@ -158,18 +191,19 @@ def main():
     activate(snapshot)
     from pymicroglia.tracking import engine
     # Keep frozen archives intact; version the explicit overlap repair separately.
-    proposal_context = None
-    if authority.get('process_proposal_repair'):
-        repair = authority['process_proposal_repair']
+    correction_contexts = []
+    for name in ('process_proposal_repair', 'fragment_observation_repair', 'core_replacement_evidence_repair'):
+        if not authority.get(name): continue
+        repair = authority[name]
         repair_source = Path(repair['source'])
         if sha(repair_source) != repair['sha256']:
             raise ValueError('Authorized process proposal repair source changed')
-        spec = importlib.util.spec_from_file_location('process_proposal_repair', repair_source)
+        spec = importlib.util.spec_from_file_location(name, repair_source)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         from pymicroglia.tracking import completed_feedback
-        proposal_context = module.activate(completed_feedback, output / 'tracking')
-        report['process_proposal_repair'] = repair
+        correction_contexts.append(module.activate(completed_feedback, output / 'tracking'))
+        report[name] = repair
     original = engine._execute_pipeline
     if parent:
         def reuse(pipeline, code, actual_root, run_name, actual_stem, actual_config, *pos, **kw):
@@ -180,23 +214,32 @@ def main():
             pipeline._verify_pins(common.Config.load(config), stem)
             print("CHECKPOINT verified 13 native stages; running current corrections from their saved outputs", flush=True)
         engine._execute_pipeline = reuse
-    elif authority.get("residency_repair"):
-        repair = authority["residency_repair"]
-        repair_source = Path(repair["source"])
-        if sha(repair_source) != repair["sha256"]:
-            raise ValueError("Authorized residency repair source changed")
-        spec = importlib.util.spec_from_file_location("residency_frame_repair", repair_source)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+    elif authority.get("residency_repair") or composition or lineage or owner_repair:
+        adapters = []
+        for name in ('residency_repair', 'composition_repair', 'lineage_overlap_repair', 'owner_consensus_repair'):
+            if not authority.get(name): continue
+            repair = authority[name]
+            repair_source = Path(repair['source'])
+            if sha(repair_source) != repair['sha256']:
+                raise ValueError('Authorized repair source changed: ' + name)
+            spec = importlib.util.spec_from_file_location(name, repair_source)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            adapters.append(module)
+            report[name] = repair
         def repaired(pipeline, code, actual_root, *pos, **kw):
             import importlib
+            from contextlib import ExitStack
             from pymicroglia.tracking import checkpoints
             history = importlib.import_module("accepted_history")
-            with module.install(history, checkpoints, actual_root):
+            with ExitStack() as stack:
+                for adapter in adapters:
+                    stack.enter_context(adapter.install(history, checkpoints, actual_root))
                 return original(pipeline, code, actual_root, *pos, **kw)
         engine._execute_pipeline = repaired
-        report["residency_repair"] = repair
     output.mkdir(parents=True, exist_ok=True)
+    # Repair contexts write provenance before the producer starts a fresh run.
+    (output / 'tracking').mkdir(parents=True, exist_ok=True)
     stamp = str(time.time_ns())
     # Keep old invocation records. Do not rewrite any native checkpoint signature.
     for path in (root / "accepted_stage_timings.jsonl", output / "tracking_action.json"):
@@ -217,8 +260,9 @@ def main():
     sys.path.insert(0, str(home))
     sys.argv = [str(producer), args.well, str(output)]
     try:
-        from contextlib import nullcontext
-        with proposal_context if proposal_context is not None else nullcontext():
+        from contextlib import ExitStack
+        with ExitStack() as stack:
+            for context in correction_contexts: stack.enter_context(context)
             runpy.run_path(str(producer), run_name="__main__")
         report["status"] = "tracking and measurement complete"
     except BaseException as exc:

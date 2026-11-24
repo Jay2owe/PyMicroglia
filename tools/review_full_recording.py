@@ -1,4 +1,4 @@
-"""Deliver full-camera outline movies for the existing recording batch."""
+"""Deliver registered cropped outline movies for the existing recording batch."""
 from pathlib import Path
 import argparse
 import json
@@ -10,6 +10,7 @@ def main():
     parser.add_argument('well')
     parser.add_argument('--home', type=Path, required=True)
     parser.add_argument('--all-videos', action='store_true')  # legacy queue spelling
+    parser.add_argument('--revise-video', action='store_true', help='Preserve the old video and reuse verified unchanged channel TIFFs')
     args = parser.parse_args()
     home = args.home.resolve()
     complete = json.loads((home/'rigid_analysis'/args.well/'measurement_complete.json').read_text())
@@ -18,11 +19,16 @@ def main():
     crop_manifest = Path(prepared['frame_clock']).parent/'manifest.json'
     tracking = json.loads((home/'rigid_analysis'/args.well/'tracking_action.json').read_text())['result']
     folder = home/'review/full_recordings'
+    policy = json.loads((home/'review/delivery_policy.json').read_text())
     def progress(done, total):
         (folder/(args.well+'_progress.json')).write_text(json.dumps(dict(rendered_frames=done, frames=total)))
     result = render(complete['measurement_dir'], folder, prefix=args.well, progress=progress,
                     registered_manifest=crop_manifest, tracking_labels=tracking['labels'],
-                    tracking_offset=tracking['source_frame_offset'])
+                    tracking_offset=tracking['source_frame_offset'],
+                    video_signal=policy.get('video_signal', 'channels'), revise_video=args.revise_video,
+                    tracking_raw=tracking['raw'],
+                    tracking_raw_sha256=prepared['pins']['registered_raw']['sha256'],
+                    tracking_signal_name=policy.get('tracking_signal_name', 'Tracking input'))
     marker = home/'review'/f'{args.well}_delivery.json'
     if marker.is_file():
         previous = json.loads(marker.read_text())

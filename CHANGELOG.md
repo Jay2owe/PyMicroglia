@@ -2,10 +2,58 @@
 
 ## Unreleased
 
+- Add the **LV200 red outline refiner** (`refine_motion(method="lv200_red")`):
+  the reviewed_v4 U-Net trained on Jamie's corrected LV200 CD68-mCherry
+  outlines, run on each frame after its slow background glow is removed, with a
+  cell cut of 0.70. Weights come from `PYMICROGLIA_LV200_WEIGHTS` or the source
+  checkout's `development/cd68_lv200_mask_unet` run.
+- Add `tracking.outline_morph`: a cell-frame where the refiner fell back to the
+  tracking outline, or where the outline shrank below half or swelled past twice
+  its neighbours' median area (3 frames either side), is replaced by a
+  signed-distance morph of the cell's nearest good outlines (at most 5 frames
+  away). Identities never change. `refine_motion` runs it by default for
+  `lv200_red` and returns `measurement_labels`; the workbench refine job measures
+  those labels.
+
+- Add **Analyse recordings**, the workbench's new first page: drop a TIFF stack
+  or a folder anywhere on the window (or paste a path), tick recordings, give
+  each a name, condition, treatment, sample and notes, then **Run full
+  analysis** to run `auto_microglia` (Auto-Organotypic's chain, cell masks,
+  Motion tracking, measurement, grids, videos) with live stage progress and a
+  Stop button. Bare stacks get a local-input manifest in
+  `<folder>/pymicroglia_analysis/`; a folder with a microscope manifest runs as
+  it is. Finished recordings open straight into the linked views.
+- Recording labels are saved in the folder's `recording_labels.json`
+  (Auto-Organotypic's shared store). `auto_microglia` writes condition and
+  sample into every measured table's `condition` and `subject` columns, and
+  group comparisons pick up labels edited after a run.
+- The workbench still starts when the linked-views figure list fails to load,
+  and request errors now show the server's message.
+- "No recording reached the cell mask" now names the stage failures instead of
+  blaming `cell_masks=False`.
 - Saved Workbench run records (`workbench_run_record_json`,
   `significance_run_record_json`) store `cwd` as `.` when they name no input
   files, so tables and figures carry no machine folder and drawing no longer
   fails for analyses run outside the home folder.
+
+- Make Motion tracking finish on every recording whose first identity stage
+  finished. A stage from event resolution to accepted history that raises on a
+  recording's data (for example a duplicate-identity check) is skipped and its
+  input labels pass on unchanged; a failing final-correction stage publishes the
+  accepted-history labels. Memory, file-lock and disk errors are retried twice
+  in bounded, resumable mode before the deepest finished labels are published.
+  Published fallbacks are marked `degraded` in the final `run.json`; every skip
+  is listed in `pipeline_fallback_audit.json`, and a failed recording no longer
+  stops the others (`failed_recordings`, `degraded_recordings`). Changed code or
+  settings now recompute affected checkpoints instead of refusing to resume.
+  Outputs are unchanged when no stage raises. The engine now also installs the
+  reciprocal-pair and owner-identity accounting repairs that CD68 applied
+  separately, and every accepted-history repair recomputes history made under a
+  different repair version instead of refusing to resume. Two somas claiming
+  one anchor name with no nearby bookend name now get separate names in the
+  final-correction stage too, which replays tracking (MCG_10 and MCG_11 failed
+  there). Deployment:
+  `validation/completed_base_20261012/memory/never_fail_speed175/README.md`.
 - Tests: the rhythm-derived spatial and tissue map checks, the measured-run
   comparison and the saved rhythm figures (`cd68_reporter_rhythm`,
   `metric_rhythm_matrix`, `all_cell_trace_grid`, `radial_occupancy_rhythms`)
@@ -18,6 +66,25 @@
   a 24 h period. The module and table counts include `expanded_intensity`.
   `tests/__init__.py` stops an installed third-party `tests` package from
   hiding the suite's helpers.
+- Add a channel underlay to `tissue_tectonics` and `spatial_rhythm_maps`: name
+  recorded inputs (`underlay=raw`) or images in label coordinates
+  (`brightfield=bf_mean.tif`) and the maps are drawn over them, each channel
+  painted through its house map and combined at `underlay_weights`, with
+  `underlay_alpha` setting the pixel maps' opacity. Off by default; existing
+  figures are unchanged. Each run records the channels in
+  `underlay_channels.csv`.
+- Add the trace reviewer (`/review`, `python -m pymicroglia.ui.trace_review open`):
+  one grid of every cell's saved trace and rhythm fit across recordings, with
+  sorting, batch include/exclude/star, a crop video synced to the trace, variant
+  and metric overlays (same time window only), agent suggestions and a handoff
+  bound to measurement hashes. Rhythm analyses accept a `label` and a
+  recording-hour window. Older trace-grid figure folders can be imported once.
+  Agents drive it through five registered `trace_review_*` actions.
+  Guide: `src/pymicroglia/ui/README.md`.
+- Add the `tracking_tower` figure: snapshot planes stacked along time with every
+  saved identity linked by measured positions (line) or perimeter surfaces.
+  The approved poster layout is the default (`TowerSettings`) and every value is
+  configurable. Parity: `validation/tracking_tower_20261023/README.md`.
 - Reduce complete-correction audit memory with reusable snapshots, streaming
   hashes and frame-wise provenance, and release consumed evidence before later
   tracking passes. Scientific correction archives and precision are unchanged.

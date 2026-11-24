@@ -423,6 +423,22 @@
     "description": "colour map per canonical spatial panel, comma separated in panel order",
     "type": "list"
   },
+  "underlay": {
+    "description": "Real channel images drawn beneath the map, comma separated: a recorded input name (raw) or name=path to a TIFF in label coordinates (brightfield=bf_mean.tif). A stack is averaged over the label movie's frames; several channels are combined. Empty draws no underlay.",
+    "type": "list"
+  },
+  "underlay_luts": {
+    "description": "colour map per underlay channel, comma separated in channel order; one value applies to all. Empty uses the house map for brightfield, phase, red, green, raw or bioluminescence.",
+    "type": "list"
+  },
+  "underlay_weights": {
+    "description": "brightness weight per underlay channel when several are combined, comma separated; empty weights each channel 1. Brightfield at 0.5 keeps fluorescence readable.",
+    "type": "list"
+  },
+  "underlay_alpha": {
+    "description": "opacity of a pixel map over its channel underlay, above 0 and at most 1; cell markers stay opaque",
+    "type": "float"
+  },
   "matrix_lut": {
     "description": "colour map used for numeric values in a matrix",
     "type": "str"
@@ -857,5 +873,13 @@
     "type": "mapping",
     "units": "-",
     "description": "Optional input filtering: null retains the measurement default; {\"method\":\"none\"} uses raw samples; {\"method\":\"median\",\"window_points\":3} applies a gap-aware median with an odd sample window."
+  },
+  "display_preset": {
+    "description": "approved image display recipe (filter, pooled contrast, gamma, lookup table) for the reporter: cd68, cry1, rbm3 or none",
+    "type": "str"
+  },
+  "tower_settings": {
+    "description": "overrides of the approved tracking-tower layout by TowerSettings field name (snapshot_interval_h, plane_gap_ratio, outline_width_pt, surface_opacity, ...); empty keeps the defaults",
+    "type": "dict"
   }
 }

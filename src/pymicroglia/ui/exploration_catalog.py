@@ -66,6 +66,8 @@ def figure_route(item: dict) -> str:
         return "event-timeline"
     if item["name"] == "cell_lifecycle_events" and item.get("view") == "timelines":
         return "event-timeline"
+    if item["name"] == "tracking_tower":  # snapshot image planes stacked along time; both styles
+        return "image"
     if item["name"] in REPORT_FIGURES:
         return "reports"
     matches = [key for key, names in GRAMMARS.items() if item.get("view") in names]

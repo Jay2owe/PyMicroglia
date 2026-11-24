@@ -345,12 +345,13 @@ class JobManager:
         self.pool.submit(self._pipeline, identifier, name, supplied)
         return self.get(identifier)
 
-    def submit_intake(self, folder: str, mode: str, recordings: list) -> dict:
+    def submit_intake(self, folder: str, mode: str, recordings: list,
+                      settings: dict | None = None) -> dict:
         """The full automated chain over dropped recordings, with stage progress."""
         from .intake import run_params
         from pymicroglia.pipelines.auto_microglia import AO_STAGES
 
-        params = run_params(folder, mode, recordings)
+        params = run_params(folder, mode, recordings, settings)
         identifier = uuid4().hex
         row = {"id": identifier, "kind": "intake", "action": "auto_microglia",
                "state": "queued", "submitted_at": _now(), "params": params,
@@ -443,7 +444,7 @@ class JobManager:
                                    weights=weights, method_options=options,
                                    um_per_px=handoff.get("microns_per_pixel"))
             params = dict(handoff.get("measure_params") or {})
-            params["movies"] = [dict(movie, labels=result["outputs"]["refined_labels"],
+            params["movies"] = [dict(movie, labels=result["measurement_labels"],
                                      notes=f"Refined from Motion session {handoff['source']} by {method}")]
             with self.lock:
                 row.update(state="completed", finished_at=_now(),
@@ -512,6 +513,11 @@ class JobManager:
     def list(self) -> list[dict]:
         with self.lock:
             return [self.get(row["id"]) for row in reversed(list(self.jobs.values()))]
+
+    def busy(self) -> bool:
+        """True while any job is waiting or running, so the idle exit must wait."""
+        with self.lock:
+            return any(row.get("state") in {"queued", "running"} for row in self.jobs.values())
 
     def close(self) -> None:
         self.pool.shutdown(wait=False, cancel_futures=False)
