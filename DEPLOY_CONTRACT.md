@@ -45,11 +45,12 @@ Zenodo record, lab copy or documentation site for this package.
    project's copies: refresh them from the template with a reason, or run the
    group's pytest commands from `architecture.yaml` directly and say so.
 3. The pinned dependency ranges must include the versions the checks ran
-   against. Release blocker as of 2026-11-25: `Auto-Organotypic>=0.7.2,<0.8`
-   and `circadian-workbench>=0.15,<0.16`, while development and testing use
-   Auto-Organotypic 0.11.0 and circadian-workbench 0.16. Widen each range only
-   after the surfaces pass against the newest release, or prove the release
-   works inside the declared range.
+   against. Release blocker as of 2026-11-25: `Auto-Organotypic>=0.7.2,<0.8`,
+   while development and testing run against the Auto-Organotypic source,
+   now 0.11.0 (its editable install still reports 0.8.0). circadian-workbench
+   0.15.0 is in use and inside `>=0.15,<0.16`, but the newest release, 0.16.2,
+   is outside it. Widen a range only after the surfaces pass against the newest
+   release, or prove the release works inside the declared range.
 4. Push-guard in push mode must be clean: the repository is public.
 
 ## Publication
